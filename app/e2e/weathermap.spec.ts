@@ -324,9 +324,15 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
   await page.waitForTimeout(700);
   await page.getByTestId('weather-map').screenshot({ path: `e2e-results/screens/${testInfo.project.name}-17c-navigation-layers.png` });
 
-  // El enlace lleva a la pantalla de Navegación.
+  // El enlace lleva a Navegación con el lugar tocado (Rosario, a ~280 km de mi GPS en Buenos Aires), no con mi ubicación.
+  await tap(page, -60.6308, -32.9433);
+  await expect(card).toContainText('Rosario · Paraná inferior');
+  await expect(card.getByTestId('feature-nav-link')).toHaveAttribute('href', /weather\/navigation\?lat=-32\.94330&lon=-60\.63080/);
   await card.getByTestId('feature-nav-link').click();
   await expect(page.getByRole('heading', { name: 'Navegación' })).toBeVisible();
+  await expect(page.locator('#place-coords')).toHaveValue('-32.94330, -60.63080');
+  await expect(page.getByTestId('rivers-card')).toContainText('Rosario', { timeout: 15_000 });
+  await expect(page.getByTestId('tide-station')).toBeVisible({ timeout: 15_000 });
 });
 
 test('mapa de tiempo: capa de oleaje (franja pegada a la costa, ficha con el período y la dirección) y mareógrafo del IOC en la ficha de mareas', async ({ page, context }, testInfo) => {

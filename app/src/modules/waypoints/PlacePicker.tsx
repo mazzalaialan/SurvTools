@@ -21,15 +21,16 @@ const MANUAL = 'manual';
 /**
  * Elige el lugar para sol, luna y clima: GPS, un waypoint guardado o coordenadas
  * escritas. Se recuerda el waypoint elegido; las coordenadas a mano no se guardan
- * (para eso está guardarlas como waypoint).
+ * (para eso está guardarlas como waypoint). Con `initial` arranca en esas coordenadas.
  */
-export function usePlacePicker(): { place: PickedPlace | null; picker: ReactNode } {
+export function usePlacePicker(initial?: LatLon | null): { place: PickedPlace | null; picker: ReactNode } {
   const { t } = useTranslation();
   const hasGps = useCapability('geolocation');
   const waypoints = useWaypoints((s) => s.waypoints);
   const savedId = useSettings((s) => s.settings.placeWaypointId);
   const update = useSettings((s) => s.update);
-  const [manual, setManual] = useState<string | null>(null);
+  // Con un lugar inicial (por ejemplo, el que se tocó en un mapa) se arranca con esas coordenadas en vez del GPS.
+  const [manual, setManual] = useState<string | null>(() => (initial ? `${initial.lat.toFixed(5)}, ${initial.lon.toFixed(5)}` : null));
 
   const saved = savedId ? waypoints.get(savedId) : undefined;
   // Sin GPS ni waypoint elegido, se arranca con coordenadas a mano.

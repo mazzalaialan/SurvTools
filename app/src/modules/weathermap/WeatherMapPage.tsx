@@ -721,7 +721,7 @@ function FeatureCard({
           r.alert !== null || r.evac !== null || r.low !== null ? t('weatherMap.riverThresholds', { alert: m(r.alert), evac: m(r.evac), low: m(r.low) }) : '',
         ].filter(Boolean);
       }
-      to = '/weather/navigation';
+      to = `/weather/navigation?lat=${r.lat.toFixed(5)}&lon=${r.lon.toFixed(5)}`;
       break;
     }
     case 'tide': {
@@ -736,7 +736,7 @@ function FeatureCard({
         .slice(0, 2)
         .map((e) => t('weatherMap.tideNext', { what: t(e.high ? 'navigation.tides.high' : 'navigation.tides.low').toLowerCase(), time: when.format(e.time), level: sgn.format(e.level) }));
       lines = [t('navigation.tides.now', { level: sgn.format(lvl), trend: t(soon >= lvl ? 'navigation.tides.rising' : 'navigation.tides.falling') }), ...next];
-      to = '/weather/navigation';
+      to = `/weather/navigation?lat=${st.lat.toFixed(5)}&lon=${st.lon.toFixed(5)}`;
       break;
     }
     case 'wave': {
@@ -753,7 +753,7 @@ function FeatureCard({
         w.swellHeight !== null ? t('navigation.waves.swell', { h: n1.format(w.swellHeight), s: Math.round(w.swellPeriod ?? 0) }) : '',
         t('weatherMap.waveModel'),
       ].filter(Boolean);
-      to = '/weather/navigation';
+      to = `/weather/navigation?lat=${w.lat.toFixed(5)}&lon=${w.lon.toFixed(5)}`;
       break;
     }
     case 'waypoint':
