@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PickedPlace } from '@/modules/waypoints/PlacePicker';
 import { usePlaceCountries } from '@/modules/emergency/usePlaceCountry';
+import { fetchChileBays, loadSavedBays, nearestBays, saveBays, type Bay, type ChileBays } from './chileBays';
 import { fetchChileForecast, loadSavedChile, saveChile, zoneIdFor, type ChileForecast, type ChileZone } from './chileMarine';
 
 /** «141200 UTC» → «14 12:00 UTC». */
@@ -39,6 +40,48 @@ function Zone({ z, open }: { z: ChileZone; open?: boolean }) {
   );
 }
 
+/** Una bahía: el primer período abierto y los demás plegados, con el texto de la Armada. */
+function BayForecast({ bay, km, open }: { bay: Bay; km: number; open?: boolean }) {
+  const { t, i18n } = useTranslation();
+  const kmFmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 });
+  return (
+    <details open={open} data-testid={`chile-bay-${bay.id}`}>
+      <summary>
+        <strong>{bay.name}</strong> <span className="hint">· {t('navigation.chile.bayDistance', { km: kmFmt.format(km) })}</span>
+      </summary>
+      {bay.periods.map((p, i) => {
+        const rows: [string, string][] = [
+          [t('navigation.chile.wind'), p.wind],
+          [t('navigation.chile.bayInside'), p.bay],
+          [t('navigation.chile.bayOcean'), p.ocean],
+          [t('navigation.chile.bayWaves'), p.waves],
+          [t('navigation.chile.visibility'), p.visibility],
+          [t('navigation.chile.clouds'), p.clouds],
+          [t('navigation.chile.bayPhenomenon'), p.phenomenon],
+          [t('navigation.chile.bayTemps'), p.tempMin || p.tempMax ? [p.tempMin, p.tempMax].filter(Boolean).join(' / ') : ''],
+        ];
+        return (
+          <div key={`${p.label}-${i}`} style={{ marginTop: i ? 8 : 4 }}>
+            <p className="hint" style={{ margin: '0 0 2px' }}>
+              <strong>{p.label}</strong>
+            </p>
+            <dl className="decl-cheat">
+              {rows
+                .filter(([, v]) => v)
+                .map(([k, v]) => (
+                  <div key={k}>
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
+            </dl>
+          </div>
+        );
+      })}
+    </details>
+  );
+}
+
 /** Pronóstico marítimo oficial de la Armada de Chile para la zona de la costa donde estás (solo en Chile o a menos de 50 km de la frontera). */
 export function ChileMarineCard({ place }: { place: PickedPlace | null }) {
   const { t } = useTranslation();
@@ -46,6 +89,23 @@ export function ChileMarineCard({ place }: { place: PickedPlace | null }) {
   const inChile = country === 'CL' || near.includes('CL');
   const [forecast, setForecast] = useState<ChileForecast | null>(() => loadSavedChile());
   const [state, setState] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  // Pronóstico de las bahías (otro archivo de la Armada); si falla, queda lo guardado y la tarjeta sigue con las zonas.
+  const [bays, setBays] = useState<ChileBays | null>(() => loadSavedBays());
+  useEffect(() => {
+    if (!inChile || !navigator.onLine) return;
+    let cancelled = false;
+    void fetchChileBays().then(
+      (b) => {
+        if (cancelled || !b) return;
+        saveBays(b);
+        setBays(b);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [inChile]);
   useEffect(() => {
     if (!inChile) return;
     if (!navigator.onLine) {
@@ -98,6 +158,19 @@ export function ChileMarineCard({ place }: { place: PickedPlace | null }) {
                 {t('navigation.chile.yourZone')}
               </p>
               <Zone z={mine} open />
+            </div>
+          )}
+          {bays && place && nearestBays(bays.bays, place.lat, place.lon).length > 0 && (
+            <div data-testid="chile-bays">
+              <h3 className="section-title" style={{ margin: '0 0 4px', fontSize: '1rem' }}>
+                {t('navigation.chile.baysTitle')}
+              </h3>
+              <p className="hint" style={{ margin: '0 0 6px' }}>
+                {t('navigation.chile.baysIntro')}
+              </p>
+              {nearestBays(bays.bays, place.lat, place.lon).map((n, i) => (
+                <BayForecast key={n.bay.id} bay={n.bay} km={n.km} open={i === 0} />
+              ))}
             </div>
           )}
           {others.length > 0 && (

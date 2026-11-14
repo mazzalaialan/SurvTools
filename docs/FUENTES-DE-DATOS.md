@@ -115,3 +115,9 @@ API a5 (`https://alerta.ina.gob.ar/a5/obs/puntual/`): `estaciones` (4.697, con `
 ## Ríos en el mapa de alertas y clima
 
 Líneas de ríos: Natural Earth `ne_10m_rivers_lake_centerlines` (dominio público, https://www.naturalearthdata.com), recortadas a América del Sur, simplificadas a ~2 km más los cursos de OpenStreetMap (ODbL, © OpenStreetMap contributors, vía Overpass) a menos de 12 km de una estación de nivel, para que todo río con medición se vea (Natural Earth no trae el Paraná de las Palmas); todo en `app/src/modules/weathermap/geo-data.json` (clave `rivers`; `node tools/geo-data/build.mjs --solo-rios`). Son líneas de referencia, no cartografía: no hay que usarlas para navegar. Los puntos de niveles y de mareas salen de los mismos datos de la pantalla Navegación (INA, SENAMHI Bolivia y constantes TICON-4).
+
+## Caudales del INA y bahías de la Armada de Chile
+
+- **Caudal medio diario (INA, API a5 `obs/puntual/series?var_id=40&proc_id=1`):** m³/s del día anterior; 14 estaciones lo tienen al día. Mismo origen y licencia (sin licencia declarada, se cita al INA) que los niveles.
+- **Delta del Paraná (INA, calibrado 489 `288_ajuste_salidas`):** pronóstico de altura de ~19 días con banda de error; pesa casi 1 MB.
+- **Bahías (Armada de Chile, `https://meteoarmada.directemar.cl/meteo/stat/download/bahias_met.json`):** pronóstico oficial por bahía; sin coordenadas en el archivo (las pusimos a mano) y sin licencia declarada, con CORS abierto.

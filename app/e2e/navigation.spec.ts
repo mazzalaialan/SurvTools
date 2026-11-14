@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 const PASSWORD = 'prueba-segura-123';
@@ -469,4 +470,27 @@ test('Waypoint: en su detalle se ve el río más cercano con su nivel, estado y 
   await card.getByRole('link', { name: 'Ver todo en Navegación' }).click();
   await expect(page.locator('#place-coords')).toHaveValue('-32.95000, -60.64000');
   await expect(page.getByTestId('rivers-card')).toContainText('Rosario', { timeout: 15_000 });
+});
+
+test('Navegación: bahías cercanas de la Armada de Chile (Valparaíso) con el pronóstico de día y de noche', async ({ page, context }) => {
+  await mockOpenMeteo(page);
+  const bays = JSON.parse(readFileSync(new URL('../src/modules/navigation/fixtures/bahias_met.sample.json', import.meta.url), 'utf8'));
+  await context.route('https://meteoarmada.directemar.cl/meteo/stat/download/regionalMaritimo.json', (route) =>
+    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: { pronostico: { periodo_validez: { inicio: '141200 UTC', fin: '151200 UTC' }, pronostico_detallado: [{ 'id-zona': 2, zona: 'Zona Dos (Coquimbo a Valparaíso)', viento: 'S 10/15 KT' }] } } }),
+  );
+  await context.route('https://meteoarmada.directemar.cl/meteo/stat/download/bahias_met.json', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: bays }));
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -33.04, longitude: -71.62, accuracy: 20 });
+  await start(page);
+  await page.goto('/#/weather/navigation');
+  const box = page.getByTestId('chile-bays');
+  await expect(box).toContainText('Bahías cercanas', { timeout: 20_000 });
+  const valpo = page.getByTestId('chile-bay-14');
+  await expect(valpo).toContainText('Bahía Valparaíso');
+  await expect(valpo).toContainText(/a \d+ km/);
+  await expect(valpo).toContainText('Mar en la bahía');
+  await expect(valpo).toContainText('Olas');
+  await expect(valpo).toContainText(/\d{2}:\d{2}/);
+  // Arica queda lejos (más de 150 km): no aparece entre las cercanas.
+  await expect(box).not.toContainText('Bahía Arica');
 });

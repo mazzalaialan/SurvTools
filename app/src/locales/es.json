@@ -1431,7 +1431,15 @@
       "visibility": "Visibilidad",
       "clouds": "Nubosidad",
       "synoptic": "Situación sinóptica",
-      "source": "Fuente: Servicio Meteorológico de la Armada de Chile (Directemar). Pronóstico oficial para la mar, informativo: para navegar consultá los avisos de la Autoridad Marítima."
+      "source": "Fuente: Servicio Meteorológico de la Armada de Chile (Directemar). Pronóstico oficial para la mar, informativo: para navegar consultá los avisos de la Autoridad Marítima.",
+      "baysTitle": "Bahías cercanas",
+      "baysIntro": "Pronóstico oficial por bahía, de día y de noche, con el texto de la Armada. La ubicación de cada bahía es aproximada.",
+      "bayDistance": "a {{km}} km",
+      "bayInside": "Mar en la bahía",
+      "bayOcean": "Mar fuera de la bahía",
+      "bayWaves": "Olas",
+      "bayPhenomenon": "Fenómeno",
+      "bayTemps": "Temperaturas (mín. / máx.)"
     },
     "sources": {
       "title": "Fuentes y licencias",

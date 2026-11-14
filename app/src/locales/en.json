@@ -1431,7 +1431,15 @@
       "visibility": "Visibility",
       "clouds": "Cloud cover",
       "synoptic": "Synoptic situation",
-      "source": "Source: Chilean Navy Weather Service (Directemar). Official marine forecast, informational: check the Maritime Authority's notices before going out."
+      "source": "Source: Chilean Navy Weather Service (Directemar). Official marine forecast, informational: check the Maritime Authority's notices before going out.",
+      "baysTitle": "Nearby bays",
+      "baysIntro": "Official forecast per bay, day and night, with the Navy text. The location of each bay is approximate.",
+      "bayDistance": "{{km}} km away",
+      "bayInside": "Sea inside the bay",
+      "bayOcean": "Sea outside the bay",
+      "bayWaves": "Waves",
+      "bayPhenomenon": "Weather phenomenon",
+      "bayTemps": "Temperatures (min. / max.)"
     },
     "sources": {
       "title": "Sources and licenses",
