@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const prefetchCountry = vi.fn(async (_country: string) => undefined);
 let stored = new Set<string>();
 vi.mock('./country', () => ({ prefetchCountry: (c: string) => prefetchCountry(c) }));
-vi.mock('./dataFile', () => ({ hasDataFile: async (f: string) => stored.has(f) }));
+const refreshStored = vi.fn(async (_files: string[]) => 0);
+vi.mock('./dataFile', () => ({ hasDataFile: async (f: string) => stored.has(f), refreshStored: (f: string[]) => refreshStored(f) }));
 
 const setNetwork = (type: string | undefined, saveData = false) =>
   Object.defineProperty(navigator, 'connection', { value: type === undefined ? undefined : { type, saveData }, configurable: true });
@@ -15,6 +16,7 @@ async function load() {
 describe('qué hacer al detectar otro país', () => {
   beforeEach(() => {
     prefetchCountry.mockClear();
+    refreshStored.mockClear();
     stored = new Set();
     Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
   });
@@ -96,5 +98,25 @@ describe('qué hacer al detectar otro país', () => {
     Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
     await downloadFor({ country: 'PE', near: [] });
     expect(useCountryNotices.getState().ask).toBeNull();
+  });
+
+  it('lo ya guardado se actualiza solo con Wi-Fi, con los archivos del país y de los vecinos', async () => {
+    const { downloadFor, updateStored } = await load();
+    const { countryFiles } = await import('./countryDownload');
+    setNetwork('wifi');
+    stored = new Set([...countryFiles('CL'), ...countryFiles('AR')]);
+    await downloadFor({ country: 'CL', near: ['AR'] });
+    expect(refreshStored).toHaveBeenCalledTimes(1);
+    expect(refreshStored.mock.calls[0]![0]).toEqual(expect.arrayContaining(countryFiles('CL')));
+    expect(refreshStored.mock.calls[0]![0]).toEqual(expect.arrayContaining(countryFiles('AR')));
+    // Sin Wi-Fi seguro (datos móviles, iPhone, ahorro de datos) no actualiza a escondidas.
+    refreshStored.mockClear();
+    for (const type of ['cellular', undefined]) {
+      setNetwork(type);
+      expect(await updateStored(['CL'])).toBe(0);
+    }
+    setNetwork('wifi', true);
+    await updateStored(['CL']);
+    expect(refreshStored).not.toHaveBeenCalled();
   });
 });

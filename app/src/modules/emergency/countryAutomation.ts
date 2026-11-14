@@ -6,7 +6,8 @@ import { distanceMeters } from '@/core/geo/geo';
 import { useMapZones } from '@/modules/maps/store';
 import { loadBorders } from './borders';
 import { prefetchCountry } from './country';
-import { downloadsSilently, missingDownload, networkInfo } from './countryDownload';
+import { countryFiles, downloadsSilently, missingDownload, networkInfo } from './countryDownload';
+import { refreshStored } from './dataFile';
 import { createCountryDetector, type DetectedCountries } from './countryDetector';
 
 /**
@@ -64,13 +65,21 @@ export async function downloadFor(d: DetectedCountries): Promise<void> {
   if (!navigator.onLine) return;
   const countries = [d.country, ...d.near];
   const missing = await missingDownload(countries);
-  if (missing.files.length === 0) return;
-  if (downloadsSilently(networkInfo())) {
-    await Promise.all(countries.map(prefetchCountry));
-    return;
+  if (missing.files.length > 0) {
+    if (downloadsSilently(networkInfo())) await Promise.all(countries.map(prefetchCountry));
+    else if (!declined.has(countries.join(','))) useCountryNotices.setState({ ask: { countries, bytes: missing.bytes } });
   }
-  if (declined.has(countries.join(','))) return;
-  useCountryNotices.setState({ ask: { countries, bytes: missing.bytes } });
+  await updateStored(countries);
+}
+
+/**
+ * Actualiza lo que ya está guardado de estos países: baja solo los archivos que cambiaron (compara los índices, ver `refreshStored`),
+ * como mucho cada 12 horas. Con Wi-Fi sin avisar; con datos móviles o conexión desconocida no baja a escondidas (los archivos que se
+ * usan igual se actualizan al abrirlos, con la misma comparación).
+ */
+export async function updateStored(countries: Country[]): Promise<number> {
+  if (!navigator.onLine || !downloadsSilently(networkInfo())) return 0;
+  return refreshStored(countries.flatMap(countryFiles));
 }
 
 async function onDetected(d: DetectedCountries, at: { lat: number; lon: number }): Promise<void> {
@@ -85,6 +94,9 @@ async function onDetected(d: DetectedCountries, at: { lat: number; lon: number }
 export function useCountryAutomation(): void {
   useEffect(() => {
     refreshOffer();
+    // Al abrir la app: lo guardado del país de la app y del detectado se actualiza si cambió (solo Wi-Fi, una vez cada 12 horas).
+    const s = useSettings.getState().settings;
+    void updateStored([...new Set([s.country, ...(s.detectedCountry ? [s.detectedCountry, ...s.detectedNear] : [])])]).catch(() => undefined);
     const detector = createCountryDetector({
       load: loadBorders,
       current: () => {

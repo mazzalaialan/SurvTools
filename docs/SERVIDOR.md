@@ -259,3 +259,7 @@ Borra el dispositivo y, en cascada, sus vencimientos, lugares de avisos, huerta,
 ## Ríos: aviso anticipado con el pronóstico del INA
 
 Además del aviso en vivo, `runRiverForecastWatch` (`server/src/rivers/watch.ts`, con `rivers/forecast.ts`) avisa si el pronóstico del INA (la línea principal, no la banda) indica que el río llegará dentro de 7 días al nivel de alerta, de evacuación o a aguas bajas, y hay un lugar guardado a menos de 5 km. Solo para las estaciones con `forecast` en `rivers-AR.json` (17). El pronóstico se baja cada 3 horas como máximo y solo de las estaciones vigiladas (modelos `sim/calibrados/{id}/corridas?includeProno=true`; el del Delta, casi 1 MB, no se usa). Una vez por estación, lugar y nivel (claves `river-fc:` y `river-fc-low:` en `hazard_notices`); si el pronóstico después suma un nivel más grave se avisa de nuevo, y cuando deja de cruzar se borra lo avisado. Si el río ya está en ese nivel, avisa el aviso en vivo. La notificación lleva `river.forecast = true`.
+
+## Índice de paquetes de datos
+
+`GET /api/data/index.json` devuelve `{ files: { "CL.json": { date, bytes }, … } }` con la fecha de generación (`generatedAt`, vacía si el paquete no la trae) y el peso de cada paquete de `DATA_PACKS_DIR` que figura en la lista de `/api/data/:file`. La app lo compara con el índice que trae (`public/data/index.json`) para bajar solo los paquetes guardados que cambiaron, en vez de los archivos enteros. No hace falta tocar `update-data.sh`: el índice se arma leyendo la carpeta (con caché por fecha de modificación y peso).

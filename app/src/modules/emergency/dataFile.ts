@@ -23,13 +23,54 @@ async function fetchJson(url: string): Promise<unknown | null> {
   }
 }
 
+/** Qué dice un índice (`index.json`) de cada archivo: fecha de generación (vacía si no la tiene) y peso. */
+export interface DataIndex {
+  files: Record<string, { date: string; bytes: number }>;
+}
+
+const isIndex = (d: unknown): d is DataIndex => !!d && typeof d === 'object' && typeof (d as DataIndex).files === 'object' && (d as DataIndex).files !== null;
+
+const INDEX_TTL_MS = 10 * 60_000;
+let indexes: { at: number; app: DataIndex | null; server: DataIndex | null; serverBase: string | null } | null = null;
+
 /**
- * Con conexión, busca copias más nuevas: la que viene con la app y la del
- * servidor propio (que vuelve a generar los paquetes cada mes, ver
- * server/src/data/update-data.sh). Guarda la más nueva para la próxima vez.
+ * Los índices de la app y del servidor propio (unos pocos KB cada uno): con ellos se sabe qué archivos guardados cambiaron sin bajarlos
+ * enteros. Se guardan 10 minutos en memoria. Un servidor viejo sin índice da `null`.
  */
-async function refresh(file: string, current: unknown, cache: Cache | null): Promise<void> {
-  if (!cache || !navigator.onLine) return;
+export async function loadIndexes(force = false): Promise<{ app: DataIndex | null; server: DataIndex | null }> {
+  const server = serverBase();
+  if (!force && indexes && indexes.serverBase === server && Date.now() - indexes.at < INDEX_TTL_MS) return indexes;
+  const [app, srv] = await Promise.all([fetchJson(keyUrl('index.json')), server ? fetchJson(`${server}/api/data/index.json`) : null]);
+  indexes = { at: Date.now(), app: isIndex(app) ? app : null, server: isIndex(srv) ? srv : null, serverBase: server };
+  return indexes;
+}
+
+/** De dónde bajar la copia más nueva de un archivo según los índices; `null` si ninguna es más nueva que `storedDate`. */
+export function newerSource(file: string, storedDate: string, idx: { app: DataIndex | null; server: DataIndex | null }): 'app' | 'server' | null {
+  const app = idx.app?.files[file]?.date ?? '';
+  const server = idx.server?.files[file]?.date ?? '';
+  const best = server > app ? 'server' : 'app';
+  const bestDate = best === 'server' ? server : app;
+  return bestDate && bestDate > storedDate ? best : null;
+}
+
+const CHECKED = 'vikarg.data.legacyChecked';
+const LEGACY_EVERY_MS = 24 * 3_600_000;
+/** Los archivos sin fecha (o sin índice en ningún lado) se revisan como antes, pero como mucho una vez al día. */
+function legacyDue(file: string): boolean {
+  try {
+    const all = JSON.parse(localStorage.getItem(CHECKED) ?? '{}') as Record<string, number>;
+    if (Date.now() - (all[file] ?? 0) < LEGACY_EVERY_MS) return false;
+    localStorage.setItem(CHECKED, JSON.stringify({ ...all, [file]: Date.now() }));
+  } catch {
+    /* sin almacenamiento: se revisa */
+  }
+  return true;
+}
+
+/** Revisión de siempre: baja la copia de la app y la del servidor y se queda con la más nueva (por fecha). */
+async function refreshLegacy(file: string, current: unknown, cache: Cache): Promise<boolean> {
+  if (!legacyDue(file)) return false;
   const server = serverBase();
   const [fromApp, fromServer] = await Promise.all([fetchJson(keyUrl(file)), server ? fetchJson(`${server}/api/data/${file}`) : null]);
   let best = current;
@@ -37,7 +78,56 @@ async function refresh(file: string, current: unknown, cache: Cache | null): Pro
   if (fromApp && (dateOf(fromApp) > dateOf(best) || (!dateOf(fromApp) && !dateOf(best)))) best = fromApp;
   // La del servidor, solo si es más nueva.
   if (fromServer && dateOf(fromServer) > dateOf(best)) best = fromServer;
-  if (best !== current) await cache.put(keyUrl(file), new Response(JSON.stringify(best), { headers: { 'content-type': 'application/json' } }));
+  if (best === current) return false;
+  await cache.put(keyUrl(file), new Response(JSON.stringify(best), { headers: { 'content-type': 'application/json' } }));
+  return true;
+}
+
+/**
+ * Con conexión, actualiza un archivo guardado solo si hay una copia más nueva (la que viene con la app o la del servidor propio, que
+ * vuelve a generar los paquetes cada mes, ver server/src/data/update-data.sh). Mira los índices (unos pocos KB) y baja únicamente el
+ * archivo que cambió; sin índice, o si el archivo no tiene fecha, revisa a la antigua pero una vez al día. Devuelve si lo actualizó.
+ */
+async function refresh(file: string, current: unknown, cache: Cache | null): Promise<boolean> {
+  if (!cache || !navigator.onLine) return false;
+  const idx = await loadIndexes();
+  const storedDate = dateOf(current);
+  const known = idx.app?.files[file] ?? idx.server?.files[file];
+  // Sin índice que lo conozca o sin fecha en el archivo: la revisión de siempre (una vez al día).
+  if (!known || !storedDate || (!idx.app?.files[file]?.date && !idx.server?.files[file]?.date)) return refreshLegacy(file, current, cache);
+  const from = newerSource(file, storedDate, idx);
+  if (!from) return false;
+  const fresh = await fetchJson(from === 'server' ? `${serverBase()}/api/data/${file}` : keyUrl(file));
+  if (!fresh || dateOf(fresh) <= storedDate) return false;
+  await cache.put(keyUrl(file), new Response(JSON.stringify(fresh), { headers: { 'content-type': 'application/json' } }));
+  return true;
+}
+
+const REFRESHED = 'vikarg.data.refreshedAt';
+/** Cada cuánto se revisa en bloque todo lo guardado (al abrir la app o al detectar un país). */
+export const REFRESH_EVERY_MS = 12 * 3_600_000;
+
+/**
+ * Revisa los archivos de esta lista que ya están guardados y baja solo los que cambiaron (ver `refresh`). Como mucho una vez cada 12
+ * horas, salvo `force`. Los que no están guardados no se bajan acá: eso lo hace `prefetchCountry`. Devuelve cuántos actualizó.
+ */
+export async function refreshStored(files: string[], force = false): Promise<number> {
+  if (!('caches' in globalThis) || !navigator.onLine) return 0;
+  try {
+    if (!force && Date.now() - Number(localStorage.getItem(REFRESHED) ?? 0) < REFRESH_EVERY_MS) return 0;
+    localStorage.setItem(REFRESHED, String(Date.now()));
+  } catch {
+    /* sin almacenamiento: se revisa igual */
+  }
+  const cache = await caches.open(DATA_CACHE);
+  let updated = 0;
+  for (const file of [...new Set(files)]) {
+    const stored = await cache.match(keyUrl(file));
+    if (!stored) continue;
+    const data = await stored.json().catch(() => null);
+    if (data && (await refresh(file, data, cache).catch(() => false))) updated++;
+  }
+  return updated;
 }
 
 /**

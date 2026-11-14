@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import type { Config } from '../config.ts';
@@ -24,7 +24,44 @@ export const DATA_FILES = new Set([
   ...SERVICE_CATEGORIES.flatMap((c) => SERVICE_COUNTRIES.map((cc) => `${c}-${cc}.json`)),
 ]);
 
+/** Fecha de generación (`generatedAt`, AAAA-MM-DD) de un paquete; vacía si no la tiene. */
+export function generatedAtOf(json: string): string {
+  try {
+    const d = JSON.parse(json) as { generatedAt?: unknown };
+    return d && typeof d === 'object' && typeof d.generatedAt === 'string' ? d.generatedAt : '';
+  } catch {
+    return '';
+  }
+}
+
 export function dataRoutes(app: FastifyInstance, config: Config): void {
+  // Qué leyó de cada archivo (por fecha de modificación y peso): los paquetes son de cientos de KB y se regeneran cada mes.
+  const seen = new Map<string, { mtimeMs: number; bytes: number; date: string }>();
+
+  /**
+   * `GET /api/data/index.json`: fecha y peso de cada paquete que tiene el servidor, para que el teléfono baje solo los que cambiaron
+   * (app/src/modules/emergency/dataFile.ts). Mismo formato que `public/data/index.json` de la app.
+   */
+  app.get('/api/data/index.json', async (_req, reply) => {
+    if (!config.dataPacksDir) return reply.code(404).send({ error: 'not-found' });
+    const files: Record<string, { date: string; bytes: number }> = {};
+    for (const file of [...DATA_FILES].sort()) {
+      const path = join(config.dataPacksDir, file);
+      try {
+        const st = await stat(path);
+        let hit = seen.get(file);
+        if (!hit || hit.mtimeMs !== st.mtimeMs || hit.bytes !== st.size) {
+          hit = { mtimeMs: st.mtimeMs, bytes: st.size, date: generatedAtOf(await readFile(path, 'utf8')) };
+          seen.set(file, hit);
+        }
+        files[file] = { date: hit.date, bytes: hit.bytes };
+      } catch {
+        /* el servidor no tiene ese paquete: no figura */
+      }
+    }
+    return reply.header('cache-control', 'no-cache').send({ files });
+  });
+
   app.get<{ Params: { file: string } }>('/api/data/:file', async (req, reply) => {
     const { file } = req.params;
     if (!config.dataPacksDir || !DATA_FILES.has(file)) return reply.code(404).send({ error: 'not-found' });

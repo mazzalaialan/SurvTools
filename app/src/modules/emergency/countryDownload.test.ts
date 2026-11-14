@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { countryFiles, downloadsSilently, fileBytes, formatBytes, networkInfo } from './countryDownload';
 import { SERVICE_CATEGORIES } from './services';
@@ -29,6 +29,18 @@ describe('descarga de los datos de un país', () => {
       }
     }
     expect(real.length).toBeGreaterThan(40);
+  });
+
+  it('el índice de la app (public/data/index.json) coincide con los archivos (si falla: `npm run data-sizes`)', () => {
+    const dir = new URL('../../../public/data/', import.meta.url);
+    const index = JSON.parse(readFileSync(new URL('index.json', dir), 'utf8')) as { files: Record<string, { date: string; bytes: number }> };
+    const real = readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'index.json');
+    expect(Object.keys(index.files).sort()).toEqual(real.sort());
+    for (const f of real) {
+      const d = JSON.parse(readFileSync(new URL(f, dir), 'utf8')) as { generatedAt?: unknown };
+      expect(index.files[f]!.date, `${f}: la fecha del índice no coincide`).toBe(typeof d?.generatedAt === 'string' ? d.generatedAt : '');
+      expect(index.files[f]!.bytes, `${f}: el peso del índice no coincide`).toBe(statSync(new URL(f, dir)).size);
+    }
   });
 
   it('sin Wi-Fi seguro se pregunta: solo Wi-Fi o cable sin ahorro de datos baja solo', () => {
