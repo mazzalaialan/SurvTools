@@ -263,3 +263,7 @@ Además del aviso en vivo, `runRiverForecastWatch` (`server/src/rivers/watch.ts`
 ## Índice de paquetes de datos
 
 `GET /api/data/index.json` devuelve `{ files: { "CL.json": { date, bytes }, … } }` con la fecha de generación (`generatedAt`, vacía si el paquete no la trae) y el peso de cada paquete de `DATA_PACKS_DIR` que figura en la lista de `/api/data/:file`. La app lo compara con el índice que trae (`public/data/index.json`) para bajar solo los paquetes guardados que cambiaron, en vez de los archivos enteros. No hace falta tocar `update-data.sh`: el índice se arma leyendo la carpeta (con caché por fecha de modificación y peso).
+
+## Focos de calor: GET /api/fires
+
+Baja las listas públicas de NASA FIRMS (VIIRS NOAA-20 y NOAA-21, últimas 24 h, sin clave), se queda con la región de la app (lon −83 a −52, lat −57 a 0,5) y devuelve celdas de 0,1° `[lat, lon, detecciones, alta confianza, nominales, FRP total, minutos desde la más reciente]`, más `fetchedAt`, `newestAt`, `total` y `sources`. Guarda 30 minutos en memoria; si FIRMS falla devuelve la última buena (hasta 6 horas) con `stale: true`, y 503 si no hay ninguna. Un satélite que falla no tira al otro. Sin tocar la base de datos ni el cron.

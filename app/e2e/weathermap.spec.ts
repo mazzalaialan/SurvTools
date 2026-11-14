@@ -393,7 +393,7 @@ test('mapa de tiempo: capa de oleaje (franja pegada a la costa, ficha con el per
   await expect(page.getByTestId('map-tide-gauge')).toContainText(/(sigue lo calculado|m por (encima|debajo) de lo calculado)/);
 });
 
-test('mapa de tiempo: focos de calor tocables, con la cantidad de detecciones y la aclaración de que no todo es incendio', async ({ page, context }) => {
+test('mapa de tiempo: focos de calor (respaldo: imagen de la NASA) tocables, con la cantidad de detecciones y la aclaración de que no todo es incendio', async ({ page, context }) => {
   await mockSources(page);
   // Capa de focos de la NASA (VIIRS) simulada: transparente con un grupo de píxeles rojos (unas 13 detecciones por pasada).
   const firePng = await sharp({ create: { width: 400, height: 300, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
@@ -401,6 +401,8 @@ test('mapa de tiempo: focos de calor tocables, con la cantidad de detecciones y 
     .png()
     .toBuffer();
   await context.route(/gibs\.earthdata\.nasa\.gov.*VIIRS_NOAA20_Thermal_Anomalies/, (route) => route.fulfill({ body: firePng, contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  // Sin respuesta del servidor (FIRMS no disponible): la capa vuelve a la imagen de la NASA, sin confianza.
+  await context.route('**/api/fires', (route) => route.fulfill({ status: 503, json: { error: 'unavailable' }, headers: { 'Access-Control-Allow-Origin': '*' } }));
   await setup(page);
   await page.goto('/#/weather/map');
   await expect(page.getByTestId('weather-map')).toBeVisible();
@@ -414,10 +416,62 @@ test('mapa de tiempo: focos de calor tocables, con la cantidad de detecciones y 
   const map = page.getByTestId('weather-map');
   await map.evaluate((el) => el.scrollIntoView({ block: 'center' }));
   const box = (await map.boundingBox())!;
-  await page.mouse.click(box.x + box.width * (146.5 / 400), box.y + box.height * (146.5 / 300));
   const card = page.getByTestId('map-feature');
-  await expect(card).toContainText('Focos de calor');
+  // Primero se pide FIRMS (503) y recién después se baja la imagen de la NASA: se toca hasta que el grupo responda.
+  await expect(async () => {
+    await page.mouse.click(box.x + box.width * (146.5 / 400), box.y + box.height * (146.5 / 300));
+    await expect(card).toContainText('Focos de calor', { timeout: 1000 });
+  }).toPass({ timeout: 20_000 });
   await expect(card).toContainText(/Unas \d+ detecciones del satélite en esta zona/);
   await expect(card).toContainText('No confirman un incendio forestal');
   await expect(card).toContainText('baja confianza');
+});
+
+test('mapa de tiempo: focos de calor de FIRMS, llama solo para alta confianza, naranja para nominal, con la ficha de cada grupo', async ({ page, context }, testInfo) => {
+  await mockSources(page);
+  const fetchedAt = Date.now();
+  // FIRMS (servidor propio, simulado): una celda con alta confianza (2 detecciones, una alta), una nominal (4) y una de baja confianza (1).
+  await context.route('**/api/fires', (route) =>
+    route.fulfill({
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      json: {
+        fetchedAt,
+        newestAt: fetchedAt - 90 * 60_000,
+        total: 7,
+        sources: ['NOAA-20', 'NOAA-21'],
+        stale: false,
+        cells: [
+          [-24.05, -66.05, 2, 1, 1, 14, 90],
+          [-31.45, -64.15, 4, 0, 4, 9, 300],
+          [-35.05, -68.05, 1, 0, 0, 1, 600],
+        ],
+      },
+    }),
+  );
+  await setup(page);
+  await page.goto('/#/weather/map');
+  await expect(page.getByTestId('weather-map')).toBeVisible();
+  await page.getByRole('button', { name: 'Clima por zona' }).click();
+  await page.getByRole('button', { name: 'Alertas oficiales' }).click();
+  await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
+  await page.getByRole('button', { name: 'Lluvia estimada (satélite)' }).click();
+  await page.getByRole('button', { name: 'Focos de calor' }).click();
+  await expect(page.getByText(/Anomalías térmicas de las últimas 24 h \(NASA FIRMS.*la llama marca las de alta confianza/)).toBeVisible();
+  await page.waitForTimeout(1500);
+  const card = page.getByTestId('map-feature');
+  // Alta confianza: la llama; la ficha cuenta por confianza, dice hace cuánto fue la última y que no confirma un incendio.
+  await tap(page, -66.05, -24.05);
+  await expect(card).toContainText('Focos de calor');
+  await expect(card).toContainText('2 detecciones en esta zona: 1 de alta confianza, 1 nominal');
+  await expect(card).toContainText(/La más reciente, hace [12] horas?\./);
+  await expect(card).toContainText('Potencia radiativa total: 14 MW');
+  await expect(card).toContainText('Solo las de alta confianza llevan llama');
+  // Nominal: punto naranja.
+  await tap(page, -64.15, -31.45);
+  await expect(card).toContainText('4 detecciones en esta zona: 4 nominales');
+  await expect(card).not.toContainText(/\d+ de alta confianza/);
+  // Baja confianza.
+  await tap(page, -68.05, -35.05);
+  await expect(card).toContainText('Una detección en esta zona: 1 de baja confianza');
+  await page.getByTestId('weather-map').screenshot({ path: `e2e-results/screens/${testInfo.project.name}-17e-fires-firms.png` });
 });

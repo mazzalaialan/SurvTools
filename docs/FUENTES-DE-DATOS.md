@@ -121,3 +121,7 @@ Líneas de ríos: Natural Earth `ne_10m_rivers_lake_centerlines` (dominio públi
 - **Caudal medio diario (INA, API a5 `obs/puntual/series?var_id=40&proc_id=1`):** m³/s del día anterior; 14 estaciones lo tienen al día. Mismo origen y licencia (sin licencia declarada, se cita al INA) que los niveles.
 - **Delta del Paraná (INA, calibrado 489 `288_ajuste_salidas`):** pronóstico de altura de ~19 días con banda de error; pesa casi 1 MB.
 - **Bahías (Armada de Chile, `https://meteoarmada.directemar.cl/meteo/stat/download/bahias_met.json`):** pronóstico oficial por bahía; sin coordenadas en el archivo (las pusimos a mano) y sin licencia declarada, con CORS abierto.
+
+## Focos de calor (NASA FIRMS)
+
+Listas CSV públicas de las últimas 24 horas, sin clave: `https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/csv/J1_VIIRS_C2_South_America_24h.csv` (NOAA-20) y `.../noaa-21-viirs-c2/csv/J2_VIIRS_C2_South_America_24h.csv` (NOAA-21); la de Suomi NPP (`suomi-npp-viirs-c2`) estaba vacía al probarla. Columnas: `latitude, longitude, acq_date, acq_time (UTC), confidence (low/nominal/high), frp (MW), daynight`. Datos abiertos de la NASA (política de datos abiertos de ESDIS: hay que citar a NASA FIRMS). Son anomalías térmicas: incluyen incendios, quemas agrícolas y de pastura, antorchas de gas e industria. Antes la capa usaba la imagen de GIBS (`VIIRS_NOAA20_Thermal_Anomalies_375m_All`), que no distingue confianza; hoy queda como respaldo cuando no hay servidor.

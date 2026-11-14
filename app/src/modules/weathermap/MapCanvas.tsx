@@ -6,6 +6,7 @@ import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels'
 import type { GeoData, Volcano } from './geo';
 import type { NavState, RiverPoint, TidePoint } from './navLayers';
 import { seaState, type SeaState } from '@/modules/navigation/waves';
+import { clusterFires, fireLevel, type FireCell } from './fires';
 import { waveSegments, type WaveSpot } from './waveGrid';
 import { fitBounds, homeBounds, pan, project, unproject, zoomAt, type Size, type View } from './projection';
 import { readyImage } from './images';
@@ -32,6 +33,12 @@ export interface FireSpot {
   lon: number;
   lat: number;
   detections: number;
+  /** Con FIRMS: por confianza, potencia total (MW) y minutos desde la más reciente (al bajar los datos). Sin FIRMS (imagen de la NASA) no hay. */
+  high?: number;
+  nominal?: number;
+  low?: number;
+  frp?: number;
+  newestMin?: number;
 }
 
 export type MapFeature =
@@ -65,6 +72,8 @@ interface Props {
   tidePoints?: TidePoint[] | null;
   /** Oleaje: altura de las olas en una grilla de puntos de mar. */
   waves?: WaveSpot[] | null;
+  /** Focos de calor de FIRMS (celdas de 0,1° con su confianza): llama solo para alta confianza. Si no hay, se usa la imagen de la NASA. */
+  fires?: FireCell[] | null;
   /** Nivel de alerta técnica (OAVV): el volcán se pinta de amarillo, naranja o rojo, más grande. */
   volcanoAlerts?: VolcanoAlert[] | null;
   waypoints: MapWaypoint[] | null;
@@ -122,6 +131,10 @@ const FIRE_CELL_PX = 64;
 const FIRE_MIN_PX = 90;
 /** Píxeles por foco (para estimar cuántas detecciones hay en un grupo) y mínimo para considerar que hay uno. */
 const FIRE_PX_EACH = 22;
+/** Casilla (px de pantalla) en la que se juntan los focos de FIRMS, y colores fijos (iguales en todos los temas). */
+const FIRE_CLUSTER_PX = 22;
+const FIRE_ORANGE = '#f08a00';
+const FIRE_LOW = '#e6c84a';
 const FIRE_ANY_PX = 14;
 const fireCache = new WeakMap<HTMLImageElement, { x: number; y: number; n: number }[]>();
 
@@ -317,7 +330,20 @@ function hitTest(x: number, y: number, size: Size, view: View, p: Props): MapFea
   p.volcanoes?.forEach((v) => consider(v.lon, v.lat, { kind: 'volcano', item: v }));
   p.riverPoints?.forEach((r) => consider(r.lon, r.lat, { kind: 'river', item: r }, -4));
   p.tidePoints?.forEach((t) => consider(t.lon, t.lat, { kind: 'tide', item: t }, -4));
-  // Focos de calor: se toca el grupo (la llama o el punto); vale la cantidad estimada de detecciones de las dos pasadas (ayer y hoy).
+  // Focos de calor de FIRMS: se toca el grupo más cercano (llama, punto naranja o amarillo).
+  if (p.fires?.length) {
+    let nearest: { d: number; g: ReturnType<typeof clusterFires>[number] } | null = null;
+    for (const g of clusterFires(p.fires, (lat, lon) => project(lon, lat, view, size), FIRE_CLUSTER_PX, size)) {
+      const s = project(g.lon, g.lat, view, size);
+      const d = Math.hypot(s.x - x, s.y - y);
+      if (d <= HIT_PX && (!nearest || d < nearest.d)) nearest = { d, g };
+    }
+    if (nearest && (!best || nearest.d < (best as { d: number }).d)) {
+      const g = nearest.g;
+      best = { d: nearest.d, f: { kind: 'fire', item: { lon: g.lon, lat: g.lat, detections: g.n, high: g.high, nominal: g.nominal, low: g.low, frp: g.frp, newestMin: g.newestMin } } };
+    }
+  }
+  // Focos de calor de la imagen de la NASA: se toca el grupo (la llama o el punto); vale la cantidad estimada de detecciones de las dos pasadas (ayer y hoy).
   const R = 6_378_137;
   const groups: { sx: number; sy: number; n: number; x: number; y: number }[] = [];
   for (const o of p.overlays) {
@@ -620,7 +646,34 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
     labels.push({ x: s.x - 9, y: s.y - 9, w: 18, h: 18 });
   }
 
-  // Una llama por grupo de focos de calor (los puntos solos no se entienden).
+  // Focos de calor de FIRMS: un punto amarillo chico (baja confianza), uno naranja (nominal) o una llama (alta confianza), una marca por casilla.
+  if (p.fires?.length) {
+    const clusters = clusterFires(p.fires, (lat, lon) => proj(lon, lat), FIRE_CLUSTER_PX, size);
+    for (const level of ['low', 'orange', 'flame'] as const) {
+      for (const g of clusters) {
+        if (fireLevel(g) !== level) continue;
+        const s = proj(g.lon, g.lat);
+        if (level === 'flame') {
+          ctx.font = `15px ${EMOJI_FONT}`;
+          ctx.textAlign = 'center';
+          ctx.fillText('🔥', s.x, s.y + 5);
+          ctx.textAlign = 'start';
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, level === 'orange' ? 3 + Math.min(4, Math.log2(g.n)) : 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = level === 'orange' ? FIRE_ORANGE : FIRE_LOW;
+        ctx.globalAlpha = level === 'orange' ? 0.9 : 0.75;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = c.bg!;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Una llama por grupo de focos de calor de la imagen de la NASA (los puntos solos no se entienden).
   for (const o of p.overlays) {
     const img = o.fire ? readyImage(o.url) : null;
     if (!img) continue;

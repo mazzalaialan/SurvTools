@@ -14,6 +14,7 @@ import { loadGeoData, type GeoData } from './geo';
 import { imageSettled, preload } from './images';
 import { MapCanvas, type MapFeature, type Overlay } from './MapCanvas';
 import { useNavLayers } from './navLayers';
+import { useFires } from './fires';
 import { sourceEnabled } from '@/modules/navigation/sources';
 import { compass8, seaState } from '@/modules/navigation/waves';
 import { RiverForecastLine } from './RiverForecastLine';
@@ -92,6 +93,9 @@ export function WeatherMapPage() {
   const [version, setVersion] = useState(0);
   const [online, setOnline] = useState(navigator.onLine);
   const [now, setNow] = useState(() => Date.now());
+  const fires = useFires(layers.fires, serverUrl, online);
+  // Con servidor, los focos salen de FIRMS (con confianza); sin servidor, o si no hay forma de bajarlos, la imagen de la NASA como antes.
+  const gibsFires = layers.fires && (!serverUrl?.trim() || (fires.failed && !fires.data));
   const nav = useNavLayers({ rivers: layers.rivers, tides: layers.tides, waves: layers.waves && sourceEnabled('open-meteo') }, serverUrl, online, base);
 
   const [quakes, setQuakes] = useState<{ fetchedAt: string; items: Quake[] } | null>(null);
@@ -365,7 +369,7 @@ export function WeatherMapPage() {
     let cancelled = false;
     const urls: string[] = [];
     for (let i = frameCount - 1; i >= 0; i--) for (const o of frameOverlays(i)) if (!urls.includes(o.url)) urls.push(o.url);
-    if (layers.fires) for (const day of fireDays()) urls.push(gibsUrl(FIRE_LAYER, day, request.view, request.size, ratio));
+    if (gibsFires) for (const day of fireDays()) urls.push(gibsUrl(FIRE_LAYER, day, request.view, request.size, ratio));
     let next = 0;
     const worker = async () => {
       while (!cancelled && next < urls.length) {
@@ -379,7 +383,7 @@ export function WeatherMapPage() {
       cancelled = true;
     };
     // frameOverlays depende de estos mismos datos.
-  }, [request, satTimes, radar, radarTiles, layers.satellite, layers.fires, layers.radar, online, ratio, frameCount]);
+  }, [request, satTimes, radar, radarTiles, layers.satellite, layers.fires, gibsFires, layers.radar, online, ratio, frameCount]);
 
   // Se saltean los cuadros que todavía no bajaron (si no, el radar aparece vacío en esa parte).
   useEffect(() => {
@@ -406,7 +410,7 @@ export function WeatherMapPage() {
     const at = layers.satellite && satTimes?.length ? 1 : 0;
     overlays.splice(at, 0, { url: rainMap.image, bbox: { minX: sw.x, minY: sw.y, maxX: ne.x, maxY: ne.y }, opacity: 0.85 });
   }
-  if (request && layers.fires) {
+  if (request && gibsFires) {
     const bbox = viewBBox(request.view, request.size);
     for (const day of fireDays()) overlays.push({ url: gibsUrl(FIRE_LAYER, day, request.view, request.size, ratio), bbox, opacity: 1, fire: true });
   }
@@ -464,6 +468,7 @@ export function WeatherMapPage() {
             riverPoints={nav.riverPoints}
             tidePoints={nav.tidePoints}
             waves={nav.waves?.spots ?? null}
+            fires={layers.fires && fires.data ? fires.data.cells : null}
             volcanoAlerts={showOfficial ? (official?.volcanoes ?? null) : null}
             waypoints={waypoints}
             here={here}
@@ -528,7 +533,7 @@ export function WeatherMapPage() {
 
       <MapTimes sat={layers.satellite ? satTime : undefined} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fmt={timeFmt} />
 
-      {selected && <FeatureCard feature={selected} u={u} now={now} volcanoAlerts={showOfficial ? official?.volcanoes : undefined} onClose={() => setSelected(null)} />}
+      {selected && <FeatureCard feature={selected} u={u} now={now} volcanoAlerts={showOfficial ? official?.volcanoes : undefined} firesFetchedAt={fires.data?.fetchedAt} onClose={() => setSelected(null)} />}
       {showOfficial && official && <AlertsHere alerts={activeAlerts} here={here} waypoints={waypointMap} onSelect={(a) => setSelected({ kind: 'official', item: a })} />}
 
       <section className="card stack" aria-labelledby="wmap-layers">
@@ -561,7 +566,7 @@ export function WeatherMapPage() {
             ))}
           </div>
         )}
-        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} />
+        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} />
         {showLightning && (
           <p className="hint" style={{ margin: 0 }} data-testid="lightning-status">
             {lightning?.updatedAt
@@ -593,7 +598,7 @@ function MapTimes({ sat, rain, radar, fmt }: { sat: Date | undefined; rain?: Dat
   );
 }
 
-function Legend({ layers, zoneValue, windUnit }: { layers: WeatherMapLayers; zoneValue: WeatherMapValue; windUnit: string }) {
+function Legend({ layers, zoneValue, windUnit, firmsFires }: { layers: WeatherMapLayers; zoneValue: WeatherMapValue; windUnit: string; firmsFires: boolean }) {
   const { t } = useTranslation();
   const items: [boolean, string, string][] = [
     [layers.official, 'official', t('weatherMap.legend.official')],
@@ -604,7 +609,7 @@ function Legend({ layers, zoneValue, windUnit }: { layers: WeatherMapLayers; zon
     [layers.earthquakes, 'quake', t('weatherMap.legend.earthquakes')],
     [layers.hazards, 'hazard', t('weatherMap.legend.hazards')],
     [layers.volcanoes, 'volcano', t('weatherMap.legend.volcanoes')],
-    [layers.fires, 'fire', t('weatherMap.legend.fires')],
+    [layers.fires, 'fire', t(firmsFires ? 'weatherMap.legend.firesConfidence' : 'weatherMap.legend.fires')],
     [layers.lightning, 'lightning', t('weatherMap.legend.lightning')],
     [layers.rivers, 'rivers', t('weatherMap.legend.rivers')],
     [layers.tides, 'tides', t('weatherMap.legend.tides')],
@@ -628,12 +633,15 @@ function FeatureCard({
   u,
   now,
   volcanoAlerts,
+  firesFetchedAt,
   onClose,
 }: {
   feature: MapFeature;
   u: ReturnType<typeof useUnits>;
   now: number;
   volcanoAlerts?: VolcanoAlert[];
+  /** Cuándo bajó el teléfono los focos de FIRMS (ms), para decir hace cuánto fue la última detección. */
+  firesFetchedAt?: number;
   onClose: () => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -742,7 +750,20 @@ function FeatureCard({
     case 'fire': {
       const f = feature.item;
       title = t('weatherMap.fireTitle');
-      lines = [t('weatherMap.fireCount', { count: f.detections }), t('weatherMap.fireNote')];
+      if (f.high !== undefined) {
+        const parts = [
+          f.high > 0 && t('weatherMap.fireHigh', { count: f.high }),
+          (f.nominal ?? 0) > 0 && t('weatherMap.fireNominal', { count: f.nominal }),
+          (f.low ?? 0) > 0 && t('weatherMap.fireLow', { count: f.low }),
+        ].filter(Boolean);
+        const ageH = f.newestMin !== undefined ? Math.max(0, Math.round((now - (firesFetchedAt ?? now) + f.newestMin * 60_000) / 3_600_000)) : null;
+        lines = [
+          t('weatherMap.fireTotal', { count: f.detections }) + (parts.length ? `: ${parts.join(', ')}` : ''),
+          ageH !== null ? t('weatherMap.fireLatest', { count: ageH }) : '',
+          f.frp ? t('weatherMap.fireFrp', { mw: Math.round(f.frp) }) : '',
+          t('weatherMap.fireNoteFirms'),
+        ].filter(Boolean);
+      } else lines = [t('weatherMap.fireCount', { count: f.detections }), t('weatherMap.fireNote')];
       break;
     }
     case 'wave': {
