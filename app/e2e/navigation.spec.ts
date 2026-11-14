@@ -365,7 +365,15 @@ function inaRun(estacion: number, values: number[], names = { main: 'medio', lo:
 test('Navegación: pronóstico del INA en el río (Rosario) con el máximo, cuándo llega a un nivel y el gráfico con su banda, también sin conexión', async ({ page, context }, testInfo) => {
   await mockOpenMeteo(page);
   await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) =>
-    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [{ series_id: 34, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 4.4 }] }),
+    route.fulfill({
+      headers: { 'access-control-allow-origin': '*' },
+      json: [
+        { series_id: 34, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 4.4 },
+        // Caudal medio diario de Rosario (serie 26631): ayer y anteayer.
+        { series_id: 26631, timestart: new Date(Date.now() - 2 * 86_400_000).toISOString(), valor: 8540 },
+        { series_id: 26631, timestart: new Date(Date.now() - 86_400_000).toISOString(), valor: 8420 },
+      ],
+    }),
   );
   // Rosario: alerta en 5,00 m. El pronóstico sube hasta 5,2 m en el cuarto día.
   await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', (route) =>
@@ -379,6 +387,7 @@ test('Navegación: pronóstico del INA en el río (Rosario) con el máximo, cuá
   await expect(row).toContainText('Pronóstico del INA: máximo 5,20 m', { timeout: 20_000 });
   await expect(row).toContainText(/Llegaría a nivel de alerta \(5,00 m\)/);
   await expect(page.getByTestId('rivers-card')).toContainText('Pronóstico del INA, informativo: no es una alerta oficial');
+  await expect(page.getByTestId('river-flow-34')).toContainText(/Caudal medio del \d+ \w+\.?: 8420 m³\/s · -120 m³\/s respecto del día anterior/);
   await row.getByRole('button', { name: 'Ver pronóstico' }).click();
   await expect(page.getByTestId('forecast-chart-34')).toBeVisible();
   await expect(page.getByTestId('forecast-chart-34-band')).toHaveCount(1);
@@ -424,7 +433,7 @@ test('Navegación: sin pronóstico del INA (Ushuaia, lejos de los ríos con mode
 test('Waypoint: en su detalle se ve el río más cercano con su nivel, estado y pronóstico, y el enlace abre Navegación en ese lugar', async ({ page, context }) => {
   await mockOpenMeteo(page);
   await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) =>
-    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [{ series_id: 34, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 5.1 }] }),
+    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [{ series_id: 34, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 5.1 }, { series_id: 26631, timestart: new Date(Date.now() - 86_400_000).toISOString(), valor: 8420 }] }),
   );
   await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', (route) =>
     route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: inaRun(34, [5.1, 5.15, 5.2, 5.1, 4.9, 4.7]) }),
@@ -454,6 +463,7 @@ test('Waypoint: en su detalle se ve el río más cercano con su nivel, estado y 
   await expect(page.getByTestId('nearest-river-name')).toContainText(/a \d(,\d)? km al /);
   await expect(page.getByTestId('nearest-river-level')).toContainText('5,10 m');
   await expect(page.getByTestId('nearest-river-level')).toContainText('Alerta');
+  await expect(page.getByTestId('nearest-river-flow')).toContainText(/Caudal medio del .*: 8420 m³\/s/);
   await expect(card.getByTestId('map-river-forecast')).toContainText('Pronóstico del INA: máximo 5,20 m', { timeout: 15_000 });
   // El enlace abre Navegación en el lugar del waypoint, no en mi ubicación (Buenos Aires).
   await card.getByRole('link', { name: 'Ver todo en Navegación' }).click();

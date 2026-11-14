@@ -1476,6 +1476,9 @@
       "thresholdAlert": "Alerta {{m}} m",
       "thresholdEvac": "Evacuación {{m}} m",
       "thresholdLow": "Aguas bajas {{m}} m",
+      "flow": "Caudal medio del {{date}}: {{q}} m³/s",
+      "flowChange": "{{d}} m³/s respecto del día anterior",
+      "flowOld": "dato viejo",
       "forecast": {
         "show": "Ver pronóstico",
         "hide": "Ocultar pronóstico",

@@ -4,6 +4,8 @@ import type { PickedPlace } from '@/modules/waypoints/PlacePicker';
 import { ForecastChart } from './ForecastChart';
 import { fetchForecasts, loadSavedForecasts, saveForecasts, summarize, type StationForecast } from './forecast';
 import {
+  FLOW_STORE,
+  OLD_FLOW_DAYS,
   fetchReadings,
   loadRivers,
   loadSavedReadings,
@@ -25,6 +27,7 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
   const [readings, setReadings] = useState<Map<number, RiverReading>>(() => loadSavedReadings());
   const [live, setLive] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
   const [forecasts, setForecasts] = useState<Map<number, StationForecast>>(() => loadSavedForecasts());
+  const [flows, setFlows] = useState<Map<number, RiverReading>>(() => loadSavedReadings(FLOW_STORE));
   const [openForecast, setOpenForecast] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -75,6 +78,26 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
     };
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Caudal medio diario (m³/s) de las estaciones cercanas que lo tienen al día.
+  useEffect(() => {
+    const series = near.map((n) => n.station.flow).filter((f): f is number => f !== undefined);
+    if (!series.length || !navigator.onLine) return;
+    let cancelled = false;
+    void fetchReadings(series).then(
+      (fresh) => {
+        if (cancelled || !fresh.size) return;
+        saveReadings(fresh, FLOW_STORE);
+        setFlows((prev) => new Map([...prev, ...fresh]));
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const flowFmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 });
+  const flowSigned = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0, signDisplay: 'always' });
   const nf = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const whenFmt = (ms: number) => new Date(ms).toLocaleString(i18n.language, { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   const sf = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: 'always' });
@@ -111,6 +134,8 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
           const state = r ? riverState(r.level, s) : null;
           const fc = s.forecast?.length ? forecasts.get(s.id) : undefined;
           const sum = fc ? summarize(fc, s, now) : null;
+          const flow = s.flow !== undefined ? flows.get(s.flow) : undefined;
+          const flowOld = flow ? (now - Date.parse(flow.at)) / 86_400_000 > OLD_FLOW_DAYS : false;
           const threshold = (kind: 'evac' | 'alert' | 'low') => nf.format(s[kind] ?? 0);
           return (
             <li key={s.id} className="list-row river-row" data-testid={`river-${s.id}`}>
@@ -131,6 +156,13 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
                     .filter(Boolean)
                     .join(' · ')}
                 </span>
+                {flow && (
+                  <span className="list-sub" data-testid={`river-flow-${s.id}`}>
+                    {t('navigation.rivers.flow', { q: flowFmt.format(flow.level), date: new Date(flow.at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }) })}
+                    {flow.change !== null && Math.abs(flow.change) >= 1 ? ` · ${t('navigation.rivers.flowChange', { d: flowSigned.format(flow.change) })}` : ''}
+                    {flowOld ? ` · ${t('navigation.rivers.flowOld')}` : ''}
+                  </span>
+                )}
                 {s.forecast?.length ? (
                   <span className="river-forecast" data-testid={`river-forecast-${s.id}`}>
                     {fc && sum ? (

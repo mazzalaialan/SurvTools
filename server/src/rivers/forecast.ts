@@ -17,6 +17,7 @@ export const FORECAST_MODELS: ForecastModel[] = [
   { cal: 379, main: 'medio' },
   { cal: 704, main: 'main' },
   { cal: 442, main: 'main' },
+  { cal: 489, main: 'main' },
   { cal: 432, main: 'main' },
 ];
 

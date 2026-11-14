@@ -94,6 +94,18 @@ describe('pronóstico de ríos del INA', () => {
     expect((await fetchForecasts([sinPron], fake)).size).toBe(0);
   });
 
+  it('el modelo del Delta usa su propia banda (error_band_01 a error_band_99) y cubre Campana y Zárate', () => {
+    const m = FORECAST_MODELS.find((x) => x.cal === 489)!;
+    const raw = [{ forecast_date: iso(T0), series: [{ estacion_id: 41, pronosticos: [0, 1].flatMap((i) => [
+      { timestart: iso(T0 + i * DAY), valor: 1 + i, qualifier: 'main' },
+      { timestart: iso(T0 + i * DAY), valor: 0.5 + i, qualifier: 'error_band_01' },
+      { timestart: iso(T0 + i * DAY), valor: 1.6 + i, qualifier: 'error_band_99' },
+    ]) }] }];
+    expect(parseRun(raw, m, T0).get(41)!.points[1]).toEqual({ t: T0 + DAY, main: 2, lo: 1.5, hi: 2.6 });
+    const names = rivers.stations.filter((s) => s.forecast?.includes(489)).map((s) => s.name);
+    expect(names).toEqual(expect.arrayContaining(['Campana', 'Paraná Las Palmas - Zárate']));
+  });
+
   it('el catálogo marca las estaciones con pronóstico con modelos que la app conoce', () => {
     const withF = rivers.stations.filter((s) => s.forecast);
     expect(withF.length).toBeGreaterThanOrEqual(15);

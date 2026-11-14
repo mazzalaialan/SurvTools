@@ -1476,6 +1476,9 @@
       "thresholdAlert": "Alert {{m}} m",
       "thresholdEvac": "Evacuation {{m}} m",
       "thresholdLow": "Low water {{m}} m",
+      "flow": "Mean flow on {{date}}: {{q}} m³/s",
+      "flowChange": "{{d}} m³/s from the day before",
+      "flowOld": "old data",
       "forecast": {
         "show": "Show forecast",
         "hide": "Hide forecast",

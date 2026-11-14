@@ -1,12 +1,12 @@
 // Agrega a cada estación de app/public/data/rivers-AR.json qué modelos del INA dan pronóstico de su altura (`forecast`: ids de
-// calibrado, del mejor al peor). Los pronósticos pesan distinto (el del Delta, casi 1 MB), así que la app pide solo los que necesita.
+// calibrado, del mejor al peor). Los pronósticos pesan distinto (el del Delta (489), casi 1 MB), así que la app pide solo los que necesita.
 // Fuente: INA, Alerta Hidrológico, API a5 `sim/calibrados/{id}/corridas`. Uso: node forecast-map.mjs (sin pausa larga: ~7 consultas)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const BASE = 'https://alerta.ina.gob.ar/a5/sim/calibrados';
-/** Del mejor al peor: tablas de pronóstico oficiales (10 días), Uruguay, Delta (marea del estuario) y San Fernando. Mismo orden que `FORECAST_MODELS` de la app. */
-const MODELS = [289, 312, 379, 704, 442, 432];
+/** Del mejor al peor: tablas de pronóstico oficiales (10 días), Uruguay, Delta (regresión y ajuste del INA) y San Fernando. Mismo orden que `FORECAST_MODELS` de la app. */
+const MODELS = [289, 312, 379, 704, 442, 489, 432];
 const FILE = fileURLToPath(new URL('../../app/public/data/rivers-AR.json', import.meta.url));
 
 const data = JSON.parse(readFileSync(FILE, 'utf8'));

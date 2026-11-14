@@ -6,7 +6,7 @@ import { useSettings } from '@/core/settings/settings';
 import { RiverForecastLine } from '@/modules/weathermap/RiverForecastLine';
 import { boPoints, type RiverPoint } from '@/modules/weathermap/navLayers';
 import { fetchBoLevels, loadBoCatalog, loadSavedBo, saveBo, type BoCatalog, type BoLevels } from './bolivia';
-import { fetchReadings, loadRivers, loadSavedReadings, riverState, saveReadings, type RiverReading, type RiversData, type RiverState } from './rivers';
+import { FLOW_STORE, fetchReadings, loadRivers, loadSavedReadings, OLD_FLOW_DAYS, riverState, saveReadings, type RiverReading, type RiversData, type RiverState } from './rivers';
 import { sourceEnabled } from './sources';
 import { compass8 } from './waves';
 
@@ -25,6 +25,7 @@ export function NearestRiver({ lat, lon }: { lat: number; lon: number }) {
   const [ina, setIna] = useState<RiversData | null>(null);
   const [bo, setBo] = useState<BoCatalog | null>(null);
   const [readings, setReadings] = useState<Map<number, RiverReading>>(() => loadSavedReadings());
+  const [flows, setFlows] = useState<Map<number, RiverReading>>(() => loadSavedReadings(FLOW_STORE));
   const [boLevels, setBoLevels] = useState<BoLevels | null>(() => loadSavedBo());
   useEffect(() => {
     void loadRivers().then(setIna, () => undefined);
@@ -42,6 +43,7 @@ export function NearestRiver({ lat, lon }: { lat: number; lon: number }) {
 
   // Con conexión se pide el nivel de esa estación (una sola serie, o el reporte de Bolivia); sin conexión queda lo guardado.
   const series = near?.ina?.series ?? null;
+  const flowSeries = near?.ina?.flow ?? null;
   const isBo = !!near?.bo;
   useEffect(() => {
     if (!navigator.onLine) return;
@@ -52,6 +54,15 @@ export function NearestRiver({ lat, lon }: { lat: number; lon: number }) {
           if (cancelled) return;
           saveReadings(fresh);
           setReadings((prev) => new Map([...prev, ...fresh]));
+        },
+        () => undefined,
+      );
+    if (flowSeries !== null)
+      void fetchReadings([flowSeries]).then(
+        (fresh) => {
+          if (cancelled || !fresh.size) return;
+          saveReadings(fresh, FLOW_STORE);
+          setFlows((prev) => new Map([...prev, ...fresh]));
         },
         () => undefined,
       );
@@ -67,7 +78,7 @@ export function NearestRiver({ lat, lon }: { lat: number; lon: number }) {
     return () => {
       cancelled = true;
     };
-  }, [series, isBo, server]);
+  }, [series, flowSeries, isBo, server]);
 
   if (!near) return null;
   const station = near.ina ?? near.bo!;
@@ -81,6 +92,7 @@ export function NearestRiver({ lat, lon }: { lat: number; lon: number }) {
     return t('navigation.rivers.agoDays', { n: Math.round(h / 24) });
   };
   const r = near.ina ? readings.get(near.ina.series) : undefined;
+  const flow = near.ina?.flow !== undefined ? flows.get(near.ina.flow) : undefined;
   const state = near.ina && r ? riverState(r.level, near.ina) : null;
   const name = near.ina ? near.ina.name : near.bo!.name;
   const river = near.ina ? near.ina.river : near.bo!.river;
@@ -102,6 +114,12 @@ export function NearestRiver({ lat, lon }: { lat: number; lon: number }) {
         ) : (
           <p className="hint" style={{ margin: 0 }}>{t('navigation.rivers.noReading')}</p>
         ))}
+      {flow && (
+        <p className="hint" style={{ margin: 0 }} data-testid="nearest-river-flow">
+          {t('navigation.rivers.flow', { q: new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 }).format(flow.level), date: new Date(flow.at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }) })}
+          {(Date.now() - Date.parse(flow.at)) / 86_400_000 > OLD_FLOW_DAYS ? ` · ${t('navigation.rivers.flowOld')}` : ''}
+        </p>
+      )}
       {near.bo && (
         <p style={{ margin: 0 }} data-testid="nearest-river-level">
           {t('weatherMap.riverBoLevel', { cm: near.bo.level ?? '—', date: near.bo.at ? new Date(near.bo.at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }) : '—' })}

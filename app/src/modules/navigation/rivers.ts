@@ -21,6 +21,8 @@ export interface RiverStation {
   series: number;
   /** Modelos del INA que pronostican su altura, del mejor al peor (ver `forecast.ts`); no tiene si no hay pronóstico. */
   forecast?: number[];
+  /** Serie del caudal medio diario del INA (m³/s), si la estación la tiene al día; es el valor del día anterior. */
+  flow?: number;
 }
 
 export interface RiversData {
@@ -66,6 +68,10 @@ export interface RiverReading {
 
 const INA = 'https://alerta.ina.gob.ar/a5/obs/puntual/observaciones';
 const STORE = 'vikarg.rivers.last';
+/** Dónde se guardan los últimos caudales (mismo formato: `level` es el caudal en m³/s). */
+export const FLOW_STORE = 'vikarg.rivers.flows';
+/** Un caudal medio diario más viejo que esto (días) se avisa como viejo. */
+export const OLD_FLOW_DAYS = 4;
 const DAY = 86_400_000;
 
 interface Observation {
@@ -109,20 +115,20 @@ export async function fetchReadings(series: number[], now = new Date()): Promise
 }
 
 /** Los últimos niveles guardados en el teléfono (para verlos sin conexión). */
-export function loadSavedReadings(): Map<number, RiverReading> {
+export function loadSavedReadings(store = STORE): Map<number, RiverReading> {
   try {
-    const raw = localStorage.getItem(STORE);
+    const raw = localStorage.getItem(store);
     return new Map(raw ? (JSON.parse(raw) as [number, RiverReading][]) : []);
   } catch {
     return new Map();
   }
 }
 
-export function saveReadings(readings: Map<number, RiverReading>): void {
+export function saveReadings(readings: Map<number, RiverReading>, store = STORE): void {
   try {
-    const merged = loadSavedReadings();
+    const merged = loadSavedReadings(store);
     for (const [id, r] of readings) merged.set(id, r);
-    localStorage.setItem(STORE, JSON.stringify([...merged]));
+    localStorage.setItem(store, JSON.stringify([...merged]));
   } catch {
     /* sin almacenamiento: se ve igual con conexión */
   }

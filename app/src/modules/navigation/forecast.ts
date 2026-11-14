@@ -22,6 +22,8 @@ export const FORECAST_MODELS: ForecastModel[] = [
   { cal: 379, name: 'tabprono_uruguay', main: 'medio', lo: 'inferior', hi: 'superior' },
   { cal: 704, name: 'uruguay_medio', main: 'main', lo: 'inferior', hi: 'superior' },
   { cal: 442, name: 'regre_delta_vcons_snico', main: 'main', lo: 'p01', hi: 'p99' },
+  // Delta del Paraná (Campana, Zárate…): el más pesado (casi 1 MB), por eso va detrás de los que lo evitan.
+  { cal: 489, name: '288_ajuste_salidas', main: 'main', lo: 'error_band_01', hi: 'error_band_99' },
   { cal: 432, name: 'regre_sfer', main: 'main', lo: 'p05', hi: 'p95' },
 ];
 
