@@ -64,6 +64,8 @@ export interface Settings {
   weatherMapLayers: WeatherMapLayers;
   /** Qué dato del clima se dibuja en cada provincia. */
   weatherMapValue: WeatherMapValue;
+  /** Focos de calor: mostrar solo las detecciones de alta confianza (la llama), sin las nominales ni las de baja confianza. */
+  fireHighOnly: boolean;
   /**
    * De dónde bajar los mapas offline: el servidor propio y, si falla, las
    * fuentes públicas (`auto`); solo el servidor; o solo las públicas.
@@ -248,6 +250,7 @@ export const DEFAULT_SETTINGS: Settings = {
   starmapLayers: { constellationLines: true, constellationNames: true, starNames: true, planets: true, guide: true, grid: true },
   weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false, waves: false },
   weatherMapValue: 'temp',
+  fireHighOnly: false,
   mapSource: 'auto',
   mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false },
   snowlineManual: null,

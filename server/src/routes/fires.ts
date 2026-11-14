@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { fetchFires, type FiresData } from '../fires/firms.ts';
 
 /**
- * `GET /api/fires`: focos de calor de las últimas 24 horas (NASA FIRMS, VIIRS NOAA-20 y NOAA-21) agrupados en celdas de 0,1° con su
+ * `GET /api/fires`: focos de calor de las últimas 24 horas (NASA FIRMS, VIIRS NOAA-20 y NOAA-21, sin las no altas de fuentes fijas) agrupados en celdas de 0,1° con su
  * confianza (ver fires/firms.ts). Se baja solo cuando alguien lo pide y la copia tiene más de 30 minutos; si falla, se devuelve la
  * última buena (hasta 6 horas) marcada como vieja.
  */

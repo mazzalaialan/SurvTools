@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import Fastify from 'fastify';
-import { buildCells, fetchFires, parseCsv, type Detection, type FiresData } from '../src/fires/firms.ts';
+import { buildCells, fetchFires, fixedSites, parseCsv, FIXED_DAYS, type Detection, type FiresData } from '../src/fires/firms.ts';
 import { firesRoutes } from '../src/routes/fires.ts';
 
 const sample = readFileSync(new URL('./fixtures/firms-sample.csv', import.meta.url), 'utf8');
@@ -45,6 +45,35 @@ describe('focos de calor de FIRMS', () => {
     assert.equal(r.cells.reduce((n, c) => n + c[2], 0), 3);
   });
 
+  it('solo se muestran las últimas 24 horas de la región', () => {
+    const at = (h: number) => NOW - h * 3_600_000;
+    const d: Detection[] = [
+      { lat: -26.5, lon: -60.6, at: at(2), confidence: 1, frp: 1 },
+      { lat: -26.5, lon: -60.6, at: at(30), confidence: 1, frp: 1 }, // de hace más de un día
+      { lat: -26.5, lon: -60.6, at: at(-5), confidence: 1, frp: 1 }, // del futuro: descartada
+    ];
+    assert.equal(buildCells(d, NOW).total, 1);
+  });
+
+  it('reconoce una fuente fija por repetirse en 6 o más fechas, con sus vecinos, y oculta solo lo no alto de las últimas 24 h', () => {
+    const day = 86_400_000;
+    const flare = (i: number, jitter = 0): Detection => ({ lat: -38.74 + jitter, lon: -68.84, at: NOW - i * day - 3_600_000, confidence: 1, frp: 3 });
+    // Una antorcha: una detección por día durante 7 días (la de hoy incluida), una de ellas desplazada un cuadro (~1 km) hacia el norte.
+    const week = Array.from({ length: 7 }, (_, i) => flare(i, i === 3 ? 0.01 : 0));
+    const highToday: Detection = { lat: -38.74, lon: -68.84, at: NOW - 2 * 3_600_000, confidence: 2, frp: 40 };
+    const lone: Detection = { lat: -30.0, lon: -65.0, at: NOW - 3_600_000, confidence: 1, frp: 2 };
+    const sites = fixedSites([...week, lone]);
+    assert.ok(sites.has('-3874,-6884'));
+    assert.equal(sites.has('-3000,-6500'), false);
+    const r = buildCells([...week, highToday, lone], NOW);
+    assert.equal(r.hidden, 1); // la nominal de hoy de la antorcha
+    assert.equal(r.total, 2); // la de alta confianza y la aislada
+    assert.deepEqual(r.cells.find((c) => c[0] === -38.75)!.slice(2, 5), [1, 1, 0]); // 1 detección, 1 alta, 0 nominales
+    // Con 5 fechas no alcanza (FIXED_DAYS = 6).
+    assert.equal(FIXED_DAYS, 6);
+    assert.equal(fixedSites(week.slice(0, 5)).size, 0);
+  });
+
   it('baja los dos satélites, y si uno falla usa el otro; si fallan los dos, error', async () => {
     const urls: string[] = [];
     const ok = (async (url: string) => (urls.push(url), new Response(sample))) as unknown as typeof fetch;
@@ -52,6 +81,8 @@ describe('focos de calor de FIRMS', () => {
     assert.deepEqual(both.sources, ['NOAA-20', 'NOAA-21']);
     assert.equal(urls.length, 2);
     assert.equal(both.total, 22); // 11 de la región por archivo (la fila del este queda afuera)
+    assert.equal(both.hidden, 0);
+    assert.ok(urls.every((u) => u.endsWith('_7d.csv')));
     const oneDown = (async (url: string) => (url.includes('noaa-21') ? new Response('x', { status: 500 }) : new Response(sample))) as unknown as typeof fetch;
     assert.deepEqual((await fetchFires(NOW, oneDown)).sources, ['NOAA-20']);
     await assert.rejects(fetchFires(NOW, (async () => new Response('x', { status: 500 })) as unknown as typeof fetch));
@@ -60,7 +91,7 @@ describe('focos de calor de FIRMS', () => {
 });
 
 describe('GET /api/fires', () => {
-  const data = (fetchedAt: number): FiresData => ({ fetchedAt, newestAt: fetchedAt, total: 1, sources: ['NOAA-20'], cells: [[-26.55, -60.65, 1, 1, 0, 3, 5]] });
+  const data = (fetchedAt: number): FiresData => ({ fetchedAt, newestAt: fetchedAt, total: 1, hidden: 0, sources: ['NOAA-20'], cells: [[-26.55, -60.65, 1, 1, 0, 3, 5]] });
   it('baja una vez y guarda 30 minutos; si falla devuelve la última buena como vieja, y 503 si no hay', async () => {
     const clock = { t: 1_000_000 };
     let calls = 0;

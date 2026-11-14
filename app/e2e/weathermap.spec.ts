@@ -438,6 +438,7 @@ test('mapa de tiempo: focos de calor de FIRMS, llama solo para alta confianza, n
         fetchedAt,
         newestAt: fetchedAt - 90 * 60_000,
         total: 7,
+        hidden: 120,
         sources: ['NOAA-20', 'NOAA-21'],
         stale: false,
         cells: [
@@ -458,12 +459,15 @@ test('mapa de tiempo: focos de calor de FIRMS, llama solo para alta confianza, n
   await page.getByRole('button', { name: 'Focos de calor' }).click();
   await expect(page.getByText(/Anomalías térmicas de las últimas 24 h \(NASA FIRMS.*la llama marca las de alta confianza/)).toBeVisible();
   await page.waitForTimeout(1500);
+  // Aviso de lo que se ocultó (fuentes fijas) y hora de la última pasada de los satélites.
+  await expect(page.getByText(/Se ocultan las detecciones de baja y media confianza que se repiten en el mismo lugar.*hoy 120/)).toBeVisible();
+  await expect(page.getByTestId('map-times').first()).toHaveText(/Focos: última pasada \d\d:\d\d/);
   const card = page.getByTestId('map-feature');
   // Alta confianza: la llama; la ficha cuenta por confianza, dice hace cuánto fue la última y que no confirma un incendio.
   await tap(page, -66.05, -24.05);
   await expect(card).toContainText('Focos de calor');
   await expect(card).toContainText('2 detecciones en esta zona: 1 de alta confianza, 1 nominal');
-  await expect(card).toContainText(/La más reciente, hace [12] horas?\./);
+  await expect(card).toContainText(/La más reciente: \S+ \d+, \d\d:\d\d \(hace [12] horas?\)\./);
   await expect(card).toContainText('Potencia radiativa total: 14 MW');
   await expect(card).toContainText('Solo las de alta confianza llevan llama');
   // Nominal: punto naranja.
@@ -474,4 +478,18 @@ test('mapa de tiempo: focos de calor de FIRMS, llama solo para alta confianza, n
   await tap(page, -68.05, -35.05);
   await expect(card).toContainText('Una detección en esta zona: 1 de baja confianza');
   await page.getByTestId('weather-map').screenshot({ path: `e2e-results/screens/${testInfo.project.name}-17e-fires-firms.png` });
+  // «Solo alta confianza»: desaparecen los nominales y los de baja; la de alta queda solo con sus detecciones altas.
+  await page.getByTestId('fire-high-only').click();
+  await expect(page.getByTestId('fire-high-only')).toHaveAttribute('aria-pressed', 'true');
+  await page.waitForTimeout(500);
+  await tap(page, -64.15, -31.45);
+  await expect(card).toHaveCount(0);
+  await tap(page, -66.05, -24.05);
+  await expect(card).toContainText('Una detección en esta zona: 1 de alta confianza');
+  await expect(card).not.toContainText('nominal');
+  // Se vuelve a apagar y los nominales regresan.
+  await page.getByTestId('fire-high-only').click();
+  await page.waitForTimeout(500);
+  await tap(page, -64.15, -31.45);
+  await expect(card).toContainText('4 detecciones en esta zona: 4 nominales');
 });

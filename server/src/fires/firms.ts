@@ -1,8 +1,9 @@
 /**
  * Focos de calor (anomalías térmicas) de NASA FIRMS: las listas públicas de las últimas 24 horas de los satélites VIIRS NOAA-20 y
  * NOAA-21 para América del Sur, sin clave (https://firms.modaps.eosdis.nasa.gov/active_fire/). Cada detección trae su confianza
- * (baja, nominal, alta), su potencia radiativa (FRP, MW) y la hora de la pasada. El servidor las baja (≈2 MB), se queda con la región
- * de la app y las agrupa en celdas de 0,1° (~11 km) para que lleguen livianas al teléfono: `GET /api/fires` (routes/fires.ts).
+ * (baja, nominal, alta), su potencia radiativa (FRP, MW) y la hora de la pasada. El servidor baja los últimos 7 días (≈10 MB), muestra
+ * solo las últimas 24 horas de la región de la app, agrupadas en celdas de 0,1° (~11 km) para que lleguen livianas al teléfono
+ * (`GET /api/fires`, routes/fires.ts), y usa los 7 días para reconocer las fuentes fijas: antorchas de gas, industria.
  * Datos abiertos de la NASA (hay que citar a NASA FIRMS). Una anomalía térmica no es siempre un incendio.
  */
 export type FireConfidence = 0 | 1 | 2; // baja, nominal, alta
@@ -14,8 +15,10 @@ export interface FiresData {
   /** Instante (ms) del que se bajó y cuándo cubre (la detección más reciente, ms). */
   fetchedAt: number;
   newestAt: number;
-  /** Cuántas detecciones hay en total en la región (sin agrupar). */
+  /** Cuántas detecciones de las últimas 24 h hay en total en la región (las que se muestran, sin agrupar). */
   total: number;
+  /** Detecciones de las últimas 24 h que se ocultaron por ser de una fuente fija (ver `FIXED_DAYS`). */
+  hidden: number;
   sources: string[];
   cells: FireCell[];
 }
@@ -24,10 +27,20 @@ export interface FiresData {
 export const FIRE_REGION: [number, number, number, number] = [-83, -57, -52, 0.5];
 
 const BASE = 'https://firms.modaps.eosdis.nasa.gov/data/active_fire';
+/** Los últimos 7 días de cada satélite: 24 h para mostrar y 7 días para reconocer lo que se repite en el mismo lugar. */
 export const FIRE_FILES = [
-  { name: 'NOAA-20', url: `${BASE}/noaa-20-viirs-c2/csv/J1_VIIRS_C2_South_America_24h.csv` },
-  { name: 'NOAA-21', url: `${BASE}/noaa-21-viirs-c2/csv/J2_VIIRS_C2_South_America_24h.csv` },
+  { name: 'NOAA-20', url: `${BASE}/noaa-20-viirs-c2/csv/J1_VIIRS_C2_South_America_7d.csv` },
+  { name: 'NOAA-21', url: `${BASE}/noaa-21-viirs-c2/csv/J2_VIIRS_C2_South_America_7d.csv` },
 ];
+
+/** Se muestra la última pasada de las últimas 24 horas. */
+export const WINDOW_MS = 24 * 3_600_000;
+/**
+ * Una fuente fija (antorcha de gas o petróleo, fundición, acería) aparece en el mismo lugar casi todos los días: con detecciones en al
+ * menos 6 fechas distintas de las últimas 8 (7 días y la de hoy), en un cuadro de ~1 km con sus vecinos. De esos lugares se ocultan las
+ * detecciones de confianza baja y nominal; las de alta confianza se muestran siempre, así un incendio largo no se esconde.
+ */
+export const FIXED_DAYS = 6;
 
 export interface Detection {
   lat: number;
@@ -62,14 +75,41 @@ export function parseCsv(text: string): Detection[] {
   return out;
 }
 
-/** Agrupa en celdas de 0,1°, solo dentro de la región. */
-export function buildCells(detections: Detection[], now: number, region = FIRE_REGION): { cells: FireCell[]; total: number; newestAt: number } {
+/** Lugares (cuadros de 0,01° ≈ 1 km, con sus 8 vecinos) con detecciones en `minDays` fechas distintas o más. */
+export function fixedSites(detections: Detection[], region = FIRE_REGION, minDays = FIXED_DAYS): Set<string> {
   const [w, s, e, n] = region;
+  const days = new Map<string, Set<string>>();
+  for (const d of detections) {
+    if (d.lon < w || d.lon > e || d.lat < s || d.lat > n) continue;
+    const key = `${Math.round(d.lat * 100)},${Math.round(d.lon * 100)}`;
+    const set = days.get(key) ?? new Set<string>();
+    set.add(new Date(d.at).toISOString().slice(0, 10));
+    days.set(key, set);
+  }
+  const fixed = new Set<string>();
+  for (const key of days.keys()) {
+    const [la, lo] = key.split(',').map(Number) as [number, number];
+    const union = new Set<string>();
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const day of days.get(`${la! + dy},${lo! + dx}`) ?? []) union.add(day);
+    if (union.size >= minDays) fixed.add(key);
+  }
+  return fixed;
+}
+
+/** Agrupa en celdas de 0,1° las detecciones de las últimas 24 h dentro de la región, sin las no altas de las fuentes fijas. */
+export function buildCells(detections: Detection[], now: number, region = FIRE_REGION): { cells: FireCell[]; total: number; hidden: number; newestAt: number } {
+  const [w, s, e, n] = region;
+  const fixed = fixedSites(detections, region);
+  let hidden = 0;
   const cells = new Map<string, { lat: number; lon: number; n: number; high: number; nominal: number; frp: number; newest: number }>();
   let total = 0;
   let newestAt = 0;
   for (const d of detections) {
-    if (d.lon < w || d.lon > e || d.lat < s || d.lat > n) continue;
+    if (d.lon < w || d.lon > e || d.lat < s || d.lat > n || now - d.at > WINDOW_MS || d.at > now + 3_600_000) continue;
+    if (d.confidence < 2 && fixed.has(`${Math.round(d.lat * 100)},${Math.round(d.lon * 100)}`)) {
+      hidden++;
+      continue;
+    }
     total++;
     newestAt = Math.max(newestAt, d.at);
     const la = Math.floor(d.lat * 10);
@@ -85,6 +125,7 @@ export function buildCells(detections: Detection[], now: number, region = FIRE_R
   }
   return {
     total,
+    hidden,
     newestAt,
     cells: [...cells.values()]
       .map<FireCell>((c) => [Number(c.lat.toFixed(2)), Number(c.lon.toFixed(2)), c.n, c.high, c.nominal, Math.round(c.frp), Math.max(0, Math.round((now - c.newest) / 60_000))])
@@ -112,6 +153,6 @@ export async function fetchFires(now = Date.now(), fetcher: typeof fetch = fetch
     }),
   );
   if (!sources.length) throw new Error('FIRMS no respondió o cambió de formato');
-  const { cells, total, newestAt } = buildCells(all, now);
-  return { fetchedAt: now, newestAt, total, sources: sources.sort(), cells };
+  const { cells, total, hidden, newestAt } = buildCells(all, now);
+  return { fetchedAt: now, newestAt, total, hidden, sources: sources.sort(), cells };
 }

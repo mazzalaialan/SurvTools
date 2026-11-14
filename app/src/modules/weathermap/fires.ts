@@ -12,6 +12,8 @@ export interface FiresData {
   fetchedAt: number;
   newestAt: number;
   total: number;
+  /** Detecciones de las últimas 24 h que el servidor ocultó por ser de una fuente fija (antorcha de gas, industria). Con servidores viejos no viene. */
+  hidden?: number;
   sources: string[];
   cells: FireCell[];
   stale?: boolean;
@@ -23,6 +25,11 @@ export async function fetchFires(server: string, fetcher: typeof fetch = fetch):
   const data = (await res.json()) as FiresData;
   if (!Array.isArray(data.cells)) throw new Error('respuesta inesperada');
   return data;
+}
+
+/** Solo la alta confianza: cada celda queda con sus detecciones de alta confianza y nada más (la potencia queda la de toda la celda). */
+export function onlyHigh(cells: FireCell[]): FireCell[] {
+  return cells.filter((c) => c[3] > 0).map<FireCell>(([lat, lon, , high, , frp, newest]) => [lat, lon, high, high, 0, frp, newest]);
 }
 
 /** Un grupo de celdas cercanas en pantalla. */
