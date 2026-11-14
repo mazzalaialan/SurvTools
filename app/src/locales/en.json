@@ -1438,6 +1438,7 @@
       "intro": "Where the data on this screen comes from and under what license. If a source declares no license, it is used citing it and showing the date of the data.",
       "license": "License"
     },
+    "nearestRiver": { "title": "Nearest river", "where": "{{km}} km {{dir}}" },
     "waves": {
       "title": "Waves and wind",
       "intro": "Forecast wave height and period and wind for the chosen place. It is a model, not a measurement, with cells of about 9 km.",

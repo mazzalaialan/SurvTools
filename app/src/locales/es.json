@@ -1438,6 +1438,7 @@
       "intro": "De dónde salen los datos de esta pantalla y con qué licencia. Si una fuente no declara licencia, se usa citándola y mostrando la fecha del dato.",
       "license": "Licencia"
     },
+    "nearestRiver": { "title": "Río más cercano", "where": "a {{km}} km al {{dir}}" },
     "waves": {
       "title": "Oleaje y viento",
       "intro": "Altura y período de las olas y viento previstos para el lugar elegido. Es un modelo, no una medición, con celdas de unos 9 km.",

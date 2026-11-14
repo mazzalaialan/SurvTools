@@ -15,6 +15,7 @@ import { parseNum } from '@/ui/numbers';
 import { GpsStatus, useFormatBearing } from './components';
 import { useWaypoints } from './store';
 import { confirmAction } from '@/ui/confirm';
+import { NearestRiver } from '@/modules/navigation/NearestRiver';
 
 /** Datos para arrancar un waypoint nuevo desde otra pantalla (p. ej. Mi ubicación), en el estado de la navegación. */
 export interface NewWaypointDraft {
@@ -133,6 +134,8 @@ function WaypointForm({ stored }: { stored: Waypoint | undefined }) {
           <NavigationCard target={stored} />
         </>
       )}
+
+      {stored && <NearestRiver lat={stored.lat} lon={stored.lon} />}
 
       <form className="card stack" onSubmit={handleSubmit}>
         <div className="field">

@@ -420,3 +420,43 @@ test('Navegación: sin pronóstico del INA (Ushuaia, lejos de los ríos con mode
   await expect(page.getByTestId('tide-station')).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId('estuary-forecast')).toHaveCount(0);
 });
+
+test('Waypoint: en su detalle se ve el río más cercano con su nivel, estado y pronóstico, y el enlace abre Navegación en ese lugar', async ({ page, context }) => {
+  await mockOpenMeteo(page);
+  await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) =>
+    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [{ series_id: 34, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 5.1 }] }),
+  );
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', (route) =>
+    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: inaRun(34, [5.1, 5.15, 5.2, 5.1, 4.9, 4.7]) }),
+  );
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 20 });
+  await start(page);
+  // Un waypoint en Rosario (a ~1 km de la estación) y otro en Córdoba (lejos de cualquier estación).
+  const urls: Record<string, string> = {};
+  for (const [name, coords] of [['Muelle Rosario', '-32.9500, -60.6400'], ['Casa Córdoba', '-31.4200, -64.1900']] as const) {
+    await page.goto('/#/orientation/waypoints/new');
+    await page.getByLabel('Nombre').fill(name);
+    await page.getByLabel('Coordenadas').fill(coords);
+    await page.getByRole('button', { name: 'Guardar' }).click();
+    await expect(page.getByRole('heading', { name })).toBeVisible();
+    await page.waitForTimeout(400);
+    urls[name] = page.url();
+  }
+  await page.goto(urls['Casa Córdoba']!);
+  await expect(page.getByRole('heading', { name: 'Casa Córdoba' })).toBeVisible();
+  await expect(page.getByTestId('nearest-river')).toHaveCount(0);
+
+  await page.goto(urls['Muelle Rosario']!);
+  const card = page.getByTestId('nearest-river');
+  await expect(card).toContainText('Río más cercano', { timeout: 15_000 });
+  await expect(page.getByTestId('nearest-river-name')).toContainText('Rosario · Paraná inferior');
+  await expect(page.getByTestId('nearest-river-name')).toContainText(/a \d(,\d)? km al /);
+  await expect(page.getByTestId('nearest-river-level')).toContainText('5,10 m');
+  await expect(page.getByTestId('nearest-river-level')).toContainText('Alerta');
+  await expect(card.getByTestId('map-river-forecast')).toContainText('Pronóstico del INA: máximo 5,20 m', { timeout: 15_000 });
+  // El enlace abre Navegación en el lugar del waypoint, no en mi ubicación (Buenos Aires).
+  await card.getByRole('link', { name: 'Ver todo en Navegación' }).click();
+  await expect(page.locator('#place-coords')).toHaveValue('-32.95000, -60.64000');
+  await expect(page.getByTestId('rivers-card')).toContainText('Rosario', { timeout: 15_000 });
+});
