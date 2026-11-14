@@ -144,8 +144,12 @@ export function parseDinagua(json: unknown, now = Date.now()): UyStation[] {
   return out;
 }
 
-async function get(url: string, accept: string): Promise<Response> {
-  const res = await fetch(url, { headers: { 'user-agent': UA, accept }, signal: AbortSignal.timeout(60_000) });
+/** CARU es un servidor viejo que a veces tarda: 20 s y se sigue sin él; DINAGUA manda 5,7 MB y tiene 60 s. */
+const CARU_TIMEOUT_MS = 20_000;
+const DINAGUA_TIMEOUT_MS = 60_000;
+
+async function get(url: string, accept: string, timeoutMs: number): Promise<Response> {
+  const res = await fetch(url, { headers: { 'user-agent': UA, accept }, signal: AbortSignal.timeout(timeoutMs) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res;
 }
@@ -158,8 +162,8 @@ export interface UySources {
 /** Lee las dos fuentes (cada una puede fallar sin tirar a la otra); falla si ninguna da estaciones. */
 export async function fetchUyLevels(now = Date.now(), urls: UySources = {}): Promise<UyLevels> {
   const [caru, dinagua] = await Promise.all([
-    get(urls.caruUrl ?? CARU_URL, 'text/html').then(async (r) => parseCaru(await r.text()), () => [] as UyStation[]),
-    get(urls.dinaguaUrl ?? DINAGUA_URL, 'application/json').then(async (r) => parseDinagua(await r.json(), now), () => [] as UyStation[]),
+    get(urls.caruUrl ?? CARU_URL, 'text/html', CARU_TIMEOUT_MS).then(async (r) => parseCaru(await r.text()), () => [] as UyStation[]),
+    get(urls.dinaguaUrl ?? DINAGUA_URL, 'application/json', DINAGUA_TIMEOUT_MS).then(async (r) => parseDinagua(await r.json(), now), () => [] as UyStation[]),
   ]);
   if (!caru.length && !dinagua.length) throw new Error('CARU y DINAGUA no respondieron o cambiaron de formato');
   return { fetchedAt: now, stations: [...caru, ...dinagua], sources: { caru: caru.length > 0, dinagua: dinagua.length > 0 } };

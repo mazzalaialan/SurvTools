@@ -14,7 +14,15 @@ const FRESH_MS = 3 * 3_600_000;
 const STALE_MS = 7 * 86_400_000;
 const UY_FRESH_MS = 2 * 3_600_000;
 const UY_STALE_MS = 3 * 86_400_000;
+const UY_PARTIAL_MS = 10 * 60_000;
+
+/** Junta una lectura incompleta con la anterior: las estaciones de la fuente que falló ahora quedan con su última lectura (la fecha de cada una dice cuándo fue). */
+function mergeUy(before: UyLevels, fresh: UyLevels): UyLevels {
+  const missing = (source: 'CARU' | 'DINAGUA', ok: boolean) => (ok ? [] : before.stations.filter((s) => s.source === source));
+  return { fetchedAt: fresh.fetchedAt, sources: fresh.sources, stations: [...fresh.stations, ...missing('CARU', fresh.sources.caru), ...missing('DINAGUA', fresh.sources.dinagua)] };
+}
 const EXTRA_FRESH_MS = 6 * 3_600_000;
+const EXTRA_PARTIAL_MS = 3_600_000;
 const EXTRA_STALE_MS = 14 * 86_400_000;
 
 export interface BoSource {
@@ -44,7 +52,8 @@ export function riversRoutes(app: FastifyInstance, config: Config, source: BoSou
    */
   app.get('/api/rivers/bo/extra', async (_req, reply) => {
     reply.header('cache-control', 'no-store');
-    if (lastExtras && now() - lastExtras.fetchedAt < EXTRA_FRESH_MS) return { ...lastExtras, stale: false };
+    // Completo vale 6 horas; si falta el pronóstico o el boletín del lago, se reintenta a la hora.
+    if (lastExtras && now() - lastExtras.fetchedAt < (lastExtras.forecast && lastExtras.lake ? EXTRA_FRESH_MS : EXTRA_PARTIAL_MS)) return { ...lastExtras, stale: false };
     try {
       inflightExtras ??= extras().finally(() => (inflightExtras = null));
       lastExtras = await inflightExtras;
@@ -62,10 +71,13 @@ export function riversRoutes(app: FastifyInstance, config: Config, source: BoSou
    */
   app.get('/api/rivers/uy', async (_req, reply) => {
     reply.header('cache-control', 'no-store');
-    if (lastUy && now() - lastUy.fetchedAt < UY_FRESH_MS) return { ...lastUy, stale: false };
+    // Un resultado completo vale 2 horas; si falta una fuente (CARU tarda o DINAGUA no respondió) se vuelve a intentar a los 10 minutos.
+    if (lastUy && now() - lastUy.fetchedAt < (lastUy.sources.caru && lastUy.sources.dinagua ? UY_FRESH_MS : UY_PARTIAL_MS)) return { ...lastUy, stale: false };
     try {
       inflightUy ??= uy().finally(() => (inflightUy = null));
-      lastUy = await inflightUy;
+      const fresh = await inflightUy;
+      // Si ahora salió con menos fuentes que lo que ya teníamos, se conservan las estaciones de la fuente que faltó (marcadas como viejas por su fecha).
+      lastUy = lastUy && lastUy.stations.length && fresh.stations.length < lastUy.stations.length && now() - lastUy.fetchedAt < UY_STALE_MS ? mergeUy(lastUy, fresh) : fresh;
       return { ...lastUy, stale: false };
     } catch (err) {
       app.log.warn({ err: String(err) }, 'no se pudieron leer los niveles de CARU ni de DINAGUA');

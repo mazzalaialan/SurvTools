@@ -101,4 +101,31 @@ describe('GET /api/rivers/uy', () => {
     clock.t += 4 * 86_400_000;
     assert.equal((await app.inject({ method: 'GET', url: '/api/rivers/uy' })).statusCode, 503);
   });
+
+  it('un resultado incompleto (sin CARU) se reintenta a los 10 minutos y conserva lo último de la fuente que faltó', async () => {
+    const clock = { t: 1_000_000 };
+    const st = (id: string, source: 'CARU' | 'DINAGUA') => ({ id, name: id, source, provider: 'x', lat: -32, lon: -58, level: 1, at: new Date(clock.t).toISOString(), change: null, trend: null });
+    const answers: UyLevels[] = [
+      { fetchedAt: 0, stations: [st('d1', 'DINAGUA')], sources: { caru: false, dinagua: true } },
+      { fetchedAt: 0, stations: [st('c1', 'CARU'), st('d1', 'DINAGUA')], sources: { caru: true, dinagua: true } },
+      { fetchedAt: 0, stations: [st('d2', 'DINAGUA')], sources: { caru: false, dinagua: true } },
+    ];
+    let calls = 0;
+    const app = Fastify();
+    riversRoutes(app, loadConfig({}), { fetch: async () => { throw new Error('no usado'); } }, () => clock.t, async () => { throw new Error('no usado'); }, async () => ({ ...answers[calls++]!, fetchedAt: clock.t }));
+    await app.inject({ method: 'GET', url: '/api/rivers/uy' });
+    clock.t += 5 * 60_000;
+    await app.inject({ method: 'GET', url: '/api/rivers/uy' });
+    assert.equal(calls, 1); // a los 5 minutos todavía vale
+    clock.t += 6 * 60_000;
+    const full = (await app.inject({ method: 'GET', url: '/api/rivers/uy' })).json();
+    assert.equal(calls, 2); // a los 11 minutos reintentó y ahora trae CARU
+    assert.deepEqual(full.stations.map((x: { id: string }) => x.id).sort(), ['c1', 'd1']);
+    clock.t += 3 * 3_600_000; // completo: venció (2 h)
+    const partial = (await app.inject({ method: 'GET', url: '/api/rivers/uy' })).json();
+    assert.equal(calls, 3);
+    // Esta vez falló CARU: se conservan sus estaciones de la lectura anterior.
+    assert.deepEqual(partial.stations.map((x: { id: string }) => x.id).sort(), ['c1', 'd2']);
+    assert.deepEqual(partial.sources, { caru: false, dinagua: true });
+  });
 });
