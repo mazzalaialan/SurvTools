@@ -22,6 +22,9 @@ export interface Config {
   weatherUrl: string;
   /** Clave de la API del IOC (mareógrafos medidos); vacía, la función se apaga. */
   iocApiKey: string | null;
+  /** Páginas de CARU y DINAGUA (Uruguay) por si cambian de dirección (ver rivers/uy.ts). */
+  caruUrl: string;
+  dinaguaUrl: string;
   /** Cada cuánto revisar la lluvia en los lugares con aviso. */
   rainIntervalMs: number;
   /** Hasta qué antigüedad se usa la última ubicación conocida de "donde estoy". */
@@ -76,6 +79,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     schedulerIntervalMs: Number(env.SCHEDULER_INTERVAL_MINUTES ?? 10) * 60_000,
     weatherUrl: env.WEATHER_URL?.trim() || 'https://api.open-meteo.com',
     iocApiKey: env.IOC_API_KEY?.trim() || null,
+    caruUrl: env.CARU_URL?.trim() || 'http://190.0.152.194:8080/alturas/web/user/alturas',
+    dinaguaUrl: env.DINAGUA_URL?.trim() || 'https://www.ambiente.gub.uy/dinagua-obh/api/niveles-y-caudales',
     rainIntervalMs: Number(env.RAIN_INTERVAL_MINUTES ?? 15) * 60_000,
     rainHereMaxAgeMs: Number(env.RAIN_HERE_MAX_AGE_HOURS ?? 24) * 3_600_000,
     lightningEnabled: (env.LIGHTNING_ENABLED ?? 'true') !== 'false',

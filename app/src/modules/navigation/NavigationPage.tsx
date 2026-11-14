@@ -9,6 +9,7 @@ import { BoliviaRiversCard } from './BoliviaRiversCard';
 import { ChileMarineCard } from './ChileMarineCard';
 import { SourcesCard } from './SourcesCard';
 import { UruguayMarineCard } from './UruguayMarineCard';
+import { UruguayRiversCard } from './UruguayRiversCard';
 import { sourceEnabled } from './sources';
 import { WavesCard } from './WavesCard';
 
@@ -36,6 +37,7 @@ export function NavigationPage() {
       <TidesCard place={place} />
       {sourceEnabled('open-meteo') && <WavesCard place={place} />}
       <ChileMarineCard place={place} />
+      {(sourceEnabled('caru') || sourceEnabled('dinagua')) && <UruguayRiversCard place={place} />}
       <UruguayMarineCard place={place} />
       <SourcesCard />
     </div>

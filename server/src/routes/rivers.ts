@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Config } from '../config.ts';
 import { fetchBoLevels, type BoLevels } from '../rivers/bo.ts';
 import { fetchBoExtras, type BoExtras } from '../rivers/boExtra.ts';
+import { fetchUyLevels, type UyLevels } from '../rivers/uy.ts';
 
 /**
  * Niveles de los ríos de Bolivia (SENAMHI Bolivia): `GET /api/rivers/bo`. El reporte es un PDF diario: el servidor lo baja y lo lee solo
@@ -11,6 +12,8 @@ import { fetchBoExtras, type BoExtras } from '../rivers/boExtra.ts';
  */
 const FRESH_MS = 3 * 3_600_000;
 const STALE_MS = 7 * 86_400_000;
+const UY_FRESH_MS = 2 * 3_600_000;
+const UY_STALE_MS = 3 * 86_400_000;
 const EXTRA_FRESH_MS = 6 * 3_600_000;
 const EXTRA_STALE_MS = 14 * 86_400_000;
 
@@ -18,7 +21,9 @@ export interface BoSource {
   fetch: (stations: { name: string }[]) => Promise<BoLevels>;
 }
 
-export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now())): void {
+export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now()), uy: () => Promise<UyLevels> = () => fetchUyLevels(now(), { caruUrl: config.caruUrl, dinaguaUrl: config.dinaguaUrl })): void {
+  let lastUy: UyLevels | null = null;
+  let inflightUy: Promise<UyLevels> | null = null;
   let last: BoLevels | null = null;
   let lastExtras: BoExtras | null = null;
   let inflightExtras: Promise<BoExtras> | null = null;
@@ -47,6 +52,24 @@ export function riversRoutes(app: FastifyInstance, config: Config, source: BoSou
     } catch (err) {
       app.log.warn({ err: String(err) }, 'no se pudo leer el pronóstico hidrológico ni el boletín del lago de Bolivia');
       if (lastExtras && now() - lastExtras.fetchedAt < EXTRA_STALE_MS) return { ...lastExtras, stale: true };
+      return reply.code(503).send({ error: 'unavailable' });
+    }
+  });
+
+  /**
+   * `GET /api/rivers/uy`: niveles de ríos de Uruguay de CARU (río Uruguay, HTML por HTTP) y DINAGUA (API del Observatorio Hidrológico), ver rivers/uy.ts.
+   * Se actualizan cada 12 h (CARU) o cada hora (DINAGUA): se guardan 2 horas y, si falla, se devuelve lo último bueno (hasta 3 días) marcado como viejo.
+   */
+  app.get('/api/rivers/uy', async (_req, reply) => {
+    reply.header('cache-control', 'no-store');
+    if (lastUy && now() - lastUy.fetchedAt < UY_FRESH_MS) return { ...lastUy, stale: false };
+    try {
+      inflightUy ??= uy().finally(() => (inflightUy = null));
+      lastUy = await inflightUy;
+      return { ...lastUy, stale: false };
+    } catch (err) {
+      app.log.warn({ err: String(err) }, 'no se pudieron leer los niveles de CARU ni de DINAGUA');
+      if (lastUy && now() - lastUy.fetchedAt < UY_STALE_MS) return { ...lastUy, stale: true };
       return reply.code(503).send({ error: 'unavailable' });
     }
   });

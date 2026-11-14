@@ -510,3 +510,60 @@ test('Navegación: bahías cercanas de la Armada de Chile (Valparaíso) con el p
   // Arica queda lejos (más de 150 km): no aparece entre las cercanas.
   await expect(box).not.toContainText('Bahía Arica');
 });
+
+test('Navegación: ríos de Uruguay (CARU y DINAGUA) cerca de Paysandú, con la hora de cada lectura, y sin conexión los últimos guardados', async ({ page, context }) => {
+  await mockOpenMeteo(page);
+  const now = Date.now();
+  // Servidor propio simulado: CARU (Paysandú, puerto y automática) y DINAGUA (Paso de los Toros, a ~110 km de Paysandú).
+  await context.route('https://valhallarust2.ddns.net/api/rivers/uy', (route) =>
+    route.fulfill({
+      headers: { 'access-control-allow-origin': '*' },
+      json: {
+        fetchedAt: now,
+        stale: false,
+        sources: { caru: true, dinagua: true },
+        stations: [
+          { id: 'caru-altura-24', name: 'Paysandú', source: 'CARU', provider: 'Prefectura', lat: -32.32, lon: -58.08, level: 4.08, at: new Date(now - 5 * 3_600_000).toISOString(), change: 0.1, trend: 'rising' },
+          { id: 'caru-estacion-19', name: 'Paysandú (automática)', source: 'CARU', provider: 'CARU y CTM', lat: -32.32, lon: -58.08, level: 4.11, at: new Date(now - 1 * 3_600_000).toISOString(), change: 0, trend: 'steady' },
+          { id: 'dinagua-UTE-1915', name: 'Paso de los Toros', source: 'DINAGUA', provider: 'UTE', lat: -32.0, lon: -57.0, level: 7.39, at: new Date(now - 8 * 3_600_000).toISOString(), change: -0.13, trend: 'falling' },
+          { id: 'dinagua-DINAGUA-1', name: 'Estación lejana', source: 'DINAGUA', provider: 'DINAGUA', lat: -30.4, lon: -55.4, level: 1, at: new Date(now).toISOString(), change: null, trend: null },
+        ],
+      },
+    }),
+  );
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -32.32, longitude: -58.08, accuracy: 20 });
+  await start(page);
+  await page.goto('/#/weather/navigation');
+  const card = page.getByTestId('uy-rivers-card');
+  await expect(card).toContainText('Ríos de Uruguay', { timeout: 20_000 });
+  const port = page.getByTestId('uyr-caru-altura-24');
+  await expect(port).toContainText('Paysandú');
+  await expect(port).toContainText('CARU');
+  await expect(port).toContainText('4,08 m');
+  await expect(port).toContainText('Prefectura');
+  await expect(port).toContainText(/medido hace 5 h/);
+  await expect(port).toContainText('+0,10 m desde la lectura anterior');
+  await expect(page.getByTestId('uyr-caru-estacion-19')).toContainText('4,11 m');
+  await expect(page.getByTestId('uyr-dinagua-UTE-1915')).toContainText('Paso de los Toros');
+  await expect(page.getByTestId('uyr-dinagua-UTE-1915')).toContainText('-0,13 m');
+  // Fuera de los 120 km no se muestra.
+  await expect(page.getByTestId('uyr-dinagua-DINAGUA-1')).toHaveCount(0);
+  await expect(page.getByTestId('uyr-source')).toContainText('sin licencia declarada');
+  // Sin conexión: los últimos guardados.
+  await context.setOffline(true);
+  await page.goto('/#/weather');
+  await page.goto('/#/weather/navigation');
+  await expect(page.getByTestId('uyr-caru-altura-24')).toContainText('4,08 m', { timeout: 20_000 });
+  await expect(page.getByTestId('uyr-offline')).toContainText('últimos niveles guardados');
+});
+
+test('Navegación: la tarjeta de ríos de Uruguay no aparece lejos de Uruguay (Puerto Madryn)', async ({ page, context }) => {
+  await mockOpenMeteo(page);
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -42.77, longitude: -65.04, accuracy: 20 });
+  await start(page);
+  await page.goto('/#/weather/navigation');
+  await expect(page.getByTestId('tide-station')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('uy-rivers-card')).toHaveCount(0);
+});

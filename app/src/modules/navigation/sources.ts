@@ -3,7 +3,7 @@
  * dato) y con licencia no comercial o con derechos reservados se usa mientras la app sea gratuita y sin publicidad. Para una copia paga,
  * con publicidad o institucional (por ejemplo la de una escuela) se compila con `VITE_COMMERCIAL=1` y se apagan esas fuentes.
  */
-export type SourceId = 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc';
+export type SourceId = 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua';
 export type LicenseKind = 'open' | 'undeclared' | 'reserved' | 'non-commercial';
 
 export interface NavSource {
@@ -73,6 +73,24 @@ export const NAV_SOURCES: NavSource[] = [
     licenseText: 'Derechos reservados, sin términos de uso (el enlace «Términos y condiciones» del sitio está vacío)',
     url: 'https://senamhi.gob.bo/hidrologia/rhidrologico',
     cite: 'Servicio Nacional de Meteorología e Hidrología (SENAMHI) de Bolivia, reporte de niveles diarios; ubicación de las estaciones: mapa de pronóstico del SENAMHI y OpenStreetMap (© OpenStreetMap contributors)',
+  },
+  {
+    id: 'caru',
+    name: 'CARU, alturas del río Uruguay',
+    provides: 'Alturas de los puertos del río Uruguay (lado uruguayo y Salto Grande), leídas por el servidor',
+    license: 'undeclared',
+    licenseText: 'Sin licencia ni términos declarados; la página de alturas es pública (por HTTP, sin TLS, en un servidor aparte) y se lee desde el servidor propio',
+    url: 'https://www.caru.org.uy/nuevositio/',
+    cite: 'Comisión Administradora del Río Uruguay (CARU); datos de la Prefectura Naval Argentina, la Prefectura Nacional Naval (Uruguay) y la CTM',
+  },
+  {
+    id: 'dinagua',
+    name: 'DINAGUA, Observatorio Hidrológico (Uruguay)',
+    provides: 'Niveles de ríos de Uruguay (Río Negro, Yí, Santa Lucía…), leídos por el servidor',
+    license: 'undeclared',
+    licenseText: 'Sin licencia ni términos declarados; es la API del visualizador público y se lee desde el servidor propio con retraso de unas horas',
+    url: 'https://www.ambiente.gub.uy/dinagua-obh/',
+    cite: 'Dirección Nacional de Aguas (DINAGUA), Ministerio de Ambiente de Uruguay; datos de DINAGUA, UTE, CTM y OSE',
   },
   {
     id: 'ioc',
