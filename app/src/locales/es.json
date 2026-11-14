@@ -1423,6 +1423,8 @@
       "old": "lectura vieja: la estación no reportó hace días",
       "zero": "Nivel cero de barranco: {{cm}} cm",
       "sinceBefore": "desde la lectura anterior",
+      "forecast": {"title": "Pronóstico hidrológico del SENAMHI", "issued": "Emitido el {{date}}, para {{period}}.", "rises": "Probables ascensos", "falls": "Probables descensos", "note": "Resumen nacional de ~14 días, con el texto del SENAMHI. El color de amenaza de cada estación está en el boletín completo; informativo, no es una alerta oficial.", "open": "Ver el resumen del SENAMHI"},
+      "lake": {"title": "Lago Titicaca (boletín semanal)", "level": "Huatajata: {{m}} m ({{abs}} m s. n. m.) el {{date}}", "up": "subió {{cm}} cm en la semana", "down": "bajó {{cm}} cm en la semana", "steady": "sin cambios en la semana", "below": "{{m}} m por debajo del promedio histórico", "above": "{{m}} m por encima del promedio histórico", "note": "Boletín semanal del SENAMHI (se publica los viernes, a veces con días de atraso).", "open": "Ver el boletín"},
       "trend": { "rising": "Ascenso", "falling": "Descenso", "steady": "Se mantiene" },
       "reference": "Lecturas en centímetros sobre la escala de cada estación (no son iguales entre estaciones; en el lago Titicaca la estación es Huatajata). Mirá siempre la fecha: algunas estaciones traen lecturas de hace semanas o meses.",
       "source": "Fuente: SENAMHI Bolivia, reporte de niveles diarios. Dato informativo, no oficial para alertas: para alertas hidrológicas oficiales mirá los avisos del SENAMHI."

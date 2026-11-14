@@ -1423,6 +1423,8 @@
       "old": "old reading: the station has not reported for days",
       "zero": "Bank zero level: {{cm}} cm",
       "sinceBefore": "since the previous reading",
+      "forecast": {"title": "SENAMHI hydrological forecast", "issued": "Issued on {{date}}, for {{period}}.", "rises": "Probable rises", "falls": "Probable falls", "note": "National summary of ~14 days, with the SENAMHI text. The threat color of each station is in the full bulletin; informational, not an official alert.", "open": "See the SENAMHI summary"},
+      "lake": {"title": "Lake Titicaca (weekly bulletin)", "level": "Huatajata: {{m}} m ({{abs}} m a.s.l.) on {{date}}", "up": "rose {{cm}} cm in the week", "down": "fell {{cm}} cm in the week", "steady": "unchanged in the week", "below": "{{m}} m below the historical average", "above": "{{m}} m above the historical average", "note": "SENAMHI weekly bulletin (published on Fridays, sometimes days late).", "open": "See the bulletin"},
       "trend": { "rising": "Rising", "falling": "Falling", "steady": "Steady" },
       "reference": "Readings in centimeters on each station's scale (not comparable between stations; on Lake Titicaca the station is Huatajata). Always check the date: some stations carry readings from weeks or months ago.",
       "source": "Source: SENAMHI Bolivia, daily level report. Informational, not official for alerts: for official hydrological alerts see SENAMHI's warnings."

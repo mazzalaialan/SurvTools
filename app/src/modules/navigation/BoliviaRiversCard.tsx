@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/core/settings/settings';
 import type { PickedPlace } from '@/modules/waypoints/PlacePicker';
 import { usePlaceCountries } from '@/modules/emergency/usePlaceCountry';
-import { ageDays, fetchBoLevels, loadBoCatalog, loadSavedBo, nearestBo, OLD_READING_DAYS, saveBo, type BoCatalog, type BoLevels } from './bolivia';
+import { ageDays, fetchBoExtras, fetchBoLevels, loadBoCatalog, loadSavedBo, loadSavedBoExtras, nearestBo, OLD_READING_DAYS, saveBo, saveBoExtras, type BoCatalog, type BoExtras, type BoLevels } from './bolivia';
+import { distanceMeters } from '@/core/geo/geo';
 
 const TREND_CLASS = { rising: 'river-alert', falling: 'river-low', steady: 'river-ok' } as const;
 
@@ -35,6 +36,24 @@ export function BoliviaRiversCard({ place }: { place: PickedPlace | null }) {
         setState('ok');
       },
       () => !cancelled && setState('error'),
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [relevant, server]);
+
+  // Resumen del pronóstico hidrológico y boletín del lago: otro endpoint del servidor, aparte de los niveles.
+  const [extras, setExtras] = useState<BoExtras | null>(() => loadSavedBoExtras());
+  useEffect(() => {
+    if (!relevant || !server || !navigator.onLine) return;
+    let cancelled = false;
+    fetchBoExtras(server).then(
+      (e) => {
+        if (cancelled) return;
+        saveBoExtras(e);
+        setExtras(e);
+      },
+      () => undefined,
     );
     return () => {
       cancelled = true;
@@ -76,6 +95,55 @@ export function BoliviaRiversCard({ place }: { place: PickedPlace | null }) {
           {t('navigation.bolivia.report', { date: day(levels.reportDate) })}
         </p>
       )}
+      {extras?.forecast && (
+        <div className="stack" style={{ gap: 4 }} data-testid="bo-forecast">
+          <h3 className="section-title" style={{ margin: 0, fontSize: '1rem' }}>
+            {t('navigation.bolivia.forecast.title')}
+          </h3>
+          <p className="hint" style={{ margin: 0 }}>
+            {t('navigation.bolivia.forecast.issued', { date: day(extras.forecast.issuedOn), period: extras.forecast.period })}
+          </p>
+          <p style={{ margin: 0 }} data-testid="bo-forecast-note">
+            {extras.forecast.note}
+          </p>
+          {extras.forecast.trend && extras.forecast.spans && (
+            <p style={{ margin: 0 }} data-testid="bo-forecast-spans">
+              {t(`navigation.bolivia.forecast.${extras.forecast.trend}`)}: {extras.forecast.spans}
+            </p>
+          )}
+          <p className="hint" style={{ margin: 0 }}>
+            {t('navigation.bolivia.forecast.note')}{' '}
+            <a href={extras.forecast.url} target="_blank" rel="noreferrer">
+              {t('navigation.bolivia.forecast.open')}
+            </a>
+          </p>
+        </div>
+      )}
+      {extras?.lake && catalog && place && (() => {
+        const huatajata = catalog.stations.find((s) => s.name === 'HUATAJATA');
+        if (!huatajata || distanceMeters({ lat: place.lat, lon: place.lon }, huatajata) / 1000 > 200) return null;
+        const l = extras.lake;
+        const m2 = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const m3 = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        return (
+          <div className="stack" style={{ gap: 4 }} data-testid="bo-lake">
+            <h3 className="section-title" style={{ margin: 0, fontSize: '1rem' }}>
+              {t('navigation.bolivia.lake.title')}
+            </h3>
+            <p style={{ margin: 0 }}>
+              {t('navigation.bolivia.lake.level', { m: m2.format(l.levelM), abs: m3.format(l.absoluteM), date: day(l.date) })}
+              {l.weekCm !== null ? ` · ${t(l.weekCm === 0 ? 'navigation.bolivia.lake.steady' : l.weekCm > 0 ? 'navigation.bolivia.lake.up' : 'navigation.bolivia.lake.down', { cm: Math.abs(l.weekCm) })}` : ''}
+              {l.vsAverageM !== null && Math.abs(l.vsAverageM) >= 0.01 ? ` · ${t(l.vsAverageM < 0 ? 'navigation.bolivia.lake.below' : 'navigation.bolivia.lake.above', { m: m2.format(Math.abs(l.vsAverageM)) })}` : ''}
+            </p>
+            <p className="hint" style={{ margin: 0 }}>
+              {t('navigation.bolivia.lake.note')}{' '}
+              <a href={l.url} target="_blank" rel="noreferrer">
+                {t('navigation.bolivia.lake.open')}
+              </a>
+            </p>
+          </div>
+        );
+      })()}
       {levels && catalog && list.length === 0 && (
         <p className="hint" data-testid="bo-none">
           {t('navigation.bolivia.none')}

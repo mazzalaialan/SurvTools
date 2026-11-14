@@ -75,6 +75,53 @@ export async function fetchBoLevels(server: string): Promise<BoLevels> {
   return (await res.json()) as BoLevels;
 }
 
+/** Resumen del pronóstico hidrológico del SENAMHI y boletín semanal del lago Titicaca (ver server/src/rivers/boExtra.ts). */
+export interface BoForecast {
+  issuedOn: string;
+  period: string;
+  note: string;
+  trend: 'rises' | 'falls' | null;
+  spans: string;
+  url: string;
+}
+export interface BoLake {
+  date: string;
+  levelM: number;
+  absoluteM: number;
+  weekCm: number | null;
+  vsAverageM: number | null;
+  url: string;
+}
+export interface BoExtras {
+  fetchedAt: number;
+  forecast: BoForecast | null;
+  lake: BoLake | null;
+  stale?: boolean;
+}
+
+export async function fetchBoExtras(server: string): Promise<BoExtras> {
+  const res = await fetch(`${server.replace(/\/+$/, '')}/api/rivers/bo/extra`, { signal: AbortSignal.timeout(60_000) });
+  if (!res.ok) throw new Error(`servidor ${res.status}`);
+  return (await res.json()) as BoExtras;
+}
+
+const EXTRA_STORE = 'vikarg.rivers.bo.extra';
+export function loadSavedBoExtras(): BoExtras | null {
+  try {
+    const raw = localStorage.getItem(EXTRA_STORE);
+    return raw ? (JSON.parse(raw) as BoExtras) : null;
+  } catch {
+    return null;
+  }
+}
+export function saveBoExtras(e: BoExtras): void {
+  try {
+    localStorage.setItem(EXTRA_STORE, JSON.stringify(e));
+  } catch {
+    /* sin almacenamiento: se ve igual con conexión */
+  }
+}
+
 const STORE = 'vikarg.rivers.bo.last';
 export function loadSavedBo(): BoLevels | null {
   try {

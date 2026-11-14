@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import type { FastifyInstance } from 'fastify';
 import type { Config } from '../config.ts';
 import { fetchBoLevels, type BoLevels } from '../rivers/bo.ts';
+import { fetchBoExtras, type BoExtras } from '../rivers/boExtra.ts';
 
 /**
  * Niveles de los ríos de Bolivia (SENAMHI Bolivia): `GET /api/rivers/bo`. El reporte es un PDF diario: el servidor lo baja y lo lee solo
@@ -10,13 +11,17 @@ import { fetchBoLevels, type BoLevels } from '../rivers/bo.ts';
  */
 const FRESH_MS = 3 * 3_600_000;
 const STALE_MS = 7 * 86_400_000;
+const EXTRA_FRESH_MS = 6 * 3_600_000;
+const EXTRA_STALE_MS = 14 * 86_400_000;
 
 export interface BoSource {
   fetch: (stations: { name: string }[]) => Promise<BoLevels>;
 }
 
-export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now): void {
+export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now())): void {
   let last: BoLevels | null = null;
+  let lastExtras: BoExtras | null = null;
+  let inflightExtras: Promise<BoExtras> | null = null;
   let inflight: Promise<BoLevels> | null = null;
   let stations: { name: string }[] | null = null;
 
@@ -27,6 +32,24 @@ export function riversRoutes(app: FastifyInstance, config: Config, source: BoSou
     }
     return stations;
   }
+
+  /**
+   * `GET /api/rivers/bo/extra`: resumen del pronóstico hidrológico del SENAMHI (~14 días) y boletín semanal del lago Titicaca (ver rivers/boExtra.ts).
+   * Cambian una vez por día y por semana: se guardan 6 horas y, si falla, se devuelve lo último bueno (hasta 14 días) marcado como viejo.
+   */
+  app.get('/api/rivers/bo/extra', async (_req, reply) => {
+    reply.header('cache-control', 'no-store');
+    if (lastExtras && now() - lastExtras.fetchedAt < EXTRA_FRESH_MS) return { ...lastExtras, stale: false };
+    try {
+      inflightExtras ??= extras().finally(() => (inflightExtras = null));
+      lastExtras = await inflightExtras;
+      return { ...lastExtras, stale: false };
+    } catch (err) {
+      app.log.warn({ err: String(err) }, 'no se pudo leer el pronóstico hidrológico ni el boletín del lago de Bolivia');
+      if (lastExtras && now() - lastExtras.fetchedAt < EXTRA_STALE_MS) return { ...lastExtras, stale: true };
+      return reply.code(503).send({ error: 'unavailable' });
+    }
+  });
 
   app.get('/api/rivers/bo', async (_req, reply) => {
     reply.header('cache-control', 'no-store');

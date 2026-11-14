@@ -261,6 +261,25 @@ test('Navegación: ríos y lago Titicaca de Bolivia (SENAMHI) con la fecha de ca
       },
     }),
   );
+  // Resumen del pronóstico hidrológico y boletín del lago (servidor propio, simulado con el texto real del SENAMHI del 13 y del 6 de noviembre).
+  await context.route('https://valhallarust2.ddns.net/api/rivers/bo/extra', (route) =>
+    route.fulfill({
+      headers: { 'access-control-allow-origin': '*' },
+      json: {
+        fetchedAt: Date.now(),
+        stale: false,
+        forecast: {
+          issuedOn: '2026-11-13',
+          period: 'Del 13 al 27 noviembre de 2026',
+          note: 'Amenaza: aportes y ascensos de niveles del 07 AL 09, 14 al 16 noviembre sobre las cuencas de Tarija , Chuquisaca, Santa Cruz, Cbba, Beni, La Paz, Pando. Se sugiere tomar precauciones en zonas ribereñas.',
+          trend: 'rises',
+          spans: 'Del 13 al 16, 17 al 19, 21 al 23, 23 al 25, 25 al 27/11/2026',
+          url: 'https://senamhi.gob.bo/x/resumen.pdf',
+        },
+        lake: { date: '2026-11-06', levelM: 3.23, absoluteM: 3807.637, weekCm: -2, vsAverageM: -0.87, url: 'https://senamhi.gob.bo/x/lago.pdf' },
+      },
+    }),
+  );
   await context.grantPermissions(['geolocation']);
   // Orilla boliviana del lago Titicaca.
   await context.setGeolocation({ latitude: -16.21, longitude: -68.71, accuracy: 20 });
@@ -269,6 +288,17 @@ test('Navegación: ríos y lago Titicaca de Bolivia (SENAMHI) con la fecha de ca
   const row = page.getByTestId('bo-HUATAJATA-TITICACA');
   await expect(row).toContainText('Huatajata'.toUpperCase(), { timeout: 20_000 });
   await expect(row).toContainText('320 cm');
+  const fc = page.getByTestId('bo-forecast');
+  await expect(fc).toContainText('Pronóstico hidrológico del SENAMHI');
+  await expect(fc).toContainText('Del 13 al 27 noviembre de 2026');
+  await expect(page.getByTestId('bo-forecast-note')).toContainText('cuencas de Tarija , Chuquisaca, Santa Cruz, Cbba, Beni, La Paz, Pando');
+  await expect(page.getByTestId('bo-forecast-spans')).toContainText('Probables ascensos: Del 13 al 16, 17 al 19');
+  await expect(fc).toContainText('informativo, no es una alerta oficial');
+  await expect(fc.getByRole('link', { name: 'Ver el resumen del SENAMHI' })).toHaveAttribute('href', 'https://senamhi.gob.bo/x/resumen.pdf');
+  const lake = page.getByTestId('bo-lake');
+  await expect(lake).toContainText('Huatajata: 3,23 m (3807,637 m s. n. m.)');
+  await expect(lake).toContainText('bajó 2 cm en la semana');
+  await expect(lake).toContainText('0,87 m por debajo del promedio histórico');
   await expect(row).toContainText('Descenso');
   await expect(row).toContainText('−1 cm desde la lectura anterior'.replace('−', '-'));
   await expect(row).toContainText('ubicación aproximada');
