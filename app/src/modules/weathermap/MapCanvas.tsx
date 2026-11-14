@@ -5,6 +5,8 @@ import type { WeatherMapValue } from '@/core/settings/settings';
 import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels';
 import type { GeoData, Volcano } from './geo';
 import type { NavState, RiverPoint, TidePoint } from './navLayers';
+import { seaState, type SeaState } from '@/modules/navigation/waves';
+import type { WaveSpot } from './waveGrid';
 import { fitBounds, homeBounds, pan, project, unproject, zoomAt, type Size, type View } from './projection';
 import { readyImage } from './images';
 import { alertCovers, type Flash, type Hazard, type HazardLevel, type OfficialAlert, type OfficialSeverity, type VolcanoAlert, volcanoAlertAt, type Quake, type ZoneWeather } from './sources';
@@ -32,6 +34,7 @@ export type MapFeature =
   | { kind: 'volcano'; item: Volcano }
   | { kind: 'river'; item: RiverPoint }
   | { kind: 'tide'; item: TidePoint }
+  | { kind: 'wave'; item: WaveSpot }
   | { kind: 'zone'; item: ZoneWeather }
   | { kind: 'waypoint'; item: MapWaypoint };
 
@@ -52,6 +55,8 @@ interface Props {
   /** Estaciones de niveles de ríos y de mareas (capas de Navegación). */
   riverPoints?: RiverPoint[] | null;
   tidePoints?: TidePoint[] | null;
+  /** Oleaje: altura de las olas en una grilla de puntos de mar. */
+  waves?: WaveSpot[] | null;
   /** Nivel de alerta técnica (OAVV): el volcán se pinta de amarillo, naranja o rojo, más grande. */
   volcanoAlerts?: VolcanoAlert[] | null;
   waypoints: MapWaypoint[] | null;
@@ -298,6 +303,7 @@ function hitTest(x: number, y: number, size: Size, view: View, p: Props): MapFea
   p.volcanoes?.forEach((v) => consider(v.lon, v.lat, { kind: 'volcano', item: v }));
   p.riverPoints?.forEach((r) => consider(r.lon, r.lat, { kind: 'river', item: r }, -4));
   p.tidePoints?.forEach((t) => consider(t.lon, t.lat, { kind: 'tide', item: t }, -4));
+  p.waves?.forEach((w) => consider(w.lon, w.lat, { kind: 'wave', item: w }, -6));
   p.zones?.forEach((z) => consider(z.lon, z.lat, { kind: 'zone', item: z }));
   const point = (best as { f: MapFeature } | null)?.f ?? null;
   if (point || !p.official?.length) return point;
@@ -453,6 +459,29 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
     ctx.beginPath();
     ctx.arc(s.x, s.y, 14, 0, Math.PI * 2);
     ctx.stroke();
+  }
+
+  // Oleaje: círculo del color del estado del mar (Douglas) con la altura de las olas en metros; debajo de los demás puntos.
+  const SEA_COLOR: Record<SeaState, string> = { calm: c.s1!, smooth: c.s1!, slight: c.s2!, moderate: c.s3!, rough: c.s4!, veryRough: c.s5!, high: c.s6!, veryHigh: c.s6!, phenomenal: c.s6! };
+  if (p.waves?.length) {
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const w of p.waves) {
+      const s = proj(w.lon, w.lat);
+      if (s.x < -20 || s.y < -20 || s.x > size.width + 20 || s.y > size.height + 20) continue;
+      ctx.fillStyle = SEA_COLOR[seaState(w.height)];
+      ctx.strokeStyle = c.bg!;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#111';
+      ctx.fillText(w.height.toFixed(1), s.x, s.y + 0.5);
+    }
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
   }
 
   // Niveles de ríos: círculo del color del estado (evacuación, alerta, aguas bajas, normal; gris sin dato). Estaciones de mareas: rombo.

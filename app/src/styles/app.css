@@ -2041,6 +2041,7 @@ a.module-card:hover {
 .wmap-swatch-lightning { border-radius: 50%; background: #ffd400; border: 1px solid #7a5c00; }
 .wmap-swatch-hazard { background: linear-gradient(90deg, var(--scale-3), var(--scale-5), var(--scale-6)); }
 .wmap-swatch-rivers { border-radius: 50%; background: linear-gradient(90deg, var(--scale-6), var(--scale-5), var(--scale-4), var(--info)); }
+.wmap-swatch-waves { border-radius: 50%; background: linear-gradient(90deg, var(--scale-1), var(--scale-3), var(--scale-5), var(--scale-6)); }
 .wmap-swatch-tides { border-radius: 2px; background: var(--info); transform: rotate(45deg) scale(0.8); }
 .wmap-swatch-wind { background: none; border-bottom: 2px solid var(--text); border-radius: 0; height: 6px; }
 

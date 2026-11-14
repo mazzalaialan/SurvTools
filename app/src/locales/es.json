@@ -939,7 +939,8 @@
       "lightning": "Rayos",
       "official": "Alertas oficiales",
       "rivers": "Ríos",
-      "tides": "Mareas"
+      "tides": "Mareas",
+      "waves": "Oleaje"
     },
     "needsServer": "Necesita el servidor propio (Ajustes → Conexiones)",
     "lightningStatus": "{{count}} rayos en la región · actualizado {{time}}",
@@ -969,7 +970,8 @@
       "hazards": "Alertas de desastres (GDACS, ONU y Comisión Europea): 🌀 ciclón o huracán, 🌊 inundación, 🏜️ sequía, 🔥 incendio forestal, 🌋 erupción. Fondo verde, naranja o rojo según la gravedad",
       "wind": "Viento por zona en {{unit}}; la flecha indica hacia dónde sopla",
       "rivers": "Ríos de América del Sur: líneas azules, más gruesas cuanto mayor es el río, y sus estaciones de nivel del INA (Argentina) y del SENAMHI (Bolivia). Círculo rojo, evacuación; naranja, alerta; amarillo, aguas bajas; azul, normal; gris, sin lectura o sin umbrales (Bolivia). Tocá una estación para ver el detalle. Líneas: Natural Earth y © OpenStreetMap contributors",
-      "tides": "◆ Estaciones de mareas (cálculo en el teléfono, sin conexión). Tocá una para ver la marea de ahora y la próxima pleamar y bajamar"
+      "tides": "◆ Estaciones de mareas (cálculo en el teléfono, sin conexión). Tocá una para ver la marea de ahora y la próxima pleamar y bajamar",
+      "waves": "Oleaje frente a las costas (Open-Meteo Marine, modelo): círculos con la altura de las olas en metros y el color del estado del mar, de celeste (calma) a rojo (muy gruesa). Es un pronóstico del modelo, no una medición; no sirve para navegar cerca de la costa. Tocá un punto para ver el período, la dirección y el oleaje de fondo"
     },
     "severity": {"Extreme": "extrema", "Severe": "severa", "Moderate": "moderada", "Minor": "leve", "Unknown": "sin nivel"},
     "volcanoAlert": "Alerta técnica {{level}} ({{agency}}): tocá \"Más información\" para ver el último reporte",
@@ -1003,6 +1005,8 @@
     "navMore": "Ver todo en Navegación",
     "tideNearTitle": "Marea: {{name}}",
     "tideNext": "Próxima {{what}}: {{time}} ({{level}} m)",
+    "waveTitle": "Olas de {{h}} m",
+    "waveModel": "Punto de mar del modelo (celdas de unos 9 km), pronóstico y no medición. No sirve para navegar cerca de la costa, en bahías ni en bocas de río.",
     "myWaypoint": "Waypoint guardado",
     "moreInfo": "Más información",
     "disclaimer": "Datos orientativos de fuentes abiertas (NASA, USGS, GDACS, RainViewer, Open-Meteo, Smithsonian). No son alertas oficiales: ante una emergencia seguí las indicaciones del SMN, Protección Civil o el organismo de tu país."

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { loadBoCatalog, fetchBoLevels, loadSavedBo, saveBo, type BoCatalog, type BoLevels } from '@/modules/navigation/bolivia';
 import { fetchReadings, loadRivers, loadSavedReadings, riverState, saveReadings, type RiverReading, type RiversData, type RiverState, type RiverStation } from '@/modules/navigation/rivers';
 import { loadTides, type TideStation, type TidesData } from '@/modules/navigation/tides';
+import { fetchWaveGrid, loadSavedGrid, saveGrid, type WaveGrid } from './waveGrid';
 
 /**
  * Capas de Navegación del mapa de alertas y clima: niveles de ríos (INA de Argentina y SENAMHI de Bolivia) y estaciones de mareas.
@@ -62,12 +63,13 @@ export function tidePoints(data: TidesData): TidePoint[] {
 const REFRESH_MS = 10 * 60_000;
 
 /** Carga lo que piden las capas encendidas (los niveles se refrescan cada 10 minutos; sin conexión quedan los últimos guardados). */
-export function useNavLayers(on: { rivers: boolean; tides: boolean }, serverUrl: string | null | undefined, online: boolean) {
+export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boolean }, serverUrl: string | null | undefined, online: boolean, weatherUrl: string) {
   const [ina, setIna] = useState<RiversData | null>(null);
   const [readings, setReadings] = useState<Map<number, RiverReading>>(() => loadSavedReadings());
   const [boCatalog, setBoCatalog] = useState<BoCatalog | null>(null);
   const [boLevels, setBoLevels] = useState<BoLevels | null>(() => loadSavedBo());
   const [tides, setTides] = useState<TidesData | null>(null);
+  const [waves, setWaves] = useState<WaveGrid | null>(() => loadSavedGrid());
   const server = serverUrl?.trim() || null;
 
   useEffect(() => {
@@ -109,10 +111,31 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean }, serverUrl:
     };
   }, [on.rivers, ina, online, server]);
 
+  // Oleaje: una consulta con toda la grilla, cada 30 minutos; sin conexión queda la última guardada.
+  useEffect(() => {
+    if (!on.waves || !online) return;
+    let cancelled = false;
+    const load = () =>
+      void fetchWaveGrid(weatherUrl).then(
+        (g) => {
+          if (cancelled || !g) return;
+          saveGrid(g);
+          setWaves(g);
+        },
+        () => undefined,
+      );
+    load();
+    const id = setInterval(load, 3 * REFRESH_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [on.waves, online, weatherUrl]);
+
   const riverPoints = useMemo<RiverPoint[] | null>(() => {
     if (!on.rivers || !ina) return null;
     return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels) : [])];
   }, [on.rivers, ina, readings, boCatalog, boLevels]);
   const tideList = useMemo(() => (on.tides && tides ? tidePoints(tides) : null), [on.tides, tides]);
-  return { riverPoints, tidePoints: tideList };
+  return { riverPoints, tidePoints: tideList, waves: on.waves ? waves : null };
 }

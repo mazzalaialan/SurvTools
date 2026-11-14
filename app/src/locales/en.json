@@ -939,7 +939,8 @@
       "lightning": "Lightning",
       "official": "Official alerts",
       "rivers": "Rivers",
-      "tides": "Tides"
+      "tides": "Tides",
+      "waves": "Waves"
     },
     "needsServer": "Needs your own server (Settings → Connections)",
     "lightningStatus": "{{count}} flashes in the region · updated {{time}}",
@@ -969,7 +970,8 @@
       "hazards": "Disaster alerts (GDACS, UN and European Commission): 🌀 cyclone or hurricane, 🌊 flood, 🏜️ drought, 🔥 wildfire, 🌋 eruption. Green, orange or red background by severity",
       "wind": "Wind by area in {{unit}}; the arrow shows where it blows to",
       "rivers": "Rivers of South America: blue lines, thicker the bigger the river, and their level stations from INA (Argentina) and SENAMHI (Bolivia). Red circle, evacuation; orange, alert; yellow, low water; blue, normal; grey, no reading or no thresholds (Bolivia). Tap a station for details. Lines: Natural Earth and © OpenStreetMap contributors",
-      "tides": "◆ Tide stations (computed on the phone, offline). Tap one for the current tide and the next high and low"
+      "tides": "◆ Tide stations (computed on the phone, offline). Tap one for the current tide and the next high and low",
+      "waves": "Waves off the coasts (Open-Meteo Marine, model): circles with the wave height in meters and the sea-state color, from light blue (calm) to red (very rough). It is a model forecast, not a measurement; not for navigating near the coast. Tap a point for the period, direction and swell"
     },
     "severity": {"Extreme": "extreme", "Severe": "severe", "Moderate": "moderate", "Minor": "minor", "Unknown": "no level"},
     "volcanoAlert": "{{level}} technical alert ({{agency}}): tap \"More information\" for the latest report",
@@ -1003,6 +1005,8 @@
     "navMore": "See everything in Navigation",
     "tideNearTitle": "Tide: {{name}}",
     "tideNext": "Next {{what}}: {{time}} ({{level}} m)",
+    "waveTitle": "Waves of {{h}} m",
+    "waveModel": "Model sea point (cells of about 9 km), forecast and not a measurement. Not for navigating near the coast, in bays or at river mouths.",
     "myWaypoint": "Saved waypoint",
     "moreInfo": "More info",
     "disclaimer": "Indicative data from open sources (NASA, USGS, GDACS, RainViewer, Open-Meteo, Smithsonian). These are not official warnings: in an emergency follow your national weather service and civil protection."

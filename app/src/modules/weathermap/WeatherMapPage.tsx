@@ -14,7 +14,10 @@ import { loadGeoData, type GeoData } from './geo';
 import { imageSettled, preload } from './images';
 import { MapCanvas, type MapFeature, type Overlay } from './MapCanvas';
 import { useNavLayers } from './navLayers';
+import { sourceEnabled } from '@/modules/navigation/sources';
+import { compass8, seaState } from '@/modules/navigation/waves';
 import { RiverForecastLine } from './RiverForecastLine';
+import { TideGaugeLine } from './TideGaugeLine';
 import { tideExtremes, tideLevelAt } from '@/modules/navigation/tides';
 import { fitBounds, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
 import { Notice } from '@/ui/Notice';
@@ -59,7 +62,7 @@ const SETTLE_MS = 500;
 /** Teselas de radar por cuadro (si hacen falta más, se usa un zoom menor). */
 const RADAR_TILES_MAX = 16;
 const PRELOAD_PARALLEL = 4;
-const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waypoints'];
+const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waves', 'waypoints'];
 /** Cada cuánto se piden los rayos (el satélite saca un archivo cada 20 s). */
 const LIGHTNING_MS = 20_000;
 /** La lluvia estimada sale cada 10 minutos. */
@@ -89,7 +92,7 @@ export function WeatherMapPage() {
   const [version, setVersion] = useState(0);
   const [online, setOnline] = useState(navigator.onLine);
   const [now, setNow] = useState(() => Date.now());
-  const nav = useNavLayers({ rivers: layers.rivers, tides: layers.tides }, serverUrl, online);
+  const nav = useNavLayers({ rivers: layers.rivers, tides: layers.tides, waves: layers.waves && sourceEnabled('open-meteo') }, serverUrl, online, base);
 
   const [quakes, setQuakes] = useState<{ fetchedAt: string; items: Quake[] } | null>(null);
   const [hazards, setHazards] = useState<{ fetchedAt: string; items: Hazard[] } | null>(null);
@@ -460,6 +463,7 @@ export function WeatherMapPage() {
             showRivers={layers.rivers}
             riverPoints={nav.riverPoints}
             tidePoints={nav.tidePoints}
+            waves={nav.waves?.spots ?? null}
             volcanoAlerts={showOfficial ? (official?.volcanoes ?? null) : null}
             waypoints={waypoints}
             here={here}
@@ -530,7 +534,7 @@ export function WeatherMapPage() {
       <section className="card stack" aria-labelledby="wmap-layers">
         <h2 id="wmap-layers" className="section-title" style={{ margin: 0 }}>{t('weatherMap.layers')}</h2>
         <div className="chips" role="group" aria-label={t('weatherMap.layers')}>
-          {LAYER_KEYS.map((key) => {
+          {LAYER_KEYS.filter((k) => k !== 'waves' || sourceEnabled('open-meteo')).map((key) => {
             // Los rayos los junta el servidor propio: sin servidor, no hay.
             const noServer = (key === 'lightning' || key === 'satRain' || key === 'official') && !serverUrl;
             return (
@@ -604,6 +608,7 @@ function Legend({ layers, zoneValue, windUnit }: { layers: WeatherMapLayers; zon
     [layers.lightning, 'lightning', t('weatherMap.legend.lightning')],
     [layers.rivers, 'rivers', t('weatherMap.legend.rivers')],
     [layers.tides, 'tides', t('weatherMap.legend.tides')],
+    [layers.waves && sourceEnabled('open-meteo'), 'waves', t('weatherMap.legend.waves')],
   ];
   const shown = items.filter(([on]) => on);
   if (shown.length === 0) return null;
@@ -734,6 +739,23 @@ function FeatureCard({
       to = '/weather/navigation';
       break;
     }
+    case 'wave': {
+      const w = feature.item;
+      title = t('weatherMap.waveTitle', { h: n1.format(w.height) });
+      lines = [
+        [
+          t(`navigation.waves.state.${seaState(w.height)}`),
+          w.period !== null ? t('navigation.waves.period', { s: Math.round(w.period) }) : '',
+          w.direction !== null ? t('navigation.waves.from', { dir: t(`navigation.waves.compass.${compass8(w.direction)}`) }) : '',
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        w.swellHeight !== null ? t('navigation.waves.swell', { h: n1.format(w.swellHeight), s: Math.round(w.swellPeriod ?? 0) }) : '',
+        t('weatherMap.waveModel'),
+      ].filter(Boolean);
+      to = '/weather/navigation';
+      break;
+    }
     case 'waypoint':
       title = feature.item.name;
       lines = [t('weatherMap.myWaypoint')];
@@ -752,6 +774,7 @@ function FeatureCard({
           {l}
         </p>
       ))}
+      {feature.kind === 'tide' && sourceEnabled('ioc') ? <TideGaugeLine station={feature.item.station} /> : null}
       {feature.kind === 'river' && feature.item.station?.forecast?.length ? <RiverForecastLine station={feature.item.station} now={now} /> : null}
       {to && (
         <Link to={to} data-testid="feature-nav-link">

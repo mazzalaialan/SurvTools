@@ -193,6 +193,8 @@ export interface WeatherMapLayers {
   rivers: boolean;
   /** Estaciones de mareas (cálculo en el teléfono). */
   tides: boolean;
+  /** Oleaje frente a las costas (Open-Meteo Marine, modelo): altura de las olas en una grilla de puntos de mar. */
+  waves: boolean;
 }
 
 export type WeatherMapValue = 'temp' | 'rain' | 'wind';
@@ -244,7 +246,7 @@ export const DEFAULT_SETTINGS: Settings = {
   duskPlace: null,
   starmapRed: true,
   starmapLayers: { constellationLines: true, constellationNames: true, starNames: true, planets: true, guide: true, grid: true },
-  weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false },
+  weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false, waves: false },
   weatherMapValue: 'temp',
   mapSource: 'auto',
   mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false },
