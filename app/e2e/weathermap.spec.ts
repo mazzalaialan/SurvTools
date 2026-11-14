@@ -450,7 +450,7 @@ test('mapa de tiempo: focos de calor de FIRMS, llama solo para alta confianza, n
   await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
   await page.getByRole('button', { name: 'Lluvia estimada (satélite)' }).click();
   await page.getByRole('button', { name: 'Focos de calor' }).click();
-  await expect(page.getByText(/Anomalías térmicas de las últimas 24 h \(NASA FIRMS.*la llama marca las de alta confianza/)).toBeVisible();
+  await expect(page.getByText(/Anomalías térmicas de las últimas 24 h \(NASA FIRMS.*la llama roja marca las de alta confianza/)).toBeVisible();
   await page.waitForTimeout(1500);
   // Aviso de lo que se ocultó (fuentes fijas) y hora de la última pasada de los satélites.
   await expect(page.getByText(/Se ocultan las detecciones de baja y media confianza que se repiten en el mismo lugar.*hoy 120/)).toBeVisible();

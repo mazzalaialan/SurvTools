@@ -46,16 +46,26 @@ export interface FireCluster {
   newestMin: number;
 }
 
+/** Tamaños de casilla (grados) entre los que se elige según el zoom: cada uno el doble del anterior; el más chico es la celda de FIRMS (0,1°). */
+export const FIRE_CELL_DEGREES = [0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4];
+
 /**
- * Junta las celdas que caen en la misma casilla de `cellPx` píxeles de pantalla: lejos del zoom son miles de celdas y se amontonan; así
- * queda una marca por casilla (la de más confianza manda). `project` pasa lat/lon a píxeles.
+ * Qué casilla geográfica usar según el zoom: la más chica que ocupe al menos `minPx` píxeles de pantalla (`pxPerDegree` es lo que mide un
+ * grado de longitud en pantalla). Cambia en saltos al hacer zoom y **no cambia al desplazar el mapa**, así los grupos no se rearman al moverlo.
  */
-export function clusterFires(cells: FireCell[], project: (lat: number, lon: number) => { x: number; y: number }, cellPx: number, bounds?: { width: number; height: number }): FireCluster[] {
-  const buckets = new Map<number, { sl: number; so: number; w: number; n: number; high: number; nominal: number; frp: number; newest: number }>();
+export function fireCellDegrees(pxPerDegree: number, minPx = 22): number {
+  return FIRE_CELL_DEGREES.find((d) => d * pxPerDegree >= minPx) ?? FIRE_CELL_DEGREES[FIRE_CELL_DEGREES.length - 1]!;
+}
+
+/**
+ * Junta las celdas que caen en la misma casilla geográfica de `cellDeg` grados (una grilla fija sobre el mapa, no sobre la pantalla): lejos del
+ * zoom son miles de celdas y se amontonan; así queda una marca por casilla (la de más confianza manda) y la misma casilla da el mismo grupo
+ * en cualquier posición del mapa. `visible` (opcional) deja solo los grupos que caen en pantalla, decidido sobre el grupo ya armado.
+ */
+export function clusterFires(cells: FireCell[], cellDeg: number, visible?: (lat: number, lon: number) => boolean): FireCluster[] {
+  const buckets = new Map<string, { sl: number; so: number; w: number; n: number; high: number; nominal: number; frp: number; newest: number }>();
   for (const [lat, lon, n, high, nominal, frp, newest] of cells) {
-    const p = project(lat, lon);
-    if (bounds && (p.x < -cellPx || p.y < -cellPx || p.x > bounds.width + cellPx || p.y > bounds.height + cellPx)) continue;
-    const key = Math.floor(p.y / cellPx) * 100_000 + Math.floor(p.x / cellPx);
+    const key = `${Math.floor(lat / cellDeg)},${Math.floor(lon / cellDeg)}`;
     const b = buckets.get(key) ?? { sl: 0, so: 0, w: 0, n: 0, high: 0, nominal: 0, frp: 0, newest: Infinity };
     // El centro del grupo se inclina hacia donde hay más detecciones de alta confianza.
     const weight = n + high * 3;
@@ -69,7 +79,9 @@ export function clusterFires(cells: FireCell[], project: (lat: number, lon: numb
     b.newest = Math.min(b.newest, newest);
     buckets.set(key, b);
   }
-  return [...buckets.values()].map((b) => ({ lat: b.sl / b.w, lon: b.so / b.w, n: b.n, high: b.high, nominal: b.nominal, low: Math.max(0, b.n - b.high - b.nominal), frp: b.frp, newestMin: b.newest }));
+  return [...buckets.values()]
+    .map((b) => ({ lat: b.sl / b.w, lon: b.so / b.w, n: b.n, high: b.high, nominal: b.nominal, low: Math.max(0, b.n - b.high - b.nominal), frp: b.frp, newestMin: b.newest }))
+    .filter((c) => !visible || visible(c.lat, c.lon));
 }
 
 /** Cómo se dibuja un grupo: llama (hay alta confianza), punto naranja (nominal) o punto amarillo chico (solo baja confianza). */

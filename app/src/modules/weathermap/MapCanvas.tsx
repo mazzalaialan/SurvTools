@@ -6,7 +6,7 @@ import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels'
 import type { GeoData, Volcano } from './geo';
 import type { NavState, RiverPoint, TidePoint } from './navLayers';
 import { seaState, type SeaState } from '@/modules/navigation/waves';
-import { clusterFires, fireLevel, type FireCell } from './fires';
+import { clusterFires, fireCellDegrees, fireLevel, type FireCell } from './fires';
 import { waveSegments, type WaveSpot } from './waveGrid';
 import { fitBounds, homeBounds, pan, project, unproject, zoomAt, type Size, type View } from './projection';
 import { readyImage } from './images';
@@ -133,8 +133,35 @@ const FIRE_MIN_PX = 90;
 const FIRE_PX_EACH = 22;
 /** Casilla (px de pantalla) en la que se juntan los focos de FIRMS, y colores fijos (iguales en todos los temas). */
 const FIRE_CLUSTER_PX = 22;
+/** Metros por grado de longitud en Mercator (el mapa mide en metros Mercator). */
+const M_PER_DEGREE = 111_320;
 const FIRE_ORANGE = '#f08a00';
-const FIRE_LOW = '#e6c84a';
+const FIRE_LOW = '#f0d95a';
+const FIRE_HIGH = '#e8330a';
+
+/** Traza una chispa de cuatro puntas, rellena (lados cóncavos suaves), centrada en (x, y) con puntas a `r`. */
+function sparkPath(ctx: CanvasRenderingContext2D, x: number, y: number, r: number): void {
+  const k = 0.3 * r;
+  ctx.beginPath();
+  ctx.moveTo(x, y - r);
+  ctx.quadraticCurveTo(x + k, y - k, x + r, y);
+  ctx.quadraticCurveTo(x + k, y + k, x, y + r);
+  ctx.quadraticCurveTo(x - k, y + k, x - r, y);
+  ctx.quadraticCurveTo(x - k, y - k, x, y - r);
+  ctx.closePath();
+}
+
+/** Traza una silueta de llama de alto ~2,9 r centrada en (x, y): base redondeada, lengua izquierda chica, muesca y punta principal ladeada a la derecha. */
+function flamePath(ctx: CanvasRenderingContext2D, x: number, y: number, r: number): void {
+  ctx.beginPath();
+  ctx.moveTo(x, y + r);
+  ctx.bezierCurveTo(x - 1.15 * r, y + 0.85 * r, x - 1.15 * r, y - 0.35 * r, x - 0.7 * r, y - 1.05 * r);
+  ctx.bezierCurveTo(x - 0.65 * r, y - 0.6 * r, x - 0.45 * r, y - 0.5 * r, x - 0.2 * r, y - 0.55 * r);
+  ctx.bezierCurveTo(x - 0.15 * r, y - 1.2 * r, x + 0.1 * r, y - 1.6 * r, x + 0.3 * r, y - 1.95 * r);
+  ctx.bezierCurveTo(x + 0.55 * r, y - 1.3 * r, x + 1.2 * r, y - 0.6 * r, x + 1.05 * r, y + 0.2 * r);
+  ctx.bezierCurveTo(x + 0.95 * r, y + 0.8 * r, x + 0.5 * r, y + r, x, y + r);
+  ctx.closePath();
+}
 const FIRE_ANY_PX = 14;
 const fireCache = new WeakMap<HTMLImageElement, { x: number; y: number; n: number }[]>();
 
@@ -333,7 +360,11 @@ function hitTest(x: number, y: number, size: Size, view: View, p: Props): MapFea
   // Focos de calor de FIRMS: se toca el grupo más cercano (llama, punto naranja o amarillo).
   if (p.fires?.length) {
     let nearest: { d: number; g: ReturnType<typeof clusterFires>[number] } | null = null;
-    for (const g of clusterFires(p.fires, (lat, lon) => project(lon, lat, view, size), FIRE_CLUSTER_PX, size)) {
+    const onScreen = (lat: number, lon: number) => {
+      const q = project(lon, lat, view, size);
+      return q.x >= -FIRE_CLUSTER_PX && q.y >= -FIRE_CLUSTER_PX && q.x <= size.width + FIRE_CLUSTER_PX && q.y <= size.height + FIRE_CLUSTER_PX;
+    };
+    for (const g of clusterFires(p.fires, fireCellDegrees(view.scale * M_PER_DEGREE, FIRE_CLUSTER_PX), onScreen)) {
       const s = project(g.lon, g.lat, view, size);
       const d = Math.hypot(s.x - x, s.y - y);
       if (d <= HIT_PX && (!nearest || d < nearest.d)) nearest = { d, g };
@@ -648,26 +679,38 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
 
   // Focos de calor de FIRMS: un punto amarillo chico (baja confianza), uno naranja (nominal) o una llama (alta confianza), una marca por casilla.
   if (p.fires?.length) {
-    const clusters = clusterFires(p.fires, (lat, lon) => proj(lon, lat), FIRE_CLUSTER_PX, size);
+    const clusters = clusterFires(p.fires, fireCellDegrees(view.scale * M_PER_DEGREE, FIRE_CLUSTER_PX), (lat, lon) => {
+      const q = proj(lon, lat);
+      return q.x >= -FIRE_CLUSTER_PX && q.y >= -FIRE_CLUSTER_PX && q.x <= size.width + FIRE_CLUSTER_PX && q.y <= size.height + FIRE_CLUSTER_PX;
+    });
     for (const level of ['low', 'orange', 'flame'] as const) {
       for (const g of clusters) {
         if (fireLevel(g) !== level) continue;
         const s = proj(g.lon, g.lat);
         if (level === 'flame') {
-          ctx.font = `15px ${EMOJI_FONT}`;
-          ctx.textAlign = 'center';
-          ctx.fillText('🔥', s.x, s.y + 5);
-          ctx.textAlign = 'start';
+          // Solo la alta confianza lleva la llama: roja, con borde blanco y llama interior amarilla, más grande que las chispas.
+          const r = 5.5 + Math.min(2.5, Math.log2(Math.max(1, g.high)) * 0.7);
+          flamePath(ctx, s.x, s.y, r);
+          ctx.fillStyle = FIRE_HIGH;
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+          flamePath(ctx, s.x + 0.05 * r, s.y + 0.38 * r, r * 0.52);
+          ctx.fillStyle = '#ffd24d';
+          ctx.fill();
           continue;
         }
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, level === 'orange' ? 3 + Math.min(4, Math.log2(g.n)) : 2.5, 0, Math.PI * 2);
+        // Las nominales (naranja) y las de baja confianza (amarillo, más chicas) son una chispa de cuatro puntas, sin forma de llama: no se
+        // confunden con las llamas de alta confianza ni con los círculos de los ríos y los sismos.
+        const r = level === 'orange' ? 4.6 + Math.min(3, Math.log2(g.n) * 0.8) : 3.4;
+        sparkPath(ctx, s.x, s.y, r);
         ctx.fillStyle = level === 'orange' ? FIRE_ORANGE : FIRE_LOW;
-        ctx.globalAlpha = level === 'orange' ? 0.9 : 0.75;
+        ctx.globalAlpha = level === 'orange' ? 0.95 : 0.85;
         ctx.fill();
         ctx.globalAlpha = 1;
-        ctx.strokeStyle = c.bg!;
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = level === 'orange' ? '#7a3500' : '#7a6a18';
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       }
     }
