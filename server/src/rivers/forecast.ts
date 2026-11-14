@@ -43,9 +43,12 @@ interface RawRun {
 const BASE = 'https://alerta.ina.gob.ar/a5/sim/calibrados';
 const UA = 'VikArg-Survival-Tools/1.0';
 
+/** Variables del INA que son alturas del río: instantánea (2), media diaria (39) y media semanal (67). Las de caudal y precipitación no. */
+const HEIGHT_VARS = new Set([2, 39, 67]);
+
 export function stationsBySeries(runs: RawRun[]): Map<number, number> {
   const out = new Map<number, number>();
-  for (const s of runs[0]?.series ?? []) if (s.series_id !== undefined && s.estacion_id !== undefined && (s.var_id === undefined || s.var_id === 2)) out.set(s.series_id, s.estacion_id);
+  for (const s of runs[0]?.series ?? []) if (s.series_id !== undefined && s.estacion_id !== undefined && (s.var_id === undefined || HEIGHT_VARS.has(s.var_id))) out.set(s.series_id, s.estacion_id);
   return out;
 }
 

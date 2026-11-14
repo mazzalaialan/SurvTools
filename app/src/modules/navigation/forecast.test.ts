@@ -87,7 +87,9 @@ describe('pronóstico de ríos del INA', () => {
     // run() trae estacion_id: quitarlo, como hace el INA.
     full[0]!.series.forEach((x) => delete (x as { estacion_id?: number }).estacion_id);
     const map = stationsBySeries(meta);
-    expect([...map]).toEqual([[1542, 34]]); // solo las de altura (var 2) y con estación
+    expect([...map]).toEqual([[1542, 34]]); // solo las de altura (var 2) y con estación; el caudal (var 4) no
+    // La altura media semanal (var 67, la de las perspectivas) también es altura.
+    expect([...stationsBySeries([{ forecast_date: '', series: [{ series_id: 5, var_id: 67, estacion_id: 34, pronosticos: [] }, { series_id: 6, var_id: 91, estacion_id: 34, pronosticos: [] }] }])]).toEqual([[5, 34]]);
     const out = parseRun(full as never, FORECAST_MODELS[0]!, T0, map);
     expect(out.get(34)!.points).toHaveLength(2);
     // Sin el mapa no se sabe de quién es la serie: nada (antes del arreglo era lo que pasaba en producción).
