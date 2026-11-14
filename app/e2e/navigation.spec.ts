@@ -358,6 +358,8 @@ test('Navegación: pronóstico del INA en el río (Rosario) con el máximo, cuá
   );
   // Rosario: alerta en 5,00 m. El pronóstico sube hasta 5,2 m en el cuarto día.
   await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', inaRunRoute(34, [4.4, 4.6, 4.9, 5.2, 5.1, 4.8, 4.6, 4.5, 4.4]));
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/434/**', inaRunRoute(34, [4.6, 4.8, 5.0, 5.1, 4.9, 4.7, 4.5], { main: 'main', lo: 'min', hi: 'max' }, 7 * 86_400_000));
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/499/**', inaRunRoute(34, [4.5, 4.7, 4.9, 5.0, 4.8, 4.6], { main: 'main', lo: 'p10', hi: 'p90' }, 14 * 86_400_000));
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -32.95, longitude: -60.65, accuracy: 20 });
   await start(page);
@@ -366,6 +368,16 @@ test('Navegación: pronóstico del INA en el río (Rosario) con el máximo, cuá
   await expect(row).toContainText('Pronóstico del INA: máximo 5,20 m', { timeout: 20_000 });
   await expect(row).toContainText(/Llegaría a nivel de alerta \(5,00 m\)/);
   await expect(page.getByTestId('rivers-card')).toContainText('Pronóstico del INA, informativo: no es una alerta oficial');
+  // Perspectivas de plazo largo: media semanal y estacional, cada una con su gráfico, y la aclaración de que no son un pronóstico de crecida.
+  const outlook = page.getByTestId('river-outlook-34');
+  await outlook.getByRole('button', { name: 'Ver perspectiva de semanas y meses' }).click();
+  await expect(page.getByTestId('river-outlook-34-weekly')).toContainText('Altura media semanal (próximas semanas)');
+  await expect(page.getByTestId('river-outlook-34-weekly')).toContainText(/Promedio semanal previsto: máximo 5,10 m/);
+  await expect(page.getByTestId('river-outlook-34-seasonal')).toContainText('Perspectiva estacional (SISSA)');
+  await expect(page.getByTestId('river-outlook-34-seasonal')).toContainText(/percentiles 10 a 90/);
+  await expect(page.getByTestId('outlook-chart-34-weekly-band')).toHaveCount(1);
+  await expect(page.getByTestId('outlook-chart-34-seasonal-band')).toHaveCount(1);
+  await expect(outlook).toContainText('No son un pronóstico de crecida ni una alerta');
   await expect(page.getByTestId('river-flow-34')).toContainText(/Caudal medio del \d+ \w+\.?: 8420 m³\/s · -120 m³\/s respecto del día anterior/);
   await row.getByRole('button', { name: 'Ver pronóstico' }).click();
   await expect(page.getByTestId('forecast-chart-34')).toBeVisible();

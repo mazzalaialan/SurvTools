@@ -49,7 +49,9 @@ export function ForecastChart({
   const first = new Date(t0);
   first.setHours(24, 0, 0, 0);
   for (let d = first.getTime(); d <= t1; d += DAY_MS) days.push(d);
-  const every = days.length > 8 ? 2 : 1;
+  // Hasta ~8 marcas en el eje: un pronóstico de días marca cada día; uno de semanas o meses, cada tantos días, con el mes.
+  const every = Math.max(1, Math.ceil(days.length / 8));
+  const long = (t1 - t0) / DAY_MS > 14;
   const fmt = (v: number) => v.toFixed(1);
   const marks: { v: number; cls: string }[] = [
     ...(levels.evac !== null && near.includes(levels.evac) ? [{ v: levels.evac, cls: 'fc-evac' }] : []),
@@ -71,7 +73,7 @@ export function ForecastChart({
           <g key={d}>
             <line x1={x(d)} x2={x(d)} y1={pad.t} y2={H - pad.b} className="tide-day" />
             <text x={x(d) + 3} y={H - 6} className="tide-axis">
-              {new Date(d).toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })}
+              {new Date(d).toLocaleDateString(locale, long ? { day: 'numeric', month: 'short' } : { weekday: 'short', day: 'numeric' })}
             </text>
           </g>
         ),

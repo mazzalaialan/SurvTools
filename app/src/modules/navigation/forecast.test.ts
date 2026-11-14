@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { FORECAST_MODELS, fetchForecasts, parseRun, stationsBySeries, summarize, type StationForecast } from './forecast';
+import { FORECAST_MODELS, fetchForecasts, fetchOutlooks, OUTLOOK_MODELS, parseRun, stationsBySeries, summarize, type StationForecast } from './forecast';
 import type { RiversData } from './rivers';
 
 const rivers = JSON.parse(readFileSync(new URL('../../../public/data/rivers-AR.json', import.meta.url), 'utf8')) as RiversData;
@@ -121,6 +121,35 @@ describe('pronóstico de ríos del INA', () => {
     expect(parseRun(raw, m, T0).get(41)!.points[1]).toEqual({ t: T0 + DAY, main: 2, lo: 1.5, hi: 2.6 });
     const names = rivers.stations.filter((s) => s.forecast?.includes(489)).map((s) => s.name);
     expect(names).toEqual(expect.arrayContaining(['Campana', 'Paraná Las Palmas - Zárate']));
+  });
+
+  it('las perspectivas semanal (min/max) y estacional (p10/p90) se leen con su banda y salen en ese orden', async () => {
+    const WEEK = 7 * DAY;
+    const asked: string[] = [];
+    const fake = (async (url: string) => {
+      asked.push(url);
+      const cal = /calibrados\/(\d+)\//.exec(url)![1];
+      const names = cal === '434' ? ['main', 'min', 'max'] : ['main', 'p10', 'p90'];
+      const values = [4.2, 4.6, 5.1];
+      const series =
+        url.endsWith('true')
+          ? [{ series_id: Number(cal) * 10, pronosticos: values.flatMap((v, i) => [{ timestart: iso(T0 + i * WEEK), valor: v, qualifier: names[0]! }, { timestart: iso(T0 + i * WEEK), valor: v - 0.5, qualifier: names[1]! }, { timestart: iso(T0 + i * WEEK), valor: v + 0.7, qualifier: names[2]! }]) }]
+          : [{ series_id: Number(cal) * 10, var_id: 2, estacion_id: 34, pronosticos: [] }];
+      return new Response(JSON.stringify([{ forecast_date: iso(T0), series }]));
+    }) as unknown as typeof fetch;
+    const rosario = rivers.stations.find((x) => x.name === 'Rosario')!;
+    expect(rosario.outlook).toEqual([434, 499]);
+    const out = await fetchOutlooks([rosario], fake);
+    const list = out.get(34)!;
+    expect(list.map((f) => f.cal)).toEqual([434, 499]); // semanal primero
+    expect(list[0]!.points[1]).toEqual({ t: T0 + WEEK, main: 4.6, lo: 4.1, hi: 5.3 });
+    expect(new Set(asked.map((u) => /calibrados\/(\d+)\//.exec(u)![1]))).toEqual(new Set(['434', '499']));
+    expect(OUTLOOK_MODELS.map((m) => m.kind)).toEqual(['weekly', 'seasonal']);
+    // Una estación sin perspectivas no pide nada.
+    const none = rivers.stations.find((x) => !x.outlook)!;
+    asked.length = 0;
+    expect((await fetchOutlooks([none], fake)).size).toBe(0);
+    expect(asked).toEqual([]);
   });
 
   it('el catálogo marca las estaciones con pronóstico con modelos que la app conoce', () => {

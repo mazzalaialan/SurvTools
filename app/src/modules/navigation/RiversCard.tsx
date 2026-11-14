@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PickedPlace } from '@/modules/waypoints/PlacePicker';
 import { ForecastChart } from './ForecastChart';
-import { fetchForecasts, loadSavedForecasts, saveForecasts, summarize, type StationForecast } from './forecast';
+import { fetchForecasts, fetchOutlooks, loadSavedForecasts, loadSavedOutlooks, OUTLOOK_MODELS, saveForecasts, saveOutlooks, summarize, type StationForecast } from './forecast';
 import {
   FLOW_STORE,
   OLD_FLOW_DAYS,
@@ -29,6 +29,8 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
   const [forecasts, setForecasts] = useState<Map<number, StationForecast>>(() => loadSavedForecasts());
   const [flows, setFlows] = useState<Map<number, RiverReading>>(() => loadSavedReadings(FLOW_STORE));
   const [openForecast, setOpenForecast] = useState<number | null>(null);
+  const [outlooks, setOutlooks] = useState<Map<number, StationForecast[]>>(() => loadSavedOutlooks());
+  const [openOutlook, setOpenOutlook] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 60_000);
@@ -72,6 +74,21 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
       if (cancelled || !fresh.size) return;
       saveForecasts(fresh);
       setForecasts((prev) => new Map([...prev, ...fresh]));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Perspectivas de plazo largo (media semanal y estacional) de las estaciones cercanas que las tienen.
+  useEffect(() => {
+    const withO = near.map((n) => n.station).filter((s) => s.outlook?.length);
+    if (!withO.length || !navigator.onLine) return;
+    let cancelled = false;
+    void fetchOutlooks(withO).then((fresh) => {
+      if (cancelled || !fresh.size) return;
+      saveOutlooks(fresh);
+      setOutlooks((prev) => new Map([...prev, ...fresh]));
     });
     return () => {
       cancelled = true;
@@ -134,6 +151,7 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
           const state = r ? riverState(r.level, s) : null;
           const fc = s.forecast?.length ? forecasts.get(s.id) : undefined;
           const sum = fc ? summarize(fc, s, now) : null;
+          const outlook = s.outlook?.length ? outlooks.get(s.id) : undefined;
           const flow = s.flow !== undefined ? flows.get(s.flow) : undefined;
           const flowOld = flow ? (now - Date.parse(flow.at)) / 86_400_000 > OLD_FLOW_DAYS : false;
           const threshold = (kind: 'evac' | 'alert' | 'low') => nf.format(s[kind] ?? 0);
@@ -192,6 +210,35 @@ export function RiversCard({ place }: { place: PickedPlace | null }) {
                     ) : (
                       <span className="hint">{t('navigation.rivers.forecast.loading')}</span>
                     )}
+                  </span>
+                ) : null}
+                {outlook?.length ? (
+                  <span className="river-forecast" data-testid={`river-outlook-${s.id}`}>
+                    <button type="button" className="btn" aria-expanded={openOutlook === s.id} onClick={() => setOpenOutlook(openOutlook === s.id ? null : s.id)}>
+                      {t(openOutlook === s.id ? 'navigation.rivers.outlook.hide' : 'navigation.rivers.outlook.show')}
+                    </button>
+                    {openOutlook === s.id &&
+                      outlook.map((f) => {
+                        const kind = OUTLOOK_MODELS.find((m) => m.cal === f.cal)?.kind ?? 'weekly';
+                        const sum = summarize(f, s, now);
+                        const ahead = f.points.filter((p) => p.t >= now - 3_600_000 * 24 * 7);
+                        const lo = Math.min(...ahead.map((p) => p.lo ?? p.main));
+                        const hi = Math.max(...ahead.map((p) => p.hi ?? p.main));
+                        const day = (ms: number) => new Date(ms).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' });
+                        return (
+                          <span key={f.cal} className="river-forecast" data-testid={`river-outlook-${s.id}-${kind}`}>
+                            <strong>{t(`navigation.rivers.outlook.${kind}Title`)}</strong>
+                            {sum && (
+                              <span className="hint">
+                                {t(`navigation.rivers.outlook.${kind}Summary`, { max: nf.format(sum.peak.v), maxAt: day(sum.peak.t), min: nf.format(sum.trough.v), minAt: day(sum.trough.t), lo: nf.format(lo), hi: nf.format(hi), until: day(sum.until) })}
+                              </span>
+                            )}
+                            <ForecastChart forecast={f} levels={s} now={now} label={t('navigation.rivers.outlook.chartLabel', { name: s.name })} locale={i18n.language} testId={`outlook-chart-${s.id}-${kind}`} />
+                            <span className="hint">{t('navigation.rivers.forecast.issued', { date: whenFmt(f.issued) })}</span>
+                          </span>
+                        );
+                      })}
+                    {openOutlook === s.id && <span className="hint">{t('navigation.rivers.outlook.note')}</span>}
                   </span>
                 ) : null}
               </span>

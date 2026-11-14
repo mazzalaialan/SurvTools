@@ -23,6 +23,8 @@ export interface RiverStation {
   forecast?: number[];
   /** Serie del caudal medio diario del INA (m³/s), si la estación la tiene al día; es el valor del día anterior. */
   flow?: number;
+  /** Perspectivas de plazo largo del INA (ver `OUTLOOK_MODELS` en forecast.ts): media semanal y estacional. */
+  outlook?: number[];
 }
 
 export interface RiversData {

@@ -27,6 +27,15 @@ export const FORECAST_MODELS: ForecastModel[] = [
   { cal: 432, name: 'regre_sfer', main: 'main', lo: 'p05', hi: 'p95' },
 ];
 
+/**
+ * Perspectivas de plazo largo (no son pronósticos de crecida): la altura media semanal hasta fin de año, con mínima y máxima, y la perspectiva
+ * estacional del SISSA (Sistema de Información sobre Sequías para el Sur de Sudamérica) hasta febrero, con percentiles 10 y 90.
+ */
+export const OUTLOOK_MODELS: (ForecastModel & { kind: 'weekly' | 'seasonal' })[] = [
+  { cal: 434, name: 'altura_media_semanal', main: 'main', lo: 'min', hi: 'max', kind: 'weekly' },
+  { cal: 499, name: 'parana_estacional_sissa', main: 'main', lo: 'p10', hi: 'p90', kind: 'seasonal' },
+];
+
 export interface ForecastPoint {
   /** Instante (ms). */
   t: number;
@@ -144,6 +153,27 @@ export async function fetchForecasts(stations: RiverStation[], fetcher: typeof f
   return out;
 }
 
+/** Las perspectivas semanal y estacional de estas estaciones, en el orden de `OUTLOOK_MODELS` (la semanal primero). */
+export async function fetchOutlooks(stations: RiverStation[], fetcher: typeof fetch = fetch): Promise<Map<number, StationForecast[]>> {
+  const cals = new Set(stations.flatMap((s) => s.outlook ?? []));
+  const runs = new Map<number, Map<number, StationForecast>>();
+  await Promise.all(
+    OUTLOOK_MODELS.filter((m) => cals.has(m.cal)).map(async (m) => {
+      try {
+        runs.set(m.cal, await fetchRun(m, fetcher));
+      } catch {
+        /* una perspectiva que falla no tira a la otra */
+      }
+    }),
+  );
+  const out = new Map<number, StationForecast[]>();
+  for (const s of stations) {
+    const list = OUTLOOK_MODELS.filter((m) => s.outlook?.includes(m.cal)).flatMap((m) => runs.get(m.cal)?.get(s.id) ?? []);
+    if (list.length) out.set(s.id, list);
+  }
+  return out;
+}
+
 export interface ForecastSummary {
   /** Mayor y menor altura principal prevista (hacia adelante), con su instante. */
   peak: { t: number; v: number };
@@ -175,6 +205,25 @@ export function summarize(f: StationForecast, s: Pick<RiverStation, 'alert' | 'e
   const byTime = (a: { t: number; kind: keyof typeof rank }, b: { t: number; kind: keyof typeof rank }) => a.t - b.t || rank[a.kind] - rank[b.kind];
   first = candidates.filter((c) => !c.band).sort(byTime)[0] ?? candidates.sort(byTime)[0] ?? null;
   return { peak: { t: peak.t, v: peak.main }, trough: { t: trough.t, v: trough.main }, first, until: ahead[ahead.length - 1]!.t };
+}
+
+const OUTLOOK_STORE = 'vikarg.rivers.outlook';
+export function loadSavedOutlooks(): Map<number, StationForecast[]> {
+  try {
+    const raw = localStorage.getItem(OUTLOOK_STORE);
+    return new Map(raw ? (JSON.parse(raw) as [number, StationForecast[]][]) : []);
+  } catch {
+    return new Map();
+  }
+}
+export function saveOutlooks(fresh: Map<number, StationForecast[]>): void {
+  try {
+    const merged = loadSavedOutlooks();
+    for (const [id, f] of fresh) merged.set(id, f);
+    localStorage.setItem(OUTLOOK_STORE, JSON.stringify([...merged]));
+  } catch {
+    /* sin almacenamiento: se ve igual con conexión */
+  }
 }
 
 const STORE = 'vikarg.rivers.forecast';

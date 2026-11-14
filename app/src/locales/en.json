@@ -1509,6 +1509,16 @@
       "flow": "Mean flow on {{date}}: {{q}} m³/s",
       "flowChange": "{{d}} m³/s from the day before",
       "flowOld": "old data",
+      "outlook": {
+        "show": "Show outlook for weeks and months",
+        "hide": "Hide outlook",
+        "weeklyTitle": "Weekly mean height (coming weeks)",
+        "seasonalTitle": "Seasonal outlook (SISSA)",
+        "weeklySummary": "Forecast weekly mean: high {{max}} m (week of {{maxAt}}), low {{min}} m (week of {{minAt}}); range during the week from {{lo}} to {{hi}} m.",
+        "seasonalSummary": "Most likely scenario between {{min}} and {{max}} m until {{until}}; the band (10th to 90th percentiles) runs from {{lo}} to {{hi}} m.",
+        "chartLabel": "Height outlook chart for {{name}}",
+        "note": "These are long-range outlooks from INA and SISSA, informational: weekly means and seasonal scenarios with a lot of uncertainty. They are not a flood forecast or an alert. Heights are on the gauge zero of the station."
+      },
       "forecast": {
         "show": "Show forecast",
         "hide": "Hide forecast",

@@ -1509,6 +1509,16 @@
       "flow": "Caudal medio del {{date}}: {{q}} m³/s",
       "flowChange": "{{d}} m³/s respecto del día anterior",
       "flowOld": "dato viejo",
+      "outlook": {
+        "show": "Ver perspectiva de semanas y meses",
+        "hide": "Ocultar perspectiva",
+        "weeklyTitle": "Altura media semanal (próximas semanas)",
+        "seasonalTitle": "Perspectiva estacional (SISSA)",
+        "weeklySummary": "Promedio semanal previsto: máximo {{max}} m (semana del {{maxAt}}), mínimo {{min}} m (semana del {{minAt}}); rango de la semana entre {{lo}} y {{hi}} m.",
+        "seasonalSummary": "Escenario más probable entre {{min}} y {{max}} m hasta el {{until}}; la banda (percentiles 10 a 90) va de {{lo}} a {{hi}} m.",
+        "chartLabel": "Gráfico de la perspectiva de altura de {{name}}",
+        "note": "Son perspectivas de plazo largo del INA y del SISSA, informativas: promedios semanales y escenarios estacionales con mucha incertidumbre. No son un pronóstico de crecida ni una alerta. Las alturas son sobre el cero de la escala de la estación."
+      },
       "forecast": {
         "show": "Ver pronóstico",
         "hide": "Ocultar pronóstico",
