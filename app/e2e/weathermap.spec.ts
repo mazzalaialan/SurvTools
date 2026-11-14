@@ -329,14 +329,21 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
   await expect(page.getByRole('heading', { name: 'Navegación' })).toBeVisible();
 });
 
-test('mapa de tiempo: capa de oleaje (grilla de puntos de mar, ficha con el período y la dirección) y mareógrafo del IOC en la ficha de mareas', async ({ page, context }, testInfo) => {
+test('mapa de tiempo: capa de oleaje (franja pegada a la costa, ficha con el período y la dirección) y mareógrafo del IOC en la ficha de mareas', async ({ page, context }, testInfo) => {
   await mockSources(page);
-  // Open-Meteo Marine simulado: tres puntos de la grilla; uno de ellos sobre tierra (sin dato).
+  // Open-Meteo Marine simulado: una celda por coordenada pedida; el punto frente a Península Valdés con 2,3 m, uno del Pacífico sin dato (sobre tierra) y el resto con 1 m.
   let marineUrl = '';
   await context.route('https://marine-api.open-meteo.com/**', (route) => {
     marineUrl = route.request().url();
-    const cell = (latitude: number, longitude: number, h: number | null) => ({ latitude, longitude, current: { time: Math.floor(Date.now() / 1000), wave_height: h, wave_period: 9, wave_direction: 200, swell_wave_height: 1.4, swell_wave_period: 12 } });
-    return route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [cell(-38.8, -57.0, 2.3), cell(-23.7, -71.0, 0.8), cell(-34.5, -72.4, null)] });
+    const q = new URL(marineUrl).searchParams;
+    const lats = q.get('latitude')!.split(',').map(Number);
+    const lons = q.get('longitude')!.split(',').map(Number);
+    const cells = lats.map((latitude, i) => {
+      const longitude = lons[i]!;
+      const h = Math.abs(latitude + 42.5) < 0.05 && Math.abs(longitude + 62) < 0.05 ? 2.3 : Math.abs(latitude + 34.5) < 0.05 ? null : 1.0;
+      return { latitude, longitude, current: { time: Math.floor(Date.now() / 1000), wave_height: h, wave_period: 9, wave_direction: 200, swell_wave_height: 1.4, swell_wave_period: 12 } };
+    });
+    return route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: cells });
   });
   // Mareógrafo de Antofagasta (servidor propio, simulado): una marea de 12,4 h.
   await context.route('https://valhallarust2.ddns.net/api/ioc/*', (route) => {
@@ -361,13 +368,16 @@ test('mapa de tiempo: capa de oleaje (grilla de puntos de mar, ficha con el per�
   expect(marineUrl).toContain('/v1/marine?latitude=');
   expect(new URL(marineUrl).searchParams.get('latitude')!.split(',').length).toBeGreaterThanOrEqual(40);
 
-  // Tocar un punto de mar: la altura, el estado del mar, el período, la dirección y el oleaje de fondo; es modelo, no medición.
-  await tap(page, -57.0, -38.8);
+  // Tocar la franja: la altura, el estado del mar, el período, la dirección y el oleaje de fondo; es modelo, no medición.
+  await tap(page, -62.0, -42.5);
   const card = page.getByTestId('map-feature');
   await expect(card).toContainText('Olas de 2,3 m');
   await expect(card).toContainText('Marejada · período 9 s · del sur');
   await expect(card).toContainText('Oleaje de fondo: 1,4 m, período 12 s');
   await expect(card).toContainText('pronóstico y no medición');
+  await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
+  await page.getByRole('button', { name: 'Lluvia estimada (satélite)' }).click();
+  await page.waitForTimeout(700);
   await page.getByTestId('weather-map').screenshot({ path: `e2e-results/screens/${testInfo.project.name}-17d-waves-layer.png` });
 
   // La estación de mareas de Antofagasta suma lo que mide el mareógrafo.

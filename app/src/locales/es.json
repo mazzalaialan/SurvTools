@@ -971,7 +971,7 @@
       "wind": "Viento por zona en {{unit}}; la flecha indica hacia dónde sopla",
       "rivers": "Ríos de América del Sur: líneas azules, más gruesas cuanto mayor es el río, y sus estaciones de nivel del INA (Argentina) y del SENAMHI (Bolivia). Círculo rojo, evacuación; naranja, alerta; amarillo, aguas bajas; azul, normal; gris, sin lectura o sin umbrales (Bolivia). Tocá una estación para ver el detalle. Líneas: Natural Earth y © OpenStreetMap contributors",
       "tides": "◆ Estaciones de mareas (cálculo en el teléfono, sin conexión). Tocá una para ver la marea de ahora y la próxima pleamar y bajamar",
-      "waves": "Oleaje frente a las costas (Open-Meteo Marine, modelo): círculos con la altura de las olas en metros y el color del estado del mar, de celeste (calma) a rojo (muy gruesa). Es un pronóstico del modelo, no una medición; no sirve para navegar cerca de la costa. Tocá un punto para ver el período, la dirección y el oleaje de fondo"
+      "waves": "Oleaje frente a las costas (Open-Meteo Marine, modelo): una franja pegada a la costa cuyo color marca el estado del mar, de celeste (calma) a rojo (muy gruesa). Es un pronóstico del modelo, no una medición; no sirve para navegar cerca de la costa. Tocá la franja para ver la altura de las olas, el período, la dirección y el oleaje de fondo"
     },
     "severity": {"Extreme": "extrema", "Severe": "severa", "Moderate": "moderada", "Minor": "leve", "Unknown": "sin nivel"},
     "volcanoAlert": "Alerta técnica {{level}} ({{agency}}): tocá \"Más información\" para ver el último reporte",

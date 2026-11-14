@@ -971,7 +971,7 @@
       "wind": "Wind by area in {{unit}}; the arrow shows where it blows to",
       "rivers": "Rivers of South America: blue lines, thicker the bigger the river, and their level stations from INA (Argentina) and SENAMHI (Bolivia). Red circle, evacuation; orange, alert; yellow, low water; blue, normal; grey, no reading or no thresholds (Bolivia). Tap a station for details. Lines: Natural Earth and © OpenStreetMap contributors",
       "tides": "◆ Tide stations (computed on the phone, offline). Tap one for the current tide and the next high and low",
-      "waves": "Waves off the coasts (Open-Meteo Marine, model): circles with the wave height in meters and the sea-state color, from light blue (calm) to red (very rough). It is a model forecast, not a measurement; not for navigating near the coast. Tap a point for the period, direction and swell"
+      "waves": "Waves off the coasts (Open-Meteo Marine, model): a band along the coast whose color shows the sea state, from light blue (calm) to red (very rough). It is a model forecast, not a measurement; not for navigating near the coast. Tap the band for the wave height, period, direction and swell"
     },
     "severity": {"Extreme": "extreme", "Severe": "severe", "Moderate": "moderate", "Minor": "minor", "Unknown": "no level"},
     "volcanoAlert": "{{level}} technical alert ({{agency}}): tap \"More information\" for the latest report",

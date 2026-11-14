@@ -6,7 +6,7 @@ import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels'
 import type { GeoData, Volcano } from './geo';
 import type { NavState, RiverPoint, TidePoint } from './navLayers';
 import { seaState, type SeaState } from '@/modules/navigation/waves';
-import type { WaveSpot } from './waveGrid';
+import { waveSegments, type WaveSpot } from './waveGrid';
 import { fitBounds, homeBounds, pan, project, unproject, zoomAt, type Size, type View } from './projection';
 import { readyImage } from './images';
 import { alertCovers, type Flash, type Hazard, type HazardLevel, type OfficialAlert, type OfficialSeverity, type VolcanoAlert, volcanoAlertAt, type Quake, type ZoneWeather } from './sources';
@@ -76,6 +76,8 @@ interface Props {
 }
 
 const HIT_PX = 18;
+/** Qué tan cerca de la franja de oleaje cuenta un toque. */
+const WAVE_HIT_PX = 14;
 const TAP_SLOP_PX = 6;
 
 function cssVars(): Record<string, string> {
@@ -303,8 +305,22 @@ function hitTest(x: number, y: number, size: Size, view: View, p: Props): MapFea
   p.volcanoes?.forEach((v) => consider(v.lon, v.lat, { kind: 'volcano', item: v }));
   p.riverPoints?.forEach((r) => consider(r.lon, r.lat, { kind: 'river', item: r }, -4));
   p.tidePoints?.forEach((t) => consider(t.lon, t.lat, { kind: 'tide', item: t }, -4));
-  p.waves?.forEach((w) => consider(w.lon, w.lat, { kind: 'wave', item: w }, -6));
   p.zones?.forEach((z) => consider(z.lon, z.lat, { kind: 'zone', item: z }));
+  // Oleaje: la franja pegada a la costa; se toca el tramo y vale el punto más cercano al toque.
+  // (solo si no hay otro punto cerca: la franja pasa pegada a la costa, donde están las estaciones de mareas y los waypoints)
+  if (!best && p.waves?.length) {
+    for (const seg of waveSegments(p.waves)) {
+      const a = project(seg.a.lon, seg.a.lat, view, size);
+      const b = seg.b ? project(seg.b.lon, seg.b.lat, view, size) : a;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const len2 = dx * dx + dy * dy;
+      const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((x - a.x) * dx + (y - a.y) * dy) / len2));
+      const d = Math.hypot(a.x + t * dx - x, a.y + t * dy - y);
+      const spot = seg.b && t > 0.5 ? seg.b : seg.a;
+      if (d <= WAVE_HIT_PX && (!best || d < (best as { d: number }).d)) best = { d, f: { kind: 'wave', item: spot } };
+    }
+  }
   const point = (best as { f: MapFeature } | null)?.f ?? null;
   if (point || !p.official?.length) return point;
   // Sin nada puntual cerca: la alerta oficial (la más grave) cuya zona incluye el toque.
@@ -461,27 +477,35 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
     ctx.stroke();
   }
 
-  // Oleaje: círculo del color del estado del mar (Douglas) con la altura de las olas en metros; debajo de los demás puntos.
+  // Oleaje: una franja pegada a la costa (de norte a sur), del color del estado del mar (Douglas) en cada tramo, de celeste (calma) a rojo.
+  // Cada tramo une dos puntos vecinos con un degradado entre sus colores; un punto sin vecinos con dato queda como un tope redondo.
   const SEA_COLOR: Record<SeaState, string> = { calm: c.s1!, smooth: c.s1!, slight: c.s2!, moderate: c.s3!, rough: c.s4!, veryRough: c.s5!, high: c.s6!, veryHigh: c.s6!, phenomenal: c.s6! };
   if (p.waves?.length) {
-    ctx.font = 'bold 10px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (const w of p.waves) {
-      const s = proj(w.lon, w.lat);
-      if (s.x < -20 || s.y < -20 || s.x > size.width + 20 || s.y > size.height + 20) continue;
-      ctx.fillStyle = SEA_COLOR[seaState(w.height)];
-      ctx.strokeStyle = c.bg!;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = '#111';
-      ctx.fillText(w.height.toFixed(1), s.x, s.y + 0.5);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const segs = waveSegments(p.waves);
+    // Primero el borde oscuro de todos los tramos (así los colores no se pisan entre sí) y después el color.
+    for (const pass of ['edge', 'color'] as const) {
+      for (const seg of segs) {
+        const a = proj(seg.a.lon, seg.a.lat);
+        const b = seg.b ? proj(seg.b.lon, seg.b.lat) : { x: a.x + 0.01, y: a.y };
+        if (Math.max(a.x, b.x) < -20 || Math.min(a.x, b.x) > size.width + 20 || Math.max(a.y, b.y) < -20 || Math.min(a.y, b.y) > size.height + 20) continue;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        if (pass === 'edge') {
+          ctx.strokeStyle = c.bg!;
+          ctx.lineWidth = 10;
+        } else {
+          const g = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+          g.addColorStop(0, SEA_COLOR[seaState(seg.a.height)]);
+          g.addColorStop(1, SEA_COLOR[seaState((seg.b ?? seg.a).height)]);
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 6;
+        }
+        ctx.stroke();
+      }
     }
-    ctx.textAlign = 'start';
-    ctx.textBaseline = 'alphabetic';
   }
 
   // Niveles de ríos: círculo del color del estado (evacuación, alerta, aguas bajas, normal; gris sin dato). Estaciones de mareas: rombo.
