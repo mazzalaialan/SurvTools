@@ -51,9 +51,13 @@ interface RawPrediction {
   valor: number | null;
   qualifier: string;
 }
+/**
+ * Con `includeProno=true` el INA devuelve cada serie SIN `estacion_id` (solo `series_id`); con `includeProno=false` la devuelve sin datos
+ * pero con `estacion_id`. Por eso se piden las dos y se une por `series_id`.
+ */
 interface RawRun {
   forecast_date: string;
-  series: { estacion_id: number; pronosticos: RawPrediction[] }[];
+  series: { series_id?: number; estacion_id?: number; var_id?: number; pronosticos: RawPrediction[] }[];
 }
 
 const HOUR = 3_600_000;
@@ -62,13 +66,22 @@ const MIN_STEP_MS = 3 * HOUR - 60_000;
 /** Se descartan los días de pasado de la simulación: acá importa el futuro (y un día de contexto). */
 const PAST_MS = 2 * 24 * HOUR;
 
-/** Del JSON de una corrida: el pronóstico de cada estación (por id de estación del INA). */
-export function parseRun(runs: RawRun[], model: ForecastModel, fetchedAt = Date.now()): Map<number, StationForecast> {
+/** De la corrida liviana (`includeProno=false`): qué estación del INA corresponde a cada serie de altura. */
+export function stationsBySeries(runs: RawRun[]): Map<number, number> {
+  const out = new Map<number, number>();
+  for (const s of runs[0]?.series ?? []) if (s.series_id !== undefined && s.estacion_id !== undefined && (s.var_id === undefined || s.var_id === 2)) out.set(s.series_id, s.estacion_id);
+  return out;
+}
+
+/** Del JSON de una corrida: el pronóstico de cada estación (por id de estación del INA, la de la serie o la que da `stations` por `series_id`). */
+export function parseRun(runs: RawRun[], model: ForecastModel, fetchedAt = Date.now(), stations?: Map<number, number>): Map<number, StationForecast> {
   const out = new Map<number, StationForecast>();
   const run = runs[0];
   if (!run) return out;
   const issued = Date.parse(run.forecast_date);
   for (const s of run.series) {
+    const station = s.estacion_id ?? (s.series_id !== undefined ? stations?.get(s.series_id) : undefined);
+    if (station === undefined) continue;
     const by = new Map<number, Partial<Record<'main' | 'lo' | 'hi', number>>>();
     for (const p of s.pronosticos) {
       if (p.valor === null || !Number.isFinite(p.valor)) continue;
@@ -87,7 +100,7 @@ export function parseRun(runs: RawRun[], model: ForecastModel, fetchedAt = Date.
       last = t;
       points.push({ t, main: v.main!, lo: v.lo ?? null, hi: v.hi ?? null });
     });
-    if (points.length >= 2) out.set(s.estacion_id, { stationId: s.estacion_id, cal: model.cal, issued: Number.isFinite(issued) ? issued : fetchedAt, fetchedAt, points });
+    if (points.length >= 2) out.set(station, { stationId: station, cal: model.cal, issued: Number.isFinite(issued) ? issued : fetchedAt, fetchedAt, points });
   }
   return out;
 }
@@ -95,9 +108,14 @@ export function parseRun(runs: RawRun[], model: ForecastModel, fetchedAt = Date.
 const BASE = 'https://alerta.ina.gob.ar/a5/sim/calibrados';
 
 export async function fetchRun(model: ForecastModel, fetcher: typeof fetch = fetch): Promise<Map<number, StationForecast>> {
-  const res = await fetcher(`${BASE}/${model.cal}/corridas?includeProno=true`, { signal: AbortSignal.timeout(60_000) });
-  if (!res.ok) throw new Error(`INA ${res.status}`);
-  return parseRun((await res.json()) as RawRun[], model);
+  const get = async (prono: boolean) => {
+    const res = await fetcher(`${BASE}/${model.cal}/corridas?includeProno=${prono}`, { signal: AbortSignal.timeout(60_000) });
+    if (!res.ok) throw new Error(`INA ${res.status}`);
+    return (await res.json()) as RawRun[];
+  };
+  // La liviana dice de qué estación es cada serie; la completa trae los datos (sin estación).
+  const [meta, full] = await Promise.all([get(false), get(true)]);
+  return parseRun(full, model, Date.now(), stationsBySeries(meta));
 }
 
 /** Pide los modelos que hacen falta para estas estaciones y devuelve el mejor pronóstico de cada una. */

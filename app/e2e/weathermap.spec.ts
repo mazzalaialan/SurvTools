@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { inaRunRoute } from './fixtures/inaForecast';
 import { expect, test, type Page } from '@playwright/test';
 
 const PASSWORD = 'prueba-segura-123';
@@ -276,15 +277,7 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
     route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [{ series_id: 85, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 3.5 }] }),
   );
   // Pronóstico del INA de Rosario (alerta en 5,00 m): sube hasta 5,2 m al cuarto día.
-  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', (route) => {
-    const day = 86_400_000;
-    const t0 = Math.floor(Date.now() / day) * day;
-    const values = [4.4, 4.6, 4.9, 5.2, 5.1, 4.8];
-    return route.fulfill({
-      headers: { 'access-control-allow-origin': '*' },
-      json: [{ id: 1, forecast_date: new Date(t0).toISOString(), series: [{ estacion_id: 34, pronosticos: values.flatMap((v, i) => ['medio', 'inferior', 'superior'].map((q) => ({ timestart: new Date(t0 + i * day).toISOString(), valor: q === 'medio' ? v : q === 'inferior' ? v - 0.3 : v + 0.4, qualifier: q }))) }] }],
-    });
-  });
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', inaRunRoute(34, [4.4, 4.6, 4.9, 5.2, 5.1, 4.8]));
   await setup(page);
   await page.goto('/#/weather/map');
   await expect(page.getByTestId('weather-map')).toBeVisible();

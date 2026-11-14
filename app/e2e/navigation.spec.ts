@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
+import { inaRunRoute } from './fixtures/inaForecast';
 
 const PASSWORD = 'prueba-segura-123';
 
@@ -342,27 +343,6 @@ test('Navegación: sin mareógrafo medido cerca (Puerto Madryn sí, Buenos Aires
   await expect(page.getByTestId('tide-measured-line')).toHaveCount(0);
 });
 
-/** Una corrida del INA como la de las tablas de pronóstico: una estación, diaria, con banda inferior y superior. */
-function inaRun(estacion: number, values: number[], names = { main: 'medio', lo: 'inferior', hi: 'superior' }, stepMs = 86_400_000) {
-  const t0 = Math.floor(Date.now() / stepMs) * stepMs;
-  return [
-    {
-      id: 1,
-      forecast_date: new Date(t0).toISOString(),
-      series: [
-        {
-          estacion_id: estacion,
-          pronosticos: values.flatMap((v, i) => [
-            { timestart: new Date(t0 + i * stepMs).toISOString(), valor: v, qualifier: names.main },
-            { timestart: new Date(t0 + i * stepMs).toISOString(), valor: v - 0.3, qualifier: names.lo },
-            { timestart: new Date(t0 + i * stepMs).toISOString(), valor: v + 0.4, qualifier: names.hi },
-          ]),
-        },
-      ],
-    },
-  ];
-}
-
 test('Navegación: pronóstico del INA en el río (Rosario) con el máximo, cuándo llega a un nivel y el gráfico con su banda, también sin conexión', async ({ page, context }, testInfo) => {
   await mockOpenMeteo(page);
   await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) =>
@@ -377,9 +357,7 @@ test('Navegación: pronóstico del INA en el río (Rosario) con el máximo, cuá
     }),
   );
   // Rosario: alerta en 5,00 m. El pronóstico sube hasta 5,2 m en el cuarto día.
-  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', (route) =>
-    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: inaRun(34, [4.4, 4.6, 4.9, 5.2, 5.1, 4.8, 4.6, 4.5, 4.4]) }),
-  );
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', inaRunRoute(34, [4.4, 4.6, 4.9, 5.2, 5.1, 4.8, 4.6, 4.5, 4.4]));
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -32.95, longitude: -60.65, accuracy: 20 });
   await start(page);
@@ -405,9 +383,7 @@ test('Navegación: en el Río de la Plata el pronóstico del INA para San Fernan
   await mockOpenMeteo(page);
   await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [] }));
   // Modelo horario de San Fernando (aparece desde ahora): sube hasta 2,6 m en dos días.
-  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/432/**', (route) =>
-    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: inaRun(52, [1.2, 1.6, 2.0, 2.4, 2.6, 2.3, 1.9, 1.5], { main: 'main', lo: 'p05', hi: 'p95' }, 3_600_000 * 6) }),
-  );
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/432/**', inaRunRoute(52, [1.2, 1.6, 2.0, 2.4, 2.6, 2.3, 1.9, 1.5], { main: 'main', lo: 'p05', hi: 'p95' }, 3_600_000 * 6));
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 20 });
   await start(page);
@@ -436,9 +412,7 @@ test('Waypoint: en su detalle se ve el río más cercano con su nivel, estado y 
   await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) =>
     route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [{ series_id: 34, timestart: new Date(Date.now() - 3_600_000).toISOString(), valor: 5.1 }, { series_id: 26631, timestart: new Date(Date.now() - 86_400_000).toISOString(), valor: 8420 }] }),
   );
-  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', (route) =>
-    route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: inaRun(34, [5.1, 5.15, 5.2, 5.1, 4.9, 4.7]) }),
-  );
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', inaRunRoute(34, [5.1, 5.15, 5.2, 5.1, 4.9, 4.7]));
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 20 });
   await start(page);

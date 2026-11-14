@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { openDb } from '../src/db.ts';
 import type { PushPayload, PushSender, PushSubscriptionJson } from '../src/push.ts';
-import { crossings, fetchForecasts, parseRun, FORECAST_MODELS, type StationForecast } from '../src/rivers/forecast.ts';
+import { crossings, fetchForecasts, parseRun, stationsBySeries, FORECAST_MODELS, type StationForecast } from '../src/rivers/forecast.ts';
 import { runRiverForecastWatch, type RiverLevel, type RiverStation } from '../src/rivers/watch.ts';
 
 class FakePush implements PushSender {
@@ -44,14 +44,23 @@ describe('pronóstico del INA para avisar', () => {
     assert.equal(parseRun([], m).size, 0);
   });
 
-  it('pide solo los modelos que necesitan las estaciones vigiladas', async () => {
+  it('la API real: con includeProno=true las series no traen estacion_id; se une por series_id con la corrida liviana', async () => {
     const urls: string[] = [];
+    const t = (d: number) => new Date(now.getTime() + d * DAY).toISOString();
     const fake = (async (url: string) => {
       urls.push(url);
-      return new Response('[]');
+      const full = url.endsWith('true');
+      const series = full
+        ? [{ series_id: 1540, pronosticos: [0, 1].flatMap((i) => [{ timestart: t(i), valor: 5 + i, qualifier: 'medio' }, { timestart: t(i), valor: 4, qualifier: 'inferior' }]) }]
+        : [{ series_id: 1540, var_id: 2, estacion_id: 34, pronosticos: [] }, { series_id: 99, var_id: 4, estacion_id: 34, pronosticos: [] }];
+      return new Response(JSON.stringify([{ forecast_date: now.toISOString(), series }]));
     }) as unknown as typeof fetch;
-    await fetchForecasts([rosario], fake);
-    assert.deepEqual(urls, ['https://alerta.ina.gob.ar/a5/sim/calibrados/289/corridas?includeProno=true']);
+    const out = await fetchForecasts([rosario], fake);
+    assert.deepEqual(urls.sort(), ['https://alerta.ina.gob.ar/a5/sim/calibrados/289/corridas?includeProno=false', 'https://alerta.ina.gob.ar/a5/sim/calibrados/289/corridas?includeProno=true']);
+    assert.deepEqual(out.get(34)!.points.map((p) => p.value), [5, 6]);
+    // Sin el mapa no se sabe de quién es la serie.
+    assert.equal(parseRun([{ forecast_date: now.toISOString(), series: [{ series_id: 1540, pronosticos: [{ timestart: t(0), valor: 1, qualifier: 'medio' }, { timestart: t(1), valor: 2, qualifier: 'medio' }] }] }], FORECAST_MODELS[0]!).size, 0);
+    assert.deepEqual([...stationsBySeries([{ forecast_date: '', series: [{ series_id: 1, var_id: 2, estacion_id: 34, pronosticos: [] }, { series_id: 2, var_id: 4, estacion_id: 34, pronosticos: [] }] }])], [[1, 34]]);
   });
 
   it('los cruces: la crecida más grave y la bajante, solo hacia adelante y dentro de 7 días', () => {

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { FORECAST_MODELS, fetchForecasts, parseRun, summarize, type StationForecast } from './forecast';
+import { FORECAST_MODELS, fetchForecasts, parseRun, stationsBySeries, summarize, type StationForecast } from './forecast';
 import type { RiversData } from './rivers';
 
 const rivers = JSON.parse(readFileSync(new URL('../../../public/data/rivers-AR.json', import.meta.url), 'utf8')) as RiversData;
@@ -80,15 +80,32 @@ describe('pronóstico de ríos del INA', () => {
     expect(s.first).toBeNull();
   });
 
-  it('pide solo los modelos que necesitan las estaciones y elige el mejor disponible', async () => {
+  it('la API real: con includeProno=true las series NO traen estacion_id; se une por series_id con la corrida liviana', async () => {
+    // Forma real (verificada contra alerta.ina.gob.ar el 2026-11-14): la liviana trae estacion_id y var_id sin datos; la completa trae los datos sin estación.
+    const meta = [{ forecast_date: iso(T0), series: [{ series_id: 1542, var_id: 2, estacion_id: 34, pronosticos: [] }, { series_id: 777, var_id: 4, estacion_id: 34, pronosticos: [] }, { series_id: 1540, var_id: 2, pronosticos: [] }] }];
+    const full = [{ forecast_date: iso(T0), series: [{ series_id: 1542, pronosticos: run([3, 3.5])[0]!.series[0]!.pronosticos.map((p) => p) }] }];
+    // run() trae estacion_id: quitarlo, como hace el INA.
+    full[0]!.series.forEach((x) => delete (x as { estacion_id?: number }).estacion_id);
+    const map = stationsBySeries(meta);
+    expect([...map]).toEqual([[1542, 34]]); // solo las de altura (var 2) y con estación
+    const out = parseRun(full as never, FORECAST_MODELS[0]!, T0, map);
+    expect(out.get(34)!.points).toHaveLength(2);
+    // Sin el mapa no se sabe de quién es la serie: nada (antes del arreglo era lo que pasaba en producción).
+    expect(parseRun(full as never, FORECAST_MODELS[0]!, T0).size).toBe(0);
+  });
+
+  it('pide solo los modelos que necesitan las estaciones (la liviana y la completa) y elige el mejor disponible', async () => {
     const urls: string[] = [];
     const fake = (async (url: string) => {
       urls.push(url);
-      return new Response(JSON.stringify(url.includes('/289/') ? run([3, 3.5]) : []));
+      if (!url.includes('/289/')) return new Response('[]');
+      const full = url.endsWith('true');
+      const series = run([3, 3.5])[0]!.series[0]!;
+      return new Response(JSON.stringify([{ forecast_date: iso(T0), series: [full ? { series_id: 1540, pronosticos: series.pronosticos } : { series_id: 1540, var_id: 2, estacion_id: 34, pronosticos: [] }] }]));
     }) as unknown as typeof fetch;
     const rosario = rivers.stations.find((s) => s.name === 'Rosario')!;
     const out = await fetchForecasts([rosario], fake);
-    expect(urls).toEqual(['https://alerta.ina.gob.ar/a5/sim/calibrados/289/corridas?includeProno=true']);
+    expect(urls.sort()).toEqual(['https://alerta.ina.gob.ar/a5/sim/calibrados/289/corridas?includeProno=false', 'https://alerta.ina.gob.ar/a5/sim/calibrados/289/corridas?includeProno=true']);
     expect(out.get(34)?.cal).toBe(289);
     const sinPron = rivers.stations.find((s) => !s.forecast)!;
     expect((await fetchForecasts([sinPron], fake)).size).toBe(0);
