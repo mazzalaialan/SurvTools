@@ -739,6 +739,12 @@ function FeatureCard({
       to = `/weather/navigation?lat=${st.lat.toFixed(5)}&lon=${st.lon.toFixed(5)}`;
       break;
     }
+    case 'fire': {
+      const f = feature.item;
+      title = t('weatherMap.fireTitle');
+      lines = [t('weatherMap.fireCount', { count: f.detections }), t('weatherMap.fireNote')];
+      break;
+    }
     case 'wave': {
       const w = feature.item;
       title = t('weatherMap.waveTitle', { h: n1.format(w.height) });

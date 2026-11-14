@@ -27,6 +27,13 @@ export interface MapWaypoint {
   lat: number;
 }
 
+/** Un grupo de focos de calor (anomalías térmicas del satélite): dónde y cuántas detecciones (estimadas). */
+export interface FireSpot {
+  lon: number;
+  lat: number;
+  detections: number;
+}
+
 export type MapFeature =
   | { kind: 'quake'; item: Quake }
   | { kind: 'hazard'; item: Hazard }
@@ -35,6 +42,7 @@ export type MapFeature =
   | { kind: 'river'; item: RiverPoint }
   | { kind: 'tide'; item: TidePoint }
   | { kind: 'wave'; item: WaveSpot }
+  | { kind: 'fire'; item: FireSpot }
   | { kind: 'zone'; item: ZoneWeather }
   | { kind: 'waypoint'; item: MapWaypoint };
 
@@ -110,16 +118,19 @@ const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", s
 
 /** Tamaño (px de la imagen) de la celda en la que se agrupan los focos de calor cercanos. */
 const FIRE_CELL_PX = 64;
-/** Píxeles rojos mínimos para marcar la celda (cada foco ocupa unos 20–25 px: ~4 focos juntos). Uno aislado queda solo como punto. */
+/** Píxeles rojos mínimos para marcar la celda con una llama (cada foco ocupa unos 20–25 px: ~4 focos juntos). Uno aislado queda solo como punto. */
 const FIRE_MIN_PX = 90;
-const fireCache = new WeakMap<HTMLImageElement, { x: number; y: number }[]>();
+/** Píxeles por foco (para estimar cuántas detecciones hay en un grupo) y mínimo para considerar que hay uno. */
+const FIRE_PX_EACH = 22;
+const FIRE_ANY_PX = 14;
+const fireCache = new WeakMap<HTMLImageElement, { x: number; y: number; n: number }[]>();
 
 /**
  * Los focos vienen como imagen (puntos rojos): se agrupan los píxeles por
  * celda y se devuelve el centro de cada grupo, en metros Mercator, para
  * dibujar una llama por grupo y no una por píxel.
  */
-function fireClusters(img: HTMLImageElement, bbox: Overlay['bbox']): { x: number; y: number }[] {
+function fireClusters(img: HTMLImageElement, bbox: Overlay['bbox']): { x: number; y: number; n: number }[] {
   const hit = fireCache.get(img);
   if (hit) return hit;
   const w = img.naturalWidth;
@@ -128,7 +139,7 @@ function fireClusters(img: HTMLImageElement, bbox: Overlay['bbox']): { x: number
   off.width = w;
   off.height = h;
   const octx = off.getContext('2d', { willReadFrequently: true });
-  let points: { x: number; y: number }[] = [];
+  let points: { x: number; y: number; n: number }[] = [];
   if (octx && w > 0 && h > 0) {
     octx.drawImage(img, 0, 0);
     try {
@@ -146,7 +157,8 @@ function fireClusters(img: HTMLImageElement, bbox: Overlay['bbox']): { x: number
           cells.set(key, cell);
         }
       }
-      points = [...cells.values()].filter((c) => c.n >= FIRE_MIN_PX).map((c) => ({
+      points = [...cells.values()].filter((c) => c.n >= FIRE_ANY_PX).map((c) => ({
+        n: c.n,
         x: bbox.minX + ((c.sx / c.n + 0.5) / w) * (bbox.maxX - bbox.minX),
         y: bbox.maxY - ((c.sy / c.n + 0.5) / h) * (bbox.maxY - bbox.minY),
       }));
@@ -305,6 +317,26 @@ function hitTest(x: number, y: number, size: Size, view: View, p: Props): MapFea
   p.volcanoes?.forEach((v) => consider(v.lon, v.lat, { kind: 'volcano', item: v }));
   p.riverPoints?.forEach((r) => consider(r.lon, r.lat, { kind: 'river', item: r }, -4));
   p.tidePoints?.forEach((t) => consider(t.lon, t.lat, { kind: 'tide', item: t }, -4));
+  // Focos de calor: se toca el grupo (la llama o el punto); vale la cantidad estimada de detecciones de las dos pasadas (ayer y hoy).
+  const R = 6_378_137;
+  const groups: { sx: number; sy: number; n: number; x: number; y: number }[] = [];
+  for (const o of p.overlays) {
+    const img = o.fire ? readyImage(o.url) : null;
+    if (!img) continue;
+    for (const g of fireClusters(img, o.bbox)) groups.push({ sx: size.width / 2 + (g.x - view.cx) * view.scale, sy: size.height / 2 - (g.y - view.cy) * view.scale, n: g.n, x: g.x, y: g.y });
+  }
+  let nearestFire: { d: number; g: (typeof groups)[number] } | null = null;
+  for (const g of groups) {
+    const d = Math.hypot(g.sx - x, g.sy - y);
+    if (d <= HIT_PX && (!nearestFire || d < nearestFire.d)) nearestFire = { d, g };
+  }
+  if (nearestFire && (!best || nearestFire.d < (best as { d: number }).d)) {
+    const near = groups.filter((g) => Math.hypot(g.sx - nearestFire!.g.sx, g.sy - nearestFire!.g.sy) <= 24);
+    const detections = Math.max(1, Math.round(near.reduce((n, g) => n + g.n, 0) / FIRE_PX_EACH));
+    const lon = ((nearestFire.g.x / R) * 180) / Math.PI;
+    const lat = ((2 * Math.atan(Math.exp(nearestFire.g.y / R)) - Math.PI / 2) * 180) / Math.PI;
+    best = { d: nearestFire.d, f: { kind: 'fire', item: { lon, lat, detections } } };
+  }
   p.zones?.forEach((z) => consider(z.lon, z.lat, { kind: 'zone', item: z }));
   // Oleaje: la franja pegada a la costa; se toca el tramo y vale el punto más cercano al toque.
   // (solo si no hay otro punto cerca: la franja pasa pegada a la costa, donde están las estaciones de mareas y los waypoints)
@@ -594,7 +626,7 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
     if (!img) continue;
     ctx.font = `14px ${EMOJI_FONT}`;
     ctx.textAlign = 'center';
-    for (const m of fireClusters(img, o.bbox)) {
+    for (const m of fireClusters(img, o.bbox).filter((g) => g.n >= FIRE_MIN_PX)) {
       const s = { x: size.width / 2 + (m.x - view.cx) * view.scale, y: size.height / 2 - (m.y - view.cy) * view.scale };
       if (free(s.x - 8, s.y - 18, 16, 16)) ctx.fillText('🔥', s.x, s.y - 4);
     }

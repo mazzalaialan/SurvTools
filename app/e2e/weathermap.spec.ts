@@ -392,3 +392,32 @@ test('mapa de tiempo: capa de oleaje (franja pegada a la costa, ficha con el per
   await expect(page.getByTestId('map-tide-gauge')).toContainText('Mareógrafo de Antofagasta:', { timeout: 15_000 });
   await expect(page.getByTestId('map-tide-gauge')).toContainText(/(sigue lo calculado|m por (encima|debajo) de lo calculado)/);
 });
+
+test('mapa de tiempo: focos de calor tocables, con la cantidad de detecciones y la aclaración de que no todo es incendio', async ({ page, context }) => {
+  await mockSources(page);
+  // Capa de focos de la NASA (VIIRS) simulada: transparente con un grupo de píxeles rojos (unas 13 detecciones por pasada).
+  const firePng = await sharp({ create: { width: 400, height: 300, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: { create: { width: 12, height: 12, channels: 4, background: { r: 255, g: 0, b: 0, alpha: 1 } } }, left: 140, top: 140 }])
+    .png()
+    .toBuffer();
+  await context.route(/gibs\.earthdata\.nasa\.gov.*VIIRS_NOAA20_Thermal_Anomalies/, (route) => route.fulfill({ body: firePng, contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  await setup(page);
+  await page.goto('/#/weather/map');
+  await expect(page.getByTestId('weather-map')).toBeVisible();
+  await page.getByRole('button', { name: 'Clima por zona' }).click();
+  await page.getByRole('button', { name: 'Alertas oficiales' }).click();
+  await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
+  await page.getByRole('button', { name: 'Focos de calor' }).click();
+  await expect(page.getByText(/Anomalías térmicas detectadas por satélite \(VIIRS, NASA\).*No son todas incendios/)).toBeVisible();
+  await page.waitForTimeout(1200);
+  // El grupo está en (146, 146) de una imagen de 400×300 que cubre todo el lienzo.
+  const map = page.getByTestId('weather-map');
+  await map.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const box = (await map.boundingBox())!;
+  await page.mouse.click(box.x + box.width * (146.5 / 400), box.y + box.height * (146.5 / 300));
+  const card = page.getByTestId('map-feature');
+  await expect(card).toContainText('Focos de calor');
+  await expect(card).toContainText(/Unas \d+ detecciones del satélite en esta zona/);
+  await expect(card).toContainText('No confirman un incendio forestal');
+  await expect(card).toContainText('baja confianza');
+});
