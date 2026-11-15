@@ -1,6 +1,33 @@
 # Pendientes de VikArg
 
-Plan acordado el 7 de noviembre de 2026, de lo más fácil a lo más complejo; estado al 8 de noviembre. Cada punto se hace con sus pruebas y su commit; se publica solo cuando se decide. Lo hecho desde la 0.43.0 está commiteado y todavía sin publicar.
+## ESTADO ACTUAL (2026-11-15, versión publicada 0.68.1, commit d843bcc, árbol limpio)
+
+**Lectura obligatoria para una sesión nueva.** Todo lo que está commiteado **ya está publicado** (0.66.0 a 0.68.1 en producción, GitHub Pages y release): las marcas «sin publicar» que siguen más abajo son **históricas** y ya no valen. No hay trabajo a medias ni cambios sin commitear.
+
+### Lo que se publicó en 0.66.0 → 0.68.1 (Navegación y alertas)
+Ríos, mareas, oleaje y pronósticos en `Meteorología → Navegación` y en capas del mapa de alertas y clima (ríos, mareas, oleaje, focos de calor): INA (alturas, caudales, pronóstico, perspectivas semanal y estacional, Delta), IOC (mareógrafos, clave en el `.env` de producción), Chile (Armada: zonas y bahías), Uruguay (INUMET, CARU, DINAGUA), Bolivia (SENAMHI: niveles, pronóstico de 14 días, Titicaca), focos de calor NASA FIRMS con confianza, aviso push anticipado de crecida, descarga incremental de paquetes por país, estación de río más cercana en la ficha del waypoint. Detalle en las secciones de abajo, `docs/FUENTES-DE-DATOS.md` y `docs/SERVIDOR.md`.
+
+### Hay que probar en un celular real (nada se vio en un teléfono)
+1. Pronóstico del INA en Rosario o Corrientes (el arreglo de la 0.68.0: la API real no traía `estacion_id`).
+2. Focos de calor: llama roja (alta confianza) y chispa (resto), grupos estables al mover el mapa, selector «solo alta confianza».
+3. Tarjeta «Ríos de Uruguay» cerca de la costa uruguaya; horas de DINAGUA supuestas en UTC-3 (sin confirmar).
+4. Aviso push anticipado de crecida (guardar un waypoint a menos de 5 km de una estación).
+5. Descarga incremental con paquetes viejos; coordenadas de las 49 bahías de Chile (aproximadas).
+
+### Sin hacer / ideas abiertas
+- Bolivia: planilla por estación (no se lee); estaciones de Uruguay en la capa «Ríos» del mapa; «altura de marea meteorológica» del INA (variable 36) para el estuario.
+- Texto en español en las releases de GitHub (el publicador no tiene `gh` ni token; se carga a mano).
+- **Correos de permiso sin enviar** (hay borradores): SHN, SHOA, DGA, DINAGUA (confirmación escrita), CARU, SOHMA, IOC comercial; confirmar con el INA los términos del pronóstico.
+- Prueba completa de la copia comercial (`VITE_COMMERCIAL=1`) nunca hecha; revisión de un abogado matriculado.
+- Otros: Overpass → Geofabrik, radar del SMN, grabación nativa en segundo plano (Capacitor), presupuesto EAAM, evaluar Headroom / MemPalace / OmniRoute; el resto del backlog está más abajo.
+
+### Para quien tome la posta
+- Leer `CLAUDE.md` y `docs/COLABORAR.md`. **No publicar sin orden explícita.** Producción corre desde `~/vikarg/deploy` (su `.env` tiene `DOMAIN` e `IOC_API_KEY`); se edita solo `~/PrepperApp`.
+- **Lección del 2026-11-14:** bajar la respuesta real de una API antes de escribir mocks y correr el módulo contra la API real (los mocks inventados ocultaron que el INA no traía `estacion_id`). Los e2e del INA usan `e2e/fixtures/inaForecast.ts`, con la forma real.
+- Tras cambiar `app/public/data/`, correr `npm run data-sizes` (regenera `data-sizes.json` e `index.json`; hay una prueba guarda).
+- Las fuentes que solo se pueden leer desde el servidor (CORS o HTTP sin TLS): CARU, DINAGUA, SENAMHI Bolivia, FIRMS, IOC.
+
+Plan acordado el 7 de noviembre de 2026, de lo más fácil a lo más complejo; estado al 8 de noviembre. Cada punto se hace con sus pruebas y su commit; se publica solo cuando se decide.
 
 ## Mapa: recorridos cargados vs. míos (HECHO el 2026-11-13, publicado en la 0.64.0)
 

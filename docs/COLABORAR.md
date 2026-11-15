@@ -33,7 +33,7 @@ VikArg se ofrece bajo GPL-3.0-or-later y también bajo una licencia comercial (d
 
 La máquina de desarrollo es también el servidor de producción (Ubuntu en una PC de casa), con **dos copias del repositorio**:
 - `~/PrepperApp`: la copia de desarrollo. Ahí se edita, se prueba, se commitea y se empuja a GitHub (remoto SSH `mazzalaialan/SurvTools`; la carpeta conserva el nombre viejo).
-- `~/vikarg`: la copia de despliegue. **No se edita.** Solo hace `git pull --ff-only` y `docker compose up -d --build` desde `~/vikarg/deploy`; su `.env` solo tiene `DOMAIN`. Producción siempre corre lo que hay en GitHub.
+- `~/vikarg`: la copia de despliegue. **No se edita.** Solo hace `git pull --ff-only` y `docker compose up -d --build` desde `~/vikarg/deploy`; su `.env` tiene `DOMAIN` e `IOC_API_KEY` (clave de la API de mareógrafos de la IOC; no se commitea; `docker-compose.yml` la pasa al servidor). Producción siempre corre lo que hay en GitHub.
 
 Particularidades:
 - **CPU sin AVX** (Celeron G4930, 2 núcleos, sin GPU): los binarios nativos de npm hechos para AVX se caen con «Illegal instruction» (pasó con Rollup). Por eso `app/package.json` reemplaza `rollup` por `@rollup/wasm-node` mediante `overrides`. Si una dependencia nativa falla acá, sospechar esto primero. El build de Docker (`node:26-alpine`) no se ve afectado.
