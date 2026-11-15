@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { inaRunRoute } from './fixtures/inaForecast';
+import { inaRunRoute, inaSurgeRoute } from './fixtures/inaForecast';
 
 const PASSWORD = 'prueba-segura-123';
 
@@ -426,11 +426,19 @@ test('Navegación: en el Río de la Plata el pronóstico del INA para San Fernan
   await context.route('https://alerta.ina.gob.ar/a5/obs/**', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [] }));
   // Modelo horario de San Fernando (aparece desde ahora): sube hasta 2,6 m en dos días.
   await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/432/**', inaRunRoute(52, [1.2, 1.6, 2.0, 2.4, 2.6, 2.3, 1.9, 1.5], { main: 'main', lo: 'p05', hi: 'p95' }, 3_600_000 * 6));
+  // Sobreelevación meteorológica (calibrado 308): sube hasta +0,40 m y baja a −0,25 m en los próximos días.
+  await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/308/**', inaSurgeRoute([-0.25, -0.1, 0.1, 0.3, 0.4, 0.3, 0.1, -0.1, -0.2, 0, 0.2, 0.1]));
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 20 });
   await start(page);
   await page.goto('/#/weather/navigation');
   await expect(page.getByTestId('tide-estuary')).toBeVisible({ timeout: 15_000 });
+  // La sobreelevación del INA: texto con la máxima y la mínima, y la marea calculada corregida con ella en el gráfico.
+  const surge = page.getByTestId('estuary-surge');
+  await expect(surge).toContainText('Sobreelevación por el viento y la presión (INA):', { timeout: 20_000 });
+  await expect(surge).toContainText('máxima +0,40 m');
+  await expect(surge).toContainText(/mínima [-−]0,20 m/); // la de hace una hora (−0,25) ya pasó
+  await expect(page.getByTestId('tide-surge-line')).toBeVisible();
   const box = page.getByTestId('estuary-forecast');
   await expect(box).toContainText('Pronóstico del INA para el estuario', { timeout: 20_000 });
   await expect(page.getByTestId('estuary-chart')).toBeVisible();

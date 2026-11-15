@@ -7,6 +7,7 @@ import { sourceEnabled } from './sources';
 import { ForecastChart } from './ForecastChart';
 import { fetchForecasts, loadSavedForecasts, saveForecasts, summarize, type StationForecast } from './forecast';
 import { loadRivers, type RiverStation } from './rivers';
+import { fetchSurge, loadSavedSurge, nearSurgePoints, saveSurge, surgeAt, surgeSummary, type SurgeForecast } from './surge';
 import { distanceMeters } from '@/core/geo/geo';
 import { isEstuary, loadTides, nearestStations, NEAR_KM, tideCurve, tideExtremes, tideLevelAt, type TidesData } from './tides';
 
@@ -14,14 +15,14 @@ const DAY_MS = 86_400_000;
 const DAYS = 3;
 
 /** Gráfico de la marea de los próximos días, con la línea de «ahora» y los días marcados. */
-function TideChart({ curve, now, label, locale, measured }: { curve: { time: Date; level: number }[]; now: Date; label: string; locale: string; measured?: { time: Date; level: number }[] }) {
+function TideChart({ curve, now, label, locale, measured, adjusted }: { curve: { time: Date; level: number }[]; now: Date; label: string; locale: string; measured?: { time: Date; level: number }[]; adjusted?: { time: Date; level: number }[] }) {
   const W = 600;
   const H = 170;
   const pad = { l: 38, r: 8, t: 10, b: 22 };
   const t0 = curve[0]!.time.getTime();
   const t1 = curve[curve.length - 1]!.time.getTime();
   const seen = measured?.filter((p) => p.time.getTime() >= t0 && p.time.getTime() <= t1) ?? [];
-  const levels = [...curve, ...seen].map((p) => p.level);
+  const levels = [...curve, ...seen, ...(adjusted ?? [])].map((p) => p.level);
   const lo = Math.floor(Math.min(...levels) * 2) / 2;
   const hi = Math.ceil(Math.max(...levels) * 2) / 2;
   const x = (ms: number) => pad.l + ((ms - t0) / (t1 - t0)) * (W - pad.l - pad.r);
@@ -44,6 +45,7 @@ function TideChart({ curve, now, label, locale, measured }: { curve: { time: Dat
       ))}
       <path d={area} className="tide-area" />
       <path d={path} className="tide-line" />
+      {adjusted && adjusted.length > 1 && <path d={adjusted.map((p, i) => `${i ? 'L' : 'M'}${x(p.time.getTime()).toFixed(1)} ${y(p.level).toFixed(1)}`).join('')} className="tide-surge" data-testid="tide-surge-line" />}
       {seen.length > 1 && <path d={seen.map((p, i) => `${i ? 'L' : 'M'}${x(p.time.getTime()).toFixed(1)} ${y(p.level).toFixed(1)}`).join('')} className="tide-measured" data-testid="tide-measured-line" />}
       {midnights.map((d) => (
         <g key={d.getTime()}>
@@ -109,6 +111,31 @@ function EstuaryForecast({ place, now }: { place: PickedPlace; now: Date }) {
   );
 }
 
+/**
+ * La sobreelevación meteorológica del INA (viento y presión) cerca de Buenos Aires y el Delta: se pide desde el teléfono y, sin conexión,
+ * queda la última guardada. Solo hace falta si el lugar está en el estuario y cerca de los puntos del modelo.
+ */
+function useSurge(place: PickedPlace | null, estuary: boolean): SurgeForecast | null {
+  const [surge, setSurge] = useState<SurgeForecast | null>(() => loadSavedSurge());
+  const wanted = estuary && !!place && nearSurgePoints(place.lat, place.lon);
+  useEffect(() => {
+    if (!wanted || !navigator.onLine) return;
+    let cancelled = false;
+    void fetchSurge().then(
+      (s) => {
+        if (cancelled || !s) return;
+        saveSurge(s);
+        setSurge(s);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [wanted]);
+  return wanted ? surge : null;
+}
+
 /** Mareas sin conexión de la estación más cercana al lugar elegido. */
 export function TidesCard({ place }: { place: PickedPlace | null }) {
   const { t, i18n } = useTranslation();
@@ -165,6 +192,11 @@ export function TidesCard({ place }: { place: PickedPlace | null }) {
     };
   }, [gaugeCode, server]);
   const measured = useMemo(() => (levels && station ? measuredSeries(levels, station) : null), [levels, station]);
+  const estuary = !!station && !!place && isEstuary(station, place.lat, place.lon);
+  const surge = useSurge(place, estuary);
+  // La marea calculada más la sobreelevación del INA, solo donde el pronóstico la cubre (unos 4 días).
+  const adjusted = useMemo(() => (surge ? curve.flatMap((p) => { const v = surgeAt(surge, p.time.getTime()); return v === null ? [] : [{ time: p.time, level: p.level + v }]; }) : []), [surge, curve]);
+  const surgeNow = surge ? surgeSummary(surge, now.getTime()) : null;
   const levelNow = station ? tideLevelAt(station, now) : null;
   const levelSoon = station ? tideLevelAt(station, new Date(now.getTime() + 10 * 60_000)) : null;
   const nf = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: 'always' });
@@ -218,7 +250,19 @@ export function TidesCard({ place }: { place: PickedPlace | null }) {
               {t('navigation.tides.now', { level: nf.format(levelNow), trend: t(levelSoon >= levelNow ? 'navigation.tides.rising' : 'navigation.tides.falling') })}
             </p>
           )}
-          {curve.length > 1 && <TideChart curve={curve} now={now} label={t('navigation.tides.chartLabel', { days: DAYS })} locale={i18n.language} measured={measured?.points} />}
+          {curve.length > 1 && <TideChart curve={curve} now={now} label={t('navigation.tides.chartLabel', { days: DAYS })} locale={i18n.language} measured={measured?.points} adjusted={adjusted} />}
+          {surge && surgeNow && adjusted.length > 1 && (
+            <div className="stack" style={{ gap: 4 }} data-testid="estuary-surge">
+              <p style={{ margin: 0 }}>
+                <strong>{t('navigation.tides.surgeTitle')}</strong>{' '}
+                {surgeNow.now !== null ? `${t('navigation.tides.surgeNow', { value: nf.format(surgeNow.now) })} · ` : ''}
+                {t('navigation.tides.surgeMax', { value: nf.format(surgeNow.max.v), when: when(new Date(surgeNow.max.t)) })} · {t('navigation.tides.surgeMin', { value: nf.format(surgeNow.min.v), when: when(new Date(surgeNow.min.t)) })}
+              </p>
+              <p className="hint" style={{ margin: 0 }}>
+                {t('navigation.tides.surgeNote', { date: when(new Date(surge.issued)) })}
+              </p>
+            </div>
+          )}
           {measured && gauge && (
             <div className="stack" style={{ gap: 4 }} data-testid="tide-gauge">
               <p style={{ margin: 0 }} data-testid="tide-gauge-dev">

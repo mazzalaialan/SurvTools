@@ -4525,6 +4525,11 @@ a.module-card:hover {
   stroke-width: 2.5;
   stroke-linejoin: round;
 }
+.tide-surge {
+  fill: none;
+  stroke: var(--info);
+  stroke-width: 2;
+}
 .tide-measured {
   fill: none;
   stroke: var(--warn);
