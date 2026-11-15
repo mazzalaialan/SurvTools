@@ -6,7 +6,6 @@ import { useSettings } from '@/core/settings/settings';
 import { formatAltitude, formatDistance } from '@/core/units/units';
 import { GpxError } from './gpx';
 import { useRecorder } from './recorder';
-import { DriveStartButton } from './DriveStart';
 import { formatDuration, useStartRecording } from './Recording';
 import { trackFromBytes } from './importTrack';
 import { useTracks } from './store';
@@ -92,12 +91,9 @@ export function TracksPage() {
         </p>
       )}
       {recStatus === 'idle' && (
-        <div className="row wrap">
-          <button className="btn" type="button" onClick={() => void startRecording()}>
-            <Circle size={16} fill="currentColor" className="rec-icon" /> {t('tracks.rec.start')}
-          </button>
-          <DriveStartButton />
-        </div>
+        <button className="btn" type="button" onClick={() => void startRecording()}>
+          <Circle size={16} fill="currentColor" className="rec-icon" /> {t('tracks.rec.start')}
+        </button>
       )}
 
       {both && (

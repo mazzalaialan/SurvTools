@@ -80,51 +80,67 @@ describe('avisos de lluvia', () => {
     await runRainWatch(db, push, source, NOW);
     assert.deepEqual(push.sent[0], {
       type: 'rain',
-      rain: { placeId: 'w1', label: 'Refugio', state: 'soon', inMinutes: 45, mm: 3.1, fixAt: null },
+      rain: { placeId: 'w1', label: 'Refugio', state: 'soon', inMinutes: 45, mm: 3.1, fixAt: null, startsAt: NOW.getTime() + 45 * 60_000 },
     });
 
+    // Empezó a llover: el aviso de «va a llover» se reemplaza (misma etiqueta, sin sonar) por «está lloviendo»; no es un aviso nuevo.
     source.outlook = { state: 'raining', mm: 5, peakMmH: 2 };
-    await runRainWatch(db, push, source, NOW); // mismo episodio
-    assert.equal(push.sent.length, 1);
+    await runRainWatch(db, push, source, NOW);
+    assert.equal(push.sent.length, 2);
+    assert.deepEqual((push.sent[1] as { rain: unknown }).rain, { placeId: 'w1', label: 'Refugio', state: 'raining', inMinutes: 0, mm: 5, fixAt: null, update: true });
+    await runRainWatch(db, push, source, NOW); // ya está avisado: nada más
+    assert.equal(push.sent.length, 2);
 
     // Mandar la lista de nuevo (p. ej. al abrir la app) no reinicia el episodio.
     await putPlaces(deviceId, token, [refugio]);
     await runRainWatch(db, push, source, NOW);
-    assert.equal(push.sent.length, 1);
+    assert.equal(push.sent.length, 2);
 
     source.outlook = null; // la fuente no respondió: no cambia nada
     await runRainWatch(db, push, source, NOW);
     const at = (min: number) => new Date(NOW.getTime() + min * 60_000);
-    // Un rato seco y vuelve la lluvia: es el mismo episodio, no se repite.
+    // Un rato seco (menos de 20 min) y vuelve la lluvia: es el mismo episodio, no se saca el aviso ni se repite.
     source.outlook = { state: 'dry' };
     await runRainWatch(db, push, source, at(15));
     source.outlook = { state: 'raining', mm: 2, peakMmH: 2 };
     await runRainWatch(db, push, source, at(30));
-    assert.equal(push.sent.length, 1);
+    assert.equal(push.sent.length, 2);
 
     // Se intensifica (de débil a fuerte): un aviso más, marcado como "se intensifica"; igual de fuerte, no.
     source.outlook = { state: 'raining', mm: 6, peakMmH: 12 };
     await runRainWatch(db, push, source, at(45));
-    assert.equal(push.sent.length, 2);
-    assert.equal((push.sent[1] as { rain: { stronger?: boolean } }).rain.stronger, true);
+    assert.equal(push.sent.length, 3);
+    assert.equal((push.sent[2] as { rain: { stronger?: boolean } }).rain.stronger, true);
     await runRainWatch(db, push, source, at(60));
-    assert.equal(push.sent.length, 2);
+    assert.equal(push.sent.length, 3);
 
-    // Seco por menos de 3 horas: sigue el episodio.
+    // Para de llover: a los 20 minutos secos seguidos se saca el aviso (un solo «clear»); antes, no.
     source.outlook = { state: 'dry' };
     await runRainWatch(db, push, source, at(75));
-    await runRainWatch(db, push, source, at(75 + 170));
-    source.outlook = { state: 'raining', mm: 2, peakMmH: 2 };
-    await runRainWatch(db, push, source, at(75 + 175));
-    assert.equal(push.sent.length, 2);
-    // Seco 3 horas seguidas: terminó; la próxima lluvia se avisa de nuevo.
-    source.outlook = { state: 'dry' };
-    await runRainWatch(db, push, source, at(300));
-    await runRainWatch(db, push, source, at(300 + 180));
-    source.outlook = { state: 'raining', mm: 2, peakMmH: 2 };
-    await runRainWatch(db, push, source, at(300 + 195));
+    await runRainWatch(db, push, source, at(75 + 15));
     assert.equal(push.sent.length, 3);
-    assert.equal((push.sent[2] as { rain: { stronger?: boolean } }).rain.stronger, undefined);
+    await runRainWatch(db, push, source, at(75 + 20));
+    assert.equal(push.sent.length, 4);
+    assert.deepEqual((push.sent[3] as { rain: unknown }).rain, { placeId: 'w1', label: 'Refugio', state: 'raining', inMinutes: 0, mm: 0, fixAt: null, clear: true });
+    await runRainWatch(db, push, source, at(75 + 60)); // ya se sacó: nada más
+    assert.equal(push.sent.length, 4);
+
+    // Después de sacarlo, una lluvia nueva es un aviso nuevo.
+    source.outlook = { state: 'soon', inMinutes: 30, startsAt: '2026-11-03T20:00', mm: 2, peakMmH: 2 };
+    await runRainWatch(db, push, source, at(75 + 90));
+    assert.equal(push.sent.length, 5);
+    assert.equal((push.sent[4] as { rain: { state: string; startsAt: number } }).rain.state, 'soon');
+    assert.equal((push.sent[4] as { rain: { startsAt: number } }).rain.startsAt, at(75 + 90).getTime() + 30 * 60_000);
+
+    // Seco 3 horas seguidas: el episodio termina del todo; la próxima lluvia se avisa de nuevo y sin «se intensifica».
+    source.outlook = { state: 'dry' };
+    await runRainWatch(db, push, source, at(400));
+    await runRainWatch(db, push, source, at(400 + 180));
+    const before = push.sent.length;
+    source.outlook = { state: 'raining', mm: 2, peakMmH: 2 };
+    await runRainWatch(db, push, source, at(400 + 195));
+    assert.equal(push.sent.length, before + 1);
+    assert.equal((push.sent.at(-1) as { rain: { stronger?: boolean } }).rain.stronger, undefined);
   });
 
   it('consulta una sola vez los lugares repetidos', async () => {

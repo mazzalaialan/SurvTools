@@ -17,6 +17,15 @@ interface PlaceRow {
   subscription: string;
 }
 
+/**
+ * `rain_places.notified`: 0 sin aviso; 1 hay un aviso de «está lloviendo» en el celular; 2 hay un aviso de «va a llover»
+ * (con su hora); 3 el episodio sigue pero el aviso ya se sacó porque dejó de llover. Así no hace falta una migración nueva.
+ */
+const NOTIFIED = { none: 0, raining: 1, soon: 2, cleared: 3 } as const;
+
+/** Tiempo seco seguido antes de sacar el aviso: el pronóstico va y viene entre seco y lluvia cada 15 minutos. */
+export const CLEAR_AFTER_MS = 20 * 60_000;
+
 export interface RainWatchResult {
   checked: number;
   sent: number;
@@ -58,33 +67,49 @@ export async function runRainWatch(db: Db, push: PushSender, source: RainSource,
     if (gone.has(row.device_id)) continue;
     const outlook = byKey.get(keyOf(row));
     if (!outlook) continue;
-    const prev = row.notified ? { level: row.rain_level || 1, drySince: row.dry_since } : null;
+    // Después de un «dejó de llover» (notified = 3) una lluvia nueva es otro aviso: ya pasó un rato seco, no es un vaivén del pronóstico.
+    const reopened = row.notified === NOTIFIED.cleared && outlook.state !== 'dry';
+    const prev = row.notified && !reopened ? { level: row.rain_level || 1, drySince: row.dry_since } : null;
     const { episode, notify } = nextEpisode(prev, outlook, now.getTime());
-    const store = () => save.run(episode ? 1 : 0, episode?.level ?? 0, episode?.drySince ?? null, row.device_id, row.place_id);
-    if (!notify || outlook.state === 'dry') {
-      if (prev?.level !== episode?.level || prev?.drySince !== episode?.drySince) store();
+    const visible = row.notified === NOTIFIED.raining || row.notified === NOTIFIED.soon;
+    const store = (notified: number) => save.run(notified, episode?.level ?? 0, episode?.drySince ?? null, row.device_id, row.place_id);
+    /** Lo que ya está guardado se conserva (episodio vivo, sin aviso nuevo); sin episodio, nada. */
+    const keep = episode ? row.notified || NOTIFIED.raining : NOTIFIED.none;
+
+    // Qué hay que mandar: un aviso nuevo, el cambio de «va a llover» a «está lloviendo», o sacar el aviso porque dejó de llover.
+    let kind: 'new' | 'raining' | 'clear' | null = null;
+    if (notify && outlook.state !== 'dry') kind = 'new';
+    else if (visible && row.notified === NOTIFIED.soon && outlook.state === 'raining') kind = 'raining';
+    else if (visible && outlook.state === 'dry' && episode?.drySince != null && now.getTime() - episode.drySince >= CLEAR_AFTER_MS) kind = 'clear';
+
+    if (!kind) {
+      if (prev?.level !== episode?.level || prev?.drySince !== episode?.drySince || keep !== row.notified) store(keep);
       continue;
     }
-    const delivered = await push.send(JSON.parse(row.subscription) as PushSubscriptionJson, {
-      type: 'rain',
-      rain: {
-        placeId: row.place_id,
-        label: row.label,
-        state: outlook.state,
-        inMinutes: outlook.state === 'soon' ? outlook.inMinutes : 0,
-        mm: Math.round(outlook.mm * 10) / 10,
-        fixAt: row.fix_at,
-        ...(outlook.state === 'raining' && outlook.observedMmH !== undefined ? { observedMmH: outlook.observedMmH } : {}),
-        ...(notify === 'stronger' ? { stronger: true } : {}),
-      },
-    });
+    const base = { placeId: row.place_id, label: row.label, fixAt: row.fix_at };
+    const rain =
+      kind === 'clear'
+        ? { ...base, state: 'raining' as const, inMinutes: 0, mm: 0, clear: true }
+        : {
+            ...base,
+            state: kind === 'raining' ? ('raining' as const) : outlook.state === 'soon' ? ('soon' as const) : ('raining' as const),
+            inMinutes: kind !== 'raining' && outlook.state === 'soon' ? outlook.inMinutes : 0,
+            // La hora en que empieza, absoluta: «en 105 minutos» deja de ser cierto a los pocos minutos, la hora no.
+            ...(kind !== 'raining' && outlook.state === 'soon' ? { startsAt: now.getTime() + outlook.inMinutes * 60_000 } : {}),
+            mm: outlook.state === 'dry' ? 0 : Math.round(outlook.mm * 10) / 10,
+            ...(outlook.state === 'raining' && outlook.observedMmH !== undefined ? { observedMmH: outlook.observedMmH } : {}),
+            ...(kind === 'new' && notify === 'stronger' ? { stronger: true } : {}),
+            // El cambio a «está lloviendo» reemplaza al aviso anterior sin volver a sonar.
+            ...(kind === 'raining' ? { update: true } : {}),
+          };
+    const delivered = await push.send(JSON.parse(row.subscription) as PushSubscriptionJson, { type: 'rain', rain });
     if (!delivered) {
       removeDevice.run(row.device_id);
       gone.add(row.device_id);
       result.removed++;
       continue;
     }
-    store();
+    store(kind === 'clear' ? NOTIFIED.cleared : rain.state === 'soon' ? NOTIFIED.soon : NOTIFIED.raining);
     result.sent++;
   }
   return result;

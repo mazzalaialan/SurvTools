@@ -121,6 +121,9 @@ test('grabar mi recorrido: sigue con la app bloqueada, pausa, mapa, volver al or
 
   await page.goto('/#/orientation/tracks');
   await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  // Antes de empezar pregunta qué actividad es; sin elegir nada graba solo el recorrido.
+  await expect(page.getByRole('dialog', { name: '¿Qué vas a grabar?' })).toBeVisible();
+  await page.getByTestId('rec-begin').click();
   const bar = page.getByTestId('rec-bar');
   await expect(bar).toContainText('Grabando');
   // Avisa que con el celular bloqueado no se graba, hasta que se lee.
@@ -364,6 +367,9 @@ test('un corte de la grabación (pantalla apagada) se une con una recta que suma
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
   await page.goto('/#/orientation/tracks');
   await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  // Antes de empezar pregunta qué actividad es; sin elegir nada graba solo el recorrido.
+  await expect(page.getByRole('dialog', { name: '¿Qué vas a grabar?' })).toBeVisible();
+  await page.getByTestId('rec-begin').click();
   await page.getByTestId('rec-warn').getByRole('button', { name: 'Entendido' }).click();
   await page.waitForTimeout(500);
   const walk = async (lat: number) => {
@@ -467,6 +473,9 @@ test('Tracks: los cargados y mis recorridos van en pestañas separadas, con busc
   await expect(page.getByTestId('tracks-list')).toContainText('Cerro Platita');
   // Se graba un recorrido propio: aparecen las pestañas y se abre la de los míos (se está grabando).
   await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  // Antes de empezar pregunta qué actividad es; sin elegir nada graba solo el recorrido.
+  await expect(page.getByRole('dialog', { name: '¿Qué vas a grabar?' })).toBeVisible();
+  await page.getByTestId('rec-begin').click();
   await page.getByTestId('rec-warn').getByRole('button', { name: 'Entendido' }).click();
   await page.waitForTimeout(500);
   await expect(page.getByTestId('tracks-tabs')).toBeVisible();
@@ -496,11 +505,12 @@ test('modo Conducir: se graba en vehículo con la velocidad en vivo, sin calorí
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 
-  // Desde Tracks se elige el vehículo y se empieza; abre la pantalla en vivo de conducción.
+  // Desde Tracks se elige el vehículo en «¿Qué vas a grabar?» y se empieza; abre la pantalla en vivo de conducción.
   await page.goto('/#/orientation/tracks');
-  await page.getByTestId('drive-start').click();
-  await page.getByLabel('Vehículo').selectOption({ label: 'Moto' });
-  await page.getByTestId('drive-begin').click();
+  await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  await page.getByLabel('Actividad', { exact: true }).selectOption({ label: 'Moto' });
+  await expect(page.getByTestId('rec-start-hint')).toContainText('sin calorías, ritmo ni metas');
+  await page.getByTestId('rec-begin').click();
   await expect(page).toHaveURL(/#\/training\/live$/);
   const drive = page.getByTestId('drive');
   await expect(drive).toContainText('Moto');
@@ -541,4 +551,36 @@ test('modo Conducir: se graba en vehículo con la velocidad en vivo, sin calorí
   // Y no es una sesión de Entrenamiento: el historial sigue vacío.
   await page.goto('/#/training/workouts');
   await expect(page.getByTestId('train-row')).toHaveCount(0);
+});
+
+test('grabar con actividad: «¿Qué vas a grabar?» pide la actividad antes de empezar, la recuerda y el recorrido queda también como sesión', async ({ page, context }) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -41.16, longitude: -71.42, accuracy: 5 });
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  await page.goto('/#/orientation/tracks');
+  await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  // La primera vez ofrece solo el recorrido; las actividades y los vehículos están agrupados.
+  await expect(page.getByLabel('Actividad', { exact: true })).toHaveValue('');
+  await page.getByLabel('Actividad', { exact: true }).selectOption({ label: 'Trekking' });
+  await page.getByLabel('Mochila o carga (kg, opcional)').fill('8');
+  await expect(page.getByTestId('rec-start-hint')).toContainText('sesión de Entrenamiento');
+  await page.getByTestId('rec-begin').click();
+  // Empezó como actividad (pantalla en vivo de entrenamiento, sin el modo conducir).
+  await expect(page).toHaveURL(/#\/training\/live$/);
+  await expect(page.getByTestId('live')).toContainText('Grabando');
+  await expect(page.getByTestId('drive')).toHaveCount(0);
+  await expect(page.getByTestId('live-kind')).toHaveValue('trek');
+  await page.getByTestId('live-finish').click();
+  await page.getByTestId('rec-discard').click();
+  // Sin puntos todavía no hay nada que guardar: descarta; lo que importa es que la elección se recuerda.
+  await page.goto('/#/orientation/tracks');
+  await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  await expect(page.getByLabel('Actividad', { exact: true })).toHaveValue('trek');
 });

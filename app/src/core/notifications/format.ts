@@ -25,6 +25,9 @@ const TEXT = {
     testBody: 'Las notificaciones funcionan correctamente.',
     here: 'Donde estás',
     rainSoon: (min: number, place: string) => `Lluvia en unos ${min} min · ${place}`,
+    rainSoonAt: (time: string, place: string) => `Lluvia a las ${time} · ${place}`,
+    rainSoonAtIn: (time: string, min: number, place: string) => `Lluvia a las ${time} (en unos ${min} min) · ${place}`,
+    rainStopped: (place: string) => `Dejó de llover · ${place}`,
     raining: (place: string) => `Está lloviendo · ${place}`,
     rainStronger: (place: string) => `La lluvia se intensifica · ${place}`,
     rainBody: (mm: string) => `Se esperan ${mm} mm en las próximas 2 horas.`,
@@ -81,6 +84,9 @@ const TEXT = {
     testBody: 'Notifications are working.',
     here: 'Where you are',
     rainSoon: (min: number, place: string) => `Rain in about ${min} min · ${place}`,
+    rainSoonAt: (time: string, place: string) => `Rain at ${time} · ${place}`,
+    rainSoonAtIn: (time: string, min: number, place: string) => `Rain at ${time} (in about ${min} min) · ${place}`,
+    rainStopped: (place: string) => `The rain stopped · ${place}`,
     raining: (place: string) => `It's raining · ${place}`,
     rainStronger: (place: string) => `The rain is getting heavier · ${place}`,
     rainBody: (mm: string) => `${mm} mm expected in the next 2 hours.`,
@@ -177,6 +183,12 @@ export interface RainPush {
   fixAt: string | null;
   /** Lluvia vista por el satélite en el lugar (mm/h), si la hubo. */
   observedMmH?: number;
+  /** Hora en que empieza a llover (ms desde 1970), cuando todavía no llueve: la hora no se vence, «en 105 min» sí. */
+  startsAt?: number;
+  /** Cambio de «va a llover» a «está lloviendo»: reemplaza el aviso anterior sin volver a sonar. */
+  update?: boolean;
+  /** Dejó de llover: se saca el aviso (no se muestra nada). */
+  clear?: boolean;
   /** Mismo episodio, pero la lluvia subió de nivel (ver server/src/rain/episode.ts). */
   stronger?: boolean;
 }
@@ -340,10 +352,24 @@ export function lightningNotification(l: LightningPush, lang: Lang, now = Date.n
   return { title: tx.lightning(Math.max(1, l.distanceKm), dir, l.label ?? tx.here), body: tx.lightningBody + lastFixNote(l.fixAt, lang, now) + `\n${tx.informative}` };
 }
 
-export function rainNotification(rain: RainPush, lang: Lang, now = Date.now()): { title: string; body: string } {
+/** Hora local del dispositivo, «15:40». */
+export const clockTime = (ms: number, lang: Lang): string => new Date(ms).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
+
+/**
+ * Texto del aviso de lluvia. Con la hora de inicio (`startsAt`) el título dice «Lluvia a las 15:40», que sigue siendo cierto
+ * horas después; el «en unos N min» (`countdown`) solo lo agrega la app al volver a calcularlo con el reloj de ese momento.
+ */
+export function rainNotification(rain: RainPush, lang: Lang, now = Date.now(), countdown = false): { title: string; body: string } {
   const tx = TEXT[lang];
   const place = rain.label ?? tx.here;
-  const title = rain.stronger ? tx.rainStronger(place) : rain.state === 'raining' ? tx.raining(place) : tx.rainSoon(rain.inMinutes, place);
+  const soon =
+    rain.startsAt === undefined
+      ? tx.rainSoon(rain.inMinutes, place)
+      : countdown
+        ? tx.rainSoonAtIn(clockTime(rain.startsAt, lang), Math.max(1, Math.round((rain.startsAt - now) / 60_000)), place)
+        : tx.rainSoonAt(clockTime(rain.startsAt, lang), place);
+  if (rain.clear) return { title: tx.rainStopped(place), body: '' };
+  const title = rain.stronger ? tx.rainStronger(place) : rain.state === 'raining' ? tx.raining(place) : soon;
   const fmt = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 });
   const main = rain.observedMmH !== undefined ? tx.rainObserved(fmt.format(rain.observedMmH)) : tx.rainBody(fmt.format(rain.mm));
   const body = main + lastFixNote(rain.fixAt, lang, now) + `\n${tx.informative}`;

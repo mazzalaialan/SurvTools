@@ -87,7 +87,16 @@ self.addEventListener('push', (event) => {
       if (payload.type === 'rain' && payload.rain) {
         // Misma etiqueta que el aviso de la app abierta: si ya avisó, lo reemplaza sin volver a sonar.
         const { title, body } = rainNotification(payload.rain, lang);
-        await self.registration.showNotification(title, { body, icon: ICON, badge: ICON, tag: `rain-${payload.rain.placeId}`, data: { url: '#/weather/forecast' } });
+        const tag = `rain-${payload.rain.placeId}`;
+        const data = { url: '#/weather/forecast', state: payload.rain.state, startsAt: payload.rain.startsAt ?? null };
+        if (payload.rain.clear) {
+          // Dejó de llover: se saca el aviso. El navegador exige mostrar algo por cada push: se muestra y se cierra enseguida, sin sonar.
+          await self.registration.showNotification(title, { icon: ICON, badge: ICON, tag, silent: true, data });
+          for (const n of await self.registration.getNotifications({ tag })) n.close();
+        } else {
+          // «Va a llover» → «Está lloviendo»: misma etiqueta, lo reemplaza sin volver a sonar.
+          await self.registration.showNotification(title, { body, icon: ICON, badge: ICON, tag, silent: payload.rain.update === true, data });
+        }
       } else if (payload.type === 'lightning' && payload.lightning) {
         const { title, body } = lightningNotification(payload.lightning, lang);
         await self.registration.showNotification(title, {

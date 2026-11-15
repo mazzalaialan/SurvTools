@@ -58,6 +58,23 @@ describe('texto de notificaciones', () => {
     expect(lightningNotification({ ...l, fixAt: '2026-11-04T15:00:00Z' }, 'es', now).body).toMatch(/hace 3 horas/);
   });
 
+  it('aviso de lluvia con la hora de inicio: la hora no se vence, la cuenta regresiva la pone la app', () => {
+    const startsAt = new Date(2026, 10, 15, 15, 40).getTime();
+    const now = new Date(2026, 10, 15, 13, 55).getTime();
+    const rain = { placeId: 'w1', label: 'Casa', state: 'soon' as const, inMinutes: 105, mm: 3, fixAt: null, startsAt };
+    // El que llega por push dice la hora, no «en 105 min» (que a los pocos minutos ya no es cierto).
+    expect(rainNotification(rain, 'es', now).title).toBe('Lluvia a las 15:40 · Casa');
+    expect(rainNotification(rain, 'en', now).title).toMatch(/^Rain at \d{1,2}:40/);
+    // La app, al recalcular con su reloj, agrega cuánto falta.
+    expect(rainNotification(rain, 'es', now, true).title).toBe('Lluvia a las 15:40 (en unos 105 min) · Casa');
+    expect(rainNotification(rain, 'es', now + 60 * 60_000, true).title).toBe('Lluvia a las 15:40 (en unos 45 min) · Casa');
+    // Sin hora (avisos viejos) queda como antes.
+    expect(rainNotification({ ...rain, startsAt: undefined }, 'es', now).title).toBe('Lluvia en unos 105 min · Casa');
+    // Cambio a «está lloviendo» y salida del aviso.
+    expect(rainNotification({ ...rain, state: 'raining', startsAt: undefined, update: true }, 'es', now).title).toBe('Está lloviendo · Casa');
+    expect(rainNotification({ ...rain, clear: true }, 'es', now)).toEqual({ title: 'Dejó de llover · Casa', body: '' });
+  });
+
   it('aviso de lluvia vista por el satélite', () => {
     const rain = { placeId: 'w1', label: 'Casa', state: 'raining' as const, inMinutes: 0, mm: 6, fixAt: null, observedMmH: 6.2 };
     expect(rainNotification(rain, 'es').body).toBe('El satélite ve lluvia de unos 6,2 mm/h ahora (estimación por infrarrojo, orientativa).\nAviso informativo, no oficial: las alertas oficiales son del SMN.');

@@ -15,6 +15,7 @@ import { BackButton } from '@/ui/BackButton';
 import { ConfirmHost } from '@/ui/confirm';
 import { Dialog } from '@/ui/Dialog';
 import { PocketScreen, RecordingBar } from '@/modules/tracks/Recording';
+import { StartRecordingDialog } from '@/modules/tracks/StartRecording';
 import { OutingPlanBar } from '@/modules/training/OutingPlanBar';
 import { useOutingDeadlineSync } from '@/modules/training/outingDeadlineSync';
 import { useLiveSender } from '@/modules/training/liveShare';
@@ -128,6 +129,7 @@ export function Shell() {
         <CountryNotices />
         <RainNotices />
         <RecordingBar />
+        <StartRecordingDialog />
         <OutingPlanBar />
         <PocketScreen />
         <ConfirmHost />

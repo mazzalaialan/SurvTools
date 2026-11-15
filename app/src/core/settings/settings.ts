@@ -125,6 +125,8 @@ export interface Settings {
   mapOfferDismissed: Country[];
   /** Última actividad elegida en Entrenamiento. */
   trainingKind: WorkoutKind;
+  /** Última elección en «¿Qué vas a grabar?»: '' (solo el recorrido), una actividad o `v:<vehículo>`. */
+  recordChoice: string;
   /** Lee en voz alta el tiempo y el ritmo al cerrar cada kilómetro. */
   trainingVoice: boolean;
   /** Cuenta regresiva antes de empezar a grabar una sesión (segundos; 0 = sin cuenta). */
@@ -278,6 +280,7 @@ export const DEFAULT_SETTINGS: Settings = {
   countryOfferDismissed: [],
   mapOfferDismissed: [],
   trainingKind: 'walk',
+  recordChoice: '',
   trainingVoice: false,
   trainingCountdownS: 0,
   liveShare: null,

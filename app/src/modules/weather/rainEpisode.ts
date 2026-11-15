@@ -11,6 +11,9 @@ import type { RainOutlook } from './nowcast';
  */
 
 /** Horas seguidas sin lluvia para dar por terminado el episodio. */
+/** Tiempo seco seguido antes de sacar el aviso de lluvia de la barra de notificaciones (como en el servidor: rain/watch.ts). */
+export const CLEAR_AFTER_MS = 20 * 60_000;
+
 export const DRY_RESET_MS = 3 * 3_600_000;
 
 /** Nivel por intensidad (mm/h, los rangos de uso común): 1 débil, 2 moderada, 3 fuerte, 4 torrencial. */

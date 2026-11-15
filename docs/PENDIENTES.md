@@ -18,6 +18,11 @@ Pedido de quien dirige: grabar una conducción en auto, moto, etc., **sin calor�
 - **No se probó en un auto o moto reales** (el GPS simulado de Playwright no da `speed`: la velocidad del GPS y el rumbo hay que verlos en un celular). El texto de «Compartir ubicación en vivo» sigue hablando de «entrenar».
 - **Ideas sin hacer:** aviso sonoro al pasar un límite de velocidad elegido, odómetro por vehículo (como el equipo de Entrenamiento), consumo y costo de combustible por viaje, recordar el último vehículo elegido, botón en el mapa.
 
+### Pedidos del 2026-11-15 (commiteados, **sin publicar**)
+- **¿Qué vas a grabar?** Al tocar «Grabar mi recorrido» (Tracks, mapa o seguir un track) se abre un diálogo (`tracks/StartRecording.tsx`, montado en `Shell`) con la actividad (a pie, remo, ciclismo), un vehículo (modo Conducir) o «Solo el recorrido»; recuerda la última elección (`recordChoice`). Desde Tracks abre la pantalla en vivo; desde el mapa se queda. Reemplaza al botón «Grabar en vehículo».
+- **Aviso de lluvia que no queda fijo:** ver `docs/SERVIDOR.md` («El aviso se mantiene al día»): hora de inicio en el título, reemplazo por «Está lloviendo» y salida del aviso al dejar de llover, en el servidor y con la app abierta. Sin probar en un celular real.
+- **Idea (no empezada): unir un corte siguiendo el camino más corto en vez de una recta.** Fácil y sin red sobre un track cargado (geometría sobre la línea); en calles hace falta un motor de rutas (ver la respuesta dada a quien dirige: servicio de rutas propio o de terceros, o un grafo offline). El tramo se dibujaría como «estimado» y la distancia seguiría sumando.
+
 ### Hay que probar en un celular real (nada se vio en un teléfono)
 1. Pronóstico del INA en Rosario o Corrientes (el arreglo de la 0.68.0: la API real no traía `estacion_id`).
 2. Focos de calor: llama roja (alta confianza) y chispa (resto), grupos estables al mover el mapa, selector «solo alta confianza».

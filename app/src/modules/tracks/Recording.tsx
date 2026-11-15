@@ -13,6 +13,7 @@ import { useBodyWeight, useTrainingFormat } from '@/modules/training/format';
 import { Dialog } from '@/ui/Dialog';
 import { MAX_ACCURACY_M } from './record';
 import { elapsedS, useRecorder } from './recorder';
+import { useStartDialog } from './StartRecording';
 
 /** "0:42", "12:05" o "1:03:20". */
 export function formatDuration(totalS: number): string {
@@ -23,18 +24,11 @@ export function formatDuration(totalS: number): string {
   return h ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
 }
 
-/** Arranca a grabar con nombre de fecha y hora (se cambia después, en el track). */
+/** Abre «¿Qué vas a grabar?» (ver StartRecording.tsx): ahí se elige la actividad o el vehículo y recién entonces empieza. */
 export function useStartRecording() {
-  const { t, i18n } = useTranslation();
-  const start = useRecorder((s) => s.start);
   return () => {
-    const now = new Date();
-    return start(
-      t('tracks.rec.defaultName', {
-        date: now.toLocaleDateString(i18n.language),
-        time: now.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
-      }),
-    );
+    useStartDialog.getState().set(true);
+    return Promise.resolve();
   };
 }
 
