@@ -2200,6 +2200,7 @@
     "search": "Search by name",
     "noMatch": "No track matches “{{q}}”.",
     "gapsTitle": "Recording gaps",
+    "gapItemVia": "{{from}} to {{to}}: the recording was cut and was joined by following the track “{{via}}” ({{length}}; in another color on the map). It is an estimate: the real path may have been different.",
     "gapItemJoined": "{{from}} to {{to}}: screen off, joined with a straight line.",
     "gapItemJoinedLen": "{{from}} to {{to}}: screen off, joined with a straight line of {{length}} (another color on the map; it counts less than you walked).",
     "gapItemKept": "{{from}} to {{to}}: screen off, left as a gap.",

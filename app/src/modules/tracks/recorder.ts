@@ -9,6 +9,7 @@ import { useTraining } from '@/modules/training/store';
 import type { IntervalPlan } from '@/modules/training/intervals';
 import { analyzeRecording } from '@/modules/training/stats';
 import { trackStats, type TrackPoint } from './gpx';
+import { bridgeAlongTracks, isSignalJump, withBridge, type CandidateLine } from './bridge';
 import { driveSummary } from './drive';
 import { addLocked, clearLocked, newRecKey, prepareLocked, readLocked } from './lockedBuffer';
 import { addPoint, closeGap, dropOpenGap, finishedTrack, MAX_ACCURACY_M, openGap, SAVER_STEP_M, shouldAdd } from './record';
@@ -125,14 +126,33 @@ function onPosition(p: GeolocationPosition) {
   if (!shouldAdd(segments[segments.length - 1]?.at(-1), fix, lowPower() ? SAVER_STEP_M : undefined)) return;
   // Con la hora (segundos): de ahí salen el tiempo en movimiento, el ritmo y los parciales del Entrenamiento.
   const point: TrackPoint = [fix.lat, fix.lon, p.coords.altitude ?? null, Math.round(p.timestamp / 1000)];
-  const next = addPoint(segments, point);
   // Si venía un corte (pantalla apagada), este primer punto cierra su recta: queda en el mismo tramo y suma su distancia.
-  const gaps = closeGap(s.track.gaps, point);
+  let gaps = closeGap(s.track.gaps, point);
+  const last = segments[segments.length - 1]?.at(-1);
+  const closing = gaps !== s.track.gaps;
+  let next = segments;
+  // Si el corte (pantalla apagada o GPS tapado) termina sobre un track cargado, se sigue ese track por el camino más corto en vez de la recta.
+  const bridge = last && (closing || isSignalJump(last, point)) ? bridgeAlongTracks(loadedLines(), { lat: last[0], lon: last[1] }, fix) : null;
+  if (bridge && last) {
+    for (const mid of bridge.points) next = addPoint(next, mid);
+    gaps = withBridge(gaps, closing, last, point, bridge);
+  }
+  next = addPoint(next, point);
   useRecorder.setState({ track: { ...s.track, segments: next, ...trackStats(next), ...(gaps ? { gaps } : {}) } });
   // Bloqueada no se puede cifrar con la bóveda: va cifrado con la clave de la grabación.
   if (!isUnlocked()) {
     if (s.track.recKey) addLocked(s.track.id, s.track.recKey, point);
   } else if (Date.now() - lastSaved >= SAVE_EVERY_MS) void persist();
+}
+
+/** Los tracks cargados (no grabados con la app) con sus tramos, para cerrar un corte siguiendo uno. */
+function loadedLines(): CandidateLine[] {
+  const out: CandidateLine[] = [];
+  for (const t of useTracks.getState().tracks.values()) {
+    if (t.recording || t.recorded || t.deletedAt) continue;
+    for (const seg of t.segments) if (seg.length > 1) out.push({ id: t.id, name: t.name, line: seg });
+  }
+  return out;
 }
 
 function startWatch() {

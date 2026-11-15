@@ -55,7 +55,12 @@ export function dropOpenGap(gaps: TrackGap[] | undefined): TrackGap[] | undefine
 
 /** Las rectas de los cortes ya cerrados, en [lon, lat], para dibujarlas en otro color. */
 export function gapLines(gaps: TrackGap[] | undefined): [number, number][][] {
-  return (gaps ?? []).flatMap((g) => (g.a && g.b ? [[[g.a[1], g.a[0]] as [number, number], [g.b[1], g.b[0]] as [number, number]]] : []));
+  return (gaps ?? []).flatMap((g) =>
+    g.a && g.b
+      ? // Un corte cerrado siguiendo un track cargado se dibuja por ese camino; si no, la recta.
+        [[[g.a[1], g.a[0]] as [number, number], ...(g.path ?? []).map(([lat, lon]) => [lon, lat] as [number, number]), [g.b[1], g.b[0]] as [number, number]]]
+      : [],
+  );
 }
 
 /** Lo grabado, ya terminado: tramos de al menos dos puntos, datos con todo y el recorrido simplificado. */

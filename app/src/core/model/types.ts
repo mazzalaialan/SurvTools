@@ -578,6 +578,9 @@ export interface TrackGap {
   a?: [number, number];
   b?: [number, number];
   lengthM?: number;
+  /** Si el corte se cerró siguiendo un track cargado en vez de con una recta: el nombre de ese track y los puntos [lat, lon] del camino. `lengthM` es el largo de ese camino. */
+  via?: string;
+  path?: [number, number][];
 }
 
 export interface Track extends BaseEntity {

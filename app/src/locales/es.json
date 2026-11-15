@@ -2200,6 +2200,7 @@
     "search": "Buscar por nombre",
     "noMatch": "Ningún track coincide con «{{q}}».",
     "gapsTitle": "Cortes de la grabación",
+    "gapItemVia": "{{from}} a {{to}}: se cortó la grabación y se unió siguiendo el track «{{via}}» ({{length}}; en otro color en el mapa). Es una estimación: el camino real pudo ser otro.",
     "gapItemJoined": "{{from}} a {{to}}: pantalla apagada, se unió con una recta.",
     "gapItemJoinedLen": "{{from}} a {{to}}: pantalla apagada, se unió con una recta de {{length}} (en otro color en el mapa; suma menos de lo que caminaste).",
     "gapItemKept": "{{from}} a {{to}}: pantalla apagada, quedó un hueco.",

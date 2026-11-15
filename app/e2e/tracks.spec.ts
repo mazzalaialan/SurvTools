@@ -584,3 +584,56 @@ test('grabar con actividad: «¿Qué vas a grabar?» pide la actividad antes de 
   await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
   await expect(page.getByLabel('Actividad', { exact: true })).toHaveValue('trek');
 });
+
+test('un corte que vuelve sobre un track cargado se une siguiendo ese track, no con una recta', async ({ page, context }) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -41.16, longitude: -71.42, accuracy: 5 });
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // Un camino cargado en «L»: ~1,1 km al sur por la calle y ~1 km al este.
+  const pts = [
+    ...Array.from({ length: 12 }, (_, i) => [-41.16 - i * 0.001, -71.42]),
+    ...Array.from({ length: 13 }, (_, i) => [-41.17, -71.42 + i * 0.001]),
+  ];
+  const gpx = `<?xml version="1.0"?><gpx version="1.1" creator="x" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>Camino en L</name><trkseg>${pts.map(([la, lo]) => `<trkpt lat="${la}" lon="${lo}"/>`).join('')}</trkseg></trk></gpx>`;
+  await page.goto('/#/orientation/tracks');
+  await page.getByTestId('tracks-file').setInputFiles({ name: 'ele.gpx', mimeType: 'application/gpx+xml', buffer: Buffer.from(gpx) });
+  await expect(page.getByRole('heading', { name: 'Camino en L' })).toBeVisible();
+
+  await page.goto('/#/orientation/tracks');
+  await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  await page.getByTestId('rec-begin').click();
+  await page.getByTestId('rec-warn').getByRole('button', { name: 'Entendido' }).click();
+  await page.waitForTimeout(500);
+  const move = async (lat: number, lon: number) => {
+    await context.setGeolocation({ latitude: lat, longitude: lon, accuracy: 5 });
+    await page.waitForTimeout(300);
+  };
+  await move(-41.161, -71.42);
+  await move(-41.162, -71.42);
+
+  // La pantalla se apaga 2 minutos.
+  await page.evaluate(() => {
+    const real = Date.now.bind(Date);
+    let offset = 0;
+    Date.now = () => real() + offset;
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    offset = 120_000;
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  // Vuelve a engancharse sobre el tramo este del camino: en recta serían ~1,2 km; por el camino, ~1,7 km.
+  await move(-41.17, -71.41);
+  await expect(page.getByTestId('rec-stats')).toContainText(/(1[.,][89]\d*|2[.,]\d+) km/);
+
+  // La ficha del recorrido (atajo de la barra) dice que el corte se unió siguiendo el camino cargado.
+  await page.getByTestId('rec-summary').click();
+  await expect(page.getByTestId('track-gaps')).toContainText('siguiendo el track «Camino en L»');
+});
