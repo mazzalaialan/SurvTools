@@ -92,11 +92,55 @@ export interface BoLake {
   vsAverageM: number | null;
   url: string;
 }
+/** La planilla por estación del pronóstico hidrológico (ver server/src/rivers/boPlanilla.ts): amenaza, tendencia y cuánto falta para el desborde. */
+export interface BoPlanillaRow {
+  station: string;
+  river: string;
+  threat: 'yellow' | 'orange' | 'red';
+  trend: 'rises' | 'falls' | null;
+  /** Cuánto falta para el desborde, en metros (`m`) o en m³/s (`m3s`); null sin dato. */
+  untilOverflow: number | null;
+  unit: 'm' | 'm3s' | null;
+  period: string;
+}
+export interface BoPlanilla {
+  issuedOn: string;
+  url: string;
+  rows: BoPlanillaRow[];
+}
 export interface BoExtras {
   fetchedAt: number;
   forecast: BoForecast | null;
   lake: BoLake | null;
+  /** Ausente en servidores viejos; null si no se pudo leer. */
+  planilla?: BoPlanilla | null;
   stale?: boolean;
+}
+
+/** «Pronóstico del SENAMHI: amenaza naranja · ascensos · faltan 218,69 m³/s para el desborde». */
+export function boThreatLine(row: BoPlanillaRow, t: (key: string, o?: Record<string, unknown>) => string, lang: string): string {
+  const nf = new Intl.NumberFormat(lang, { maximumFractionDigits: 2 });
+  const parts = [t('navigation.bolivia.threat.line', { level: t(`navigation.bolivia.threat.${row.threat}`) })];
+  if (row.trend) parts.push(t(`navigation.bolivia.threat.${row.trend}`));
+  if (row.untilOverflow !== null && row.unit) parts.push(t('navigation.bolivia.threat.until', { value: nf.format(row.untilOverflow), unit: row.unit === 'm' ? 'm' : 'm³/s' }));
+  return parts.join(' · ');
+}
+
+const THREAT_RANK = { yellow: 1, orange: 2, red: 3 } as const;
+const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/**
+ * La fila de la planilla que corresponde a una estación del catálogo (el reporte diario y la planilla escriben los nombres distinto:
+ * mayúsculas, tildes, una palabra partida como «Guayaram erin»). Si la estación sale en varias tablas, la de mayor amenaza.
+ */
+export function planillaFor(rows: BoPlanillaRow[] | undefined | null, stationName: string): BoPlanillaRow | null {
+  const cn = norm(stationName);
+  if (!rows || cn.length < 4) return null;
+  const hits = rows.filter((r) => {
+    const rn = norm(r.station);
+    return rn.length >= 4 && (rn === cn || cn.startsWith(rn) || rn.startsWith(cn));
+  });
+  return hits.reduce<BoPlanillaRow | null>((best, r) => (!best || THREAT_RANK[r.threat] > THREAT_RANK[best.threat] ? r : best), null);
 }
 
 export async function fetchBoExtras(server: string): Promise<BoExtras> {

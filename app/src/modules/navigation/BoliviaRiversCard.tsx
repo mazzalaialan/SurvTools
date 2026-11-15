@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/core/settings/settings';
 import type { PickedPlace } from '@/modules/waypoints/PlacePicker';
 import { usePlaceCountries } from '@/modules/emergency/usePlaceCountry';
-import { ageDays, fetchBoExtras, fetchBoLevels, loadBoCatalog, loadSavedBo, loadSavedBoExtras, nearestBo, OLD_READING_DAYS, saveBo, saveBoExtras, type BoCatalog, type BoExtras, type BoLevels } from './bolivia';
+import { ageDays, boThreatLine, fetchBoExtras, fetchBoLevels, loadBoCatalog, loadSavedBo, loadSavedBoExtras, nearestBo, OLD_READING_DAYS, planillaFor, saveBo, saveBoExtras, type BoCatalog, type BoExtras, type BoLevels } from './bolivia';
 import { distanceMeters } from '@/core/geo/geo';
 
 const TREND_CLASS = { rising: 'river-alert', falling: 'river-low', steady: 'river-ok' } as const;
@@ -166,6 +166,16 @@ export function BoliviaRiversCard({ place }: { place: PickedPlace | null }) {
                   {t('navigation.bolivia.measured', { date: day(r.lastDate) })}
                   {old ? ` · ${t('navigation.bolivia.old')}` : ''}
                 </span>
+                {(() => {
+                  // Lo que pronostica el SENAMHI para esta estación (planilla), si sale en ella.
+                  const fc = planillaFor(extras?.planilla?.rows, r.station);
+                  return fc ? (
+                    <span className="list-sub" data-testid={`bo-threat-${fc.threat}`}>
+                      <strong className={`chip-state threat-${fc.threat}`}>{t(`navigation.bolivia.threat.${fc.threat}`)}</strong> {boThreatLine(fc, t, i18n.language)}
+                      {fc.period ? ` · ${fc.period}` : ''}
+                    </span>
+                  ) : null;
+                })()}
                 {r.zeroCm !== null && <span className="list-sub">{t('navigation.bolivia.zero', { cm: n0.format(r.zeroCm) })}</span>}
               </span>
               <span className="list-end river-level">

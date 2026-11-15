@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import Fastify from 'fastify';
-import { latestForecastUrl, latestLakeUrl, parseForecastSummary, parseLakeBulletin, type BoExtras } from '../src/rivers/boExtra.ts';
+import { readFileSync } from 'node:fs';
+import { parsePlanilla, type PlanillaItem } from '../src/rivers/boPlanilla.ts';
+import { latestForecastUrl, latestLakeUrl, latestPlanillaUrl, parseForecastSummary, parseLakeBulletin, type BoExtras } from '../src/rivers/boExtra.ts';
 import { loadConfig } from '../src/config.ts';
 import { riversRoutes } from '../src/routes/rivers.ts';
 
@@ -78,8 +80,25 @@ describe('pronóstico hidrológico y boletín del lago (SENAMHI Bolivia)', () =>
   });
 });
 
+const planillaPages = JSON.parse(readFileSync(new URL('./fixtures/bo-planilla-items.sample.json', import.meta.url), 'utf8')) as PlanillaItem[][];
+
+describe('listado de la planilla', () => {
+  it('toma la planilla nacional más nueva y no las regionales (con prefijo)', () => {
+    const l = (name: string) => `<a href="../meteorologia/boletines/pronostico_hidrologico/2026/NOVIEMBRE/${name}">x</a>`;
+    const html = [
+      l('RESUMEN EN PLANILLA PRONÓSTICO HIDROLÓGICO SENAMHI VIERNES 06-11-2026.pdf'),
+      l('RESUMEN EN PLANILLA PRONÓSTICO HIDROLÓGICO SENAMHI VIERNES 13-11-2026.pdf'),
+      l('CBBA-RESUMEN EN PLANILLA PRONÓSTICO HIDROLÓGICO SENAMHI VIERNES 13-11-2026.pdf'),
+      l('TAR-RESUMEN EN PLANILLA PRONÓSTICO HIDROLÓGICO SENAMHI SÁBADO 14-11-2026.pdf'),
+    ].join('\n');
+    const url = latestPlanillaUrl(html)!;
+    assert.match(decodeURIComponent(url), /\/NOVIEMBRE\/RESUMEN EN PLANILLA PRONÓSTICO HIDROLÓGICO SENAMHI VIERNES 13-11-2026\.pdf$/);
+    assert.equal(latestPlanillaUrl('<html></html>'), null);
+  });
+});
+
 describe('GET /api/rivers/bo/extra', () => {
-  const extras = (fetchedAt: number): BoExtras => ({ fetchedAt, forecast: parseForecastSummary(forecastText, 'u'), lake: parseLakeBulletin(lakeText, 'u') });
+  const extras = (fetchedAt: number): BoExtras => ({ fetchedAt, forecast: parseForecastSummary(forecastText, 'u'), lake: parseLakeBulletin(lakeText, 'u'), planilla: parsePlanilla(planillaPages, '2026-11-13', 'u') });
   const build = (get: () => Promise<BoExtras>, clock: { t: number }) => {
     const app = Fastify();
     riversRoutes(app, { ...loadConfig({}), appDir: new URL('../../app/public', import.meta.url).pathname }, { fetch: async () => { throw new Error('no usado'); } }, () => clock.t, get);
@@ -99,6 +118,7 @@ describe('GET /api/rivers/bo/extra', () => {
     assert.equal(a.json().stale, false);
     assert.equal(a.json().forecast.issuedOn, '2026-11-13');
     assert.equal(a.json().lake.levelM, 3.23);
+    assert.equal(a.json().planilla.rows.length, 80);
     assert.equal(a.headers['cache-control'], 'no-store');
     clock.t += 5 * 3_600_000;
     await app.inject({ method: 'GET', url: '/api/rivers/bo/extra' });

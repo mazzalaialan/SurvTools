@@ -4591,6 +4591,18 @@ a.module-card:hover {
   gap: 2px;
   text-align: right;
 }
+.threat-yellow {
+  background: var(--scale-4);
+  color: #1a1a1a;
+}
+.threat-orange {
+  background: var(--scale-5);
+  color: #1a1a1a;
+}
+.threat-red {
+  background: var(--scale-6);
+  color: #fff;
+}
 .chip-state {
   font-size: 0.8rem;
   font-weight: 700;

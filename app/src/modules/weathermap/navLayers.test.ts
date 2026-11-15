@@ -31,6 +31,17 @@ describe('capas de Navegación del mapa', () => {
     expect(boPoints(bo, null)).toEqual([]);
   });
 
+  it('en Bolivia la estación que sale en la planilla del pronóstico del SENAMHI lleva su amenaza (la peor si sale en varias tablas)', () => {
+    const levels: BoLevels = { reportDate: '2026-11-12', fetchedAt: 0, url: '', readings: [{ station: 'CAMIACO', river: 'MAMORE', prevDate: '2026-11-11', prevCm: 10, lastDate: '2026-11-12', lastCm: 12, zeroCm: null, trend: 'rising' }, { station: 'SICHEZ', river: 'SICHEZ', prevDate: '2026-11-11', prevCm: 10, lastDate: '2026-11-12', lastCm: 12, zeroCm: null, trend: 'steady' }] };
+    const catalog: BoCatalog = { generatedAt: '', source: '', stations: [{ name: 'CAMIACO', lat: -15, lon: -64, approx: false }, { name: 'SICHEZ', lat: -17, lon: -65, approx: false }] };
+    const row = (station: string, threat: 'yellow' | 'orange' | 'red', until: number | null = null) => ({ station, river: 'x', threat, trend: 'rises' as const, untilOverflow: until, unit: until === null ? null : ('m' as const), period: '13 al 15 noviembre' });
+    const points = boPoints(catalog, levels, [row('Camiaco', 'yellow', 6.54), row('Camiaco', 'orange', 1), row('Otra', 'red')]);
+    expect(points.find((p) => p.name === 'CAMIACO')).toMatchObject({ threat: 'orange', forecast: { untilOverflow: 1 } });
+    expect(points.find((p) => p.name === 'SICHEZ')!.threat).toBeUndefined();
+    // Sin planilla (servidor viejo o sin conexión) queda como antes.
+    expect(boPoints(catalog, levels, null).every((p) => p.threat === undefined)).toBe(true);
+  });
+
   it('las estaciones de Uruguay (CARU y DINAGUA) son puntos sin umbrales, con su fuente, quién mide y cuánto cambió', () => {
     const levels: UyLevels = {
       fetchedAt: 0,

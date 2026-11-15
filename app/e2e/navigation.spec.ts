@@ -277,6 +277,15 @@ test('Navegación: ríos y lago Titicaca de Bolivia (SENAMHI) con la fecha de ca
           url: 'https://senamhi.gob.bo/x/resumen.pdf',
         },
         lake: { date: '2026-11-06', levelM: 3.23, absoluteM: 3807.637, weekCm: -2, vsAverageM: -0.87, url: 'https://senamhi.gob.bo/x/lago.pdf' },
+        // La planilla por estación (forma real, leída por posición): Guanay sale dos veces, en la cuenca del Tipuani (naranja) y en la del Mapiri (amarilla).
+        planilla: {
+          issuedOn: '2026-11-13',
+          url: 'https://senamhi.gob.bo/x/planilla.pdf',
+          rows: [
+            { station: 'Guanay Mapiri', river: 'Mapiri', threat: 'yellow', trend: 'rises', untilOverflow: null, unit: null, period: '13 al 16, 21 al 23 noviembre' },
+            { station: 'Guanay Tipuani', river: 'Tipuani', threat: 'orange', trend: 'rises', untilOverflow: 2.5, unit: 'm', period: '13 al 16, 21 al 23 noviembre' },
+          ],
+        },
       },
     }),
   );
@@ -295,6 +304,11 @@ test('Navegación: ríos y lago Titicaca de Bolivia (SENAMHI) con la fecha de ca
   await expect(page.getByTestId('bo-forecast-spans')).toContainText('Probables ascensos: Del 13 al 16, 17 al 19');
   await expect(fc).toContainText('informativo, no es una alerta oficial');
   await expect(fc.getByRole('link', { name: 'Ver el resumen del SENAMHI' })).toHaveAttribute('href', 'https://senamhi.gob.bo/x/resumen.pdf');
+  // Lo que pronostica el SENAMHI para la estación (planilla): la peor amenaza, la tendencia, cuánto falta para el desborde y el período.
+  const threat = page.getByTestId('bo-GUANAY-MAPIRI').getByTestId('bo-threat-orange');
+  await expect(threat).toContainText('Pronóstico del SENAMHI: amenaza naranja · ascensos · faltan 2,5 m para el desborde');
+  await expect(threat).toContainText('13 al 16, 21 al 23 noviembre');
+  await expect(page.getByTestId('bo-HUATAJATA-TITICACA').getByTestId('bo-threat-orange')).toHaveCount(0);
   const lake = page.getByTestId('bo-lake');
   await expect(lake).toContainText('Huatajata: 3,23 m (3807,637 m s. n. m.)');
   await expect(lake).toContainText('bajó 2 cm en la semana');

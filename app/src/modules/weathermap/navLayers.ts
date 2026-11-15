@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchUyLevels, loadSavedUy, saveUy, type UyLevels } from '@/modules/navigation/uruguayRivers';
-import { loadBoCatalog, fetchBoLevels, loadSavedBo, saveBo, type BoCatalog, type BoLevels } from '@/modules/navigation/bolivia';
+import { loadBoCatalog, fetchBoExtras, fetchBoLevels, loadSavedBo, loadSavedBoExtras, planillaFor, saveBo, saveBoExtras, type BoCatalog, type BoExtras, type BoLevels, type BoPlanillaRow } from '@/modules/navigation/bolivia';
 import { fetchReadings, loadRivers, loadSavedReadings, riverState, saveReadings, type RiverReading, type RiversData, type RiverState, type RiverStation } from '@/modules/navigation/rivers';
 import { loadTides, type TideStation, type TidesData } from '@/modules/navigation/tides';
 import { fetchWaveGrid, loadSavedGrid, saveGrid, type WaveGrid } from './waveGrid';
@@ -31,6 +31,9 @@ export interface RiverPoint {
   trend?: 'rising' | 'falling' | 'steady';
   /** INA: la estación del catálogo (para pedir su pronóstico al tocarla). */
   station?: RiverStation;
+  /** Bolivia: la amenaza que pronostica el SENAMHI para esta estación (planilla del pronóstico hidrológico), si sale en ella. */
+  threat?: 'yellow' | 'orange' | 'red';
+  forecast?: BoPlanillaRow;
   /** Uruguay: quién lo publica (CARU o DINAGUA), quién mide (UTE, OSE…) y cuánto cambió el nivel (m) respecto de la lectura anterior. */
   uySource?: 'CARU' | 'DINAGUA';
   provider?: string;
@@ -51,13 +54,14 @@ export function inaPoints(stations: RiverStation[], readings: Map<number, RiverR
   });
 }
 
-export function boPoints(catalog: BoCatalog, levels: BoLevels | null): RiverPoint[] {
+export function boPoints(catalog: BoCatalog, levels: BoLevels | null, planilla?: BoPlanillaRow[] | null): RiverPoint[] {
   const byName = new Map((levels?.readings ?? []).map((r) => [r.station, r]));
   return catalog.stations.flatMap((s) => {
     const r = byName.get(s.name);
     // Sin lectura no se dibuja: en Bolivia el catálogo trae todas las estaciones posibles y la mayoría no está en el reporte del día.
     if (!r) return [];
-    return [{ id: `bo-${s.name}`, source: 'bo' as const, name: s.name, river: r.river, lon: s.lon, lat: s.lat, state: 'unknown' as const, level: r.lastCm, at: r.lastDate, alert: null, evac: null, low: null, trend: r.trend }];
+    const fc = planillaFor(planilla, s.name);
+    return [{ id: `bo-${s.name}`, source: 'bo' as const, name: s.name, river: r.river, lon: s.lon, lat: s.lat, state: 'unknown' as const, level: r.lastCm, at: r.lastDate, alert: null, evac: null, low: null, trend: r.trend, ...(fc ? { threat: fc.threat, forecast: fc } : {}) }];
   });
 }
 
@@ -96,6 +100,7 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
   const [boCatalog, setBoCatalog] = useState<BoCatalog | null>(null);
   const [boLevels, setBoLevels] = useState<BoLevels | null>(() => loadSavedBo());
   const [uyLevels, setUyLevels] = useState<UyLevels | null>(() => loadSavedUy());
+  const [boExtras, setBoExtras] = useState<BoExtras | null>(() => loadSavedBoExtras());
   const [tides, setTides] = useState<TidesData | null>(null);
   const [waves, setWaves] = useState<WaveGrid | null>(() => loadSavedGrid());
   const server = serverUrl?.trim() || null;
@@ -127,6 +132,14 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
             if (cancelled) return;
             saveBo(l);
             setBoLevels(l);
+          },
+          () => undefined,
+        );
+        fetchBoExtras(server).then(
+          (e) => {
+            if (cancelled) return;
+            saveBoExtras(e);
+            setBoExtras(e);
           },
           () => undefined,
         );
@@ -171,8 +184,8 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
 
   const riverPoints = useMemo<RiverPoint[] | null>(() => {
     if (!on.rivers || !ina) return null;
-    return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels) : []), ...uyPoints(uyLevels)];
-  }, [on.rivers, ina, readings, boCatalog, boLevels, uyLevels]);
+    return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels, boExtras?.planilla?.rows) : []), ...uyPoints(uyLevels)];
+  }, [on.rivers, ina, readings, boCatalog, boLevels, boExtras, uyLevels]);
   const tideList = useMemo(() => (on.tides && tides ? tidePoints(tides) : null), [on.tides, tides]);
   return { riverPoints, tidePoints: tideList, waves: on.waves ? waves : null };
 }

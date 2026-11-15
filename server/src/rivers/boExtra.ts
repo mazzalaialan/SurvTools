@@ -1,10 +1,11 @@
 import { extractText, getDocumentProxy } from 'unpdf';
+import { parsePlanilla, type BoPlanilla, type PlanillaItem } from './boPlanilla.ts';
 
 /**
  * Dos documentos más del SENAMHI Bolivia, además del reporte de niveles diarios (rivers/bo.ts): el resumen del pronóstico hidrológico de ~14
  * días (nota oficial con las cuencas bajo amenaza y los períodos de ascensos o descensos) y el boletín semanal del lago Titicaca (estación
  * Huatajata). Sin licencia declarada («Derechos Reservados»): se usa citando al SENAMHI y mostrando la fecha, igual que los niveles diarios.
- * El pronóstico por estación (la planilla) no se lee: sus celdas salen mezcladas del PDF y trae color de amenaza como imagen.
+ * La planilla por estación (amenaza, tendencia, cuánto falta para el desborde y período) se lee por la posición de cada texto: ver boPlanilla.ts.
  */
 export interface BoForecast {
   /** Fecha de emisión (AAAA-MM-DD) y período que cubre, como lo escribe el SENAMHI («13 AL 27 NOVIEMBRE DE 2026»). */
@@ -34,6 +35,8 @@ export interface BoExtras {
   fetchedAt: number;
   forecast: BoForecast | null;
   lake: BoLake | null;
+  /** La planilla por estación del pronóstico (la nacional), o null si no se pudo leer. */
+  planilla: BoPlanilla | null;
 }
 
 const FORECAST_LIST = 'https://senamhi.gob.bo/hidrologia/repositorio-pronostico';
@@ -63,6 +66,8 @@ function latestLink(html: string, pattern: RegExp, base: string): string | null 
 
 /** «…RESUMEN DEL BOLETÍN DE PRONÓSTICO HIDROLÓGICO SENAMHI VIERNES 13-11-2026.pdf» (sin los de «(DIRECTOR)» ni los de planilla). */
 export const latestForecastUrl = (html: string) => latestLink(html, /RESUMEN DEL BOLET[ÍI]N DE PRON[ÓO]STICO HIDROL[ÓO]GICO SENAMHI\s+\S+\s+(\d{2})-(\d{2})-(\d{4})\.pdf$/i, FORECAST_LIST);
+/** «…/RESUMEN EN PLANILLA PRONÓSTICO HIDROLÓGICO SENAMHI VIERNES 13-11-2026.pdf»: la nacional (las regionales llevan un prefijo, «CBBA-RESUMEN…», y son partes de ella). */
+export const latestPlanillaUrl = (html: string) => latestLink(html, /\/RESUMEN EN PLANILLA PRON[ÓO]STICO HIDROL[ÓO]GICO SENAMHI\s+\S+\s+(\d{2})-(\d{2})-(\d{4})\.pdf$/i, FORECAST_LIST);
 /** «…LAGO TITICACA - BOLETIN Semanal (Actualizado 06_11_2026).pdf». */
 export const latestLakeUrl = (html: string) => latestLink(html, /LAGO TITICACA - BOLETIN Semanal \(Actualizado (\d{2})_(\d{2})_(\d{4})\)\.pdf$/i, LAKE_LIST);
 
@@ -121,6 +126,20 @@ async function pdfText(url: string): Promise<string> {
   return text as string;
 }
 
+/** La planilla: los textos con su posición en cada página, y la fecha de emisión que dice el nombre del archivo. */
+async function planillaFrom(url: string): Promise<BoPlanilla | null> {
+  const buf = new Uint8Array(await (await get(url)).arrayBuffer());
+  if (buf.length > MAX_PDF) throw new Error('SENAMHI Bolivia: el PDF es demasiado grande');
+  const pdf = await getDocumentProxy(buf);
+  const pages: PlanillaItem[][] = [];
+  for (let n = 1; n <= pdf.numPages; n++) {
+    const content = await (await pdf.getPage(n)).getTextContent();
+    pages.push(content.items.flatMap((i) => ('str' in i && i.str.trim() ? [[i.str.trim(), Math.round(i.transform[4]!), Math.round(i.transform[5]!)] as PlanillaItem] : [])));
+  }
+  const date = /(\d{2})-(\d{2})-(\d{4})\.pdf$/i.exec(decode(url));
+  return date ? parsePlanilla(pages, iso(date[3]!, date[2]!, date[1]!), url) : null;
+}
+
 /** Baja el último resumen del pronóstico y el último boletín del lago; cada uno puede fallar sin tirar al otro (null). Falla si ninguno sale. */
 export async function fetchBoExtras(now = Date.now()): Promise<BoExtras> {
   const one = async <T>(list: string, find: (html: string) => string | null, parse: (text: string, url: string) => T | null): Promise<T | null> => {
@@ -131,7 +150,15 @@ export async function fetchBoExtras(now = Date.now()): Promise<BoExtras> {
       return null;
     }
   };
-  const [forecast, lake] = await Promise.all([one(FORECAST_LIST, latestForecastUrl, parseForecastSummary), one(LAKE_LIST, latestLakeUrl, parseLakeBulletin)]);
-  if (!forecast && !lake) throw new Error('SENAMHI Bolivia: no se pudo leer el pronóstico ni el boletín del lago');
-  return { fetchedAt: now, forecast, lake };
+  const planilla = async (): Promise<BoPlanilla | null> => {
+    try {
+      const url = latestPlanillaUrl(await (await get(FORECAST_LIST)).text());
+      return url ? await planillaFrom(url) : null;
+    } catch {
+      return null;
+    }
+  };
+  const [forecast, lake, stations] = await Promise.all([one(FORECAST_LIST, latestForecastUrl, parseForecastSummary), one(LAKE_LIST, latestLakeUrl, parseLakeBulletin), planilla()]);
+  if (!forecast && !lake && !stations) throw new Error('SENAMHI Bolivia: no se pudo leer el pronóstico, el boletín del lago ni la planilla');
+  return { fetchedAt: now, forecast, lake, planilla: stations };
 }

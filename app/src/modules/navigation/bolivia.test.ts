@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ageDays, nearestBo, OLD_READING_DAYS, type BoCatalog, type BoLevels } from './bolivia';
+import { ageDays, boThreatLine, nearestBo, OLD_READING_DAYS, planillaFor, type BoCatalog, type BoLevels, type BoPlanillaRow } from './bolivia';
 
 const catalog = JSON.parse(readFileSync(new URL('../../../public/data/rivers-BO.json', import.meta.url), 'utf8')) as BoCatalog;
 const reading = (station: string, river: string, lastCm: number, lastDate = '2026-11-12') => ({ station, river, prevDate: '2026-11-11', prevCm: lastCm - 1, lastDate, lastCm, zeroCm: null, trend: 'steady' as const });
@@ -40,5 +40,25 @@ describe('niveles de ríos de Bolivia', () => {
     expect(ageDays('2026-11-12', '2026-11-12')).toBe(0);
     expect(ageDays('2026-11-11', '2026-11-12')).toBe(1);
     expect(ageDays('2026-06-01', '2026-11-12')).toBeGreaterThan(OLD_READING_DAYS);
+  });
+
+  it('cruza el catálogo con la planilla del pronóstico: nombres con otra forma, palabras partidas y la peor amenaza', () => {
+    const row = (station: string, threat: BoPlanillaRow['threat']): BoPlanillaRow => ({ station, river: 'x', threat, trend: 'rises', untilOverflow: null, unit: null, period: '' });
+    const rows = [row('Guayaram erin', 'yellow'), row('Pico de Loro', 'orange'), row('Pico de loro', 'orange'), row('Puerto Villarroel', 'yellow'), row('Puerto Villarroel', 'red'), row('Tupiza-1', 'yellow')];
+    expect(planillaFor(rows, 'GUAYARAMERIN')?.station).toBe('Guayaram erin');
+    expect(planillaFor(rows, 'PICO DE LORO')?.threat).toBe('orange');
+    expect(planillaFor(rows, 'PUERTO VILLARROEL')?.threat).toBe('red');
+    expect(planillaFor(rows, 'TUPIZA')?.station).toBe('Tupiza-1');
+    expect(planillaFor(rows, 'ABAPO')).toBeNull();
+    expect(planillaFor(undefined, 'ABAPO')).toBeNull();
+    expect(planillaFor(rows, 'EL')).toBeNull(); // un nombre corto no se cruza por prefijo
+  });
+
+  it('la línea de la amenaza: nivel, tendencia y cuánto falta, con su unidad', () => {
+    const t = (key: string, o?: Record<string, unknown>) => `${key}${o ? JSON.stringify(o) : ''}`;
+    const line = boThreatLine({ station: 'Corani', river: 'Corani', threat: 'orange', trend: 'rises', untilOverflow: 218.69, unit: 'm3s', period: '' }, t, 'es');
+    expect(line).toContain('"unit":"m³/s"');
+    expect(line).toContain('"value":"218,69"');
+    expect(boThreatLine({ station: 'X', river: 'x', threat: 'yellow', trend: null, untilOverflow: null, unit: null, period: '' }, t, 'es')).not.toContain('until');
   });
 });

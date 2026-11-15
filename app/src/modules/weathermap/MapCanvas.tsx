@@ -598,11 +598,13 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
   }
 
   // Niveles de ríos: círculo del color del estado (evacuación, alerta, aguas bajas, normal; gris sin dato). Estaciones de mareas: rombo.
+  const THREAT_COLOR = { yellow: c.s4!, orange: c.s5!, red: c.s6! };
   const RIVER_COLOR: Record<NavState, string> = { evac: c.s6!, alert: c.s5!, low: c.s4!, normal: c.info!, unknown: c.muted! };
   for (const r of [...(p.riverPoints ?? [])].sort((a, b) => Number(a.state !== 'unknown' && a.state !== 'normal') - Number(b.state !== 'unknown' && b.state !== 'normal'))) {
     const s = proj(r.lon, r.lat);
-    const hot = r.state === 'evac' || r.state === 'alert' || r.state === 'low';
-    ctx.fillStyle = RIVER_COLOR[r.state];
+    // Bolivia: el color es la amenaza del pronóstico del SENAMHI (amarilla, naranja o roja), si la estación sale en la planilla.
+    const hot = r.state === 'evac' || r.state === 'alert' || r.state === 'low' || r.threat === 'orange' || r.threat === 'red';
+    ctx.fillStyle = r.threat ? THREAT_COLOR[r.threat] : RIVER_COLOR[r.state];
     ctx.strokeStyle = c.bg!;
     ctx.lineWidth = 1.5;
     ctx.beginPath();

@@ -289,6 +289,25 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
       },
     }),
   );
+  // Bolivia (SENAMHI): el reporte diario y la planilla del pronóstico, que lee el servidor propio. Villamontes (sur de Bolivia, dentro de la vista) sale en la planilla con amenaza naranja.
+  await context.route('https://valhallarust2.ddns.net/api/rivers/bo', (route) =>
+    route.fulfill({
+      headers: { 'access-control-allow-origin': '*' },
+      json: { reportDate: '2026-11-12', fetchedAt: Date.now(), url: 'https://senamhi.gob.bo/x.pdf', stale: false, readings: [{ station: 'VILLAMONTES', river: 'PILCOMAYO', prevDate: '2026-11-11', prevCm: 300, lastDate: '2026-11-12', lastCm: 310, zeroCm: null, trend: 'rising' }] },
+    }),
+  );
+  await context.route('https://valhallarust2.ddns.net/api/rivers/bo/extra', (route) =>
+    route.fulfill({
+      headers: { 'access-control-allow-origin': '*' },
+      json: {
+        fetchedAt: Date.now(),
+        stale: false,
+        forecast: null,
+        lake: null,
+        planilla: { issuedOn: '2026-11-13', url: 'https://senamhi.gob.bo/x/planilla.pdf', rows: [{ station: 'Villa montes', river: 'Pilcomayo', threat: 'orange', trend: 'rises', untilOverflow: 6.54, unit: 'm', period: '14 al 16, 17 al 19 noviembre' }] },
+      },
+    }),
+  );
   await setup(page);
   await page.goto('/#/weather/map');
   await expect(page.getByTestId('weather-map')).toBeVisible();
@@ -330,6 +349,12 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
   await expect(card).toContainText(/[-−]0,12 m desde la lectura anterior/);
   await expect(card).toContainText('Fuente: DINAGUA (UTE)');
   await expect(card).not.toContainText('Alerta');
+  // Una estación de Bolivia que sale en la planilla del pronóstico: su amenaza, la tendencia, cuánto falta para el desborde y el período.
+  await tap(page, -63.5033, -21.2611);
+  await expect(card).toContainText('VILLAMONTES · PILCOMAYO');
+  await expect(card).toContainText('310 cm sobre la escala');
+  await expect(card).toContainText('Pronóstico del SENAMHI: amenaza naranja · ascensos · faltan 6,54 m para el desborde');
+  await expect(card).toContainText('14 al 16, 17 al 19 noviembre');
   await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
   await page.getByRole('button', { name: 'Lluvia estimada (satélite)' }).click();
   await page.waitForTimeout(700);

@@ -52,8 +52,8 @@ export function riversRoutes(app: FastifyInstance, config: Config, source: BoSou
    */
   app.get('/api/rivers/bo/extra', async (_req, reply) => {
     reply.header('cache-control', 'no-store');
-    // Completo vale 6 horas; si falta el pronóstico o el boletín del lago, se reintenta a la hora.
-    if (lastExtras && now() - lastExtras.fetchedAt < (lastExtras.forecast && lastExtras.lake ? EXTRA_FRESH_MS : EXTRA_PARTIAL_MS)) return { ...lastExtras, stale: false };
+    // Completo vale 6 horas; si falta el pronóstico, el boletín del lago o la planilla, se reintenta a la hora.
+    if (lastExtras && now() - lastExtras.fetchedAt < (lastExtras.forecast && lastExtras.lake && lastExtras.planilla ? EXTRA_FRESH_MS : EXTRA_PARTIAL_MS)) return { ...lastExtras, stale: false };
     try {
       inflightExtras ??= extras().finally(() => (inflightExtras = null));
       lastExtras = await inflightExtras;

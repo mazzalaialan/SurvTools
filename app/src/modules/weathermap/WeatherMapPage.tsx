@@ -19,6 +19,7 @@ import { sourceEnabled } from '@/modules/navigation/sources';
 import { compass8, seaState } from '@/modules/navigation/waves';
 import { RiverForecastLine } from './RiverForecastLine';
 import { TideGaugeLine } from './TideGaugeLine';
+import { boThreatLine } from '@/modules/navigation/bolivia';
 import { tideExtremes, tideLevelAt } from '@/modules/navigation/tides';
 import { fitBounds, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
 import { Notice } from '@/ui/Notice';
@@ -732,6 +733,8 @@ function FeatureCard({
         lines = [
           t('weatherMap.riverBoLevel', { cm: r.level ?? '—', date: r.at ? day.format(new Date(r.at)) : '—' }),
           r.trend ? t(`navigation.bolivia.trend.${r.trend}`) : '',
+          r.forecast ? boThreatLine(r.forecast, t, i18n.language) : '',
+          r.forecast?.period ?? '',
         ].filter(Boolean);
       } else if (r.source === 'uy') {
         const sgn = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: 'always' });
