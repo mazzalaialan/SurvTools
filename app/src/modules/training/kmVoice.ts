@@ -20,6 +20,8 @@ export function useKmVoice(): void {
   const { t, i18n } = useTranslation();
   const voice = useSettings((s) => s.settings.trainingVoice);
   const status = useRecorder((s) => s.status);
+  // Conduciendo, un aviso por kilómetro sería cada medio minuto: no se habla.
+  const driving = useRecorder((s) => !!s.track?.vehicle);
   const trackId = useRecorder((s) => s.track?.id ?? null);
   // Se recalcula solo cuando cambia el kilómetro entero, no con cada punto del GPS.
   const km = useRecorder((s) => Math.floor((s.track?.distanceM ?? 0) / 1000));
@@ -39,7 +41,7 @@ export function useKmVoice(): void {
       return;
     }
     spoken.current.km = km;
-    if (!voice || status !== 'recording' || !('speechSynthesis' in window)) return;
+    if (!voice || driving || status !== 'recording' || !('speechSynthesis' in window)) return;
     const s = useRecorder.getState();
     const segments = s.track?.segments ?? [];
     // ¿El último punto es reciente? Si no, el kilómetro se pasó con la pantalla apagada: no se anuncia.

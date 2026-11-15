@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FORECAST_MODELS, fetchForecasts, fetchOutlooks, OUTLOOK_MODELS, parseRun, stationsBySeries, summarize, type StationForecast } from './forecast';
 import type { RiversData } from './rivers';
 
@@ -26,6 +26,14 @@ const run = (values: number[], lo = -0.3, hi = 0.4) => [
 ];
 
 describe('pronóstico de ríos del INA', () => {
+  // Las corridas de prueba tienen fechas fijas y el código descarta los puntos anteriores a «ahora»: sin congelar la fecha,
+  // las pruebas se rompen solas con el paso de los días (pasó el 2026-11-15).
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(T0);
+  });
+  afterEach(() => vi.useRealTimers());
+
   it('lee la línea principal y la banda de cada estación', () => {
     const m = FORECAST_MODELS[0]!;
     const out = parseRun(run([3, 3.5, 4]), m, T0);

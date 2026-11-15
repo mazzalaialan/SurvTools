@@ -328,6 +328,8 @@ export function FinishDialog({ initialName, points, onClose }: { initialName: st
   const finish = useRecorder((s) => s.finish);
   const recorded = useRecorder((s) => s.track?.activity);
   const recordedPack = useRecorder((s) => s.track?.activityPackKg);
+  // En modo «Conducir» solo se pide el nombre: no hay actividad, mochila ni peso (no es un entrenamiento).
+  const driving = useRecorder((s) => !!s.track?.vehicle);
   const bodyKg = useBodyWeight();
   const [name, setName] = useState(initialName);
   const [kind, setKind] = useState<WorkoutKind>(recorded ?? 'walk');
@@ -338,7 +340,7 @@ export function FinishDialog({ initialName, points, onClose }: { initialName: st
   const weightKg = Number(weight.replace(',', '.'));
   async function stop() {
     onClose();
-    const id = await finish(name, nothing ? undefined : { kind, packKg: kind === 'trek' && packKg > 0 ? packKg : null, weightKg: !bodyKg && weightKg >= 20 && weightKg <= 400 ? weightKg : null });
+    const id = await finish(name, nothing || driving ? undefined : { kind, packKg: kind === 'trek' && packKg > 0 ? packKg : null, weightKg: !bodyKg && weightKg >= 20 && weightKg <= 400 ? weightKg : null });
     const workoutId = useRecorder.getState().lastWorkoutId;
     if (workoutId) navigate(`/training/workouts/${workoutId}`);
     else if (id) navigate(`/orientation/tracks/${id}`);
@@ -371,6 +373,14 @@ export function FinishDialog({ initialName, points, onClose }: { initialName: st
           <p className="error" role="alert">
             {t('tracks.rec.nothingYet')}
           </p>
+        ) : driving ? (
+          <>
+            <div className="field">
+              <label htmlFor="rec-name">{t('tracks.name')}</label>
+              <input id="rec-name" className="input" value={name} onChange={(e) => setName(e.target.value)} autoFocus onFocus={(e) => e.target.select()} />
+            </div>
+            <p className="hint" style={{ margin: 0 }}>{t('drive.savesTrack')}</p>
+          </>
         ) : (
           <>
             <div className="field">

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { GeoError } from '@/core/geo/useGeolocation';
 import { newEntity } from '@/core/model/entity';
-import type { Id, Track, WorkoutKind } from '@/core/model/types';
+import type { Id, Track, VehicleKind, WorkoutKind } from '@/core/model/types';
 import { isUnlocked } from '@/core/security/session';
 import { useMedical } from '@/modules/firstAid/medicalStore';
 import { workoutFromRecording } from '@/modules/training/store';
@@ -9,8 +9,9 @@ import { useTraining } from '@/modules/training/store';
 import type { IntervalPlan } from '@/modules/training/intervals';
 import { analyzeRecording } from '@/modules/training/stats';
 import { trackStats, type TrackPoint } from './gpx';
+import { driveSummary } from './drive';
 import { addLocked, clearLocked, newRecKey, prepareLocked, readLocked } from './lockedBuffer';
-import { addPoint, closeGap, dropOpenGap, finishedTrack, openGap, SAVER_STEP_M, shouldAdd } from './record';
+import { addPoint, closeGap, dropOpenGap, finishedTrack, MAX_ACCURACY_M, openGap, SAVER_STEP_M, shouldAdd } from './record';
 import { useSettings } from '@/core/settings/settings';
 import { useTracks } from './store';
 
@@ -53,8 +54,10 @@ interface RecorderState {
   gapJoined: boolean | null;
   /** Precisión de la última posición del GPS (para mostrar por qué todavía no graba). */
   accuracy: number | null;
+  /** Última posición del GPS con su velocidad, rumbo y altura (solo en modo «Conducir»: el GPS da la velocidad de ahora mejor que los puntos guardados). */
+  fix: { speedMs: number | null; heading: number | null; altitude: number | null; at: number } | null;
   /** Empieza a grabar; con `kind` es una sesión de Entrenamiento (al terminar crea la actividad). */
-  start: (name: string, opts?: { kind?: WorkoutKind; packKg?: number | null; intervals?: IntervalPlan | null }) => Promise<void>;
+  start: (name: string, opts?: { kind?: WorkoutKind; packKg?: number | null; intervals?: IntervalPlan | null; vehicle?: VehicleKind }) => Promise<void>;
   /** La actividad que creó la última grabación terminada (para abrirla al terminar). */
   lastWorkoutId: Id | null;
   pause: () => Promise<void>;
@@ -67,7 +70,7 @@ interface RecorderState {
   lap: () => void;
 }
 
-const IDLE = { status: 'idle', track: null, elapsedMs: 0, since: null, error: null, warned: false, gapS: null, gapFrom: null, gapTo: null, gapJoined: null, accuracy: null, lastWorkoutId: null } as const;
+const IDLE = { status: 'idle', track: null, elapsedMs: 0, since: null, error: null, warned: false, gapS: null, gapFrom: null, gapTo: null, gapJoined: null, accuracy: null, fix: null, lastWorkoutId: null } as const;
 
 /** Más que esto con la pantalla apagada, se avisa que no se grabó. */
 const GAP_NOTICE_MS = 20_000;
@@ -112,6 +115,12 @@ function onPosition(p: GeolocationPosition) {
   if (s.status !== 'recording' || !s.track) return;
   const fix = { lat: p.coords.latitude, lon: p.coords.longitude, accuracy: p.coords.accuracy };
   if (s.error || s.accuracy !== fix.accuracy) useRecorder.setState({ error: null, accuracy: fix.accuracy });
+  // Conduciendo: la velocidad y el rumbo salen del GPS en cada posición (aunque no se guarde el punto), para mostrarlos de ahora.
+  if (s.track.vehicle && fix.accuracy <= MAX_ACCURACY_M) {
+    const speedMs = p.coords.speed !== null && Number.isFinite(p.coords.speed) ? Math.max(0, p.coords.speed) : null;
+    const heading = p.coords.heading !== null && Number.isFinite(p.coords.heading) ? p.coords.heading : null;
+    useRecorder.setState({ fix: { speedMs, heading, altitude: p.coords.altitude ?? null, at: p.timestamp } });
+  }
   const segments = s.track.segments;
   if (!shouldAdd(segments[segments.length - 1]?.at(-1), fix, lowPower() ? SAVER_STEP_M : undefined)) return;
   // Con la hora (segundos): de ahí salen el tiempo en movimiento, el ritmo y los parciales del Entrenamiento.
@@ -168,6 +177,8 @@ export const useRecorder = create<RecorderState>((set, get) => ({
       recording: true,
       durationS: 0,
       ...(opts?.kind ? { activity: opts.kind, activityPackKg: opts.packKg ?? null, intervals: opts.intervals ?? null } : {}),
+      // Conducir y entrenar son excluyentes: un recorrido en vehículo nunca es una sesión de Entrenamiento.
+      ...(!opts?.kind && opts?.vehicle ? { vehicle: opts.vehicle } : {}),
       recKey: await newRecKey(),
     });
     prepareLocked(track.recKey!);
@@ -220,7 +231,8 @@ export const useRecorder = create<RecorderState>((set, get) => ({
     const raw = s.track.segments.map((seg) => (seg.length > 1 ? seg : []));
     const activity = opts?.kind ?? s.track.activity;
     const stats = activity ? analyzeRecording(raw) : null;
-    const finished = finishedTrack({ ...s.track, name: finalName, ...(activity ? { activity, activityPackKg: opts?.packKg ?? s.track.activityPackKg ?? null } : {}) }, elapsedS(s));
+    const drive = s.track.vehicle ? driveSummary(raw, elapsedS(s)) : undefined;
+    const finished = finishedTrack({ ...s.track, name: finalName, ...(activity ? { activity, activityPackKg: opts?.packKg ?? s.track.activityPackKg ?? null } : {}), ...(drive ? { drive } : {}) }, elapsedS(s));
     // La clave de la grabación ya no hace falta.
     const done = finished && { ...finished, recKey: undefined };
     const kind = activity;

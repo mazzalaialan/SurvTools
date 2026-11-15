@@ -340,6 +340,19 @@ export type WorkoutKind =
   | 'roadBike' | 'mtb' | 'gravel' | 'cityBike' | 'ebike'
   | 'treadmill' | 'elliptical' | 'stairClimber';
 
+/** Vehículo de un recorrido grabado en modo «Conducir» (ver modules/tracks/drive.ts). */
+export type VehicleKind = 'car' | 'motorcycle' | 'fourByFour' | 'truck' | 'other';
+
+/** Resumen de un recorrido en vehículo: solo lo útil al manejar (sin calorías ni ritmo). */
+export interface DriveSummary {
+  maxKmh: number;
+  /** Velocidad media en movimiento (sin paradas) y total (con paradas). */
+  avgMovingKmh: number;
+  avgKmh: number;
+  movingS: number;
+  stoppedS: number;
+}
+
 /**
  * Una sesión de entrenamiento: grabada con el GPS (el recorrido queda en el
  * track `trackId`, con su mapa y su perfil de altura) o cargada a mano
@@ -581,6 +594,10 @@ export interface Track extends BaseEntity {
   /** Grabado como sesión de Entrenamiento: qué actividad y la carga (mochila, kg). Al terminar crea la actividad. */
   activity?: WorkoutKind;
   activityPackKg?: number | null;
+  /** Grabado en modo «Conducir»: con qué vehículo. Nunca es una sesión de Entrenamiento (sin calorías ni ritmo). */
+  vehicle?: VehicleKind;
+  /** Resumen de la conducción, calculado al terminar con todos los puntos. */
+  drive?: DriveSummary;
   /** Sesión por intervalos (ver modules/training/intervals.ts). */
   intervals?: IntervalPlanData | null;
   /** Vueltas marcadas con el botón durante la grabación: tiempo (s) y distancia (m) acumulados al marcar. */

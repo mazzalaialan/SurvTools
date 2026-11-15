@@ -484,3 +484,61 @@ test('Tracks: los cargados y mis recorridos van en pestañas separadas, con busc
   await expect(page.getByTestId('tracks-list').getByRole('listitem')).toHaveCount(1);
   await expect(page.getByTestId('tracks-list')).not.toContainText('Cerro Platita');
 });
+
+test('modo Conducir: se graba en vehículo con la velocidad en vivo, sin calorías ni ritmo, y se guarda solo como recorrido con su resumen', async ({ page, context }, testInfo) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 5 });
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // Desde Tracks se elige el vehículo y se empieza; abre la pantalla en vivo de conducción.
+  await page.goto('/#/orientation/tracks');
+  await page.getByTestId('drive-start').click();
+  await page.getByLabel('Vehículo').selectOption({ label: 'Moto' });
+  await page.getByTestId('drive-begin').click();
+  await expect(page).toHaveURL(/#\/training\/live$/);
+  const drive = page.getByTestId('drive');
+  await expect(drive).toContainText('Moto');
+  await expect(drive).toContainText('Grabando');
+  // Nada de entrenamiento: ni calorías, ni ritmo, ni vueltas, ni elegir actividad.
+  await expect(drive).not.toContainText('kcal');
+  await expect(drive).not.toContainText('Calorías');
+  await expect(drive).not.toContainText('Ritmo');
+  await expect(page.getByTestId('live-kind')).toHaveCount(0);
+  await expect(page.getByTestId('live-lap')).toHaveCount(0);
+  for (const label of ['Velocidad máxima', 'Media en movimiento', 'Parado', 'Rumbo', 'Altura']) await expect(drive).toContainText(label);
+  await page.getByTestId('rec-warn').getByRole('button', { name: 'Entendido' }).click();
+
+  // Se maneja un poco al norte (unos 33 m por paso).
+  for (const lat of [-34.5997, -34.5994, -34.5991]) {
+    await context.setGeolocation({ latitude: lat, longitude: -58.4, accuracy: 5 });
+    await page.waitForTimeout(400);
+  }
+  await expect(page.getByTestId('drive-distance')).toHaveText(/^\d+ m$/);
+  await expect(page.getByTestId('drive-heading')).toContainText(/^N/);
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-41-drive.png`, fullPage: true });
+
+  // Al terminar solo pide el nombre (sin actividad, mochila ni peso) y deja un recorrido con su resumen.
+  await page.getByTestId('live-finish').click();
+  await expect(page.getByLabel('Actividad', { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Peso (kg)')).toHaveCount(0);
+  await expect(page.getByText('no como entrenamiento')).toBeVisible();
+  await page.getByLabel('Nombre').fill('Viaje a la costa');
+  await page.getByTestId('rec-save-btn').click();
+  await expect(page).toHaveURL(/#\/orientation\/tracks\/[^/]+$/);
+  await expect(page.getByRole('heading', { name: 'Viaje a la costa' })).toBeVisible();
+  const stats = page.getByTestId('drive-stats');
+  await expect(stats).toContainText('Moto');
+  await expect(stats).toContainText('Velocidad máxima');
+  await expect(stats).toContainText('Media con paradas');
+  await expect(page.getByTestId('track-workout')).toHaveCount(0);
+
+  // Y no es una sesión de Entrenamiento: el historial sigue vacío.
+  await page.goto('/#/training/workouts');
+  await expect(page.getByTestId('train-row')).toHaveCount(0);
+});

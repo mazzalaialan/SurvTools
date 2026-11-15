@@ -5,6 +5,7 @@ import type { WorkoutKind } from '@/core/model/types';
 import { Flag, Pause, Play, Square, Volume2, VolumeX } from 'lucide-react';
 import { useWakeLock } from '@/core/power/useWakeLock';
 import { useSettings } from '@/core/settings/settings';
+import { DrivePanel } from '@/modules/tracks/DrivePanel';
 import { FinishDialog, PocketButton } from '@/modules/tracks/Recording';
 import { elapsedS, useRecorder } from '@/modules/tracks/recorder';
 import { ACTIVITIES, ACTIVITY_KINDS } from './activities';
@@ -82,6 +83,9 @@ export function LivePage() {
       beep(440, 80);
     }
   }); // cada segundo
+
+  // Conducir (auto, moto…): otra pantalla, sin calorías ni ritmo.
+  if (track?.vehicle && status !== 'idle') return <DrivePanel />;
 
   if (status === 'idle' || !track || !stats) {
     return (

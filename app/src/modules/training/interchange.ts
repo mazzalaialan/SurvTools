@@ -15,7 +15,7 @@ const iso = (s: number) => new Date(s * 1000).toISOString();
 
 export interface ExportActivity {
   name: string;
-  kind: WorkoutKind;
+  kind: WorkoutKind | 'driving';
   /** Inicio (ISO), por si los puntos no traen hora. */
   startedAt: string;
   segments: TrackPoint[][];
@@ -45,7 +45,7 @@ ${segs}
 }
 
 /** El deporte que entiende TCX (Garmin): Running, Biking u Other. */
-function tcxSport(kind: WorkoutKind): 'Running' | 'Biking' | 'Other' {
+function tcxSport(kind: string): 'Running' | 'Biking' | 'Other' {
   if (kind === 'run' || kind === 'treadmill') return 'Running';
   if (['roadBike', 'mtb', 'gravel', 'cityBike', 'ebike'].includes(kind)) return 'Biking';
   return 'Other';

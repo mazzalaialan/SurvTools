@@ -33,7 +33,8 @@ export interface RecordedStats {
   splitsS: number[];
 }
 
-export function analyzeRecording(segments: TrackPoint[][]): RecordedStats {
+/** `maxPlausibleMs`: por encima de esa velocidad un salto del GPS se descarta (a pie y en bici 25 m/s; en vehículo mucho más). */
+export function analyzeRecording(segments: TrackPoint[][], maxPlausibleMs = MAX_PLAUSIBLE_MS): RecordedStats {
   const base = trackStats(segments);
   let totalS = 0;
   let movingS = 0;
@@ -52,7 +53,7 @@ export function analyzeRecording(segments: TrackPoint[][]): RecordedStats {
       if (dt <= 0) continue;
       const d = distanceMeters({ lat: a[0], lon: a[1] }, { lat: b[0], lon: b[1] });
       const v = d / dt;
-      if (v > MAX_PLAUSIBLE_MS) continue;
+      if (v > maxPlausibleMs) continue;
       if (v < STOPPED_MS || (dt > STOP_GAP_S && v < STOPPED_MS * 2)) continue;
       movingS += dt;
       maxMs = Math.max(maxMs, v);

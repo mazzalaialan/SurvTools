@@ -18,6 +18,7 @@ import { ElevationProfile } from './ElevationProfile';
 import { useRecorder } from './recorder';
 import { formatDuration } from './Recording';
 import { useTraining } from '@/modules/training/store';
+import { DriveStats } from './DriveStats';
 import { useTracks } from './store';
 import { confirmAction } from '@/ui/confirm';
 
@@ -190,6 +191,7 @@ function TrackDetail({ track }: { track: Track }) {
             </div>
           )}
         </dl>
+        {track.drive && <DriveStats track={track} />}
         <ElevationProfile track={track} />
         {track.gaps && track.gaps.length > 0 && (
           <div className="stack" style={{ gap: 4 }} data-testid="track-gaps">
@@ -231,7 +233,7 @@ function TrackDetail({ track }: { track: Track }) {
               testId="track-export"
               formats={{
                 name: track.name,
-                gpx: () => toGpx({ name: track.name, kind: track.activity ?? 'walk', startedAt: track.createdAt, segments: track.segments }),
+                gpx: () => toGpx({ name: track.name, kind: track.activity ?? (track.vehicle ? 'driving' : 'walk'), startedAt: track.createdAt, segments: track.segments }),
                 kml: () => toKml(track.name, track.segments.flat().map(([lat, lon, ele]) => ({ lat, lon, ele }))),
               }}
             />

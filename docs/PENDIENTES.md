@@ -7,6 +7,17 @@
 ### Lo que se publicó en 0.66.0 → 0.68.1 (Navegación y alertas)
 Ríos, mareas, oleaje y pronósticos en `Meteorología → Navegación` y en capas del mapa de alertas y clima (ríos, mareas, oleaje, focos de calor): INA (alturas, caudales, pronóstico, perspectivas semanal y estacional, Delta), IOC (mareógrafos, clave en el `.env` de producción), Chile (Armada: zonas y bahías), Uruguay (INUMET, CARU, DINAGUA), Bolivia (SENAMHI: niveles, pronóstico de 14 días, Titicaca), focos de calor NASA FIRMS con confianza, aviso push anticipado de crecida, descarga incremental de paquetes por país, estación de río más cercana en la ficha del waypoint. Detalle en las secciones de abajo, `docs/FUENTES-DE-DATOS.md` y `docs/SERVIDOR.md`.
 
+### Modo «Conducir» (hecho el 2026-11-15, commiteado, **sin publicar**)
+Pedido de quien dirige: grabar una conducción en auto, moto, etc., **sin calorías ni ritmo**, solo lo útil (velocidad de ahora y otros datos).
+- **Dónde:** botón «Grabar en vehículo» en Tracks (`tracks/DriveStart.tsx`): se elige Auto, Moto, Camioneta o 4x4, Camión u Otro y abre la pantalla en vivo (`/training/live`, que muestra `tracks/DrivePanel.tsx` cuando el track tiene `vehicle`).
+- **Qué es:** solo un **recorrido** (`Track.vehicle` + `Track.drive`), **nunca una sesión de Entrenamiento**: no entra en el historial, metas, récords ni equipo. Es excluyente con la actividad (`start` ignora `vehicle` si hay `kind`).
+- **En vivo:** velocidad de ahora en grande (la del GPS, `coords.speed`; si no la da, la de los últimos puntos; «—» si la posición tiene más de 10 s), máxima (también la que dio el GPS entre puntos guardados), media en movimiento y con paradas, distancia, tiempo del viaje, en movimiento y parado, rumbo (GPS en movimiento; parado, el del último tramo), altura y subida acumulada. Sin voz por kilómetro (`useKmVoice` no habla conduciendo). Mantiene pantalla negra, compartir ubicación en vivo y el aviso «no mires el celular manejando».
+- **Al terminar:** solo pide el nombre; la ficha del track muestra el resumen (`DriveStats`: vehículo, máxima, medias, en movimiento y parado). El GPX exporta con `<type>driving</type>`.
+- **Cálculo:** `tracks/drive.ts`; `analyzeRecording` recibe un límite de salto del GPS (25 m/s a pie y en bici, 90 m/s en vehículo; con el de a pie se habría descartado todo a ruta).
+- **Pruebas:** `tracks/drive.test.ts` y e2e en `tracks.spec.ts` (escritorio y Android). Arreglé de paso dos pruebas de `navigation/forecast.test.ts` que se rompían solas con los días (fechas fijas del 13/11: ahora congelan la fecha).
+- **No se probó en un auto o moto reales** (el GPS simulado de Playwright no da `speed`: la velocidad del GPS y el rumbo hay que verlos en un celular). El texto de «Compartir ubicación en vivo» sigue hablando de «entrenar».
+- **Ideas sin hacer:** aviso sonoro al pasar un límite de velocidad elegido, odómetro por vehículo (como el equipo de Entrenamiento), consumo y costo de combustible por viaje, recordar el último vehículo elegido, botón en el mapa.
+
 ### Hay que probar en un celular real (nada se vio en un teléfono)
 1. Pronóstico del INA en Rosario o Corrientes (el arreglo de la 0.68.0: la API real no traía `estacion_id`).
 2. Focos de calor: llama roja (alta confianza) y chispa (resto), grupos estables al mover el mapa, selector «solo alta confianza».
