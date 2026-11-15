@@ -77,7 +77,7 @@ export function LiveShareCard() {
         </>
       ) : (
         <>
-          <p className="hint" style={{ margin: 0 }}>{t('liveShare.intro')}</p>
+          <p className="hint" style={{ margin: 0 }}>{t(track?.vehicle ? 'liveShare.introDrive' : 'liveShare.intro')}</p>
           <p className="hint" style={{ margin: 0 }}>{t('liveShare.privacy')}</p>
           <div className="field">
             <label htmlFor="live-minutes">{t('liveShare.duration')}</label>
