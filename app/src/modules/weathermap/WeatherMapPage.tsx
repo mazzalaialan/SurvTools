@@ -733,6 +733,13 @@ function FeatureCard({
           t('weatherMap.riverBoLevel', { cm: r.level ?? '—', date: r.at ? day.format(new Date(r.at)) : '—' }),
           r.trend ? t(`navigation.bolivia.trend.${r.trend}`) : '',
         ].filter(Boolean);
+      } else if (r.source === 'uy') {
+        const sgn = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: 'always' });
+        lines = [
+          r.level !== null && r.at ? `${t('weatherMap.riverLevel', { value: m(r.level) })} · ${t('weatherMap.riverMeasured', { ago: when.format(new Date(r.at)) })}` : t('weatherMap.riverNoReading'),
+          [r.trend ? t(`navigation.bolivia.trend.${r.trend}`) : '', r.change != null ? t('weatherMap.riverUyChange', { change: sgn.format(r.change) }) : ''].filter(Boolean).join(' · '),
+          t('weatherMap.riverUyFrom', { source: r.uySource ?? '', provider: r.provider ?? '' }),
+        ].filter(Boolean);
       } else {
         lines = [
           r.level !== null && r.at

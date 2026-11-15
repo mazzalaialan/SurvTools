@@ -278,6 +278,17 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
   );
   // Pronóstico del INA de Rosario (alerta en 5,00 m): sube hasta 5,2 m al cuarto día.
   await context.route('https://alerta.ina.gob.ar/a5/sim/calibrados/289/**', inaRunRoute(34, [4.4, 4.6, 4.9, 5.2, 5.1, 4.8]));
+  // Uruguay (CARU y DINAGUA) lo lee el servidor propio: una estación del Río Negro, lejos de las del INA.
+  await context.route('https://valhallarust2.ddns.net/api/rivers/uy', (route) =>
+    route.fulfill({
+      headers: { 'access-control-allow-origin': '*' },
+      json: {
+        fetchedAt: Date.now(),
+        sources: { caru: true, dinagua: true },
+        stations: [{ id: 'dinagua-pt', name: 'Paso de los Toros', source: 'DINAGUA', provider: 'UTE', lat: -32.8, lon: -56.5, level: 3.1, at: new Date(Date.now() - 3_600_000).toISOString(), change: -0.12, trend: 'falling' }],
+      },
+    }),
+  );
   await setup(page);
   await page.goto('/#/weather/map');
   await expect(page.getByTestId('weather-map')).toBeVisible();
@@ -287,7 +298,7 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
   await page.getByRole('button', { name: 'Alertas oficiales' }).click();
   await page.getByRole('button', { name: 'Ríos', exact: true }).click();
   await page.getByRole('button', { name: 'Mareas', exact: true }).click();
-  await expect(page.getByText(/Ríos de América del Sur: líneas azules.*estaciones de nivel del INA \(Argentina\) y del SENAMHI/)).toBeVisible();
+  await expect(page.getByText(/Ríos de América del Sur: líneas azules.*estaciones de nivel del INA \(Argentina\), del SENAMHI \(Bolivia\) y de CARU y DINAGUA/)).toBeVisible();
   await page.waitForTimeout(1200);
 
   // Una estación de mareas: la marea de ahora y las próximas.
@@ -312,6 +323,13 @@ test('mapa de tiempo: capas de Navegación (ríos con sus niveles, y mareas) con
   await tap(page, -58.3993, -34.5611);
   await expect(card).toContainText('Buenos Aires · Río de la Plata');
   await expect(page.getByTestId('map-river-forecast')).toHaveCount(0);
+  // Una estación de Uruguay (DINAGUA): nivel sobre el cero de la estación, tendencia, cambio y fuente; sin umbrales.
+  await tap(page, -56.5, -32.8);
+  await expect(card).toContainText('Paso de los Toros');
+  await expect(card).toContainText('Nivel 3,10 m');
+  await expect(card).toContainText(/[-−]0,12 m desde la lectura anterior/);
+  await expect(card).toContainText('Fuente: DINAGUA (UTE)');
+  await expect(card).not.toContainText('Alerta');
   await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
   await page.getByRole('button', { name: 'Lluvia estimada (satélite)' }).click();
   await page.waitForTimeout(700);

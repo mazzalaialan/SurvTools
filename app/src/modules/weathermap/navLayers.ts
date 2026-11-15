@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { fetchUyLevels, loadSavedUy, saveUy, type UyLevels } from '@/modules/navigation/uruguayRivers';
 import { loadBoCatalog, fetchBoLevels, loadSavedBo, saveBo, type BoCatalog, type BoLevels } from '@/modules/navigation/bolivia';
 import { fetchReadings, loadRivers, loadSavedReadings, riverState, saveReadings, type RiverReading, type RiversData, type RiverState, type RiverStation } from '@/modules/navigation/rivers';
 import { loadTides, type TideStation, type TidesData } from '@/modules/navigation/tides';
@@ -12,7 +13,7 @@ export type NavState = RiverState | 'unknown';
 
 export interface RiverPoint {
   id: string;
-  source: 'ina' | 'bo';
+  source: 'ina' | 'bo' | 'uy';
   name: string;
   river: string;
   lon: number;
@@ -30,6 +31,10 @@ export interface RiverPoint {
   trend?: 'rising' | 'falling' | 'steady';
   /** INA: la estación del catálogo (para pedir su pronóstico al tocarla). */
   station?: RiverStation;
+  /** Uruguay: quién lo publica (CARU o DINAGUA), quién mide (UTE, OSE…) y cuánto cambió el nivel (m) respecto de la lectura anterior. */
+  uySource?: 'CARU' | 'DINAGUA';
+  provider?: string;
+  change?: number | null;
 }
 
 export interface TidePoint {
@@ -56,6 +61,28 @@ export function boPoints(catalog: BoCatalog, levels: BoLevels | null): RiverPoin
   });
 }
 
+/** Uruguay (CARU y DINAGUA, vía el servidor): todas las estaciones que llegan, en metros sobre el cero de cada una y sin umbrales (estado `unknown`). */
+export function uyPoints(levels: UyLevels | null): RiverPoint[] {
+  return (levels?.stations ?? []).map((s) => ({
+    id: `uy-${s.id}`,
+    source: 'uy' as const,
+    name: s.name,
+    river: '',
+    lon: s.lon,
+    lat: s.lat,
+    state: 'unknown' as const,
+    level: s.level,
+    at: s.at,
+    alert: null,
+    evac: null,
+    low: null,
+    ...(s.trend ? { trend: s.trend } : {}),
+    uySource: s.source,
+    provider: s.provider,
+    change: s.change,
+  }));
+}
+
 export function tidePoints(data: TidesData): TidePoint[] {
   return data.stations.map((station) => ({ id: station.id, lon: station.lon, lat: station.lat, station }));
 }
@@ -68,6 +95,7 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
   const [readings, setReadings] = useState<Map<number, RiverReading>>(() => loadSavedReadings());
   const [boCatalog, setBoCatalog] = useState<BoCatalog | null>(null);
   const [boLevels, setBoLevels] = useState<BoLevels | null>(() => loadSavedBo());
+  const [uyLevels, setUyLevels] = useState<UyLevels | null>(() => loadSavedUy());
   const [tides, setTides] = useState<TidesData | null>(null);
   const [waves, setWaves] = useState<WaveGrid | null>(() => loadSavedGrid());
   const server = serverUrl?.trim() || null;
@@ -93,7 +121,7 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
         },
         () => undefined,
       );
-      if (server)
+      if (server) {
         fetchBoLevels(server).then(
           (l) => {
             if (cancelled) return;
@@ -102,6 +130,15 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
           },
           () => undefined,
         );
+        fetchUyLevels(server).then(
+          (l) => {
+            if (cancelled) return;
+            saveUy(l);
+            setUyLevels(l);
+          },
+          () => undefined,
+        );
+      }
     };
     load();
     const id = setInterval(load, REFRESH_MS);
@@ -134,8 +171,8 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
 
   const riverPoints = useMemo<RiverPoint[] | null>(() => {
     if (!on.rivers || !ina) return null;
-    return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels) : [])];
-  }, [on.rivers, ina, readings, boCatalog, boLevels]);
+    return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels) : []), ...uyPoints(uyLevels)];
+  }, [on.rivers, ina, readings, boCatalog, boLevels, uyLevels]);
   const tideList = useMemo(() => (on.tides && tides ? tidePoints(tides) : null), [on.tides, tides]);
   return { riverPoints, tidePoints: tideList, waves: on.waves ? waves : null };
 }

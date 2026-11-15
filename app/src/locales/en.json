@@ -972,7 +972,7 @@
       "firesHidden_other": "Low and nominal confidence detections that repeat in the same place almost every day (gas flares, industry) are hidden: {{count}} today. High-confidence ones are always shown",
       "hazards": "Disaster alerts (GDACS, UN and European Commission): 🌀 cyclone or hurricane, 🌊 flood, 🏜️ drought, 🔥 wildfire, 🌋 eruption. Green, orange or red background by severity",
       "wind": "Wind by area in {{unit}}; the arrow shows where it blows to",
-      "rivers": "Rivers of South America: blue lines, thicker the bigger the river, and their level stations from INA (Argentina) and SENAMHI (Bolivia). Red circle, evacuation; orange, alert; yellow, low water; blue, normal; grey, no reading or no thresholds (Bolivia). Tap a station for details. Lines: Natural Earth and © OpenStreetMap contributors",
+      "rivers": "Rivers of South America: blue lines, thicker the bigger the river, and their level stations from INA (Argentina), SENAMHI (Bolivia) and CARU and DINAGUA (Uruguay; the last two need your own server). Red circle, evacuation; orange, alert; yellow, low water; blue, normal; grey, no reading or no thresholds (Bolivia and Uruguay). Tap a station for details. Lines: Natural Earth and © OpenStreetMap contributors",
       "tides": "◆ Tide stations (computed on the phone, offline). Tap one for the current tide and the next high and low",
       "waves": "Waves off the coasts (Open-Meteo Marine, model): a band along the coast whose color shows the sea state, from light blue (calm) to red (very rough). It is a model forecast, not a measurement; not for navigating near the coast. Tap the band for the wave height, period, direction and swell"
     },
@@ -1004,6 +1004,8 @@
     "riverLevel": "Level {{value}}",
     "riverBoLevel": "{{cm}} cm on the gauge, reading of {{date}} (SENAMHI Bolivia)",
     "riverThresholds": "Alert {{alert}} · Evacuation {{evac}} · Low water {{low}}",
+    "riverUyChange": "{{change}} m since the previous reading",
+    "riverUyFrom": "Level above the station zero (no alert thresholds). Source: {{source}} ({{provider}}).",
     "riverNoReading": "No recent reading",
     "navMore": "See everything in Navigation",
     "tideNearTitle": "Tide: {{name}}",
