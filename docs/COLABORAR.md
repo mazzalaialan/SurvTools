@@ -1,6 +1,6 @@
 # Guía para colaborar en VikArg
 
-Documento de traspaso para quien se suma al proyecto (persona o sesión de Claude Code). Junta lo que antes estaba solo en la memoria de la sesión de trabajo: cómo se trabaja, cómo se publica, cómo funciona el servidor, qué agentes ayudan y qué reglas se respetan. Estado al **13 de noviembre de 2026** (versión 0.61.1 publicada).
+Documento de traspaso para quien se suma al proyecto (persona o sesión de Claude Code). Junta lo que antes estaba solo en la memoria de la sesión de trabajo: cómo se trabaja, cómo se publica, cómo funciona el servidor, qué agentes ayudan y qué reglas se respetan. Estado al **15 de noviembre de 2026** (versión 0.70.0 publicada).
 
 Lo que ya estaba documentado no se repite acá:
 - Principios, arquitectura, modelo de datos, módulos: `docs/ARQUITECTURA.md`.
