@@ -29,6 +29,7 @@ const TOL = 0.01;
 const CONTINENT = process.argv.includes('--continente') ? [-95, -90, -30, 13] : null;
 /** Islas de Chile sin frontera en el mapa de países: Juan Fernández y San Félix-San Ambrosio. */
 const EXTRA_IDS = new Set(['560', '562']);
+const TOL_FAR = 0.02;
 const MIN_AREA = 0.002; // grados²: sin islotes ni manchas minúsculas
 
 async function zipBytes() {
@@ -106,6 +107,12 @@ const bbox = (r) => r.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y
 const boxes = countryRings.map((r) => ({ r, b: bbox(r) }));
 const inCountries = ([x, y]) => boxes.some(({ r, b }) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3] && inRing(r, [x, y]));
 
+/** ¿La parte toca alguno de los seis países? (algún vértice o el centro de su caja adentro). */
+const touchesSix = (p) => {
+  const b = bbox(p[0]);
+  return p[0].some((pt, k) => k % 7 === 0 && inCountries(pt)) || inCountries([(b[0] + b[2]) / 2, (b[1] + b[3]) / 2]);
+};
+
 const ecoregions = [];
 const missing = new Set();
 for (let i = 0; i < geoms.length; i++) {
@@ -133,7 +140,8 @@ for (let i = 0; i < geoms.length; i++) {
   const tr = TRADUCCIONES[a.ECO_ID] ?? null;
   if (!tr) missing.add(`${a.ECO_ID} ${a.ECO_NAME}`);
   const rings = kept
-    .map((p) => p.map((r) => simplifyRing(r, TOL).map(([x, y]) => [Math.round(x * 1000) / 1000, Math.round(y * 1000) / 1000])).filter((r) => r.length >= 4 && ringArea(r) > MIN_AREA))
+    // Fuera de los seis países (solo con --continente) alcanza con 2 km: el archivo pesa menos.
+    .map((p) => p.map((r) => simplifyRing(r, CONTINENT && !touchesSix(p) ? TOL_FAR : TOL).map(([x, y]) => [Math.round(x * 1000) / 1000, Math.round(y * 1000) / 1000])).filter((r) => r.length >= 4 && ringArea(r) > MIN_AREA))
     .filter((p) => p.length);
   if (!rings.length) continue;
   ecoregions.push({

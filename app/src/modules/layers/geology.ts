@@ -1,7 +1,8 @@
 import type { Country } from '@/core/settings/settings';
 import { hasDataFile, loadDataFile } from '@/modules/emergency/dataFile';
 import { COMMERCIAL_BUILD } from '@/modules/navigation/sources';
-import { loadStoredLayers } from './zoneLayers';
+import { loadStoredLayers, onLayersChange } from './zoneLayers';
+import { GridIndex, type Box } from './grid';
 import { periodColor } from './periods';
 
 /**
@@ -87,7 +88,10 @@ export function loadGeologyPack(pack: GeologyPack, download = false): Promise<Ge
 /** Baja el paquete de geología de un país (para el paquete del país); no falla si ese país no tiene. */
 export async function downloadGeologyPack(country: Country): Promise<void> {
   const pack = GEOLOGY_PACKS.find((p) => p.country === country);
-  if (pack && availablePacks().includes(pack)) await loadGeologyPack(pack, true);
+  if (pack && availablePacks().includes(pack)) {
+    await loadGeologyPack(pack, true);
+    invalidateGeologyIndex();
+  }
 }
 
 interface Boxed {
@@ -124,8 +128,11 @@ const inRing = (ring: number[], lon: number, lat: number): boolean => {
   return inside;
 };
 
+const grids = new WeakMap<Boxed[], GridIndex<Boxed>>();
 function find(list: Boxed[], lat: number, lon: number): GeologyUnit | null {
-  for (const { p, u, b } of list) {
+  let grid = grids.get(list);
+  if (!grid) grids.set(list, (grid = new GridIndex(list)));
+  for (const { p, u, b } of grid.near(lon, lat)) {
     if (lon < b[0] || lon > b[2] || lat < b[1] || lat > b[3]) continue;
     if (inRing(p[0]!, lon, lat) && !p.slice(1).some((h) => inRing(h, lon, lat))) return u;
   }
@@ -140,8 +147,23 @@ export function geologyAt(idx: GeologyIndex, lat: number, lon: number): { unit: 
   return b ? { unit: b, detail: false } : null;
 }
 
-/** Índice con las bases de los países guardados y todo el detalle de las zonas. */
-export async function loadGeologyIndex(): Promise<GeologyIndex> {
+let indexPending: Promise<GeologyIndex> | null = null;
+/** Se vuelve a armar si cambia lo guardado (se bajó o se borró un paquete o una zona). */
+export function invalidateGeologyIndex(): void {
+  indexPending = null;
+}
+onLayersChange(invalidateGeologyIndex);
+
+/** Índice con las bases de los países guardados y todo el detalle de las zonas (se arma una vez y se reutiliza). */
+export function loadGeologyIndex(): Promise<GeologyIndex> {
+  indexPending ??= buildGeologyIndex().catch((err) => {
+    indexPending = null;
+    throw err;
+  });
+  return indexPending;
+}
+
+async function buildGeologyIndex(): Promise<GeologyIndex> {
   const packs = availablePacks();
   const [datas, stored] = await Promise.all([Promise.all(packs.map((p) => loadGeologyPack(p))), loadStoredLayers()]);
   const loaded = datas.filter((d): d is GeologyData => !!d);
@@ -176,6 +198,32 @@ export function geologyAlong(idx: GeologyIndex, line: [number, number][]): Geolo
     out.set(key, cur);
   }
   return [...out.values()];
+}
+
+/** Recorte de lo que se pide al mapa: [oeste, sur, este, norte]. */
+export type ViewBox = [number, number, number, number];
+const touches = (b: Box, v: ViewBox) => b[2] >= v[0] && b[0] <= v[2] && b[3] >= v[1] && b[1] <= v[3];
+
+const ringText = (r: number[]): string => {
+  let s = '[';
+  for (let i = 0; i < r.length; i += 2) s += (i ? ',[' : '[') + r[i] + ',' + r[i + 1] + ']';
+  return s + ']';
+};
+
+/**
+ * GeoJSON de la capa como TEXTO, armado directo de los arreglos planos (sin crear decenas de miles de objetos en el hilo principal) y solo
+ * con los polígonos que tocan `view` (la base de cada país y el detalle de las zonas); MapLibre lo lee en su propio proceso desde un
+ * enlace local (`URL.createObjectURL`). Sin `view`, entra todo.
+ */
+export function geologyGeoJSONText(idx: GeologyIndex, view?: ViewBox): string {
+  const parts: string[] = [];
+  for (const list of [idx.base, idx.detail]) {
+    for (const { p, u, b } of list) {
+      if (view && !touches(b, view)) continue;
+      parts.push(`{"type":"Feature","properties":{"name":${JSON.stringify(u.name)},"color":"${unitColor(u)}"},"geometry":{"type":"Polygon","coordinates":[${p.map(ringText).join(',')}]}}`);
+    }
+  }
+  return `{"type":"FeatureCollection","features":[${parts.join(',')}]}`;
 }
 
 /** Para dibujar en el mapa: la base y encima el detalle de las zonas. */

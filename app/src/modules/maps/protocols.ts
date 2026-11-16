@@ -3,7 +3,7 @@ import mlcontour from 'maplibre-contour';
 // MapLibre 6 dibuja con un worker aparte: con Vite hay que indicarle dónde queda el archivo.
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import './appSources';
-import { decodeTerrarium, HATCH_RECENT, HATCH_USUAL, overzoomElevation, paintSlopeTile, slopeTile, type SlopeStyle, cornicePad, CORNICE_MIN_ZOOM } from './slope';
+import { decodeTerrarium, HATCH_RECENT, HATCH_USUAL, overzoomElevation, paintSlopeTile, type SlopeStyle, cornicePad, CORNICE_MIN_ZOOM } from './slope';
 import { themeColors } from './style';
 import { cachedOr, DEM_MAX_ZOOM, DEM_URL, GLYPHS_URL, mapTile, networkUrl } from './tiles';
 
@@ -19,7 +19,17 @@ let contoursUrl = '';
 
 /** Últimas teselas de altura ya decodificadas: con zoom alto, muchas teselas de pendiente salen de la misma. */
 const decoded = new Map<string, Promise<Float32Array | null>>();
-const DECODED_MAX = 24;
+const DECODED_MAX = 48;
+
+/** Últimas teselas de pendiente ya pintadas, por dirección completa (zoom, línea de nieve, sotavento) y tema: al volver sobre lo ya mirado o cambiar de pantalla no se recalculan. */
+const painted = new Map<string, ArrayBuffer>();
+const PAINTED_MAX = 96;
+function rememberPainted(key: string, data: ArrayBuffer): ArrayBuffer {
+  painted.delete(key);
+  painted.set(key, data);
+  while (painted.size > PAINTED_MAX) painted.delete(painted.keys().next().value!);
+  return data.slice(0);
+}
 
 function demHeights(z: number, x: number, y: number): Promise<Float32Array | null> {
   const key = `${z}/${x}/${y}`;
@@ -69,6 +79,14 @@ export function setupProtocols(): { contoursUrl: string } {
     const minElevation = Number(q.get('min') ?? 0) || 0;
     const list = (k: string) => (q.get(k) ?? '').split(',').filter(Boolean).map(Number).filter(Number.isFinite);
     const c = themeColors();
+    // La tesela pintada depende de la dirección y de los colores del tema.
+    const cacheKey = `${params.url}|${c.ok}|${c.warn}|${c.slopeAvalanche}|${c.steep}|${c.extreme}`;
+    const again = painted.get(cacheKey);
+    if (again) {
+      painted.delete(cacheKey);
+      painted.set(cacheKey, again);
+      return { data: again.slice(0) };
+    }
     const colors = { low: c.ok, caution: c.warn, avalanche: c.slopeAvalanche, steep: c.steep, extreme: c.extreme, hatch: HATCH_RECENT, hatchUsual: HATCH_USUAL };
     if (z > DEM_MAX_ZOOM) {
       // Más cerca que la elevación: la altura se interpola suave y la pendiente se calcula a la escala de la pantalla,
@@ -79,11 +97,12 @@ export function setupProtocols(): { contoursUrl: string } {
       const elev = await overzoomElevation(z, x, y, DEM_MAX_ZOOM, (tx, ty) => demHeights(DEM_MAX_ZOOM, tx, ty), pad);
       if (!elev) throw new Error('sin elevación');
       const style: SlopeStyle = { colors, minElevation, lee: list('lee'), leeUsual: list('usual'), corniceLee };
-      return { data: await paintSlopeTile(elev, z, x, y, style, pad) };
+      return { data: rememberPainted(cacheKey, await paintSlopeTile(elev, z, x, y, style, pad)) };
     }
-    const dem = await mapTile('dem', z, x, y);
-    if (!dem) throw new Error('sin elevación');
-    return { data: await slopeTile(dem, z, x, y, colors, minElevation, list('lee'), list('usual')) };
+    // La altura decodificada se recuerda: cambiar solo la línea de nieve o el sotavento repinta sin volver a leer la imagen.
+    const elev = await demHeights(z, x, y);
+    if (!elev) throw new Error('sin elevación');
+    return { data: rememberPainted(cacheKey, await paintSlopeTile(elev, z, x, y, { colors, minElevation, lee: list('lee'), leeUsual: list('usual') })) };
   });
 
   maplibregl.addProtocol('vkglyph', async (params) => {

@@ -50,9 +50,9 @@ interface Props {
   /** Contorno de la región (sin conexión y fuera de las zonas, al menos se ve dónde estás). */
   outline: FeatureCollection | null;
   /** Ecorregiones (capa opcional): un polígono por ecorregión con su color y nombre. */
-  ecoregions?: FeatureCollection | null;
+  ecoregions?: FeatureCollection | string | null;
   /** Geología (capa opcional): unidades de SEGEMAR pintadas por edad. */
-  geology?: FeatureCollection | null;
+  geology?: FeatureCollection | string | null;
   /** Cambia cuando se importa o borra un mapa: se vuelven a pedir las teselas. */
   tilesVersion?: number;
   /** Cambia `key` para mover la vista. */
@@ -185,7 +185,8 @@ function data(p: Props) {
 function ensureAreaLayers(map: MlMap, c: MapColors, p: Props) {
   const d = data(p);
   if (p.layers.ecoregions && !map.getLayer('ecoregion-fill')) {
-    if (!map.getSource('ecoregions')) map.addSource('ecoregions', { type: 'geojson', data: d.ecoregions });
+    // Las capas de áreas no necesitan más detalle que ~1 km (zoom 10) ni teselas finas: menos trabajo para el proceso del mapa.
+    if (!map.getSource('ecoregions')) map.addSource('ecoregions', { type: 'geojson', data: d.ecoregions, maxzoom: 10, tolerance: 1 });
     // Ecorregiones: relleno suave con el color de cada una, borde fino y el nombre (debajo de caminos y rótulos del mapa base).
     map.addLayer({ id: 'ecoregion-fill', type: 'fill', source: 'ecoregions', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.3 } }, 'landcover-wood');
     map.addLayer({ id: 'ecoregion-line', type: 'line', source: 'ecoregions', paint: { 'line-color': ['get', 'color'], 'line-width': 1.2, 'line-opacity': 0.8 } }, 'landcover-wood');
@@ -199,7 +200,7 @@ function ensureAreaLayers(map: MlMap, c: MapColors, p: Props) {
     });
   }
   if (p.layers.geology && !map.getLayer('geology-fill')) {
-    if (!map.getSource('geology')) map.addSource('geology', { type: 'geojson', data: d.geology });
+    if (!map.getSource('geology')) map.addSource('geology', { type: 'geojson', data: d.geology, maxzoom: 10, tolerance: 1 });
     // Geología: relleno por edad de la roca y borde fino (en el mismo lugar que las ecorregiones: nunca se prenden las dos a la vez).
     map.addLayer({ id: 'geology-fill', type: 'fill', source: 'geology', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.5 } }, 'landcover-wood');
     map.addLayer({ id: 'geology-line', type: 'line', source: 'geology', paint: { 'line-color': '#5d4037', 'line-width': 0.6, 'line-opacity': 0.5 } }, 'landcover-wood');

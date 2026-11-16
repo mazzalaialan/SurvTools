@@ -16,9 +16,11 @@ import { routePoints, useWaypoints } from '@/modules/waypoints/store';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { outlineFeatures } from './outline';
 import { withLayer } from './layerExclusion';
-import { biomeName, ecoregionName, ecoregionsGeoJSON, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
+import { nextAreaBox } from './viewBounds';
+import { useBlobUrl } from './useBlobUrl';
+import { biomeName, ecoregionName, ecoregionsGeoJSONText, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
 import { fineCredit, useFineEcoregions } from '@/modules/ecoregions/EcoregionViews';
-import { geologyAt, geologyGeoJSON, inGeologyCoverage, unitAge, type GeologyUnit } from '@/modules/layers/geology';
+import { geologyAt, geologyGeoJSONText, loadGeologyIndex, inGeologyCoverage, unitAge, type GeologyUnit, type ViewBox } from '@/modules/layers/geology';
 import { useGeologyIndex } from '@/modules/layers/GeologyViews';
 import { FullscreenStage } from '@/ui/FullscreenStage';
 import './appSources';
@@ -284,11 +286,27 @@ export function MapsPage() {
   }, [layers.ecoregions, eco]);
   const fine = useFineEcoregions(0);
   // La cobertura fina (bosque andino patagónico de las zonas descargadas) va encima de la gruesa de RESOLVE.
-  const ecoGeo = useMemo(() => {
-    if (!layers.ecoregions || !eco) return null;
-    const coarse = ecoregionsGeoJSON(eco, i18n.language);
-    return fine ? { ...coarse, features: [...coarse.features, ...ecoregionsGeoJSON(fine, i18n.language).features] } : coarse;
-  }, [layers.ecoregions, eco, fine, i18n.language]);
+  // Solo se arma lo que cae en el área de la vista (más un margen): se rehace cuando la vista sale de ella, no a cada movimiento.
+  const [areaBox, setAreaBox] = useState<ViewBox | null>(null);
+  // Con la pantalla libre se leen los datos de las capas (ya guardados), así prender una no espera a la lectura.
+  useEffect(() => {
+    const run = () => {
+      void loadEcoregions();
+      void loadGeologyIndex();
+    };
+    const idle = typeof requestIdleCallback === 'function';
+    const id = idle ? requestIdleCallback(run, { timeout: 4000 }) : setTimeout(run, 2000);
+    return () => (idle ? cancelIdleCallback(id as number) : clearTimeout(id as ReturnType<typeof setTimeout>));
+  }, []);
+  const areaOn = layers.ecoregions || layers.geology;
+  useEffect(() => {
+    if (areaOn) setAreaBox((cur) => nextAreaBox(cur, view));
+  }, [areaOn, view.lat, view.lon, view.zoom]);
+  const ecoText = useMemo(
+    () => (layers.ecoregions && eco && areaBox ? ecoregionsGeoJSONText(fine ? [eco, fine] : [eco], i18n.language, areaBox) : null),
+    [layers.ecoregions, eco, fine, i18n.language, areaBox],
+  );
+  const ecoGeo = useBlobUrl(ecoText);
   const ecoPoint = picked && layers.ecoregions ? picked : view;
   const ecoHere = layers.ecoregions && eco ? finerLookup(eco, fine).lookup(ecoPoint.lat, ecoPoint.lon) : null;
   const ecoFine = !!(ecoHere && fine?.ecoregions.some((e) => e.id === ecoHere.id));
@@ -311,7 +329,8 @@ export function MapsPage() {
   }, [geoOn, geoKey, online, serverUrl, !!geoHit?.detail]);
   const geoUnit = geoHit?.detail ? geoHit.unit : geoOnline?.key === geoKey && geoOnline.unit ? geoOnline.unit : (geoHit?.unit ?? null);
   const geoViaOnline = !geoHit?.detail && geoOnline?.key === geoKey && !!geoOnline.unit;
-  const geoGeo = useMemo(() => (layers.geology && geoIdx ? geologyGeoJSON(geoIdx) : null), [layers.geology, geoIdx]);
+  const geoText = useMemo(() => (layers.geology && geoIdx && areaBox ? geologyGeoJSONText(geoIdx, areaBox) : null), [layers.geology, geoIdx, areaBox]);
+  const geoGeo = useBlobUrl(geoText);
   const zoneCircles = useMemo(() => zones.map((z) => ({ id: z.id, name: z.name, lat: z.lat, lon: z.lon, radiusKm: z.radiusKm })), [zones]);
   const maxZoom = panel ? DETAILS.find((d) => d.id === panel.detail)!.maxZoom : 0;
   // Al editar una zona el centro es el de la zona (no el del mapa).

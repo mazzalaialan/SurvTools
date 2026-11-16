@@ -32,6 +32,8 @@ function preloadPages() {
   if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 4000 });
   else setTimeout(run, 1500);
 }
+// Los contornos de países y provincias (livianos) se cargan siempre apenas la app queda libre, no al abrir cada mapa.
+loaders.push(() => import('@/modules/weathermap/geo').then((m) => m.loadGeoData()));
 const AstronomyPage = page(() => import('@/modules/astronomy/AstronomyPage').then((m) => ({ default: m.AstronomyPage })));
 const BackupPage = page(() => import('@/modules/backup/BackupPage').then((m) => ({ default: m.BackupPage })));
 const SharePage = page(() => import('@/modules/share/SharePage').then((m) => ({ default: m.SharePage })));

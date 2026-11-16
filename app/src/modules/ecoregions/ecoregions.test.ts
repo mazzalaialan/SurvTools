@@ -51,4 +51,14 @@ describe('ecorregiones', () => {
     expect(e.biome).toBeGreaterThan(100);
     expect(biomeName(cl, e)).toBeTruthy();
   });
+  it('toda América del Sur y la Península Antártica', () => {
+    expect(at(-3.1, -60.0)).toBeTruthy(); // Manaos: selva amazónica
+    expect(ecoregionAt(d, 4.6, -74.08)).toBeTruthy(); // Bogotá
+    expect(ecoregionAt(d, -22.9, -43.2)).toBeTruthy(); // Río de Janeiro
+    const ant = ecoregionAt(d, -64.5, -62.5); // Isla Anvers, Península Antártica
+    expect(ant?.nameEs).toMatch(/Tundra|Roca/);
+    // Todo traducido: ningún nombre en español igual al original, salvo los que coinciden (Cerrado, Caatinga, Llanos, Pantanal, Espinal).
+    const same = d.ecoregions.filter((e) => e.name === e.nameEs).map((e) => e.name).sort();
+    expect(same).toEqual(['Caatinga', 'Cerrado', 'Espinal', 'Llanos', 'Pantanal']);
+  });
 });

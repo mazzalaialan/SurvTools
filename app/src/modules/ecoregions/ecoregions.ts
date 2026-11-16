@@ -1,4 +1,5 @@
 import { hasDataFile, loadDataFile } from '@/modules/emergency/dataFile';
+import { GridIndex } from '@/modules/layers/grid';
 
 /**
  * Ecorregiones (RESOLVE Ecoregions 2017, CC BY 4.0, ver tools/eco-data/build.mjs): en cuál se está y por cuáles pasó un recorrido.
@@ -82,23 +83,29 @@ const inRing = (ring: number[], lon: number, lat: number): boolean => {
   return inside;
 };
 
-const boxes = new WeakMap<EcoregionData, { e: Ecoregion; polys: { p: number[][]; b: [number, number, number, number] }[] }[]>();
-function index(data: EcoregionData) {
-  let idx = boxes.get(data);
+interface EcoPoly {
+  e: Ecoregion;
+  p: number[][];
+  b: [number, number, number, number];
+}
+const grids = new WeakMap<EcoregionData, GridIndex<EcoPoly>>();
+function index(data: EcoregionData): GridIndex<EcoPoly> {
+  let idx = grids.get(data);
   if (!idx) {
-    idx = data.ecoregions.map((e) => ({
-      e,
-      polys: e.polys.map((p) => {
+    const items: EcoPoly[] = [];
+    for (const e of data.ecoregions) {
+      for (const p of e.polys) {
         const r = p[0]!;
         let w = Infinity, s = Infinity, ea = -Infinity, nn = -Infinity;
         for (let i = 0; i < r.length; i += 2) {
           w = Math.min(w, r[i]!); ea = Math.max(ea, r[i]!);
           s = Math.min(s, r[i + 1]!); nn = Math.max(nn, r[i + 1]!);
         }
-        return { p, b: [w, s, ea, nn] as [number, number, number, number] };
-      }),
-    }));
-    boxes.set(data, idx);
+        items.push({ e, p, b: [w, s, ea, nn] });
+      }
+    }
+    // La cuadrícula guarda a cada polígono en las celdas que toca: una búsqueda mira solo los de su celda.
+    grids.set(data, (idx = new GridIndex(items)));
   }
   return idx;
 }
@@ -113,11 +120,9 @@ export function ecoregionAt(data: EcoregionData, lat: number, lon: number): Ecor
 }
 
 function exactAt(data: EcoregionData, lat: number, lon: number): Ecoregion | null {
-  for (const { e, polys } of index(data)) {
-    for (const { p, b } of polys) {
-      if (lon < b[0] || lon > b[2] || lat < b[1] || lat > b[3]) continue;
-      if (inRing(p[0]!, lon, lat) && !p.slice(1).some((h) => inRing(h, lon, lat))) return e;
-    }
+  for (const { e, p, b } of index(data).near(lon, lat)) {
+    if (lon < b[0] || lon > b[2] || lat < b[1] || lat > b[3]) continue;
+    if (inRing(p[0]!, lon, lat) && !p.slice(1).some((h) => inRing(h, lon, lat))) return e;
   }
   return null;
 }
@@ -170,6 +175,39 @@ export function ecoregionsAlongWith(lookup: EcoLookup, line: [number, number][])
     out.set(e.id, cur);
   }
   return [...out.values()];
+}
+
+/**
+ * La misma capa como TEXTO GeoJSON (ver `geologyGeoJSONText`): un conjunto o más (la gruesa y la fina), solo las partes que tocan `view`.
+ */
+export function ecoregionsGeoJSONText(datas: EcoregionData[], lang: string, view?: [number, number, number, number]): string {
+  const ring = (r: number[]): string => {
+    let s = '[';
+    for (let i = 0; i < r.length; i += 2) s += (i ? ',[' : '[') + r[i] + ',' + r[i + 1] + ']';
+    return s + ']';
+  };
+  const features: string[] = [];
+  for (const data of datas) {
+    for (const e of data.ecoregions) {
+      const polys: string[] = [];
+      for (const p of e.polys) {
+        if (view) {
+          const r = p[0]!;
+          let w = Infinity, s = Infinity, ea = -Infinity, nn = -Infinity;
+          for (let i = 0; i < r.length; i += 2) {
+            if (r[i]! < w) w = r[i]!;
+            if (r[i]! > ea) ea = r[i]!;
+            if (r[i + 1]! < s) s = r[i + 1]!;
+            if (r[i + 1]! > nn) nn = r[i + 1]!;
+          }
+          if (ea < view[0] || w > view[2] || nn < view[1] || s > view[3]) continue;
+        }
+        polys.push(`[${p.map(ring).join(',')}]`);
+      }
+      if (polys.length) features.push(`{"type":"Feature","properties":{"id":${e.id},"name":${JSON.stringify(ecoregionName(e, lang))},"color":"${e.color}"},"geometry":{"type":"MultiPolygon","coordinates":[${polys.join(',')}]}}`);
+    }
+  }
+  return `{"type":"FeatureCollection","features":[${features.join(',')}]}`;
 }
 
 /** Para dibujar la capa en el mapa (MapLibre): un polígono por ecorregión, con su color y nombre. */
