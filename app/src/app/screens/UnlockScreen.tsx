@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WrongSecretError } from '@/core/crypto/crypto';
-import { HeartPulse } from 'lucide-react';
+import { BiometricError } from '@/core/security/vaultBiometric';
+import { Fingerprint, HeartPulse } from 'lucide-react';
 import { readEmergencyCard, type EmergencyCard } from '@/core/security/emergencyCard';
 import { useVault } from '@/core/security/useVault';
 import { useSettings } from '@/core/settings/settings';
@@ -16,6 +17,8 @@ export function UnlockScreen() {
   const { t } = useTranslation();
   const unlock = useVault((s) => s.unlock);
   const recover = useVault((s) => s.recover);
+  const unlockBiometric = useVault((s) => s.unlockBiometric);
+  const hasBiometric = useVault((s) => s.biometric);
   const recording = useRecorder((s) => s.status === 'recording');
   const [mode, setMode] = useState<Mode>('password');
   const [secret, setSecret] = useState('');
@@ -44,6 +47,20 @@ export function UnlockScreen() {
     } catch (err) {
       if (!(err instanceof WrongSecretError)) throw err;
       setError(t(mode === 'password' ? 'unlock.wrong' : 'unlock.wrongRecovery'));
+      setBusy(false);
+    }
+  }
+
+  async function handleBiometric() {
+    setBusy(true);
+    setError(null);
+    try {
+      await unlockBiometric();
+    } catch (err) {
+      if (!(err instanceof BiometricError)) throw err;
+      // Cancelar no es un error: se puede volver a tocar el botón o usar la contraseña.
+      // Los navegadores responden igual cuando se cancela que cuando la clave de acceso ya no existe: se avisa sin tratarlo como error.
+      setError(t(err.code === 'cancelled' ? 'unlock.biometricCancelled' : 'unlock.biometricFailed'));
       setBusy(false);
     }
   }
@@ -94,6 +111,11 @@ export function UnlockScreen() {
         )}
         <form className="card stack" onSubmit={handleSubmit}>
           <h2>{t(isPassword ? 'unlock.title' : 'unlock.recoveryTitle')}</h2>
+          {isPassword && hasBiometric && (
+            <button className="btn btn-primary btn-block" type="button" disabled={busy} onClick={() => void handleBiometric()} data-testid="unlock-biometric">
+              <Fingerprint size={18} aria-hidden /> {t('unlock.biometric')}
+            </button>
+          )}
           <div className="field">
             <label htmlFor="secret">{t(isPassword ? 'unlock.password' : 'unlock.recoveryKey')}</label>
             <input

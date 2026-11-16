@@ -194,3 +194,53 @@ test('probar biometría: con un autenticador virtual con PRF el dispositivo sirv
   await expect(page.getByTestId('biometric-step-prfEnabled')).toHaveAttribute('data-status', 'fail');
   await expect(page.getByTestId('biometric-step-auth')).toHaveAttribute('data-status', 'skip');
 });
+
+test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir la contraseña, y desactivar vuelve a la contraseña', async ({ page, context }) => {
+  test.skip(test.info().project.name !== 'desktop', 'el autenticador virtual solo existe en Chromium de escritorio');
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  // Un dato propio: tiene que seguir ahí después de desbloquear con la biometría.
+  await page.goto('/#/orientation/waypoints/new');
+  await page.getByLabel('Nombre').fill('Refugio Huella');
+  await page.getByLabel('Coordenadas').fill('-41.1, -71.3');
+  await page.getByRole('button', { name: 'Guardar' }).click();
+
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('WebAuthn.enable');
+  await cdp.send('WebAuthn.addVirtualAuthenticator', {
+    options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true, hasPrf: true },
+  });
+  // Activar.
+  await page.goto('/#/settings');
+  const box = page.getByTestId('biometric-unlock');
+  await box.getByTestId('biometric-unlock-on-button').click();
+  await expect(box.getByTestId('biometric-unlock-message')).toContainText('Listo', { timeout: 20_000 });
+  await expect(box.getByTestId('biometric-unlock-on')).toBeVisible();
+
+  // Bloquear: aparece el botón de la biometría y desbloquea sin escribir nada.
+  await page.locator('.topbar-lock').click();
+  await expect(page.getByTestId('unlock-biometric')).toBeVisible();
+  await page.getByTestId('unlock-biometric').click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible({ timeout: 20_000 });
+  await page.goto('/#/orientation/waypoints');
+  await expect(page.getByText('Refugio Huella')).toBeVisible();
+
+  // La contraseña sigue valiendo.
+  await page.locator('.topbar-lock').click();
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByRole('button', { name: 'Desbloquear', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // Desactivar: el botón de la biometría desaparece del bloqueo.
+  await page.goto('/#/settings');
+  await page.getByTestId('biometric-unlock-off').click();
+  await page.getByTestId('confirm-ok').click();
+  await expect(page.getByTestId('biometric-unlock-on-button')).toBeVisible();
+  await page.locator('.topbar-lock').click();
+  await expect(page.getByTestId('unlock-biometric')).toHaveCount(0);
+});

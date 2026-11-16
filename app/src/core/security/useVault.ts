@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { isUnlocked, onSessionChange } from './session';
+import { biometricEnabled, disableBiometric, enableBiometric, unlockWithBiometric } from './vaultBiometric';
 import {
   addPassword,
   changePassword,
@@ -20,6 +21,8 @@ interface VaultState {
   status: VaultStatus;
   /** Bóveda sin contraseña: entra sola y no se bloquea. */
   open: boolean;
+  /** Tiene activado el desbloqueo con huella, cara o PIN. */
+  biometric: boolean;
   setupInProgress: boolean;
   /** Clave recién generada que la UI debe mostrar antes de entrar a la app. */
   pendingRecoveryKey: string | null;
@@ -36,6 +39,10 @@ interface VaultState {
   acknowledgeRecoveryKey: () => void;
   unlock: (password: string) => Promise<void>;
   recover: (recoveryKey: string) => Promise<void>;
+  /** Desbloquea con la biometría del dispositivo (lanza `BiometricError`). */
+  unlockBiometric: () => Promise<void>;
+  enableBiometric: () => Promise<void>;
+  disableBiometric: () => Promise<void>;
   setNewPassword: (password: string) => Promise<void>;
   lock: () => void;
 }
@@ -43,15 +50,17 @@ interface VaultState {
 export const useVault = create<VaultState>((set, get) => ({
   status: 'loading',
   open: false,
+  biometric: false,
   setupInProgress: false,
   pendingRecoveryKey: null,
   mustChangePassword: false,
   async refresh() {
     const open = await isOpenVault();
-    if (isUnlocked()) return set({ status: 'unlocked', open });
+    const biometric = !open && (await biometricEnabled());
+    if (isUnlocked()) return set({ status: 'unlocked', open, biometric });
     // Sin contraseña: se abre sola (abrirla vuelve a llamar a refresh, ya desbloqueada).
     if (open && (await unlockOpenVault())) return;
-    set({ status: (await isVaultInitialized()) ? 'locked' : 'uninitialized', open });
+    set({ status: (await isVaultInitialized()) ? 'locked' : 'uninitialized', open, biometric });
   },
   async create(password) {
     // La bóveda queda desbloqueada antes de tener la clave: el flag evita mostrar la app en ese instante.
@@ -94,6 +103,17 @@ export const useVault = create<VaultState>((set, get) => ({
       set({ mustChangePassword: false });
       throw e;
     }
+  },
+  async unlockBiometric() {
+    await unlockWithBiometric();
+  },
+  async enableBiometric() {
+    await enableBiometric();
+    set({ biometric: true });
+  },
+  async disableBiometric() {
+    await disableBiometric();
+    set({ biometric: false });
   },
   async setNewPassword(password) {
     await changePassword(password);

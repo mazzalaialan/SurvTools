@@ -52,7 +52,7 @@ const errName = (e: unknown) => (e instanceof Error ? e.name : String(e));
 const INFO = new TextEncoder().encode('vikarg-vault-biometric-v1');
 
 /** La clave que se derivaría del secreto del dispositivo (HKDF) para envolver la clave de datos. */
-async function kekFrom(subtle: SubtleCrypto, secret: ArrayBuffer): Promise<CryptoKey> {
+export async function kekFrom(subtle: SubtleCrypto, secret: ArrayBuffer): Promise<CryptoKey> {
   const base = await subtle.importKey('raw', secret, 'HKDF', false, ['deriveKey']);
   return subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(32), info: INFO }, base, { name: 'AES-GCM', length: 256 }, false, ['wrapKey', 'unwrapKey']);
 }

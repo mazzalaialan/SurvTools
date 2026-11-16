@@ -29,6 +29,7 @@ import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
 import { ArchivedVaults } from '../screens/ArchivedVaults';
 import { BiometricTest } from '../screens/BiometricTest';
+import { BiometricUnlockSettings } from '../screens/BiometricUnlockSettings';
 import { NotificationsSection } from './NotificationsSection';
 import { confirmAction } from '@/ui/confirm';
 
@@ -110,6 +111,8 @@ export function SettingsPage() {
             <button className="btn" type="button" onClick={lock}>
               <Lock size={18} /> {t('settings.lockNow')}
             </button>
+            {/* Huella, cara o PIN del dispositivo para desbloquear (la contraseña sigue valiendo siempre). */}
+            <BiometricUnlockSettings />
             <RemovePasswordForm />
           </>
         )}

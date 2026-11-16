@@ -17,6 +17,20 @@ export interface VaultHeader {
   password: WrappedKey;
   recovery: WrappedKey;
   createdAt: string;
+  /** Desbloqueo con huella, cara o PIN del dispositivo (ver vaultBiometric.ts): una tercera envoltura de la DEK, propia de este dispositivo. */
+  biometric?: BiometricWrap;
+}
+
+/** La DEK envuelta con el secreto que el dispositivo devuelve (WebAuthn PRF) después de la biometría. Nada de esto sale del dispositivo (no va en backups). */
+export interface BiometricWrap {
+  /** Id de la clave de acceso (base64). */
+  credentialId: string;
+  /** «Sal» que se le pasa al dispositivo para obtener el secreto (base64). */
+  salt: string;
+  iv: string;
+  /** DEK envuelta con AES-GCM (base64). */
+  wrapped: string;
+  createdAt: string;
 }
 
 /**
