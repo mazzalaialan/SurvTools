@@ -1,6 +1,7 @@
 import { strFromU8, strToU8 } from 'fflate';
 import { blobStore } from '@/core/db/repository';
 import type { Forecast } from './forecast';
+import type { History } from './history';
 
 /**
  * Último pronóstico por lugar, cifrado como el resto de los datos (lleva
@@ -39,4 +40,37 @@ export async function storeForecast(key: string, forecast: Forecast): Promise<vo
     .sort(([, a], [, b]) => b.fetchedAt.localeCompare(a.fetchedAt))
     .slice(0, MAX_PLACES);
   await blobStore.put(CACHE_ID, strToU8(JSON.stringify(Object.fromEntries(kept))) as Uint8Array<ArrayBuffer>);
+}
+
+// ---------- Clima histórico ----------
+
+const HISTORY_CACHE_ID = 'weather-history-cache';
+const MAX_HISTORY = 12;
+
+type HistoryCache = Record<string, History>;
+
+/** Clave por celda de ~1 km y día elegido. */
+export const historyKey = (lat: number, lon: number, date: string): string => `${placeKey(lat, lon)}|${date}`;
+
+async function readHistory(): Promise<HistoryCache> {
+  const bytes = await blobStore.get(HISTORY_CACHE_ID);
+  if (!bytes) return {};
+  try {
+    return JSON.parse(strFromU8(bytes)) as HistoryCache;
+  } catch {
+    return {};
+  }
+}
+
+export async function cachedHistory(key: string): Promise<History | null> {
+  return (await readHistory())[key] ?? null;
+}
+
+export async function storeHistory(key: string, history: History): Promise<void> {
+  const all = await readHistory();
+  all[key] = history;
+  const kept = Object.entries(all)
+    .sort(([, a], [, b]) => b.fetchedAt.localeCompare(a.fetchedAt))
+    .slice(0, MAX_HISTORY);
+  await blobStore.put(HISTORY_CACHE_ID, strToU8(JSON.stringify(Object.fromEntries(kept))) as Uint8Array<ArrayBuffer>);
 }
