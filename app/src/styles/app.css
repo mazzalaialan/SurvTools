@@ -221,6 +221,14 @@ a {
   font-size: 0.92rem;
 }
 
+.ok-box {
+  border-left: 4px solid var(--ok);
+  background: var(--surface-2);
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+}
+
 .check {
   display: flex;
   align-items: center;

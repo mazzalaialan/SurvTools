@@ -166,3 +166,31 @@ test('olvidé la contraseña y la clave: guardo la bóveda aparte, empiezo de ce
   await page.getByTestId('forgot-erase').click();
   await expect(page.getByRole('button', { name: 'Crear bóveda' })).toBeVisible({ timeout: 15_000 });
 });
+
+test('probar biometría: con un autenticador virtual con PRF el dispositivo sirve, y sin PRF no', async ({ page, context }) => {
+  test.skip(test.info().project.name !== 'desktop', 'el autenticador virtual solo existe en Chromium de escritorio');
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Usar sin contraseña' }).click();
+  await page.getByRole('button', { name: 'Entendido, usar sin contraseña' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  await page.goto('/#/settings');
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('WebAuthn.enable');
+  // Con PRF: pasa todos los pasos.
+  const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', {
+    options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true, hasPrf: true },
+  });
+  await page.getByTestId('biometric-run').click();
+  await expect(page.getByTestId('biometric-verdict')).toHaveAttribute('data-usable', 'true', { timeout: 30_000 });
+  await expect(page.getByTestId('biometric-step-wrap')).toHaveAttribute('data-status', 'ok');
+  await expect(page.getByTestId('biometric-step-prfEnabled')).toHaveAttribute('data-status', 'ok');
+  // Sin PRF: se detiene en ese paso y dice que no sirve.
+  await cdp.send('WebAuthn.removeVirtualAuthenticator', { authenticatorId });
+  await cdp.send('WebAuthn.addVirtualAuthenticator', {
+    options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true, hasPrf: false },
+  });
+  await page.getByTestId('biometric-run').click();
+  await expect(page.getByTestId('biometric-verdict')).toHaveAttribute('data-usable', 'false', { timeout: 30_000 });
+  await expect(page.getByTestId('biometric-step-prfEnabled')).toHaveAttribute('data-status', 'fail');
+  await expect(page.getByTestId('biometric-step-auth')).toHaveAttribute('data-status', 'skip');
+});

@@ -28,6 +28,7 @@ import { useMapZones } from '@/modules/maps/store';
 import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
 import { ArchivedVaults } from '../screens/ArchivedVaults';
+import { BiometricTest } from '../screens/BiometricTest';
 import { NotificationsSection } from './NotificationsSection';
 import { confirmAction } from '@/ui/confirm';
 
@@ -114,6 +115,8 @@ export function SettingsPage() {
         )}
         {/* Bóvedas anteriores guardadas aparte (si las hay): se recuperan con su contraseña o clave. */}
         <ArchivedVaults hasCurrent />
+        {/* Prueba (sin cambiar nada) de si este dispositivo puede desbloquear con huella, cara o PIN. */}
+        <BiometricTest />
       </section>
 
       {settings.dismissedNotices.length > 0 && (
