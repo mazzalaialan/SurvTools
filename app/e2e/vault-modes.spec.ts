@@ -104,3 +104,65 @@ test('datos de emergencia en la pantalla de bloqueo: solo si se activan, y al d�
   await page.locator('.topbar-lock').click();
   await expect(page.getByTestId('lock-emergency-show')).toHaveCount(0);
 });
+
+test('olvidé la contraseña y la clave: guardo la bóveda aparte, empiezo de cero y la recupero con su contraseña', async ({ page }) => {
+  const OLD = 'prueba-segura-123';
+  const NEW = 'segunda-clave-789';
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(OLD);
+  await page.getByLabel('Repetir contraseña').fill(OLD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  // Un dato propio en la bóveda vieja.
+  await page.goto('/#/orientation/waypoints/new');
+  await page.getByLabel('Nombre').fill('Refugio Viejo');
+  await page.getByLabel('Coordenadas').fill('-41.1, -71.3');
+  await page.getByRole('button', { name: 'Guardar' }).click();
+  await page.goto('/#/orientation/waypoints');
+  await expect(page.getByText('Refugio Viejo')).toBeVisible();
+
+  // Se bloquea y no hay contraseña ni clave: la salida está en la pantalla de bloqueo.
+  await page.locator('.topbar-lock').click();
+  await page.getByTestId('forgot-link').click();
+  await expect(page.getByTestId('forgot-secret')).toBeVisible();
+  // Borrar pide escribir la palabra; guardar aparte no.
+  await expect(page.getByTestId('forgot-erase')).toBeDisabled();
+  await page.getByTestId('forgot-archive').click();
+  // La app empieza de cero y ofrece la bóveda guardada.
+  await expect(page.getByTestId('archived-vaults')).toContainText('Bóvedas anteriores guardadas', { timeout: 15_000 });
+  await page.getByLabel('Contraseña', { exact: true }).fill(NEW);
+  await page.getByLabel('Repetir contraseña').fill(NEW);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  // La bóveda nueva no ve nada de la vieja.
+  await page.goto('/#/orientation/waypoints');
+  await expect(page.getByText('Todavía no guardaste puntos')).toBeVisible();
+
+  // Desde Ajustes se recupera la vieja: con una contraseña incorrecta no pasa nada; con la correcta vuelve su dato.
+  await page.goto('/#/settings');
+  const archived = page.getByTestId('archived-vaults');
+  await expect(archived).toBeVisible();
+  await archived.getByRole('button', { name: 'Recuperar', exact: true }).click();
+  await archived.getByLabel('Contraseña de esa bóveda').fill('contraseña-equivocada');
+  await page.getByTestId('archived-submit').click();
+  await expect(page.getByTestId('archived-error')).toContainText('Contraseña incorrecta');
+  await archived.getByLabel('Contraseña de esa bóveda').fill(OLD);
+  await page.getByTestId('archived-submit').click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible({ timeout: 15_000 });
+  await page.goto('/#/orientation/waypoints');
+  await expect(page.getByText('Refugio Viejo')).toBeVisible();
+  // La bóveda que estaba activa quedó guardada aparte (se pidió guardarla): ahora es la que figura en la lista.
+  await page.goto('/#/settings');
+  await expect(page.getByTestId('archived-vaults')).toContainText('Bóveda guardada el');
+
+  // Y borrar todo también es una salida, con la palabra de confirmación.
+  await page.locator('.topbar-lock').click();
+  await page.getByTestId('forgot-link').click();
+  await page.getByTestId('forgot-word').fill('borrar');
+  await page.getByTestId('forgot-erase').click();
+  await expect(page.getByRole('button', { name: 'Crear bóveda' })).toBeVisible({ timeout: 15_000 });
+});

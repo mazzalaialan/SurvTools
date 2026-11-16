@@ -8,6 +8,7 @@ import { RestoreForm } from '@/modules/backup/RestoreForm';
 import { BrandHeader } from '@/ui/Brand';
 import { NewPasswordForm } from '@/ui/NewPasswordForm';
 import { Segmented } from '@/ui/Segmented';
+import { ArchivedVaults } from './ArchivedVaults';
 
 export function SetupScreen() {
   const { t } = useTranslation();
@@ -67,6 +68,8 @@ export function SetupScreen() {
               )}
             </>
           )}
+          {/* Bóvedas que se guardaron aparte al empezar de cero: se recuperan con su contraseña o clave. */}
+          {!restoring && <ArchivedVaults hasCurrent={false} />}
           <button className="btn-link" type="button" onClick={() => setRestoring(!restoring)}>
             {restoring ? t('setup.createInstead') : t('setup.restoreLink')}
           </button>

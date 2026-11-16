@@ -27,6 +27,7 @@ import { useLibrary } from '@/modules/library/store';
 import { useMapZones } from '@/modules/maps/store';
 import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
+import { ArchivedVaults } from '../screens/ArchivedVaults';
 import { NotificationsSection } from './NotificationsSection';
 import { confirmAction } from '@/ui/confirm';
 
@@ -111,6 +112,8 @@ export function SettingsPage() {
             <RemovePasswordForm />
           </>
         )}
+        {/* Bóvedas anteriores guardadas aparte (si las hay): se recuperan con su contraseña o clave. */}
+        <ArchivedVaults hasCurrent />
       </section>
 
       {settings.dismissedNotices.length > 0 && (

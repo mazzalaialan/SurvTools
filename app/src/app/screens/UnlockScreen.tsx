@@ -8,8 +8,9 @@ import { useSettings } from '@/core/settings/settings';
 import { EmergencyCardView } from '@/modules/firstAid/EmergencyCardView';
 import { useRecorder } from '@/modules/tracks/recorder';
 import { BrandHeader } from '@/ui/Brand';
+import { ForgotSecret } from './ForgotSecret';
 
-type Mode = 'password' | 'recovery';
+type Mode = 'password' | 'recovery' | 'forgot';
 
 export function UnlockScreen() {
   const { t } = useTranslation();
@@ -48,6 +49,16 @@ export function UnlockScreen() {
   }
 
   const isPassword = mode === 'password';
+  if (mode === 'forgot') {
+    return (
+      <main className="gate">
+        <div className="gate-panel">
+          <BrandHeader />
+          <ForgotSecret onBack={() => switchMode('password')} />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="gate">
@@ -103,6 +114,9 @@ export function UnlockScreen() {
           </button>
           <button className="btn-link" type="button" onClick={() => switchMode(isPassword ? 'recovery' : 'password')}>
             {t(isPassword ? 'unlock.useRecovery' : 'unlock.usePassword')}
+          </button>
+          <button className="btn-link" type="button" onClick={() => switchMode('forgot')} data-testid="forgot-link">
+            {t('unlock.forgotBoth')}
           </button>
         </form>
       </div>
