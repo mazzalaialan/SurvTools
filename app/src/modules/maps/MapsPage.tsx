@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Download, Locate, MapPin, Pencil, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Download, Layers, Locate, MapPin, Pencil, Trash2, X } from 'lucide-react';
 import { useCapabilities } from '@/core/capabilities/capabilities';
 import { formatDms } from '@/core/geo/geo';
 import { useGeolocation } from '@/core/geo/useGeolocation';
@@ -15,7 +15,7 @@ import { useTracks } from '@/modules/tracks/store';
 import { routePoints, useWaypoints } from '@/modules/waypoints/store';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { outlineFeatures } from './outline';
-import { withLayer } from './layerExclusion';
+import { EXCLUSIVE_LAYERS, withLayer } from './layerExclusion';
 import { nextAreaBox } from './viewBounds';
 import { overlapWithZones } from './overlap';
 import { useBlobUrl } from './useBlobUrl';
@@ -97,6 +97,7 @@ export function MapsPage() {
   const [flyTo, setFlyTo] = useState<(ViewState & { key: number }) | null>(null);
   const [outline, setOutline] = useState<FeatureCollection | null>(null);
   // Ecorregiones: el archivo se carga la primera vez que se prende la capa (y queda guardado para usarlo sin conexión).
+  const [layersOpen, setLayersOpen] = useState(false);
   const [eco, setEco] = useState<EcoregionData | null>(null);
   const [ecoFailed, setEcoFailed] = useState(false);
   /** Punto tocado en el mapa (con la capa prendida): la ficha de ecorregión es de ese punto y no del centro. */
@@ -475,6 +476,41 @@ export function MapsPage() {
 
   const selectedWp = selected ? waypointMap.get(selected) : undefined;
 
+  const areaInfo = (pre: string) => (
+    <>
+      {layers.ecoregions && (eco || ecoFailed) && (
+        <p className="hint" style={{ margin: 0 }} data-testid={`${pre}map-ecoregion`}>
+          {ecoFailed || !eco
+            ? t('maps.ecoUnavailable')
+            : ecoHere
+              ? t(picked ? 'maps.ecoPicked' : 'maps.ecoHere', { name: ecoregionName(ecoHere, i18n.language), biome: biomeName(ecoFine && fine ? fine : eco, ecoHere), coords: formatDms(ecoPoint, t('geo.westLetter')) })
+              : t(picked ? 'maps.ecoPickedNone' : 'maps.ecoNone', { coords: formatDms(ecoPoint, t('geo.westLetter')) })}
+          {picked && (
+            <>
+              {' '}
+              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid={`${pre}eco-pick-clear`}>{t('maps.ecoPickClear')}</button>
+            </>
+          )}
+        </p>
+      )}
+
+      {layers.geology && (
+        <p className="hint" style={{ margin: 0 }} data-testid={`${pre}map-geology`}>
+          {geoUnit
+            ? t(picked ? 'geology.picked' : 'geology.here', { name: geoUnit.name, age: unitAge(geoUnit), litho: geoUnit.litho, coords: formatDms(ecoPoint, t('geo.westLetter')) }) + (geoViaOnline ? ' ' + t('geology.online') : '')
+            : t('geology.none')}
+          {picked && (
+            <>
+              {' '}
+              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid={`${pre}geo-pick-clear`}>{t('maps.ecoPickClear')}</button>
+            </>
+          )}
+        </p>
+      )}
+
+    </>
+  );
+
   return (
     <div className="stack">
       <div className="page-head">
@@ -485,7 +521,20 @@ export function MapsPage() {
       </div>
       {!online && <p className="hint" role="status">{t('maps.offline')}</p>}
 
-      <FullscreenStage className="maps-stage" overlay={tools.overlay}>
+      <FullscreenStage
+        className="maps-stage"
+        overlay={
+          <>
+            {tools.overlay}
+            {(layers.ecoregions || layers.geology || layers.slope) && (
+              <div className="maps-area-overlay" data-testid="fs-area-info">
+                {areaInfo('fs-')}
+                {layers.slope && <p className="hint" style={{ margin: 0 }}>{t('maps.layer.slope')}: {SLOPE_ZONES.map((z) => t(`inclinometer.legend.${z}`)).join(' · ')}</p>}
+              </div>
+            )}
+          </>
+        }
+      >
         <MapView
           initial={initial}
           layers={{ ...layers, slopeMin, slopeLee, slopeLeeUsual, slopeCornice }}
@@ -521,6 +570,20 @@ export function MapsPage() {
           onMoveStart={tools.closeMenu}
         />
         {tools.floating}
+        <div className="maps-layers-fs">
+          <button className="icon-btn" type="button" onClick={() => setLayersOpen((o) => !o)} aria-expanded={layersOpen} aria-label={t('maps.fsLayers')} title={t('maps.fsLayers')} data-testid="fs-layers-btn">
+            <Layers size={22} />
+          </button>
+          {layersOpen && (
+            <div className="maps-layers-menu" role="group" aria-label={t('maps.fsLayers')} onPointerDown={(e) => e.stopPropagation()}>
+              {EXCLUSIVE_LAYERS.map((key) => (
+                <button key={key} type="button" className="chip" aria-pressed={layers[key]} onClick={() => setLayer(key, !layers[key])} data-testid={`fs-layer-${key}`}>
+                  {t(`maps.layer.${key}`)}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         {tools.menu}
         <CameraButtons threeD={layers.terrain3d} onThreeD={(on) => setLayer('terrain3d', on)} follow={follow && !!fix} onFollow={setFollow} canFollow={!!fix}>
           <RecordButton />
@@ -537,35 +600,7 @@ export function MapsPage() {
         {t('maps.center', { coords: formatDms(view, t('geo.westLetter')), zoom: Math.round(view.zoom) })}
       </p>
 
-      {layers.ecoregions && (eco || ecoFailed) && (
-        <p className="hint" style={{ margin: 0 }} data-testid="map-ecoregion">
-          {ecoFailed || !eco
-            ? t('maps.ecoUnavailable')
-            : ecoHere
-              ? t(picked ? 'maps.ecoPicked' : 'maps.ecoHere', { name: ecoregionName(ecoHere, i18n.language), biome: biomeName(ecoFine && fine ? fine : eco, ecoHere), coords: formatDms(ecoPoint, t('geo.westLetter')) })
-              : t(picked ? 'maps.ecoPickedNone' : 'maps.ecoNone', { coords: formatDms(ecoPoint, t('geo.westLetter')) })}
-          {picked && (
-            <>
-              {' '}
-              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid="eco-pick-clear">{t('maps.ecoPickClear')}</button>
-            </>
-          )}
-        </p>
-      )}
-
-      {layers.geology && (
-        <p className="hint" style={{ margin: 0 }} data-testid="map-geology">
-          {geoUnit
-            ? t(picked ? 'geology.picked' : 'geology.here', { name: geoUnit.name, age: unitAge(geoUnit), litho: geoUnit.litho, coords: formatDms(ecoPoint, t('geo.westLetter')) }) + (geoViaOnline ? ' ' + t('geology.online') : '')
-            : t('geology.none')}
-          {picked && (
-            <>
-              {' '}
-              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid="geo-pick-clear">{t('maps.ecoPickClear')}</button>
-            </>
-          )}
-        </p>
-      )}
+      {areaInfo('')}
 
       {selectedWp && (
         <section className="card row-between" data-testid="map-waypoint">

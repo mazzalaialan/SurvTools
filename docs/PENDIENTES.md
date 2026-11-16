@@ -25,7 +25,7 @@ Resultados y fuentes en `docs/FUENTES-DE-DATOS.md` («Control de los parques con
 
 ### PRÓXIMA VERSIÓN (0.76), a medias al llegar al límite de uso (2026-11-16)
 - **Clima histórico (pedido del usuario): hecho y conectado (tarjeta «Clima histórico» en Meteorología, ruta `/weather/history`), con pruebas unitarias y e2e; sin publicar.** Lugar por GPS/waypoint, fecha con atajos, 7 días alrededor (historial ERA5 + pronóstico para los recientes), hora por hora, guardado sin conexión.
-- **Botones de capas en el mapa maximizado** (avalancha, ecorregiones, geología, una a la vez) con los datos de la ecorregión visibles a pantalla completa: sin empezar.
+- **Botones de capas en el mapa maximizado: hecho, sin publicar.** En pantalla completa aparece un botón de capas (abajo a la izquierda) con avalancha, ecorregiones y geología (una a la vez) y un panel sobre el mapa con la ecorregión o geología del centro o del punto tocado (y la leyenda de avalancha). Probado en la e2e de ecorregiones. Falta mirarlo en un teléfono real (que el panel no tape controles).
 - **Para probar en el teléfono de la 0.75:** la actualización con barra de progreso se ve desde la actualización siguiente (la 0.76).
 
 ### Satélite del mapa de clima: NASA y respaldo de NOAA, sin imágenes de más de 2 horas (hecho el 2026-11-16, sin publicar)

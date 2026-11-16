@@ -830,6 +830,7 @@
     "goHere": "Ir a mi ubicación",
     "center": "Centro: {{coords}} · zoom {{zoom}}",
     "layers": "Capas",
+    "fsLayers": "Capas del mapa (una a la vez)",
     "layer": {
       "geology": "Geología",
       "ecoregions": "Ecorregiones", "hillshade": "Relieve", "slope": "Riesgo de avalancha", "contours": "Curvas de nivel", "mine": "Mis waypoints y rutas", "tracks": "Tracks" },

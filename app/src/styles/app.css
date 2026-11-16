@@ -4740,3 +4740,42 @@ button.country-pack-icon {
 .hist-hours-row:nth-child(even) {
   background: var(--surface-2);
 }
+
+/* Mapa maximizado: botón que despliega las capas exclusivas y datos del área sobre el mapa. */
+.maps-stage:not([data-fullscreen='true']) .maps-layers-fs {
+  display: none;
+}
+
+.maps-layers-fs {
+  position: absolute;
+  left: 10px;
+  bottom: 40px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.maps-layers-fs > .icon-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.maps-layers-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.maps-area-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  pointer-events: auto;
+}

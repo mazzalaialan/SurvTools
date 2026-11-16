@@ -579,6 +579,17 @@ test('mapas offline: la capa de ecorregiones dice en cuál está el centro del m
   await expect(page.getByTestId('map-ecoregion')).toContainText('punto tocado', { timeout: 10_000 });
   await page.getByTestId('eco-pick-clear').click();
   await expect(page.getByTestId('map-ecoregion')).toContainText('centro del mapa');
+  // Pantalla completa: el botón de capas elige una a la vez y los datos de la ecorregión se ven sobre el mapa.
+  await expect(page.getByTestId('fs-layers-btn')).toBeHidden();
+  await page.getByRole('button', { name: 'Pantalla completa' }).click();
+  await expect(page.getByTestId('fs-area-info')).toContainText('Pampa húmeda');
+  await page.getByTestId('fs-layers-btn').click();
+  await page.getByTestId('fs-layer-slope').click();
+  await expect(page.getByTestId('fs-layer-slope')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('fs-layer-ecoregions')).toHaveAttribute('aria-pressed', 'false');
+  await page.getByTestId('fs-layer-ecoregions').click();
+  await expect(page.getByTestId('fs-area-info')).toContainText('Pampa húmeda');
+  await page.getByRole('button', { name: 'Salir de pantalla completa' }).click();
   // El archivo quedó guardado en el dispositivo (con los datos del país): se usa sin conexión.
   const stored = await page.evaluate(async () => !!(await (await caches.open('vikarg-country')).match(new URL('data/ecoregions.json', location.href).href)));
   expect(stored).toBe(true);
