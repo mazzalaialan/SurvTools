@@ -43,11 +43,11 @@ for (const e of elements) {
     console.warn(`Sin límite: ${name}`);
     continue;
   }
-  const site = e.tags.website ?? e.tags['contact:website'];
   parks.push({
     country: 'BO',
     name,
-    url: /^https?:\/\//.test(site ?? '') ? site : SERNAP_PAGE,
+    // Siempre la portada: las páginas por área (sernap.gob.bo/amboro/…) daban 404 en la revisión del 2026-11-16 (el sitio se rediseñó).
+    url: SERNAP_PAGE,
     office: 'SERNAP',
     address: '',
     phone: '',

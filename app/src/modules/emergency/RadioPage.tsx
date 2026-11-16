@@ -201,7 +201,7 @@ export function RadioPage() {
         <Notice id="radio.distress">{t('radio.distressNote')}</Notice>
       </section>
 
-      {country !== 'UY' && <ParkSection place={place} country={country} />}
+      <ParkSection place={place} country={country} />
 
       {(country === 'AR' || country === 'CL') && <MountainSection place={place} />}
 

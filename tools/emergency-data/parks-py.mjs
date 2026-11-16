@@ -38,7 +38,7 @@ area["ISO3166-1"="PY"][admin_level=2]->.a;
   nwr["leisure"="nature_reserve"]["name"](area.a);
 );
 out geom;`)
-).filter((e) => !/^(22|24)$/.test(e.tags?.protect_class ?? '') && !/mata ciliar|centro hist[oó]rico|batall[oó]n|campo de batalla/i.test(e.tags?.name ?? '') && /parque|reserva|refug|monumento|[aá]rea|fort[ií]n/i.test(e.tags?.name ?? '') && (e.type === 'relation' ? e.members?.length : e.geometry?.length > 3));
+).filter((e) => !/^(22|24)$/.test(e.tags?.protect_class ?? '') && !/mata ciliar|centro hist[oó]rico|batall[oó]n|campo de batalla/i.test(e.tags?.name ?? '') && !/itabo.*bosque/i.test(e.tags?.name ?? '') && !/agroindustrial|s\.a\.|s\.r\.l/i.test(e.tags?.operator ?? '') && /parque|reserva|refug|monumento|[aá]rea|fort[ií]n/i.test(e.tags?.name ?? '') && (e.type === 'relation' ? e.members?.length : e.geometry?.length > 3));
 
 const seen = new Set();
 const parks = [];

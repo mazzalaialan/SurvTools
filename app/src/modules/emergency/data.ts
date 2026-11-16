@@ -120,7 +120,7 @@ export interface ParksData {
 
 let parksAR: Promise<ParksData> | null = null;
 let parksCL: Promise<ParksData> | null = null;
-const parksOther = new Map<'BO' | 'PE' | 'PY', Promise<ParksData>>();
+const parksOther = new Map<'BO' | 'PE' | 'PY' | 'UY', Promise<ParksData>>();
 
 // Argentina viene con la app; si el servidor propio la regeneró (cada mes), se usa la copia más nueva.
 const loadParksAR = () => (parksAR ??= import('./parks-data.json').then((m) => preferNewer('parks-AR.json', m.default as unknown as ParksData)));
@@ -132,8 +132,8 @@ export function loadParksCL(): Promise<ParksData> {
   return parksCL;
 }
 
-/** Bolivia (SERNAP, de OpenStreetMap), Perú (SERNANP) y Paraguay (de OpenStreetMap): archivos aparte, se bajan una vez y quedan guardados, como el de Chile. */
-export function loadParksFile(country: 'BO' | 'PE' | 'PY'): Promise<ParksData> {
+/** Bolivia (SERNAP, de OpenStreetMap), Perú (SERNANP), Paraguay y Uruguay (SNAP; de OpenStreetMap): archivos aparte, se bajan una vez y quedan guardados, como el de Chile. */
+export function loadParksFile(country: 'BO' | 'PE' | 'PY' | 'UY'): Promise<ParksData> {
   let p = parksOther.get(country);
   if (!p) {
     p = loadDataFile<ParksData>(`parks-${country}.json`);
@@ -148,7 +148,7 @@ export function loadParksFile(country: 'BO' | 'PE' | 'PY'): Promise<ParksData> {
 const PARK_NEIGHBORS: Record<Country, Country[]> = {
   AR: ['AR', 'CL', 'BO', 'PY'],
   CL: ['CL', 'AR', 'BO', 'PE'],
-  UY: [],
+  UY: ['UY'],
   BO: ['BO', 'PE', 'CL', 'AR', 'PY'],
   PE: ['PE', 'BO', 'CL'],
   PY: ['PY', 'AR', 'BO'],
@@ -159,7 +159,7 @@ export const parkCountry = (park: Park): Country => park.country ?? (park.url.in
 
 /**
  * Parques del país elegido y los de los países vecinos con los que comparte
- * cordillera (Argentina y Chile, Bolivia y Perú…); Uruguay, ninguno. El de
+ * cordillera (Argentina y Chile, Bolivia y Perú…); Uruguay, las suyas. El de
  * Argentina viene con la app y los demás se bajan aparte: si no están
  * bajados y no hay conexión, solo los que haya.
  */
@@ -167,7 +167,7 @@ export async function loadParks(country: Country): Promise<ParksData> {
   const want = PARK_NEIGHBORS[country];
   if (!want.length) return { source: '', parks: [] };
   const loaded = await Promise.all(
-    want.map((c): Promise<ParksData | null> => (c === 'AR' ? loadParksAR() : c === 'CL' ? loadParksCL().catch(() => null) : c === 'UY' ? Promise.resolve(null) : loadParksFile(c).catch(() => null))),
+    want.map((c): Promise<ParksData | null> => (c === 'AR' ? loadParksAR() : c === 'CL' ? loadParksCL().catch(() => null) : loadParksFile(c).catch(() => null))),
   );
   const ok = loaded.filter((d): d is ParksData => d !== null);
   return { source: ok.map((d) => d.source).filter(Boolean).join(' '), parks: ok.flatMap((d) => d.parks) };

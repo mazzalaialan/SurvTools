@@ -23,6 +23,7 @@ export const DATA_FILES = new Set([
   'parks-BO.json',
   'parks-PE.json',
   'parks-PY.json',
+  'parks-UY.json',
   ...SERVICE_CATEGORIES.flatMap((c) => SERVICE_COUNTRIES.map((cc) => `${c}-${cc}.json`)),
 ]);
 

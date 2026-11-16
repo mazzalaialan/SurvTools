@@ -7,6 +7,10 @@
  *
  * Cada fila: [texto del nombre del área (sin tildes, minúsculas), dirección, teléfono].
  * El teléfono va como lo marcaría un celular: +51, código de la ciudad sin el 0.
+ *
+ * Revisión del 2026-11-16: un directorio más nuevo (setiembre de 2026, gob.pe) trae un teléfono nuevo (RN San Fernando, ya cargado) y ya no
+ * lista 8 de los de junio de 2024 (Pantanos de Villa, Nor Yauyos-Cochas, Chacamarca, Manglares de Tumbes, Tambopata, Ampay, Megantoni y
+ * Machiguenga): se dejan hasta confirmarlos, pero pueden estar desactualizados. Algunos teléfonos están compartidos por varias áreas.
  */
 const LIMA_CHICLAYO = 'Calle Los Laureles 330, Urb. Felipe Santiago Salaverry, Chiclayo';
 const IQUITOS = 'Calle Tacna 432, Iquitos';
@@ -68,7 +72,7 @@ export const PARK_CONTACTS = [
   ['reserva nacional matses', IQUITOS, ''],
   ['reserva nacional sistema de islas', 'José Gálvez Barrenechea 696, San Isidro, Lima', ''],
   ['reserva nacional pucacuro', IQUITOS, ''],
-  ['reserva nacional san fernando', 'Av. Agustín Bocanegra y Prada 829, Nasca, Ica', ''],
+  ['reserva nacional san fernando', 'Av. Agustín Bocanegra y Prada 829, Nasca, Ica', '+51 56 640216'], // directorio de jefes de setiembre de 2026 (gob.pe, 25/09/2026)
   ['reserva nacional dorsal de nasca', PARACAS, ''],
   ['reserva nacional illescas', PIURA, '+51 73 321668'],
   ['reserva nacional mar tropical de grau', PIURA, '+51 73 321668'],

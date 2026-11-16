@@ -15,7 +15,7 @@ describe('descarga de los datos de un país', () => {
     const ar = countryFiles('AR');
     expect(ar).not.toContain('AR.json');
     expect(ar).toEqual(expect.arrayContaining(['fuel-AR.json', 'parks-CL.json', 'repeaters-CL.json']));
-    expect(countryFiles('UY')).not.toContain('parks-UY.json');
+    expect(countryFiles('UY')).toContain('parks-UY.json');
     expect(countryFiles('PY')).toEqual(expect.arrayContaining(['PY.json', 'parks-PY.json', 'fuel-PY.json']));
   });
 
