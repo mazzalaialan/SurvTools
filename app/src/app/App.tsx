@@ -71,6 +71,7 @@ const TrackFollowPage = page(() => import('@/modules/tracks/TrackFollowPage').th
 const TrackPage = page(() => import('@/modules/tracks/TrackPage').then((m) => ({ default: m.TrackPage })));
 const TracksPage = page(() => import('@/modules/tracks/TracksPage').then((m) => ({ default: m.TracksPage })));
 const WeatherPage = page(() => import('@/modules/weather/WeatherPage').then((m) => ({ default: m.WeatherPage })));
+const HistoryPage = page(() => import('@/modules/weather/HistoryPage').then((m) => ({ default: m.HistoryPage })));
 const WeatherMapPage = page(() => import('@/modules/weathermap/WeatherMapPage').then((m) => ({ default: m.WeatherMapPage })));
 const WaypointEditPage = page(() => import('@/modules/waypoints/WaypointEditPage').then((m) => ({ default: m.WaypointEditPage })));
 const WaypointsPage = page(() => import('@/modules/waypoints/WaypointsPage').then((m) => ({ default: m.WaypointsPage })));
@@ -167,6 +168,7 @@ const router = createHashRouter([
       { path: '/weather', element: <SectionPage section="weather" /> },
       { path: '/weather/sky', element: <AstronomyPage /> },
       { path: '/weather/forecast', element: <WeatherPage /> },
+      { path: '/weather/history', element: <HistoryPage /> },
       { path: '/weather/map', element: <WeatherMapPage /> },
       { path: '/knots', element: <SectionPage section="knots" /> },
       { path: '/knots/guide', element: <KnotGuidePage /> },

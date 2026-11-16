@@ -4709,3 +4709,34 @@ button.country-pack-icon {
     animation: none;
   }
 }
+
+/* Clima histórico: resumen del día y tabla hora por hora. */
+.hist-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hist-hours {
+  display: grid;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hist-hours-head,
+.hist-hours-row {
+  display: grid;
+  grid-template-columns: 4rem 1fr 1fr 1.6fr;
+  gap: 8px;
+  padding: 4px 2px;
+}
+
+.hist-hours-head {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hist-hours-row:nth-child(even) {
+  background: var(--surface-2);
+}

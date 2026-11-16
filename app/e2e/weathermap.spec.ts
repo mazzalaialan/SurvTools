@@ -556,3 +556,32 @@ test('mapa de tiempo: con NASA atrasada usa el mosaico de NOAA de respaldo, y si
   await expect(page.getByTestId('satellite-stale')).toContainText('más de 2 horas', { timeout: 20_000 });
   await expect(page.getByTestId('map-times').first()).not.toContainText('Satélite (NOAA');
 });
+
+test('clima histórico: elegir una fecha trae el día del historial, con sus horas, y queda guardado para verlo sin conexión', async ({ page, context }) => {
+  const day = (i: number) => `2026-06-${String(12 + i).padStart(2, '0')}`;
+  const body = {
+    latitude: -34.6, longitude: -58.38, timezone: 'America/Argentina/Buenos_Aires', elevation: 25,
+    hourly: {
+      time: Array.from({ length: 7 * 24 }, (_, i) => `${day(Math.floor(i / 24))}T${String(i % 24).padStart(2, '0')}:00`),
+      temperature_2m: Array(7 * 24).fill(9), precipitation: Array(7 * 24).fill(0), wind_speed_10m: Array(7 * 24).fill(12), wind_direction_10m: Array(7 * 24).fill(180), wind_gusts_10m: Array(7 * 24).fill(20),
+    },
+    daily: {
+      time: Array.from({ length: 7 }, (_, i) => day(i)), weather_code: Array(7).fill(3), temperature_2m_max: Array(7).fill(14), temperature_2m_min: Array(7).fill(4),
+      precipitation_sum: [0, 0, 6.5, 0, 0, 0, 0], snowfall_sum: Array(7).fill(0), wind_speed_10m_max: Array(7).fill(25), wind_gusts_10m_max: Array(7).fill(40), wind_direction_10m_dominant: Array(7).fill(180),
+    },
+  };
+  await context.route('https://archive-api.open-meteo.com/**', (route) => route.fulfill({ json: body, headers: { 'Access-Control-Allow-Origin': '*' } }));
+  await setup(page);
+  await page.goto('/#/weather');
+  await page.getByRole('link', { name: /Clima histórico/ }).click();
+  await page.getByTestId('history-date').fill('2026-06-15');
+  await expect(page.getByTestId('history-temps')).toContainText('Mínima 4° · máxima 14°');
+  await expect(page.getByTestId('history-hour')).toHaveCount(24);
+  await page.getByTestId('history-day-2026-06-14').click();
+  await expect(page.getByTestId('history-facts')).toContainText('6,5 mm');
+  await context.setOffline(true);
+  await page.getByRole('link', { name: 'Meteo' }).first().click();
+  await page.getByRole('link', { name: /Clima histórico/ }).click();
+  await page.getByTestId('history-date').fill('2026-06-15');
+  await expect(page.getByTestId('history-temps')).toContainText('Mínima 4°');
+});
