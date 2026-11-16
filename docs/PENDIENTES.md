@@ -7,6 +7,9 @@
 ### Lo que se publicó en 0.66.0 → 0.68.1 (Navegación y alertas)
 Ríos, mareas, oleaje y pronósticos en `Meteorología → Navegación` y en capas del mapa de alertas y clima (ríos, mareas, oleaje, focos de calor): INA (alturas, caudales, pronóstico, perspectivas semanal y estacional, Delta), IOC (mareógrafos, clave en el `.env` de producción), Chile (Armada: zonas y bahías), Uruguay (INUMET, CARU, DINAGUA), Bolivia (SENAMHI: niveles, pronóstico de 14 días, Titicaca), focos de calor NASA FIRMS con confianza, aviso push anticipado de crecida, descarga incremental de paquetes por país, estación de río más cercana en la ficha del waypoint. Detalle en las secciones de abajo, `docs/FUENTES-DE-DATOS.md` y `docs/SERVIDOR.md`.
 
+### Países e idiomas nuevos (analizado el 2026-11-16, **sin hacer**)
+Guía genérica y casos en **`docs/PAISES-E-IDIOMAS.md`**: dónde se toca el código y las herramientas para sumar un país o un idioma, la investigación de fuentes de **Paraguay** (teléfonos 911/132/141 y ríos de la DMH por HTML: fáciles; sin alertas oficiales, sin radio abierta, parques solo por OSM) y lo que hace falta para el **portugués** (decidir pt-BR, 3.577 textos de interfaz más contenido largo, revisión humana de lo de seguridad). Falta confirmar: Cruz Roja y ANDE de Paraguay, si el 132 ya se arregló y OSM de áreas protegidas.
+
 ### Modo «Conducir» (hecho el 2026-11-15, publicado en la 0.69.0)
 Pedido de quien dirige: grabar una conducción en auto, moto, etc., **sin calorías ni ritmo**, solo lo útil (velocidad de ahora y otros datos).
 - **Dónde:** botón «Grabar en vehículo» en Tracks (`tracks/DriveStart.tsx`): se elige Auto, Moto, Camioneta o 4x4, Camión u Otro y abre la pantalla en vivo (`/training/live`, que muestra `tracks/DrivePanel.tsx` cuando el track tiene `vehicle`).
