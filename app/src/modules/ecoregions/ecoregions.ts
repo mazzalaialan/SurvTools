@@ -1,4 +1,4 @@
-import { loadDataFile } from '@/modules/emergency/dataFile';
+import { hasDataFile, loadDataFile } from '@/modules/emergency/dataFile';
 
 /**
  * Ecorregiones (RESOLVE Ecoregions 2017, CC BY 4.0, ver tools/eco-data/build.mjs): en cuál se está y por cuáles pasó un recorrido.
@@ -25,6 +25,39 @@ export interface EcoregionData {
 
 export const ECOREGIONS_FILE = 'ecoregions.json';
 export const ECOREGIONS_CREDIT = 'RESOLVE Ecoregions 2017 (Dinerstein et al. 2017, CC BY 4.0)';
+
+export const VEGETATION_CL_FILE = 'vegetation-CL.json';
+export const VEGETATION_CL_CREDIT = 'Luebert y Pliscoff (2021), pisos de vegetación de Chile, doi:10.5281/zenodo.4711540 (CC BY 4.0)';
+
+/** Copia con los números de bioma corridos en `offset`: así las formaciones de distintos conjuntos no se pisan al juntarlos. */
+export function offsetBiomes(d: EcoregionData, offset: number): EcoregionData {
+  return {
+    ...d,
+    biomes: Object.fromEntries(Object.entries(d.biomes).map(([k, v]) => [String(Number(k) + offset), v])),
+    ecoregions: d.ecoregions.map((e) => ({ ...e, biome: e.biome + offset })),
+  };
+}
+
+let clPending: Promise<EcoregionData | null> | null = null;
+/** Pisos de vegetación de Chile (ecorregión fina); `null` si no se bajó (se baja con el paquete de Chile, no por sí solo). */
+export function loadVegetationCL(): Promise<EcoregionData | null> {
+  clPending ??= (async () => {
+    if (!(await hasDataFile(VEGETATION_CL_FILE))) {
+      clPending = null;
+      return null;
+    }
+    return offsetBiomes(await loadDataFile<EcoregionData>(VEGETATION_CL_FILE), 100);
+  })().catch(() => {
+    clPending = null;
+    return null;
+  });
+  return clPending;
+}
+/** Baja los pisos de Chile (para el paquete del país) y los deja listos. */
+export async function downloadVegetationCL(): Promise<void> {
+  await loadDataFile<EcoregionData>(VEGETATION_CL_FILE);
+  clPending = null;
+}
 
 let pending: Promise<EcoregionData | null> | null = null;
 /** Carga el archivo (guardado en el dispositivo); `null` si no se pudo bajar y no hay copia. */

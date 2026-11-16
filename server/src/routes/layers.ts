@@ -100,7 +100,7 @@ export function layersRoutes(
     try {
       const { data, stale } = await cached('forest', x, y, () => src.forest(x, y));
       reply.header('cache-control', 'public, max-age=86400');
-      return { ...data, stale, tileDeg: FOREST_TILE_DEG, source: 'Ministerio de Ambiente y Desarrollo Sostenible de la Nación, Bosque Andino Patagónico 2017' };
+      return { ...data, stale, tileDeg: FOREST_TILE_DEG, source: 'Ministerio de Ambiente y Desarrollo Sostenible de la Nación, Cobertura de bosque del Bosque Andino Patagónico 2017, CC BY 4.0' };
     } catch (err) {
       app.log.warn({ err: String(err), x, y }, 'no se pudo leer la cobertura de bosque');
       return reply.code(502).send({ error: 'upstream' });

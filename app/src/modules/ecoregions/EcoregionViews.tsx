@@ -4,8 +4,8 @@ import { Trees } from 'lucide-react';
 import { formatDistance } from '@/core/units/units';
 import { useSettings } from '@/core/settings/settings';
 import { useRecorder } from '@/modules/tracks/recorder';
-import { loadStoredLayers, mergeForest, onLayersChange } from '@/modules/layers/zoneLayers';
-import { biomeName, ecoregionName, ecoregionsAlongWith, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoLookup, type Ecoregion, type EcoregionData } from './ecoregions';
+import { FOREST_CREDIT, loadStoredLayers, mergeForest, onLayersChange } from '@/modules/layers/zoneLayers';
+import { loadVegetationCL, VEGETATION_CL_CREDIT, biomeName, ecoregionName, ecoregionsAlongWith, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoLookup, type Ecoregion, type EcoregionData } from './ecoregions';
 
 /** El archivo de ecorregiones (guardado con los datos del país); `null` mientras carga o si no está. */
 export function useEcoregionData(): EcoregionData | null {
@@ -25,7 +25,13 @@ export function useFineEcoregions(): EcoregionData | null {
   const [data, setData] = useState<EcoregionData | null>(null);
   useEffect(() => {
     let live = true;
-    const read = () => void loadStoredLayers().then((l) => live && setData(mergeForest(l.forest)));
+    const read = () =>
+      void Promise.all([loadStoredLayers(), loadVegetationCL()]).then(([l, cl]) => {
+        if (!live) return;
+        const forest = mergeForest(l.forest);
+        // Bosque andino patagónico (Argentina) y pisos de vegetación de Chile en un solo conjunto fino.
+        setData(forest && cl ? { ...forest, biomes: { ...cl.biomes, ...forest.biomes }, ecoregions: [...cl.ecoregions, ...forest.ecoregions] } : (forest ?? cl));
+      });
     read();
     const off = onLayersChange(read);
     return () => {
@@ -35,6 +41,10 @@ export function useFineEcoregions(): EcoregionData | null {
   }, []);
   return data;
 }
+
+/** Qué fuentes finas hay en el conjunto (el bosque patagónico, los pisos de Chile o los dos), para citarlas. */
+export const fineCredit = (fine: EcoregionData): string =>
+  [fine.ecoregions.some((e) => e.id >= 100_000) ? FOREST_CREDIT : '', fine.ecoregions.some((e) => e.id < 100_000) ? VEGETATION_CL_CREDIT : ''].filter(Boolean).join('; ');
 
 export interface EcoContext {
   coarse: EcoregionData | null;
@@ -141,7 +151,7 @@ export function TrackEcoregions({ segments }: { segments: readonly (readonly (re
           </li>
         ))}
       </ul>
-      <p className="hint" style={{ margin: 0 }}>{t('ecoregions.alongHint', { credit: ECOREGIONS_CREDIT })}</p>
+      <p className="hint" style={{ margin: 0 }}>{t('ecoregions.alongHint', { credit: ECOREGIONS_CREDIT })}{ctx.fine ? ' ' + t('ecoregions.alongFine', { credit: fineCredit(ctx.fine) }) : ''}</p>
     </section>
   );
 }

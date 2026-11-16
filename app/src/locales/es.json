@@ -887,6 +887,7 @@
     "ecoPickedNone": "En el punto tocado ({{coords}}) no hay una ecorregión (mar o fuera de la región cubierta).",
     "ecoPickClear": "Volver al centro",
     "zoneWithDetail": "con detalle de geología y vegetación",
+    "ecoCreditFine": "Donde hay detalle de zona descargada, la vegetación es de: {{credit}}.",
     "centerHint": "La zona es el cuadrado naranja (el radio es la mitad del lado): mové el mapa para cambiar el centro.",
     "estimate": "Unas {{tiles}} teselas, ~{{mb}} MB (aproximado: depende de cuánto hay dibujado).",
     "tooBig": "Es demasiado para bajar de los servidores públicos (permiten hasta 3.000 teselas o 50 MB por zona): achicá el radio o bajá el detalle. Con un servidor VikArg que tenga mapas de este lugar se pueden bajar zonas más grandes.",
@@ -3320,6 +3321,7 @@
     "updated": "Actualizado: {{date}}"
   },
   "ecoregions": {
+    "alongFine": "Donde hay detalle de zona descargada, la vegetación es de: {{credit}}.",
     "entered": "Entraste en: {{name}}","now": "Ecorregión: {{name}}", "alongTitle": "Ecorregiones del recorrido", "alongHint": "Según {{credit}}: referencia aproximada (límites simplificados a ~1 km)."},
   "geology": {"now": "Geología: {{name}} ({{age}})", "alongTitle": "Geología del recorrido", "alongHint": "Según {{credit}}: referencia aproximada (en las zonas descargadas con detalle es 1:250.000; en el resto, 1:2.500.000).", "layerName": "Geología", "here": "Geología en el centro del mapa: {{name}}, {{age}}. {{litho}}", "picked": "Geología en el punto tocado ({{coords}}): {{name}}, {{age}}. {{litho}}", "none": "Sin datos de geología en este punto (solo hay para Argentina).", "online": "(consulta en línea)", "detailOn": "Con detalle de geología y vegetación (1:250.000)", "detailOff": "Sin el detalle de geología y vegetación: falta tu servidor propio o la zona es muy grande", "detailPartial": "Detalle de geología y vegetación incompleto: faltaron {{count}} teselas", "credit": "Geología: {{credit}}. Es una referencia: la base nacional es 1:2.500.000 y el detalle de las zonas descargadas, 1:250.000.", "legend": "Colores por edad (período) de la roca."}
 }

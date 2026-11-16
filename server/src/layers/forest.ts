@@ -4,8 +4,8 @@ import { tileBounds, type TileId } from './tiles.ts';
 /**
  * Cobertura de bosque del Bosque Andino Patagónico 2017 (Ministerio de Ambiente de la Nación, Sentinel-2, 1:40.000):
  * lenga, ñire, coihue, ciprés, raulí, mallín, estepa, arbustal… por teselas de 0,25° que la app baja con cada zona descargada.
- * https://geo.ambiente.gob.ar/geoserver/ows (capas `bosques:cobertura_bosque_bap_2017_<provincia>`). Licencia: sin declarar en la capa (la
- * ficha del sitio dice CC BY 4.0): se cita al Ministerio y se confirma por escrito (docs/PENDIENTES.md). Cubre solo el bosque andino.
+ * https://geo.ambiente.gob.ar/geoserver/ows (capas `bosques:cobertura_bosque_bap_2017_<provincia>`). Licencia: **CC BY 4.0** (la del sitio
+ * oficial argentina.gob.ar para estos datos; la capa del servicio no la repite): se publica así, citando al Ministerio. Cubre solo el bosque andino.
  */
 export const FOREST_TILE_DEG = 0.25;
 export const AMBIENTE_URL = 'https://geo.ambiente.gob.ar/geoserver/ows';

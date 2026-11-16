@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import data from '../../../public/data/ecoregions.json';
-import { biomeName, distanceM, ecoregionAt, ecoregionName, ecoregionsAlong, ecoregionsGeoJSON, type EcoregionData } from './ecoregions';
+import veg from '../../../public/data/vegetation-CL.json';
+import { biomeName, distanceM, finerLookup, offsetBiomes, ecoregionAt, ecoregionName, ecoregionsAlong, ecoregionsGeoJSON, type EcoregionData } from './ecoregions';
 
 const d = data as unknown as EcoregionData;
 const at = (lat: number, lon: number) => ecoregionAt(d, lat, lon)?.name;
@@ -36,5 +37,18 @@ describe('ecorregiones', () => {
     const g = ecoregionsGeoJSON(d, 'es');
     expect(g.features.length).toBe(d.ecoregions.length);
     expect((g.features[0]!.geometry as GeoJSON.MultiPolygon).coordinates[0]![0]![0]).toHaveLength(2);
+  });
+  it('pisos de vegetación de Chile: la fina manda donde hay y la gruesa en el resto', () => {
+    const cl = offsetBiomes(veg as unknown as EcoregionData, 100);
+    const { lookup, fineAt } = finerLookup(d, cl);
+    // Pucón: un piso de Nothofagus; Argentina (sin dato fino) sigue con RESOLVE.
+    expect(fineAt(-39.28, -71.98)?.name).toMatch(/Nothofagus/);
+    expect(lookup(-39.28, -71.98)?.id).toBeLessThan(100_000);
+    expect(fineAt(-34.6, -58.4)).toBeNull();
+    expect(lookup(-34.6, -58.4)?.name).toBe('Humid Pampas');
+    // Los biomas corridos no se pisan con los de RESOLVE y se pueden nombrar.
+    const e = fineAt(-33.45, -70.67)!;
+    expect(e.biome).toBeGreaterThan(100);
+    expect(biomeName(cl, e)).toBeTruthy();
   });
 });

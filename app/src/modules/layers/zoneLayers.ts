@@ -1,5 +1,5 @@
 import { MAP_CACHE } from '@/modules/maps/tiles';
-import type { EcoregionData } from '@/modules/ecoregions/ecoregions';
+import { offsetBiomes, type EcoregionData } from '@/modules/ecoregions/ecoregions';
 import type { GeologyData } from './geology';
 
 /**
@@ -7,6 +7,8 @@ import type { GeologyData } from './geology';
  * (server/src/layers) que se bajan con cada zona del mapa sin conexión y se guardan en la misma caché de mapas, así que editar o borrar
  * una zona las agrega o las limpia junto con sus teselas (store.ts). Sin servidor propio la zona queda sin detalle (queda la base nacional).
  */
+/** Cita del Ministerio de Ambiente (CC BY 4.0). */
+export const FOREST_CREDIT = 'Ministerio de Ambiente y Desarrollo Sostenible de la Nación, Cobertura de bosque del Bosque Andino Patagónico 2017 (CC BY 4.0)';
 export type LayerKind = 'geology' | 'forest';
 export const LAYER_TILE_DEG: Record<LayerKind, number> = { geology: 0.4, forest: 0.25 };
 /** Más teselas que esto en una zona: no se baja el detalle (la zona es muy grande para estas capas). */
@@ -134,5 +136,6 @@ export function mergeForest(tiles: EcoregionData[]): EcoregionData | null {
       else byId.set(e.id, { ...e, polys: [...e.polys] });
     }
   }
-  return { generatedAt: tiles[0]!.generatedAt, source: 'Ministerio de Ambiente y Desarrollo Sostenible de la Nación, Bosque Andino Patagónico 2017', biomes: tiles[0]!.biomes, ecoregions: [...byId.values()] };
+  // Los biomas de este conjunto se corren en 200 para no pisarse con los de Chile (+100) ni con los de RESOLVE.
+  return offsetBiomes({ generatedAt: tiles[0]!.generatedAt, source: FOREST_CREDIT, biomes: tiles[0]!.biomes, ecoregions: [...byId.values()] }, 200);
 }
