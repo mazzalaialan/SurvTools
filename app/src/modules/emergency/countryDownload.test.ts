@@ -16,12 +16,13 @@ describe('descarga de los datos de un país', () => {
     expect(ar).not.toContain('AR.json');
     expect(ar).toEqual(expect.arrayContaining(['fuel-AR.json', 'parks-CL.json', 'repeaters-CL.json']));
     expect(countryFiles('UY')).not.toContain('parks-UY.json');
+    expect(countryFiles('PY')).toEqual(expect.arrayContaining(['PY.json', 'parks-PY.json', 'fuel-PY.json']));
   });
 
   it('los pesos coinciden con los archivos de public/data (si esta prueba falla: `npm run data-sizes`)', () => {
     const dir = new URL('../../../public/data/', import.meta.url);
     const real = readdirSync(dir).filter((f) => f.endsWith('.json'));
-    for (const country of ['AR', 'CL', 'UY', 'BO', 'PE'] as const) {
+    for (const country of ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'] as const) {
       for (const f of countryFiles(country)) {
         expect(existsSync(new URL(f, dir)), `${f} no existe`).toBe(true);
         const actual = statSync(new URL(f, dir)).size;

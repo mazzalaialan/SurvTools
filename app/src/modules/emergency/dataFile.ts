@@ -160,6 +160,51 @@ export async function forgetDataFile(file: string): Promise<void> {
   if ('caches' in globalThis) await (await caches.open(DATA_CACHE)).delete(keyUrl(file));
 }
 
+/**
+ * Fecha de generación (`generatedAt`) de un archivo guardado, leyendo solo los primeros bytes (el campo está al comienzo de todos los
+ * paquetes): `null` si no está guardado, cadena vacía si no trae fecha.
+ */
+export async function storedDate(file: string): Promise<string | null> {
+  if (!('caches' in globalThis)) return null;
+  const res = await (await caches.open(DATA_CACHE)).match(keyUrl(file));
+  if (!res) return null;
+  if (!res.body) return dateOf(await res.json().catch(() => null));
+  const reader = res.body.getReader();
+  let head = '';
+  const decoder = new TextDecoder();
+  try {
+    while (head.length < 1024) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      head += decoder.decode(value, { stream: true });
+      if (/"generatedAt":"\d{4}-\d{2}-\d{2}"/.test(head)) break;
+    }
+  } finally {
+    void reader.cancel().catch(() => undefined);
+  }
+  return /"generatedAt":"(\d{4}-\d{2}-\d{2})"/.exec(head)?.[1] ?? '';
+}
+
+export type FileState = 'ok' | 'stale' | 'missing';
+
+/**
+ * Cómo está cada archivo en este dispositivo: `missing` (no se bajó), `stale` (hay una copia más nueva en la app o en el servidor propio
+ * según los índices) u `ok`. Sin conexión no se puede saber si hay algo más nuevo: queda `ok` si está guardado. Un archivo que ningún
+ * índice conoce (no existe para ese país) cuenta como `ok`.
+ */
+export async function fileStates(files: string[], force = false): Promise<Record<string, FileState>> {
+  const idx = navigator.onLine ? await loadIndexes(force) : { app: null, server: null };
+  const haveIndex = !!(idx.app || idx.server);
+  const out: Record<string, FileState> = {};
+  for (const file of files) {
+    const known = !!(idx.app?.files[file] || idx.server?.files[file]);
+    const date = await storedDate(file);
+    if (date === null) out[file] = haveIndex && !known ? 'ok' : 'missing';
+    else out[file] = date && haveIndex && newerSource(file, date, idx) ? 'stale' : 'ok';
+  }
+  return out;
+}
+
 /** ¿Ya está guardado este archivo de `data/`? (sin leerlo) */
 export async function hasDataFile(file: string): Promise<boolean> {
   if (!('caches' in globalThis)) return false;

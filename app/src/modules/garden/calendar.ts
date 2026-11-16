@@ -434,7 +434,7 @@ export function monthPlan(zone: Zone, month: number): MonthPlan {
 }
 
 /**
- * Zona sugerida para un lugar. Uruguay usa la Pampeana; Chile, la zona
+ * Zona sugerida para un lugar. Uruguay usa la Pampeana; Paraguay, el NEA; Chile, la zona
  * argentina de clima parecido: el norte, NOA; de Atacama al Biobío, Cuyo; del
  * Biobío al sur, Patagonia sur y andina. Bolivia y Perú no se parecen a
  * ninguna zona argentina (altiplano, selva): sin zona sugerida hasta tener sus
@@ -443,6 +443,8 @@ export function monthPlan(zone: Zone, month: number): MonthPlan {
 export function zoneFor(lat: number, lon: number, country: Country): Zone | null {
   if (country === 'BO' || country === 'PE') return null;
   if (country === 'UY') return 'pampeana';
+  // Paraguay: subtropical, parecido al NEA argentino (heladas suaves, verano muy caluroso y húmedo); sin calendario propio publicado.
+  if (country === 'PY') return 'nea';
   if (country === 'CL') {
     if (lat > -27) return 'noa';
     if (lat > -37.5) return 'cuyo';

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { fetchPyLevels, loadSavedPy, savePy, type PyLevels } from '@/modules/navigation/paraguayRivers';
 import { fetchUyLevels, loadSavedUy, saveUy, type UyLevels } from '@/modules/navigation/uruguayRivers';
 import { loadBoCatalog, fetchBoExtras, fetchBoLevels, loadSavedBo, loadSavedBoExtras, planillaFor, saveBo, saveBoExtras, type BoCatalog, type BoExtras, type BoLevels, type BoPlanillaRow } from '@/modules/navigation/bolivia';
 import { fetchReadings, loadRivers, loadSavedReadings, riverState, saveReadings, type RiverReading, type RiversData, type RiverState, type RiverStation } from '@/modules/navigation/rivers';
@@ -13,7 +14,7 @@ export type NavState = RiverState | 'unknown';
 
 export interface RiverPoint {
   id: string;
-  source: 'ina' | 'bo' | 'uy';
+  source: 'ina' | 'bo' | 'uy' | 'py';
   name: string;
   river: string;
   lon: number;
@@ -38,6 +39,10 @@ export interface RiverPoint {
   uySource?: 'CARU' | 'DINAGUA';
   provider?: string;
   change?: number | null;
+  /** Paraguay: la ubicación es aproximada, y el máximo y mínimo históricos (m). */
+  approx?: boolean;
+  histMax?: { level: number; date: string } | null;
+  histMin?: { level: number; date: string } | null;
 }
 
 export interface TidePoint {
@@ -87,6 +92,29 @@ export function uyPoints(levels: UyLevels | null): RiverPoint[] {
   }));
 }
 
+/** Paraguay (DMH, vía el servidor): una lectura por día en metros sobre el cero de la escala y sin umbrales (estado `unknown`). */
+export function pyPoints(levels: PyLevels | null): RiverPoint[] {
+  return (levels?.stations ?? []).map((s) => ({
+    id: `py-${s.code}`,
+    source: 'py' as const,
+    name: s.name,
+    river: s.river,
+    lon: s.lon,
+    lat: s.lat,
+    state: 'unknown' as const,
+    level: s.level,
+    at: s.date,
+    alert: null,
+    evac: null,
+    low: null,
+    ...(s.trend ? { trend: s.trend } : {}),
+    change: s.changeCm === null ? null : s.changeCm / 100,
+    approx: s.approx,
+    histMax: s.max,
+    histMin: s.min,
+  }));
+}
+
 export function tidePoints(data: TidesData): TidePoint[] {
   return data.stations.map((station) => ({ id: station.id, lon: station.lon, lat: station.lat, station }));
 }
@@ -100,6 +128,7 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
   const [boCatalog, setBoCatalog] = useState<BoCatalog | null>(null);
   const [boLevels, setBoLevels] = useState<BoLevels | null>(() => loadSavedBo());
   const [uyLevels, setUyLevels] = useState<UyLevels | null>(() => loadSavedUy());
+  const [pyLevels, setPyLevels] = useState<PyLevels | null>(() => loadSavedPy());
   const [boExtras, setBoExtras] = useState<BoExtras | null>(() => loadSavedBoExtras());
   const [tides, setTides] = useState<TidesData | null>(null);
   const [waves, setWaves] = useState<WaveGrid | null>(() => loadSavedGrid());
@@ -151,6 +180,14 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
           },
           () => undefined,
         );
+        fetchPyLevels(server).then(
+          (l) => {
+            if (cancelled) return;
+            savePy(l);
+            setPyLevels(l);
+          },
+          () => undefined,
+        );
       }
     };
     load();
@@ -184,8 +221,8 @@ export function useNavLayers(on: { rivers: boolean; tides: boolean; waves: boole
 
   const riverPoints = useMemo<RiverPoint[] | null>(() => {
     if (!on.rivers || !ina) return null;
-    return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels, boExtras?.planilla?.rows) : []), ...uyPoints(uyLevels)];
-  }, [on.rivers, ina, readings, boCatalog, boLevels, boExtras, uyLevels]);
+    return [...inaPoints(ina.stations, readings), ...(boCatalog ? boPoints(boCatalog, boLevels, boExtras?.planilla?.rows) : []), ...uyPoints(uyLevels), ...pyPoints(pyLevels)];
+  }, [on.rivers, ina, readings, boCatalog, boLevels, boExtras, uyLevels, pyLevels]);
   const tideList = useMemo(() => (on.tides && tides ? tidePoints(tides) : null), [on.tides, tides]);
   return { riverPoints, tidePoints: tideList, waves: on.waves ? waves : null };
 }

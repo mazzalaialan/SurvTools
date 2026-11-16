@@ -43,6 +43,7 @@ export const REGION_BOUNDS = { west: -76, east: -52, south: -58, north: -21 };
 export const COUNTRY_BOUNDS: Record<string, typeof REGION_BOUNDS> = {
   BO: { west: -70, east: -57.4, south: -23, north: -9.6 },
   PE: { west: -81.5, east: -68.5, south: -18.5, north: 0 },
+  PY: { west: -63, east: -53.5, south: -28, north: -19 },
 };
 export const homeBounds = (country: string) => COUNTRY_BOUNDS[country] ?? REGION_BOUNDS;
 /** Toda América del Sur, América Central y la Península Antártica: hasta donde se puede alejar el mapa. */

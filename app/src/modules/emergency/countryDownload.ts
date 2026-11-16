@@ -1,5 +1,5 @@
 import type { Country } from '@/core/settings/settings';
-import { hasDataFile } from './dataFile';
+import { fileStates, hasDataFile } from './dataFile';
 import { SERVICE_CATEGORIES } from './services';
 import sizes from './data-sizes.json';
 
@@ -15,7 +15,7 @@ export function countryFiles(country: Country): string[] {
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).
   if (country === 'AR' || country === 'CL') files.push('parks-CL.json', 'repeaters-CL.json');
-  if (country === 'BO' || country === 'PE') files.push(`parks-${country}.json`);
+  if (country === 'BO' || country === 'PE' || country === 'PY') files.push(`parks-${country}.json`);
   return files;
 }
 
@@ -56,4 +56,18 @@ export const downloadsSilently = (n: { kind: NetworkKind; saveData: boolean }): 
 export function formatBytes(bytes: number, lang: string): string {
   const nf = (d: number) => new Intl.NumberFormat(lang, { maximumFractionDigits: d });
   return bytes >= 1024 * 1024 ? `${nf(1).format(bytes / 1024 / 1024)} MB` : `${nf(0).format(Math.max(1, bytes / 1024))} KB`;
+}
+
+export type PackState = 'ready' | 'outdated' | 'missing';
+
+/**
+ * Cómo está el paquete de un país en este dispositivo: `missing` si falta algún archivo, `outdated` si hay una copia más nueva de alguno
+ * (la de la app o la del servidor propio) y `ready` si está todo y al día. Incluye qué archivos hay que bajar y cuánto pesan.
+ */
+export async function countryPackState(country: Country, force = false): Promise<{ state: PackState; files: string[]; bytes: number }> {
+  const states = await fileStates(countryFiles(country), force);
+  const missing = Object.keys(states).filter((f) => states[f] === 'missing');
+  const stale = Object.keys(states).filter((f) => states[f] === 'stale');
+  const files = [...missing, ...stale];
+  return { state: missing.length ? 'missing' : stale.length ? 'outdated' : 'ready', files, bytes: files.reduce((n, f) => n + fileBytes(f), 0) };
 }

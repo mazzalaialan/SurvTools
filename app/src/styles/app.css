@@ -4622,3 +4622,75 @@ a.module-card:hover {
 .river-evac {
   color: #d33;
 }
+
+/* Selector de país de Ajustes con el estado del paquete de datos de cada uno (bajado y al día, desactualizado o sin bajar). */
+.country-pack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.country-pack-item {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.country-pack-select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: none;
+  background: var(--surface);
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.country-pack-select[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.country-pack-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  border: none;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+button.country-pack-icon {
+  cursor: pointer;
+  font: inherit;
+}
+
+.country-pack-ready {
+  color: var(--ok);
+}
+
+.country-pack-item[data-state='outdated'] .country-pack-get {
+  color: var(--warn);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

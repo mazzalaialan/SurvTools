@@ -3,7 +3,7 @@
  * dato) y con licencia no comercial o con derechos reservados se usa mientras la app sea gratuita y sin publicidad. Para una copia paga,
  * con publicidad o institucional (por ejemplo la de una escuela) se compila con `VITE_COMMERCIAL=1` y se apagan esas fuentes.
  */
-export type SourceId = 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua';
+export type SourceId = 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py';
 export type LicenseKind = 'open' | 'undeclared' | 'reserved' | 'non-commercial';
 
 export interface NavSource {
@@ -91,6 +91,15 @@ export const NAV_SOURCES: NavSource[] = [
     licenseText: 'Sin licencia ni términos declarados; es la API del visualizador público y se lee desde el servidor propio con retraso de unas horas',
     url: 'https://www.ambiente.gub.uy/dinagua-obh/',
     cite: 'Dirección Nacional de Aguas (DINAGUA), Ministerio de Ambiente de Uruguay; datos de DINAGUA, UTE, CTM y OSE',
+  },
+  {
+    id: 'dmh-py',
+    name: 'DMH, nivel de los ríos de Paraguay',
+    provides: 'Niveles diarios de los ríos Paraguay, Paraná, Pilcomayo y Tebicuary, leídos por el servidor',
+    license: 'undeclared',
+    licenseText: 'Sin licencia ni términos declarados; la tabla es pública (sin CORS) y se lee desde el servidor propio',
+    url: 'https://www.meteorologia.gov.py/nivel-rio/',
+    cite: 'Dirección de Meteorología e Hidrología (DMH) de Paraguay, por convenio con la Armada, la ANNP, el MADES y el MOPC; ubicación aproximada: estaciones publicadas por YRATO (Itaipú) y OpenStreetMap (© OpenStreetMap contributors)',
   },
   {
     id: 'ioc',

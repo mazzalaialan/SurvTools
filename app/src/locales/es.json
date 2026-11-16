@@ -449,13 +449,22 @@
       "peRedCross": {"name": "Cruz Roja Peruana", "desc": "Central de Lima"},
       "pePoison": {"name": "Intoxicaciones (CICOTOX)", "desc": "Centro de Información, Control Toxicológico de la Universidad de San Marcos (Jr. Puno 1002, piso 3, Lima): también mordeduras y picaduras. Celular y WhatsApp: +51 956 740 869"},
       "peMountain": {"name": "Rescate de alta montaña (Policía, USAM)", "desc": "Unidad de Salvamento de Alta Montaña, Yungay (Áncash): Cordillera Blanca y Huayhuash. Si no atiende el primero, probá el segundo"},
-      "peGender": {"name": "Violencia familiar y sexual", "desc": "100: Ministerio de la Mujer, gratuita, las 24 horas"}
+      "peGender": {"name": "Violencia familiar y sexual", "desc": "100: Ministerio de la Mujer, gratuita, las 24 horas"},
+      "pyEmergencies": {"name": "Emergencias y Policía Nacional", "desc": "911: gratuito, atiende emergencias de policía, salud y bomberos"},
+      "pyFire": {"name": "Bomberos Voluntarios", "desc": "132: incendios y rescate. Tuvo fallas técnicas en 2025: si no responde, llamá al 911"},
+      "pySeme": {"name": "Ambulancia (SEME)", "desc": "141: Servicio de Emergencias Médicas Extrahospitalarias del Ministerio de Salud"},
+      "pyCivilDefense": {"name": "Defensa Civil (SEN)", "desc": "Secretaría de Emergencia Nacional, mesa de entrada: inundaciones, tormentas y otros desastres"},
+      "pyPoison": {"name": "Intoxicaciones (CNTox)", "desc": "Centro Nacional de Toxicología, Asunción: también mordeduras y picaduras"},
+      "pyMentalHealth": {"name": "Salud mental (línea 155)", "desc": "Ministerio de Salud, gratuita, las 24 horas: crisis y prevención del suicidio"},
+      "pyGender": {"name": "SOS Mujer", "desc": "137: violencia contra la mujer"},
+      "pyKids": {"name": "Fono Ayuda (niñez)", "desc": "147: niñez y adolescencia"}
     },
     "localNoteAR": "Algunos números cambian según la provincia o el municipio: guardá también los de tu zona en \"Mis contactos\".",
     "localNoteCL": "En Chile no hay un número único: 131 ambulancia, 132 bomberos, 133 Carabineros. Guardá también los de tu comuna en \"Mis contactos\".",
     "localNoteUY": "En Uruguay el 911 atiende todas las emergencias. Guardá también la emergencia móvil de tu mutualista en \"Mis contactos\".",
     "localNoteBO": "En Bolivia no hay un número único: 110 policía, 118 ambulancia, 119 bomberos. Guardá también los de tu ciudad en \"Mis contactos\".",
     "localNotePE": "En Perú no hay un número único: 105 policía, 116 bomberos, 106 ambulancia (donde hay SAMU). Guardá también el serenazgo de tu distrito en \"Mis contactos\".",
+    "localNotePY": "En Paraguay el 911 atiende todas las emergencias; el 141 es la ambulancia del Ministerio de Salud y el 132 los bomberos voluntarios (tuvo fallas en 2025: si no responde, llamá al 911). Guardá también los de tu ciudad en \"Mis contactos\".",
     "unconfirmed": "Sin confirmar en una fuente oficial.",
     "unconfirmedLink": "Avisanos si no funciona",
     "unconfirmedReport": "El número de \"{{name}}\" ({{number}}) no funciona o no es correcto. El que funciona es: ",
@@ -677,6 +686,8 @@
     "nacionalNoteBO": "Radio del Estado: Red Patria Nueva (Radio Illimani), FM 94.3 y AM 1020 en La Paz, FM 93.7 en Cochabamba y repetidoras en las capitales. Solo están confirmadas La Paz y Cochabamba: si en tu ciudad sintonizás otra, avisanos.",
     "nacionalTitlePE": "Radio Nacional del Perú más cercana",
     "nacionalNotePE": "Radio pública: Radio Nacional del Perú (IRTP), FM 103.9 y AM 850 en Lima y 70 estaciones FM en todo el país. AM llega más lejos de noche; FM, solo cerca. Las frecuencias vienen de la lista oficial del IRTP (de 2021): si en tu ciudad es otra, avisanos.",
+    "nacionalTitlePY": "Radio Nacional del Paraguay más cercana",
+    "nacionalNotePY": "Radio pública: Radio Nacional del Paraguay (Mitic), AM 920 en Asunción, FM 105.9 en San Pedro y AM 700 en Pilar, según su sitio oficial (radionacional.gov.py, consultado el 16/11/2026): no hay un listado completo, confirmá la frecuencia en tu zona. AM llega más lejos de noche; FM, solo cerca.",
     "nacionalTitleCL": "Radio con cobertura nacional más cercana",
     "nacionalNoteCL": "Chile no tiene radio pública nacional: se muestra la red de Radio Bío-Bío (privada, con emisoras en todas las regiones), que informa las emergencias. Las alertas oficiales de SENAPRED llegan además al celular por el Sistema de Alerta de Emergencia (SAE). Frecuencias vía Wikipedia; confirmalas con tu radio.",
     "packageMissing": "Las emisoras de {{country}} vienen en los datos sin conexión del país: se bajan solos la primera vez que haya conexión.",
@@ -734,10 +745,12 @@
     "park": {"title": "Frecuencias de parques", "intro": "Las que publica cada parque nacional o área protegida para emergencias de visitantes, con sus teléfonos. Primero el parque donde estás; después los demás que publican una frecuencia.", "inside": "estás adentro", "near": "a {{distance}} del límite", "noRadioAR": "El parque no publica una frecuencia VHF para visitantes: con radio, usá la FEM 140,970 MHz.", "noRadioCL": "CONAF no publica una frecuencia VHF para esta área: con radio, escuchá la del Socorro Andino o la FEM 140,970 MHz.",
       "noRadioBO": "El SERNAP no publica una frecuencia de radio para visitantes de esta área. Antes de entrar, avisá a los guardaparques y llevá una forma de comunicarte; ante una emergencia mirá los números de Bolivia en Contactos de emergencia.",
       "noRadioPE": "El SERNANP no publica una frecuencia de radio para visitantes de esta área. Antes de entrar, avisá en la jefatura del área y llevá una forma de comunicarte; ante una emergencia llamá al 105 (Policía) o al 116 (Bomberos).", "office": "Intendencia", "source": "Fuente: {{source}}", "othersTitle": "Otros parques con frecuencia publicada", "allTitle": "Parques con frecuencia publicada", "note": "Las frecuencias de los parques son para emergencias: la cobertura depende del terreno. Antes de entrar, registrate en la seccional o guardería y preguntá cuál usan en la zona.", "sourcesLead": "Fuentes:",
+      "noRadioPY": "Ningún área protegida de Paraguay publica una frecuencia de radio para visitantes. Antes de entrar, avisá en la administración del área y llevá una forma de comunicarte; ante una emergencia llamá al 911 o mirá los números de Paraguay en Contactos de emergencia.",
       "sourceOfAR": "Administración de Parques Nacionales (argentina.gob.ar/parquesnacionales, CC BY 4.0), con la fuente de cada frecuencia; límites: IGN (CC BY 4.0).",
       "sourceOfCL": "CONAF (conaf.cl), con la fuente de cada frecuencia; límites: © colaboradores de OpenStreetMap (ODbL).",
       "sourceOfBO": "Bolivia: límites © colaboradores de OpenStreetMap (ODbL) y contacto del SERNAP (sernap.gob.bo).",
-      "sourceOfPE": "Perú: límites del SERNANP (MINAM), mapa derivado y simplificado, y contacto de su sede central (gob.pe/sernanp)."},
+      "sourceOfPE": "Perú: límites del SERNANP (MINAM), mapa derivado y simplificado, y contacto de su sede central (gob.pe/sernanp).",
+      "sourceOfPY": "Paraguay: límites y nombres © colaboradores de OpenStreetMap (ODbL) y contacto del MADES (mades.gov.py)."},
     "mountainNote": "La FEM y las dos de uso libre son libres, sin licencia, según la Resolución 5/2015 (en Argentina). Fuera de una emergencia, transmitir en otras frecuencias o del lado chileno requiere la autorización que corresponda. Una radio no reemplaza el aviso al 911, a la guardería o al 131 si hay señal.",
     "mountainSources": "Fuentes: Federación Andinistas Argentinos (FEM, 2021), Club Andino Mercedario (2024), Wikiexplora (Chile), Andesport y Meunier (guardaparques). Confirmá las de tu zona en el refugio o la guardería y guardalas en \"Mis frecuencias\".",
     "distressNote": "Para transmitir hace falta un equipo de esa banda. Usalas solo ante un peligro real para la vida: un llamado falso es delito.",
@@ -748,7 +761,8 @@
       "CL": "En Chile la licencia la da SUBTEL después de un examen; los radioclubes preparan para rendirlo y muchos tienen redes de emergencia.",
       "UY": "En Uruguay el permiso lo da URSEC; el Radio Club Uruguayo (CX1AA) y los radioclubes del interior dan los cursos.",
       "BO": "En Bolivia la licencia la da la ATT (Autoridad de Regulación y Fiscalización de Telecomunicaciones y Transportes); el Radio Club de Bolivia y los radioclubes departamentales dan los cursos.",
-      "PE": "En Perú la licencia la da el MTC; el Radio Club Peruano (OA4O) da los cursos. Su red de emergencias (RENER) usa 146.520 MHz en simplex."
+      "PE": "En Perú la licencia la da el MTC; el Radio Club Peruano (OA4O) da los cursos. Su red de emergencias (RENER) usa 146.520 MHz en simplex.",
+      "PY": "En Paraguay las licencias de radioaficionado las da la CONATEL (Comisión Nacional de Telecomunicaciones); consultá con los radioclubes de tu ciudad por los cursos y las redes de emergencia."
     },
     "securityNote": "Las frecuencias de guardaparques, CONAF y el Radio Club de Carabineros están solo para pedir auxilio con la vida en peligro: ante un peligro de vida se puede pedir ayuda por cualquier medio. No se incluyen las de Gendarmería ni policía: no son públicas y muchas están cifradas. Escuchar comunicaciones de fuerzas o servicios sin autorización puede ser delito (en Argentina, Código Penal, art. 153)."
   },
@@ -972,7 +986,7 @@
       "firesHidden_other": "Se ocultan las detecciones de baja y media confianza que se repiten en el mismo lugar casi todos los días (antorchas de gas, industria): hoy {{count}}. Las de alta confianza se muestran siempre",
       "hazards": "Alertas de desastres (GDACS, ONU y Comisión Europea): 🌀 ciclón o huracán, 🌊 inundación, 🏜️ sequía, 🔥 incendio forestal, 🌋 erupción. Fondo verde, naranja o rojo según la gravedad",
       "wind": "Viento por zona en {{unit}}; la flecha indica hacia dónde sopla",
-      "rivers": "Ríos de América del Sur: líneas azules, más gruesas cuanto mayor es el río, y sus estaciones de nivel del INA (Argentina), del SENAMHI (Bolivia) y de CARU y DINAGUA (Uruguay; estas dos últimas necesitan el servidor propio). Círculo rojo, evacuación; naranja, alerta; amarillo, aguas bajas; azul, normal; gris, sin lectura o sin umbrales (Bolivia y Uruguay). En Bolivia, si la estación sale en el pronóstico del SENAMHI, el color es su amenaza (amarilla, naranja o roja). Tocá una estación para ver el detalle. Líneas: Natural Earth y © OpenStreetMap contributors",
+      "rivers": "Ríos de América del Sur: líneas azules, más gruesas cuanto mayor es el río, y sus estaciones de nivel del INA (Argentina), del SENAMHI (Bolivia) y de CARU y DINAGUA (Uruguay) y de la DMH (Paraguay); las de Uruguay y Paraguay necesitan el servidor propio. Círculo rojo, evacuación; naranja, alerta; amarillo, aguas bajas; azul, normal; gris, sin lectura o sin umbrales (Bolivia y Uruguay). En Bolivia, si la estación sale en el pronóstico del SENAMHI, el color es su amenaza (amarilla, naranja o roja). Tocá una estación para ver el detalle. Líneas: Natural Earth y © OpenStreetMap contributors",
       "tides": "◆ Estaciones de mareas (cálculo en el teléfono, sin conexión). Tocá una para ver la marea de ahora y la próxima pleamar y bajamar",
       "waves": "Oleaje frente a las costas (Open-Meteo Marine, modelo): una franja pegada a la costa cuyo color marca el estado del mar, de celeste (calma) a rojo (muy gruesa). Es un pronóstico del modelo, no una medición; no sirve para navegar cerca de la costa. Tocá la franja para ver la altura de las olas, el período, la dirección y el oleaje de fondo"
     },
@@ -1006,6 +1020,11 @@
     "riverThresholds": "Alerta {{alert}} · Evacuación {{evac}} · Aguas bajas {{low}}",
     "riverUyChange": "{{change}} m desde la lectura anterior",
     "riverUyFrom": "Nivel sobre el cero de la estación (sin umbrales de alerta). Fuente: {{source}} ({{provider}}).",
+    "riverPyLevel": "Nivel {{value}} sobre el cero de la escala, lectura del {{date}} (DMH Paraguay)",
+    "riverPyChange": "{{change}} m en el día",
+    "riverPyHistory": "Máximo histórico {{max}} ({{maxDate}})",
+    "riverPyFrom": "Sin umbrales de alerta. Fuente: DMH de Paraguay.{{approx}}",
+    "riverPyApprox": " Ubicación aproximada.",
     "riverNoReading": "Sin lectura reciente",
     "navMore": "Ver todo en Navegación",
     "tideNearTitle": "Marea: {{name}}",
@@ -1412,6 +1431,7 @@
     "noticeTitle": "Información orientativa",
     "notice": "No reemplaza las cartas náuticas, las tablas oficiales, los radioavisos ni las indicaciones de la autoridad marítima. Verificá por los canales oficiales (radio, NAVTEX) antes de navegar.",
     "uyRivers": {"title": "Ríos de Uruguay", "intro": "Niveles de los ríos cerca del lugar elegido: el río Uruguay (CARU) y el resto del país (DINAGUA, con datos de UTE, CTM y OSE). Los lee el servidor propio.", "needsServer": "Para ver los niveles de los ríos de Uruguay hace falta el servidor propio (Ajustes).", "loading": "Buscando los niveles…", "error": "No se pudieron leer los niveles. Probá de nuevo con conexión.", "offlineSaved": "Sin conexión o sin respuesta: se ven los últimos niveles guardados (leídos el {{when}}).", "none": "No hay estaciones de CARU ni de DINAGUA a menos de 120 km de este lugar.", "distance": "a {{km}} km", "sinceBefore": "desde la lectura anterior", "reference": "Niveles en metros sobre el cero de cada estación (no son los de las cartas). No traen niveles de alerta ni de evacuación. DINAGUA llega con un retraso de unas horas y CARU se actualiza cada 12 o 24 horas en los puertos: mirá siempre cuándo se midió.", "source": "Datos: CARU (Comisión Administradora del Río Uruguay; Prefectura Naval Argentina, Prefectura Nacional Naval y CTM) y DINAGUA (Ministerio de Ambiente de Uruguay; UTE, CTM y OSE), sin licencia declarada. Informativo, no es una alerta oficial."},
+    "pyRivers": {"title": "Ríos de Paraguay", "intro": "Niveles diarios de los ríos Paraguay, Paraná, Pilcomayo y Tebicuary cerca del lugar elegido, de la Dirección de Meteorología e Hidrología (DMH). Los lee el servidor propio.", "needsServer": "Para ver los niveles de los ríos de Paraguay hace falta el servidor propio (Ajustes).", "loading": "Buscando los niveles…", "error": "No se pudieron leer los niveles. Probá de nuevo con conexión.", "offlineSaved": "Sin conexión o sin respuesta: se ven los últimos niveles guardados (leídos el {{when}}).", "none": "No hay estaciones de la DMH a menos de 250 km de este lugar.", "distance": "a {{km}} km", "reading": "lectura del {{date}}", "old": "lectura vieja: {{date}}", "approx": "ubicación aproximada", "history": "Máximo histórico {{max}} m ({{maxDate}}); mínimo {{min}} m", "perDay": "por día", "reference": "Niveles en metros sobre el cero de cada escala. La DMH publica una lectura por día, sin niveles de alerta ni de evacuación, y algunas estaciones quedan meses sin datos nuevos: mirá siempre la fecha. La ubicación de las estaciones es aproximada.", "source": "Datos: Dirección de Meteorología e Hidrología (DMH) de Paraguay, con la Armada, la ANNP, el MADES y el MOPC, sin licencia declarada. Ubicaciones: YRATO (Itaipú) y © colaboradores de OpenStreetMap. Informativo, no es una alerta oficial."},
     "bolivia": {
       "title": "Ríos y lago Titicaca de Bolivia",
       "intro": "Nivel de los ríos y del lago Titicaca cerca del lugar elegido, del reporte diario del SENAMHI Bolivia (lo lee el servidor propio).",
@@ -2340,11 +2360,18 @@
   },
   "country": {
     "label": "País",
-    "AR": "Argentina",
+    "pack": {
+      "ready": "{{country}}: datos sin conexión bajados y al día",
+      "download": "Bajar los datos sin conexión de {{country}}",
+      "update": "Actualizar los datos sin conexión de {{country}}",
+      "downloading": "Bajando los datos de {{country}}…"
+    },
+        "AR": "Argentina",
     "CL": "Chile",
     "UY": "Uruguay",
     "BO": "Bolivia",
     "PE": "Perú",
+    "PY": "Paraguay",
     "hint": "Define los números de emergencia, el centro toxicológico y la guía de primeros auxilios. También se cambia en Contactos de emergencia y en la guía."
   },
   "legal": {
@@ -2730,7 +2757,8 @@
       "CL": "Chile no tiene un calendario oficial de huerta familiar: se usa el de la zona argentina de clima parecido ({{zone}}).",
       "UY": "Uruguay no tiene un calendario oficial de huerta familiar: se usa el de la zona argentina de clima parecido ({{zone}}).",
       "BO": "Bolivia no tiene un calendario de huerta oficial publicado por cultivo y mes (el INIAF no lo publica). Hay dos zonas estimadas: \"Valles de Bolivia (Tarija)\", armada con el manual de una ONG, y \"Trópico y Yungas de Bolivia\", de un cuadro de un proyecto de cooperación (12 cultivos); en el altiplano elegí a mano la que más se parezca y tomá los meses como referencia.",
-      "PE": "Perú no tiene un calendario de huerta oficial publicado por cultivo y mes (el INIA no lo publica abierto): el clima de la costa, la sierra y la selva no se parece a ninguna zona argentina. Hay una zona estimada \"Sierra de Perú\" (7 cultivos andinos, del calendario de la sierra del INIA); para la costa y la selva elegí a mano la que más se parezca (la de \"Valles de Bolivia\" es de clima templado de valle) y tomá los meses como referencia."
+      "PE": "Perú no tiene un calendario de huerta oficial publicado por cultivo y mes (el INIA no lo publica abierto): el clima de la costa, la sierra y la selva no se parece a ninguna zona argentina. Hay una zona estimada \"Sierra de Perú\" (7 cultivos andinos, del calendario de la sierra del INIA); para la costa y la selva elegí a mano la que más se parezca (la de \"Valles de Bolivia\" es de clima templado de valle) y tomá los meses como referencia.",
+      "PY": "Paraguay no tiene un calendario de huerta oficial publicado por cultivo y mes: se usa el de la zona argentina de clima parecido ({{zone}}: subtropical, heladas suaves y verano muy caluroso y húmedo). Tomalo como orientación."
     },
     "zoneEstimatedValles": "Esta zona sale de un manual de una ONG para el Valle Central de Tarija (2016), no de una fuente oficial: los meses se leyeron de cuadros gráficos y pueden estar corridos un mes. Sirve para valles de clima templado; en el altiplano o el trópico los meses cambian. Tomalo como orientación y fijate qué hacen en tu zona.",
     "zoneEstimatedTropico": "Esta zona sale de un cuadro de siembra de un proyecto de cooperación para el trópico de Cochabamba y los Yungas de La Paz (Jatun Sacha, con apoyo de UNODC): una sola fuente, no oficial y sin validar por el INIAF. No distingue siembra directa de almácigo ni los Yungas del trópico, y trae solo 12 cultivos. Tomalo como orientación y fijate qué hacen en tu zona.",

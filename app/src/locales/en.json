@@ -449,13 +449,22 @@
       "peRedCross": {"name": "Peruvian Red Cross", "desc": "Lima headquarters"},
       "pePoison": {"name": "Poisoning (CICOTOX)", "desc": "San Marcos University poison information and control center (Jr. Puno 1002, 3rd floor, Lima): also bites and stings. Mobile and WhatsApp: +51 956 740 869"},
       "peMountain": {"name": "High-mountain rescue (Police, USAM)", "desc": "High Mountain Rescue Unit, Yungay (Áncash): Cordillera Blanca and Huayhuash. If the first doesn’t answer, try the second"},
-      "peGender": {"name": "Family and sexual violence", "desc": "100: Ministry of Women, free, 24 hours"}
+      "peGender": {"name": "Family and sexual violence", "desc": "100: Ministry of Women, free, 24 hours"},
+      "pyEmergencies": {"name": "Emergencies and National Police", "desc": "911: free, handles police, medical and fire emergencies"},
+      "pyFire": {"name": "Volunteer firefighters", "desc": "132: fires and rescue. It had technical failures in 2025: if nobody answers, call 911"},
+      "pySeme": {"name": "Ambulance (SEME)", "desc": "141: the Ministry of Health’s out-of-hospital emergency medical service"},
+      "pyCivilDefense": {"name": "Civil defense (SEN)", "desc": "National Emergency Secretariat, front desk: floods, storms and other disasters"},
+      "pyPoison": {"name": "Poisoning (CNTox)", "desc": "National Toxicology Center, Asunción: also bites and stings"},
+      "pyMentalHealth": {"name": "Mental health (line 155)", "desc": "Ministry of Health, free, 24 hours: crisis and suicide prevention"},
+      "pyGender": {"name": "SOS Mujer", "desc": "137: violence against women"},
+      "pyKids": {"name": "Fono Ayuda (children)", "desc": "147: children and adolescents"}
     },
     "localNoteAR": "Some numbers change by province or municipality: save your local ones in \"My contacts\" too.",
     "localNoteCL": "Chile has no single number: 131 ambulance, 132 fire, 133 Carabineros (police). Save your local ones in \"My contacts\" too.",
     "localNoteUY": "In Uruguay 911 handles every emergency. Save your health provider's mobile emergency service in \"My contacts\" too.",
     "localNoteBO": "Bolivia has no single number: 110 police, 118 ambulance, 119 fire. Save your city’s numbers in \"My contacts\" too.",
     "localNotePE": "Peru has no single number: 105 police, 116 fire, 106 ambulance (where SAMU operates). Save your district’s serenazgo in \"My contacts\" too.",
+    "localNotePY": "In Paraguay 911 handles all emergencies; 141 is the Ministry of Health ambulance and 132 the volunteer firefighters (it had failures in 2025: if nobody answers, call 911). Also save your city’s numbers under \"My contacts\".",
     "unconfirmed": "Not confirmed by an official source.",
     "unconfirmedLink": "Tell us if it doesn’t work",
     "unconfirmedReport": "The number for \"{{name}}\" ({{number}}) doesn’t work or is wrong. The one that works is: ",
@@ -677,6 +686,8 @@
     "nacionalNoteBO": "State radio: Red Patria Nueva (Radio Illimani), FM 94.3 and AM 1020 in La Paz, FM 93.7 in Cochabamba and repeaters in the capitals. Only La Paz and Cochabamba are confirmed: if you tune in another one in your city, let us know.",
     "nacionalTitlePE": "Nearest Radio Nacional del Perú station",
     "nacionalNotePE": "Public radio: Radio Nacional del Perú (IRTP), FM 103.9 and AM 850 in Lima and 70 FM stations across the country. AM reaches farther at night; FM only nearby. Frequencies come from IRTP's official list (from 2021): if yours differs, let us know.",
+    "nacionalTitlePY": "Nearest Radio Nacional del Paraguay",
+    "nacionalNotePY": "Public radio: Radio Nacional del Paraguay (Mitic), AM 920 in Asunción, FM 105.9 in San Pedro and AM 700 in Pilar, according to its official site (radionacional.gov.py, checked on 2026-11-16): there is no complete list, confirm the frequency in your area. AM carries farther at night; FM only nearby.",
     "nacionalTitleCL": "Nearest nationwide radio station",
     "nacionalNoteCL": "Chile has no national public radio: this shows the Radio Bío-Bío network (private, with stations in every region), which reports emergencies. SENAPRED official alerts also reach phones through the Emergency Alert System (SAE). Frequencies via Wikipedia; check them with your radio.",
     "packageMissing": "The {{country}} stations come with the country's offline data: it downloads automatically the first time there is a connection.",
@@ -734,10 +745,12 @@
     "park": {"title": "Park frequencies", "intro": "The ones each national park or protected area publishes for visitor emergencies, with their phones. First the park you are in; then the others that publish a frequency.", "inside": "you are inside", "near": "{{distance}} from the boundary", "noRadioAR": "The park doesn't publish a VHF frequency for visitors: with a radio, use the FEM, 140.970 MHz.", "noRadioCL": "CONAF doesn't publish a VHF frequency for this area: with a radio, monitor the Socorro Andino one or the FEM, 140.970 MHz.",
       "noRadioBO": "SERNAP doesn't publish a radio frequency for visitors in this area. Before going in, tell the rangers and bring a way to communicate; in an emergency, see Bolivia's numbers in Emergency contacts.",
       "noRadioPE": "SERNANP doesn't publish a radio frequency for visitors in this area. Before going in, tell the area office and bring a way to communicate; in an emergency call 105 (Police) or 116 (Fire).", "office": "Park office", "source": "Source: {{source}}", "othersTitle": "Other parks with a published frequency", "allTitle": "Parks with a published frequency", "note": "Park frequencies are for emergencies; coverage depends on the terrain. Before going in, register at the ranger station and ask which one they use in the area.", "sourcesLead": "Sources:",
+      "noRadioPY": "No protected area in Paraguay publishes a radio frequency for visitors. Before going in, tell the area’s administration and bring a way to communicate; in an emergency call 911 or see the Paraguay numbers in Emergency contacts.",
       "sourceOfAR": "Administración de Parques Nacionales (argentina.gob.ar/parquesnacionales, CC BY 4.0), with each frequency's source; boundaries: IGN (CC BY 4.0).",
       "sourceOfCL": "CONAF (conaf.cl), with each frequency's source; boundaries: © OpenStreetMap contributors (ODbL).",
       "sourceOfBO": "Bolivia: boundaries © OpenStreetMap contributors (ODbL) and SERNAP contact (sernap.gob.bo).",
-      "sourceOfPE": "Peru: boundaries from SERNANP (MINAM), simplified derived map, and its headquarters contact (gob.pe/sernanp)."},
+      "sourceOfPE": "Peru: boundaries from SERNANP (MINAM), simplified derived map, and its headquarters contact (gob.pe/sernanp).",
+      "sourceOfPY": "Paraguay: boundaries and names © OpenStreetMap contributors (ODbL) and MADES contact (mades.gov.py)."},
     "mountainNote": "The FEM and the two free-use ones are free to use without a license under Resolution 5/2015 (in Argentina). Outside an emergency, transmitting on other frequencies or on the Chilean side requires the proper authorization. A radio does not replace calling 911, the ranger station or 131 if there is signal.",
     "mountainSources": "Sources: Federación Andinistas Argentinos (FEM, 2021), Club Andino Mercedario (2024), Wikiexplora (Chile), Andesport and Meunier (park rangers). Confirm the ones for your area at the hut or ranger station and save them in \"My frequencies\".",
     "distressNote": "Transmitting needs a radio for that band. Use them only when a life is truly at risk: a false call is a crime.",
@@ -748,7 +761,8 @@
       "CL": "In Chile the license is issued by SUBTEL after an exam; radio clubs prepare you for it and many run emergency networks.",
       "UY": "In Uruguay the permit is issued by URSEC; Radio Club Uruguayo (CX1AA) and local clubs run the courses.",
       "BO": "In Bolivia the license is issued by ATT (the telecom and transport regulator); Radio Club de Bolivia and departmental clubs run the courses.",
-      "PE": "In Peru the license is issued by MTC; Radio Club Peruano (OA4O) runs the courses. Its emergency network (RENER) uses 146.520 MHz simplex."
+      "PE": "In Peru the license is issued by MTC; Radio Club Peruano (OA4O) runs the courses. Its emergency network (RENER) uses 146.520 MHz simplex.",
+      "PY": "In Paraguay amateur radio licenses are issued by CONATEL (the National Telecommunications Commission); ask the radio clubs in your city about courses and emergency networks."
     },
     "securityNote": "The park ranger, CONAF and Radio Club de Carabineros frequencies are only for calling for help when a life is in danger: with a life at risk you may ask for help by any means. Gendarmerie and police frequencies aren't included: they aren't public and many are encrypted. Listening to forces or services without authorization may be a crime (in Argentina, Penal Code, art. 153)."
   },
@@ -972,7 +986,7 @@
       "firesHidden_other": "Low and nominal confidence detections that repeat in the same place almost every day (gas flares, industry) are hidden: {{count}} today. High-confidence ones are always shown",
       "hazards": "Disaster alerts (GDACS, UN and European Commission): 🌀 cyclone or hurricane, 🌊 flood, 🏜️ drought, 🔥 wildfire, 🌋 eruption. Green, orange or red background by severity",
       "wind": "Wind by area in {{unit}}; the arrow shows where it blows to",
-      "rivers": "Rivers of South America: blue lines, thicker the bigger the river, and their level stations from INA (Argentina), SENAMHI (Bolivia) and CARU and DINAGUA (Uruguay; the last two need your own server). Red circle, evacuation; orange, alert; yellow, low water; blue, normal; grey, no reading or no thresholds (Bolivia and Uruguay). In Bolivia, if the station is in the SENAMHI forecast, the color is its threat (yellow, orange or red). Tap a station for details. Lines: Natural Earth and © OpenStreetMap contributors",
+      "rivers": "Rivers of South America: blue lines, thicker the bigger the river, and their level stations from INA (Argentina), SENAMHI (Bolivia) and CARU and DINAGUA (Uruguay) and the DMH (Paraguay); the Uruguay and Paraguay ones need your own server. Red circle, evacuation; orange, alert; yellow, low water; blue, normal; grey, no reading or no thresholds (Bolivia and Uruguay). In Bolivia, if the station is in the SENAMHI forecast, the color is its threat (yellow, orange or red). Tap a station for details. Lines: Natural Earth and © OpenStreetMap contributors",
       "tides": "◆ Tide stations (computed on the phone, offline). Tap one for the current tide and the next high and low",
       "waves": "Waves off the coasts (Open-Meteo Marine, model): a band along the coast whose color shows the sea state, from light blue (calm) to red (very rough). It is a model forecast, not a measurement; not for navigating near the coast. Tap the band for the wave height, period, direction and swell"
     },
@@ -1006,6 +1020,11 @@
     "riverThresholds": "Alert {{alert}} · Evacuation {{evac}} · Low water {{low}}",
     "riverUyChange": "{{change}} m since the previous reading",
     "riverUyFrom": "Level above the station zero (no alert thresholds). Source: {{source}} ({{provider}}).",
+    "riverPyLevel": "Level {{value}} above the gauge zero, reading of {{date}} (DMH Paraguay)",
+    "riverPyChange": "{{change}} m in the day",
+    "riverPyHistory": "Historical maximum {{max}} ({{maxDate}})",
+    "riverPyFrom": "No alert thresholds. Source: Paraguay’s DMH.{{approx}}",
+    "riverPyApprox": " Approximate location.",
     "riverNoReading": "No recent reading",
     "navMore": "See everything in Navigation",
     "tideNearTitle": "Tide: {{name}}",
@@ -1412,6 +1431,7 @@
     "noticeTitle": "For guidance only",
     "notice": "It does not replace nautical charts, official tables, navigational warnings or the maritime authority's instructions. Check official channels (radio, NAVTEX) before going out.",
     "uyRivers": {"title": "Rivers of Uruguay", "intro": "River levels near the chosen place: the Uruguay River (CARU) and the rest of the country (DINAGUA, with data from UTE, CTM and OSE). Read by your own server.", "needsServer": "Your own server (Settings) is needed to see the river levels of Uruguay.", "loading": "Looking for the levels…", "error": "The levels could not be read. Try again with a connection.", "offlineSaved": "Offline or no answer: the last saved levels are shown (read on {{when}}).", "none": "There are no CARU or DINAGUA stations within 120 km of this place.", "distance": "{{km}} km away", "sinceBefore": "since the previous reading", "reference": "Levels in meters above the zero of each station (not chart datum). They do not give alert or evacuation levels. DINAGUA arrives a few hours late and CARU updates every 12 or 24 hours at the ports: always check when it was measured.", "source": "Data: CARU (Administrative Commission of the Uruguay River; Argentine Naval Prefecture, Uruguayan Naval Prefecture and CTM) and DINAGUA (Uruguay Ministry of Environment; UTE, CTM and OSE), no declared license. Informational, not an official alert."},
+    "pyRivers": {"title": "Paraguay rivers", "intro": "Daily levels of the Paraguay, Paraná, Pilcomayo and Tebicuary rivers near the chosen place, from the Directorate of Meteorology and Hydrology (DMH). Read by your own server.", "needsServer": "Seeing Paraguay river levels needs your own server (Settings).", "loading": "Looking for levels…", "error": "The levels could not be read. Try again with a connection.", "offlineSaved": "Offline or no answer: showing the last saved levels (read on {{when}}).", "none": "There are no DMH stations within 250 km of this place.", "distance": "{{km}} km away", "reading": "reading of {{date}}", "old": "old reading: {{date}}", "approx": "approximate location", "history": "Historical maximum {{max}} m ({{maxDate}}); minimum {{min}} m", "perDay": "per day", "reference": "Levels in meters above each gauge’s zero. The DMH publishes one reading per day, with no alert or evacuation levels, and some stations go months without new data: always check the date. Station locations are approximate.", "source": "Data: Paraguay’s Directorate of Meteorology and Hydrology (DMH), with the Navy, ANNP, MADES and MOPC, no declared license. Locations: YRATO (Itaipú) and © OpenStreetMap contributors. Informational, not an official alert."},
     "bolivia": {
       "title": "Rivers and Lake Titicaca of Bolivia",
       "intro": "River and Lake Titicaca levels near the chosen place, from SENAMHI Bolivia's daily report (read by your own server).",
@@ -2340,11 +2360,18 @@
   },
   "country": {
     "label": "Country",
-    "AR": "Argentina",
+    "pack": {
+      "ready": "{{country}}: offline data downloaded and up to date",
+      "download": "Download the offline data for {{country}}",
+      "update": "Update the offline data for {{country}}",
+      "downloading": "Downloading the data for {{country}}…"
+    },
+        "AR": "Argentina",
     "CL": "Chile",
     "UY": "Uruguay",
     "BO": "Bolivia",
     "PE": "Peru",
+    "PY": "Paraguay",
     "hint": "Sets the emergency numbers, poison center and first aid guide. It can also be changed in Emergency contacts and in the guide."
   },
   "legal": {
@@ -2730,7 +2757,8 @@
       "CL": "Chile has no official home-garden calendar: the Argentine zone with a similar climate is used ({{zone}}).",
       "UY": "Uruguay has no official home-garden calendar: the Argentine zone with a similar climate is used ({{zone}}).",
       "BO": "Bolivia has no official garden calendar by crop and month (INIAF does not publish one). There are two estimated zones: \"Bolivian valleys (Tarija)\", built from an NGO manual, and \"Bolivian tropics and Yungas\", from a table of a cooperation project (12 crops); on the altiplano pick the closest one by hand and treat the months as a reference.",
-      "PE": "Peru has no official garden calendar by crop and month (INIA does not publish an open one): the climate of the coast, highlands and jungle matches no Argentine zone. There is an estimated \"Peruvian highlands\" zone (7 Andean crops, from the INIA highlands calendar); for the coast and jungle pick the closest by hand (\"Bolivian valleys\" is a temperate valley climate) and treat the months as a reference."
+      "PE": "Peru has no official garden calendar by crop and month (INIA does not publish an open one): the climate of the coast, highlands and jungle matches no Argentine zone. There is an estimated \"Peruvian highlands\" zone (7 Andean crops, from the INIA highlands calendar); for the coast and jungle pick the closest by hand (\"Bolivian valleys\" is a temperate valley climate) and treat the months as a reference.",
+      "PY": "Paraguay has no official garden calendar by crop and month: the one for the Argentine zone with a similar climate is used ({{zone}}: subtropical, mild frosts and a very hot, humid summer). Use it as a guide."
     },
     "zoneEstimatedValles": "This zone comes from an NGO manual for the Central Tarija Valley (2016), not an official source: months were read from graphic tables and may be off by a month. It suits temperate valleys; on the altiplano or in the tropics the months change. Use it as guidance and check what is done locally.",
     "zoneEstimatedSierraPeru": "This zone comes from the INIA Peru \"Highlands agricultural calendar\" (September to November; copied by hand from its publication, without the document at hand) and has only 7 Andean crops, rainfed. Harvest months were computed from each crop's cycle and change with altitude and variety (the higher, the longer the cycle). Use it as guidance and ask your local agricultural agency.",

@@ -120,7 +120,7 @@ export interface ParksData {
 
 let parksAR: Promise<ParksData> | null = null;
 let parksCL: Promise<ParksData> | null = null;
-const parksOther = new Map<'BO' | 'PE', Promise<ParksData>>();
+const parksOther = new Map<'BO' | 'PE' | 'PY', Promise<ParksData>>();
 
 // Argentina viene con la app; si el servidor propio la regeneró (cada mes), se usa la copia más nueva.
 const loadParksAR = () => (parksAR ??= import('./parks-data.json').then((m) => preferNewer('parks-AR.json', m.default as unknown as ParksData)));
@@ -132,8 +132,8 @@ export function loadParksCL(): Promise<ParksData> {
   return parksCL;
 }
 
-/** Bolivia (SERNAP, de OpenStreetMap) y Perú (SERNANP): archivos aparte, se bajan una vez y quedan guardados, como el de Chile. */
-export function loadParksFile(country: 'BO' | 'PE'): Promise<ParksData> {
+/** Bolivia (SERNAP, de OpenStreetMap), Perú (SERNANP) y Paraguay (de OpenStreetMap): archivos aparte, se bajan una vez y quedan guardados, como el de Chile. */
+export function loadParksFile(country: 'BO' | 'PE' | 'PY'): Promise<ParksData> {
   let p = parksOther.get(country);
   if (!p) {
     p = loadDataFile<ParksData>(`parks-${country}.json`);
@@ -146,11 +146,12 @@ export function loadParksFile(country: 'BO' | 'PE'): Promise<ParksData> {
 
 /** Países cuyos parques se muestran junto con los de cada uno (en la cordillera se está a pocos km de la frontera). */
 const PARK_NEIGHBORS: Record<Country, Country[]> = {
-  AR: ['AR', 'CL', 'BO'],
+  AR: ['AR', 'CL', 'BO', 'PY'],
   CL: ['CL', 'AR', 'BO', 'PE'],
   UY: [],
-  BO: ['BO', 'PE', 'CL', 'AR'],
+  BO: ['BO', 'PE', 'CL', 'AR', 'PY'],
   PE: ['PE', 'BO', 'CL'],
+  PY: ['PY', 'AR', 'BO'],
 };
 
 /** País de un área: el que trae el archivo; si no, por la página (conaf.cl es Chile; el resto, Argentina). */

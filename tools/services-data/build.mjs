@@ -22,7 +22,7 @@
  * Combustibles (`fuels`): códigos que la app traduce: gasoline (nafta,
  * bencina, gasolina), diesel, cng (GNC/GNV) y lpg (GLP).
  *
- * Uso: node tools/services-data/build.mjs [AR|CL|UY|BO|PE] [categoría]
+ * Uso: node tools/services-data/build.mjs [AR|CL|UY|BO|PE|PY] [categoría]
  *      (necesita conexión; el resultado se versiona; sin país, todos; sin categoría, todas)
  */
 
@@ -37,7 +37,7 @@ const UA = 'VikArg-Prepping-Tools-build/1.0 (https://github.com/mazzalaialan/Sur
 const AR_PACKAGE = 'http://datos.energia.gob.ar/api/3/action/package_show?id=1c181390-5045-475e-94dc-410429be4b17';
 /** Estaciones que no informan precios hace más de esto: se consideran cerradas. */
 const MAX_AGE_MONTHS = 24;
-export const COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE'];
+export const COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
 
 const r5 = (n) => Math.round(n * 1e5) / 1e5;
 /** Distancia aproximada en metros (para no duplicar una estación oficial con la de OpenStreetMap). */
@@ -306,7 +306,7 @@ async function build(cc, category) {
 }
 
 /** Mínimo esperable de estaciones por país: si hay menos, la respuesta vino cortada y no se genera. */
-const MIN_FUEL = { AR: 3000, CL: 800, UY: 200, BO: 150, PE: 800 };
+const MIN_FUEL = { AR: 3000, CL: 800, UY: 200, BO: 150, PE: 800, PY: 800 };
 
 const [onlyCountry, onlyCategory] = process.argv.slice(2);
 if (onlyCategory && !CATEGORIES[onlyCategory]) throw new Error(`Categoría desconocida: ${onlyCategory} (${Object.keys(CATEGORIES).join(', ')})`);

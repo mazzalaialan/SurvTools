@@ -743,6 +743,15 @@ function FeatureCard({
           [r.trend ? t(`navigation.bolivia.trend.${r.trend}`) : '', r.change != null ? t('weatherMap.riverUyChange', { change: sgn.format(r.change) }) : ''].filter(Boolean).join(' · '),
           t('weatherMap.riverUyFrom', { source: r.uySource ?? '', provider: r.provider ?? '' }),
         ].filter(Boolean);
+      } else if (r.source === 'py') {
+        const sgn = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: 'always' });
+        const date = (d: string) => new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T00:00:00Z`));
+        lines = [
+          r.level !== null && r.at ? t('weatherMap.riverPyLevel', { value: m(r.level), date: date(r.at) }) : t('weatherMap.riverNoReading'),
+          [r.trend ? t(`navigation.bolivia.trend.${r.trend}`) : '', r.change != null ? t('weatherMap.riverPyChange', { change: sgn.format(r.change) }) : ''].filter(Boolean).join(' · '),
+          r.histMax ? t('weatherMap.riverPyHistory', { max: m(r.histMax.level), maxDate: date(r.histMax.date) }) : '',
+          t('weatherMap.riverPyFrom', { approx: r.approx ? t('weatherMap.riverPyApprox') : '' }),
+        ].filter(Boolean);
       } else {
         lines = [
           r.level !== null && r.at

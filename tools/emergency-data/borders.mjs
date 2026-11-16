@@ -21,11 +21,11 @@ const res = await fetch(URL_NE);
 if (!res.ok) throw new Error(`Natural Earth: ${res.status}`);
 const features = (await res.json()).features;
 const data = { source: 'Natural Earth 1:50 m (dominio público)' };
-for (const [code, a3] of [['AR', 'ARG'], ['CL', 'CHL'], ['UY', 'URY'], ['BO', 'BOL'], ['PE', 'PER']]) {
+for (const [code, a3] of [['AR', 'ARG'], ['CL', 'CHL'], ['UY', 'URY'], ['BO', 'BOL'], ['PE', 'PER'], ['PY', 'PRY']]) {
   const g = features.find((f) => f.properties.ADM0_A3 === a3).geometry;
   const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
   // Solo el borde de cada polígono (sin huecos) y sin islotes oceánicos lejanos (Rapa Nui, Juan Fernández).
   data[code] = polys.map((p) => p[0].map(([x, y]) => [r3(x), r3(y)])).filter((ring) => ring.some(([x]) => x > -76));
 }
 await writeFile(OUT, JSON.stringify(data));
-console.log(`AR ${data.AR.length} polígonos, CL ${data.CL.length}, UY ${data.UY.length}, BO ${data.BO.length}, PE ${data.PE.length} → ${OUT} (${JSON.stringify(data).length} bytes)`);
+console.log(`AR ${data.AR.length} polígonos, CL ${data.CL.length}, UY ${data.UY.length}, BO ${data.BO.length}, PE ${data.PE.length}, PY ${data.PY.length} → ${OUT} (${JSON.stringify(data).length} bytes)`);

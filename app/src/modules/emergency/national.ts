@@ -18,6 +18,10 @@ import type { Country } from '@/core/settings/settings';
  *   Policía Boliviana (policia.bo, leído el 2026-11-11); el 118 (ambulancia) sale
  *   de guías de viaje de otros gobiernos (Canadá, República Checa): sin confirmar.
  *   Familia Segura: línea de apoyo psicológico de UNICEF Bolivia.
+ * - Paraguay (consultado el 2026-11-16): el 911 (Policía y sistema nacional de emergencias, Ley 4739) lo traen la Embajada de Alemania y la
+ *   ley; el 132 (Bomberos Voluntarios) y el 141 (SEME del Ministerio de Salud) salen de los sitios oficiales del CBVP y del MSPBS (el 132
+ *   tuvo fallas técnicas en 2025: ver la nota del país); el de la SEN (Defensa Civil) de sen.gov.py/contacto. Sin confirmar en fuente oficial:
+ *   CNTox (solo una nota de prensa), la línea 155 de salud mental (prensa y la Agencia IP), el 137 (violencia) y el 147 (niñez).
  *
  * Los `unconfirmed` se muestran con esa aclaración y un enlace para avisar si no andan.
  */
@@ -78,6 +82,16 @@ export const NATIONAL_NUMBERS: Record<Country, NationalNumber[]> = {
     { id: 'pePoison', number: '+51 1 328 7700', kind: 'medical' },
     { id: 'peMountain', number: '043 393333 / 043 493333', kind: 'other', unconfirmed: true },
     { id: 'peGender', number: '100', kind: 'other' },
+  ],
+  PY: [
+    { id: 'pyEmergencies', number: '911', kind: 'police' },
+    { id: 'pyFire', number: '132', kind: 'fire' },
+    { id: 'pySeme', number: '141', kind: 'medical' },
+    { id: 'pyCivilDefense', number: '0986 111 001', kind: 'civilDefense' },
+    { id: 'pyPoison', number: '021 220 418', kind: 'medical', unconfirmed: true },
+    { id: 'pyMentalHealth', number: '155', kind: 'medical', unconfirmed: true },
+    { id: 'pyGender', number: '137', kind: 'other', unconfirmed: true },
+    { id: 'pyKids', number: '147', kind: 'other', unconfirmed: true },
   ],
 };
 

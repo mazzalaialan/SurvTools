@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Config } from '../config.ts';
 import { fetchBoLevels, type BoLevels } from '../rivers/bo.ts';
 import { fetchBoExtras, type BoExtras } from '../rivers/boExtra.ts';
+import { fetchPyLevels, type PyCatalogStation, type PyLevels } from '../rivers/py.ts';
 import { fetchUyLevels, type UyLevels } from '../rivers/uy.ts';
 
 /**
@@ -21,6 +22,8 @@ function mergeUy(before: UyLevels, fresh: UyLevels): UyLevels {
   const missing = (source: 'CARU' | 'DINAGUA', ok: boolean) => (ok ? [] : before.stations.filter((s) => s.source === source));
   return { fetchedAt: fresh.fetchedAt, sources: fresh.sources, stations: [...fresh.stations, ...missing('CARU', fresh.sources.caru), ...missing('DINAGUA', fresh.sources.dinagua)] };
 }
+const PY_FRESH_MS = 2 * 3_600_000;
+const PY_STALE_MS = 3 * 86_400_000;
 const EXTRA_FRESH_MS = 6 * 3_600_000;
 const EXTRA_PARTIAL_MS = 3_600_000;
 const EXTRA_STALE_MS = 14 * 86_400_000;
@@ -29,7 +32,37 @@ export interface BoSource {
   fetch: (stations: { name: string }[]) => Promise<BoLevels>;
 }
 
-export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now()), uy: () => Promise<UyLevels> = () => fetchUyLevels(now(), { caruUrl: config.caruUrl, dinaguaUrl: config.dinaguaUrl })): void {
+export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now()), uy: () => Promise<UyLevels> = () => fetchUyLevels(now(), { caruUrl: config.caruUrl, dinaguaUrl: config.dinaguaUrl }), py: (catalog: PyCatalogStation[]) => Promise<PyLevels> = (catalog) => fetchPyLevels(catalog, now())): void {
+  let lastPy: PyLevels | null = null;
+  let inflightPy: Promise<PyLevels> | null = null;
+  let pyStations: PyCatalogStation[] | null = null;
+
+  function pyCatalog(): PyCatalogStation[] {
+    if (!pyStations) {
+      if (!config.appDir) throw new Error('sin catálogo de estaciones de Paraguay');
+      pyStations = (JSON.parse(readFileSync(`${config.appDir}/data/rivers-PY.json`, 'utf8')) as { stations: PyCatalogStation[] }).stations;
+    }
+    return pyStations;
+  }
+
+  /**
+   * `GET /api/rivers/py`: niveles de los ríos de Paraguay de la DMH (tabla HTML diaria), ver rivers/py.ts.
+   * Se guardan 2 horas y, si falla, se devuelve lo último bueno (hasta 3 días) marcado como viejo.
+   */
+  app.get('/api/rivers/py', async (_req, reply) => {
+    reply.header('cache-control', 'no-store');
+    if (lastPy && now() - lastPy.fetchedAt < PY_FRESH_MS) return { ...lastPy, stale: false };
+    try {
+      inflightPy ??= py(pyCatalog()).finally(() => (inflightPy = null));
+      lastPy = await inflightPy;
+      return { ...lastPy, stale: false };
+    } catch (err) {
+      app.log.warn({ err: String(err) }, 'no se pudieron leer los niveles de la DMH de Paraguay');
+      if (lastPy && now() - lastPy.fetchedAt < PY_STALE_MS) return { ...lastPy, stale: true };
+      return reply.code(503).send({ error: 'unavailable' });
+    }
+  });
+
   let lastUy: UyLevels | null = null;
   let inflightUy: Promise<UyLevels> | null = null;
   let last: BoLevels | null = null;

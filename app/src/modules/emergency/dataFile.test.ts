@@ -115,4 +115,28 @@ describe('actualización incremental de los paquetes guardados', () => {
     expect(await refreshStored(['CL.json'], true)).toBe(1);
     expect(JSON.parse(store.get(base('CL.json'))!).n).toBe(3);
   });
+
+  it('fileStates: bajado y al día, desactualizado, sin bajar, y un archivo que ningún índice conoce no cuenta como faltante', async () => {
+    const store = fakeCaches();
+    // La fecha está entre los primeros bytes de cada paquete: se lee sin traer el archivo entero.
+    store.set(base('CL.json'), JSON.stringify({ country: 'CL', generatedAt: '2026-11-10', fire: [] }));
+    store.set(base('UY.json'), JSON.stringify({ country: 'UY', generatedAt: '2026-10-01', fire: [] }));
+    fakeNet({
+      [base('index.json')]: idx({ 'CL.json': '2026-11-10', 'UY.json': '2026-11-10', 'BO.json': '2026-11-10' }),
+      'https://srv.test/api/data/index.json': 'no',
+    });
+    const { fileStates, storedDate } = await import('./dataFile');
+    expect(await storedDate('CL.json')).toBe('2026-11-10');
+    expect(await storedDate('BO.json')).toBeNull();
+    const states = await fileStates(['CL.json', 'UY.json', 'BO.json', 'nunca-existio.json'], true);
+    expect(states).toEqual({ 'CL.json': 'ok', 'UY.json': 'stale', 'BO.json': 'missing', 'nunca-existio.json': 'ok' });
+  });
+
+  it('fileStates sin conexión: lo guardado queda al día (no se puede saber) y lo que falta, faltante', async () => {
+    const store = fakeCaches();
+    store.set(base('CL.json'), JSON.stringify({ generatedAt: '2020-01-01' }));
+    Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
+    const { fileStates } = await import('./dataFile');
+    expect(await fileStates(['CL.json', 'UY.json'])).toEqual({ 'CL.json': 'ok', 'UY.json': 'missing' });
+  });
 });

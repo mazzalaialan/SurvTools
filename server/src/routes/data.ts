@@ -11,16 +11,18 @@ import type { Config } from '../config.ts';
  */
 /** Servicios para "Buscar cercanos" (tools/services-data): un archivo por categoría y país. */
 const SERVICE_CATEGORIES = ['fuel', 'tyres', 'repair', 'pharmacy', 'aed', 'vet', 'water', 'shelter', 'atm', 'nautical'];
-const SERVICE_COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE'];
+const SERVICE_COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
 export const DATA_FILES = new Set([
   'CL.json',
   'UY.json',
   'BO.json',
   'PE.json',
+  'PY.json',
   'parks-CL.json',
   'parks-AR.json',
   'parks-BO.json',
   'parks-PE.json',
+  'parks-PY.json',
   ...SERVICE_CATEGORIES.flatMap((c) => SERVICE_COUNTRIES.map((cc) => `${c}-${cc}.json`)),
 ]);
 

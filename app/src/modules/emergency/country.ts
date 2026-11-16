@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useSettings, type Country } from '@/core/settings/settings';
 import { loadEmergencyData, loadParksCL, loadParksFile, type EmergencyData } from './data';
 import { prefetchServices } from './services';
-import { DATA_CACHE as CACHE, loadDataFile } from './dataFile';
+import { countryFiles } from './countryDownload';
+import { DATA_CACHE as CACHE, loadDataFile, refreshStored } from './dataFile';
 export { CountryDataError } from './dataFile';
 import { loadOfficialRepeaters } from './officialRepeaters';
 import { loadPlaceFinder, placeFinder, type PlaceFinder, type PlacesData } from './places';
@@ -72,8 +73,8 @@ export async function prefetchCountry(country: Country): Promise<void> {
     quiet(loadOfficialRepeaters(country)),
     // Áreas protegidas de Chile (CONAF): también con Argentina, por la cordillera.
     country === 'AR' || country === 'CL' ? quiet(loadParksCL()) : undefined,
-    // Bolivia y Perú: las suyas (SERNAP, SERNANP).
-    country === 'BO' || country === 'PE' ? quiet(loadParksFile(country)) : undefined,
+    // Bolivia, Perú y Paraguay: las suyas (SERNAP, SERNANP, OpenStreetMap).
+    country === 'BO' || country === 'PE' || country === 'PY' ? quiet(loadParksFile(country)) : undefined,
   ]);
 }
 
@@ -82,4 +83,10 @@ export async function hasCountryData(country: Country): Promise<boolean> {
   if (country === 'AR') return true;
   if (!('caches' in globalThis)) return false;
   return !!(await (await caches.open(CACHE)).match(packageUrl(country)));
+}
+
+/** Baja lo que falta del país y actualiza lo que quedó viejo (para el botón de descarga de Ajustes, sin elegir el país). */
+export async function downloadCountryPack(country: Country): Promise<void> {
+  await prefetchCountry(country);
+  await refreshStored(countryFiles(country), true).catch(() => 0);
 }

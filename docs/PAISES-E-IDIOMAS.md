@@ -1,6 +1,6 @@
 # Sumar un país o un idioma nuevo
 
-Guía de trabajo (escrita el 2026-11-16 revisando el código real y con una investigación de fuentes de Paraguay). Sirve para **cualquier país** que se quiera agregar y para **cualquier idioma**. Al final están los dos casos pendientes: **Paraguay** y **portugués**. Nada de esto está hecho todavía.
+Guía de trabajo (escrita el 2026-11-16 revisando el código real y con una investigación de fuentes de Paraguay). Sirve para **cualquier país** que se quiera agregar y para **cualquier idioma**. Al final están los dos casos pendientes: **Paraguay** y **portugués**. **Paraguay ya está cargado (2026-11-16)**; el portugués, Brasil, Ecuador, Colombia y Venezuela quedan pendientes.
 
 Reglas que valen siempre (ver `CLAUDE.md`): datos con licencia anotada (fuente, licencia y fecha), sin saltear protecciones de terceros, alertas «informativas» nunca oficiales, ninguna función depende de la red, y publicar solo con aprobación explícita.
 
@@ -83,7 +83,9 @@ Hoy hay dos idiomas (`es`, `en`). El español es el respaldo y el inglés se car
 
 ---
 
-## C. Caso: Paraguay (investigación del 2026-11-15/16)
+## C. Caso: Paraguay (investigado y cargado el 2026-11-16)
+
+Lo cargado y de dónde sale cada dato está en `docs/FUENTES-DE-DATOS.md` («Paraguay»); lo que sigue es el análisis previo, que sirve de ejemplo.
 
 ### Qué hay y qué no
 | Ítem | Resultado | Dificultad |
@@ -126,3 +128,11 @@ Teléfono de la Cruz Roja Paraguaya, ANDE en fuente oficial, si el 132 ya se arr
 **Qué hago yo:** el código (A/B de arriba, **medio día a 1 día**), el borrador de traducción por lotes con agentes (unos 145.000 caracteres de interfaz y otros ~420 KB de contenido en el código y en `seeds.json`; el contenido largo es lo caro), las pruebas (la de claves iguales ya exige paridad) y la documentación.
 
 **Orden sugerido:** (1) tipo `Language` y carga bajo demanda con respaldo en español; (2) `pt.json` completo; (3) notificaciones y servidor; (4) contenido largo con `pt?` opcional; (5) revisión humana; (6) ficha de la tienda y manifiesto.
+
+---
+
+## E. Pendientes de analizar (anotado el 2026-11-16)
+
+- **Brasil** (con el portugués): país completo y mucho más grande que los demás. Números 192 (SAMU), 193 (bombeiros), 190 (polícia), 199 (Defesa Civil); INMET (alertas, CAP) y ANA (ríos, telemetría); límites por estados (Natural Earth); OSM por Geofabrik (extracto enorme: habría que recortarlo por zonas); huso horario por estado. Es un trabajo de semanas, no de días.
+- **Ecuador, Colombia y Venezuela:** sin investigar. Para cada uno, la lista de la sección A (teléfonos oficiales, meteorología y alertas, ríos, parques, radio, límites, OSM, huerta y huso horario), con `vikarg-investigador`, y anotar fuente, licencia y fecha en `FUENTES-DE-DATOS.md` antes de escribir código. Pistas: Ecuador tiene el ECU 911 único y el INAMHI; Colombia el 123 (emergencias) y el IDEAM (alertas y niveles de ríos con datos abiertos); en Venezuela la información pública es limitada y cambia (verificar mucho).
+- **Selector de país:** con más de siete países conviene pasarlo a una lista agrupada por región en lugar de botones en fila.

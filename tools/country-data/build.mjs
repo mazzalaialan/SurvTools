@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Genera los paquetes de datos sin conexión de Chile, Uruguay, Bolivia y Perú:
- * app/public/data/CL.json, UY.json, BO.json y PE.json. No van en la descarga inicial de la app:
+ * Genera los paquetes de datos sin conexión de Chile, Uruguay, Bolivia, Perú y Paraguay:
+ * app/public/data/CL.json, UY.json, BO.json, PE.json y PY.json. No van en la descarga inicial de la app:
  * se bajan una vez al elegir el país (ver app/src/modules/emergency/country.ts).
  *
  * - Localidades: GeoNames (CC BY 4.0), con población, para la detección de
@@ -20,7 +20,7 @@
  *   frecuencias confirmadas) y Radio Nacional del Perú (planilla oficial del IRTP),
  *   ubicadas con GeoNames.
  *
- * Uso: node tools/country-data/build.mjs [UY|CL|BO|PE]   (necesita conexión; el resultado se versiona; sin país, todos)
+ * Uso: node tools/country-data/build.mjs [UY|CL|BO|PE|PY]   (necesita conexión; el resultado se versiona; sin país, todos)
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -513,8 +513,19 @@ async function build(cc, radioList, labels) {
   );
 }
 
+/**
+ * Radio Nacional del Paraguay (estatal, Mitic): las tres frecuencias que muestra el menú de su sitio oficial (radionacional.gov.py,
+ * leído el 2026-11-16). No hay un listado completo (CONATEL no publica uno): no se agrega nada que no esté en la fuente oficial.
+ */
+const RADIO_PY = [
+  ['Radio Nacional del Paraguay', 'Asunción', 920, null, { province: 'Distrito Capital', lat: -25.2637, lon: -57.5759 }],
+  ['Radio Nacional del Paraguay', 'San Pedro', null, 105.9, { province: 'San Pedro', lat: -24.093, lon: -57.083 }],
+  ['Radio Nacional del Paraguay', 'Pilar', 700, null, { province: 'Ñeembucú', lat: -26.867, lon: -58.3 }],
+];
+
 const only = process.argv[2];
 if (!only || only === 'UY') await build('UY', RADIO_UY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radiodifusión Nacional del Uruguay (Wikipedia)' });
 if (!only || only === 'CL') await build('CL', RADIO_CL, { fire: 'Bomberos', police: 'Carabineros', health: 'Centro de salud', radioSource: 'Radio Bío-Bío (Wikipedia)' });
 if (!only || only === 'BO') await build('BO', RADIO_BO, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Red Patria Nueva (State Media Monitor)' });
 if (!only || only === 'PE') await build('PE', RADIO_PE, { fire: 'Bomberos', police: 'Comisaría', health: 'Centro de salud', radioSource: 'Radio Nacional del Perú (IRTP, datos abiertos de datosabiertos.gob.pe, ODC-By, planilla de 2021)' });
+if (!only || only === 'PY') await build('PY', RADIO_PY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radio Nacional del Paraguay (radionacional.gov.py, sitio oficial, 2026-11-16)' });

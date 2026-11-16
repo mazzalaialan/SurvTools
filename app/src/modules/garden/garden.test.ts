@@ -134,6 +134,7 @@ describe('calendario', () => {
     expect(zoneFor(-27.4, -55.9, 'AR')).toBe('nea'); // Posadas
     expect(zoneFor(-31.4, -64.2, 'AR')).toBe('pampeana'); // Córdoba
     expect(zoneFor(-34.9, -56.2, 'UY')).toBe('pampeana'); // Montevideo
+    expect(zoneFor(-25.3, -57.6, 'PY')).toBe('nea'); // Asunción
     expect(zoneFor(-33.45, -70.66, 'CL')).toBe('cuyo'); // Santiago
     expect(zoneFor(-41.47, -72.94, 'CL')).toBe('patagoniaSur'); // Puerto Montt
     expect(zoneFor(-23.65, -70.4, 'CL')).toBe('noa'); // Antofagasta

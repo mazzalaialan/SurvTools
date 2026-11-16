@@ -50,6 +50,8 @@ export const CALLS: Record<Country, Partial<Record<CallKey, string>>> = {
   BO: { emergency: '110', same: '118', fire: '119' },
   // Perú: el SAMU (106) no llega a todas las regiones.
   PE: { emergency: '105', same: '106', fire: '116', poison: '+51 1 328 7700' },
+  // Paraguay: el 911 atiende emergencias y policía; el SEME (141) es la ambulancia del Ministerio de Salud; el teléfono del CNTox no está confirmado en fuente oficial (ver emergency/national.ts).
+  PY: { emergency: '911', same: '141', fire: '132' },
 };
 
 /** Nombre del centro toxicológico de cada país, para el texto de la guía. */
@@ -59,6 +61,7 @@ const POISON_NAME: Record<Country, L> = {
   UY: { es: 'CIAT (centro toxicológico)', en: 'CIAT (poison center)' },
   BO: { es: 'el centro toxicológico de tu departamento (CIATOX)', en: 'your department’s poison center (CIATOX)' },
   PE: { es: 'CICOTOX (centro toxicológico de la Universidad de San Marcos)', en: 'CICOTOX (San Marcos University poison center)' },
+  PY: { es: 'el Centro Nacional de Toxicología (CNTox, Ministerio de Salud)', en: 'the National Toxicology Center (CNTox, Ministry of Health)' },
 };
 
 /**

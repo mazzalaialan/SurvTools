@@ -32,6 +32,9 @@ describe('país según la ubicación', () => {
     expect(countryAt(d, -12.05, -77.04)).toBe('PE'); // Lima
     expect(countryAt(d, -9.53, -77.53)).toBe('PE'); // Huaraz
     expect(countryAt(d, -18.48, -70.31)).toBe('CL'); // Arica (frontera con Perú)
+    expect(countryAt(d, -25.28, -57.63)).toBe('PY'); // Asunción
+    expect(countryAt(d, -25.52, -54.62)).toBe('PY'); // Ciudad del Este (frontera con Brasil)
+    expect(countryAt(d, -27.45, -58.99)).toBe('AR'); // Resistencia, del otro lado del río
     expect(countryAt(d, -45, -40)).toBeNull(); // Atlántico
   });
 });

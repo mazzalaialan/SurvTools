@@ -15,6 +15,7 @@
  * - Ríos de América del Sur: líneas centrales de Natural Earth 1:10m (dominio público) y, para que todo río con
  *   estación de nivel (INA, SENAMHI Bolivia) aparezca, los cursos de OpenStreetMap (ODbL, © OpenStreetMap contributors)
  *   a menos de 12 km de una estación, como el Paraná de las Palmas, que Natural Earth no trae.
+ * - `node build.mjs --solo-paraguay` suma Paraguay (departamentos, frontera, capitales) al archivo ya generado.
  * - `node build.mjs --solo-contornos` suma al archivo ya generado el contorno de América Central y de la Antártida (sector de la Península).
  *   `node build.mjs --solo-rios` reemplaza solo los ríos en el archivo ya generado (sin volver a bajar volcanos ni provincias).
  *
@@ -35,14 +36,16 @@ const GVP =
   '&typeName=GVP-VOTW:Smithsonian_VOTW_Holocene_Volcanoes&outputFormat=application/json';
 const OUT = fileURLToPath(new URL('../../app/src/modules/weathermap/geo-data.json', import.meta.url));
 
-const COUNTRIES = { ARG: 'AR', CHL: 'CL', URY: 'UY', BOL: 'BO', PER: 'PE' };
+const COUNTRIES = { ARG: 'AR', CHL: 'CL', URY: 'UY', BOL: 'BO', PER: 'PE', PRY: 'PY' };
 /** El resto de América del Sur (la Guayana Francesa sale del polígono de Francia). */
-const NEIGHBORS = ['BRA', 'PRY', 'ECU', 'COL', 'VEN', 'GUY', 'SUR'];
+const NEIGHBORS = ['BRA', 'ECU', 'COL', 'VEN', 'GUY', 'SUR'];
 /** Grados: ~1 km en provincias, ~4 km en el contorno de los vecinos. */
 const TOLERANCE = 0.01;
 const NEIGHBOR_TOLERANCE = 0.04;
 /** Islotes más chicos que esto (grados²) no aportan a un mapa de referencia. */
 const MIN_RING_AREA = 0.002;
+/** Solo las islas grandes en la frontera de los países (ver más abajo). */
+const BORDER_MIN_AREA = 0.05;
 
 const get = async (url) => {
   const res = await fetch(url);
@@ -187,6 +190,45 @@ function clipRing(ring, [w, s, e, n]) {
   return out;
 }
 
+/** Capitales departamentales de Paraguay: [nombre, latitud, longitud]. */
+const PY_CAPITALS = [
+  ['Asunción', -25.264, -57.576], ['Concepción', -23.406, -57.434], ['San Pedro de Ycuamandiyú', -24.093, -57.083],
+  ['Caacupé', -25.386, -57.141], ['Villarrica', -25.75, -56.433], ['Coronel Oviedo', -25.45, -56.442],
+  ['Caazapá', -26.199, -56.371], ['Encarnación', -27.331, -55.867], ['San Juan Bautista', -26.667, -57.15],
+  ['Pilar', -26.867, -58.3], ['Paraguarí', -25.624, -57.152], ['Areguá', -25.311, -57.389],
+  ['Ciudad del Este', -25.517, -54.617], ['Salto del Guairá', -24.058, -54.308], ['Pedro Juan Caballero', -22.547, -55.733],
+  ['Pozo Colorado', -23.492, -58.8], ['Filadelfia', -22.35, -60.033], ['Fuerte Olimpo', -21.042, -57.867],
+];
+
+if (process.argv.includes('--solo-paraguay')) {
+  // Paraguay deja de ser solo contorno: departamentos, frontera, capitales y nombre. Se suma al archivo ya generado.
+  const data = JSON.parse(await readFile(OUT, 'utf8'));
+  const [admin1, admin0hi] = await Promise.all([
+    get(`${NE}/ne_10m_admin_1_states_provinces.geojson`),
+    get(`${NE}/ne_10m_admin_0_countries.geojson`),
+  ]);
+  const regions = admin1.features
+    .filter((f) => f.properties.adm0_a3 === 'PRY')
+    .map((f) => ({
+      id: f.properties.iso_3166_2 || f.properties.adm1_code,
+      country: 'PY',
+      name: f.properties.name_es || f.properties.name,
+      label: [r3(f.properties.longitude), r3(f.properties.latitude)],
+      rings: rings(f.geometry, TOLERANCE),
+    }));
+  const border = admin0hi.features.find((f) => f.properties.ADM0_A3 === 'PRY');
+  // Natural Earth trae capitales equivocadas para Paraguay (Ypacaraí en vez de Areguá, ninguna de Boquerón ni Canindeyú):
+  // se usa la lista de las 18 capitales departamentales, con coordenadas aproximadas del casco urbano.
+  const capitals = PY_CAPITALS.map(([name, lat, lon]) => ({ name, country: 'PY', national: name === 'Asunción', lon, lat }));
+  data.regions = [...data.regions.filter((r) => r.country !== 'PY'), ...regions].sort((a, b) => a.id.localeCompare(b.id));
+  data.neighbors = data.neighbors.filter((n) => n.code !== 'PY');
+  data.borders = [...data.borders.filter((b) => b.code !== 'PY'), { code: 'PY', rings: rings(border.geometry, TOLERANCE, BORDER_MIN_AREA) }];
+  data.capitals = [...data.capitals.filter((c) => c.country !== 'PY'), ...capitals].sort((a, b) => a.name.localeCompare(b.name));
+  await writeFile(OUT, JSON.stringify(data));
+  console.log(`Paraguay: ${regions.length} departamentos, ${capitals.length} capitales → ${OUT} (${JSON.stringify(data).length} bytes)`);
+  process.exit(0);
+}
+
 if (process.argv.includes('--solo-contornos')) {
   // Suma el contorno de América Central y la Antártida al archivo ya generado, sin volver a bajar el resto.
   const data = JSON.parse(await readFile(OUT, 'utf8'));
@@ -250,7 +292,6 @@ neighbors.push({ code: 'GF', rings: rings(guiana, NEIGHBOR_TOLERANCE) });
  */
 // Solo las islas grandes (Chiloé, Tierra del Fuego, Malvinas…): las cientos de islitas de los
 // canales del sur con línea gruesa forman una mancha; ya tienen su línea fina de provincia.
-const BORDER_MIN_AREA = 0.05;
 const borders = admin0hi.features
   .filter((f) => COUNTRIES[f.properties.ADM0_A3])
   .map((f) => ({ code: COUNTRIES[f.properties.ADM0_A3], rings: rings(f.geometry, TOLERANCE, BORDER_MIN_AREA) }));

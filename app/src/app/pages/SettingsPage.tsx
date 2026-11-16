@@ -17,9 +17,10 @@ import {
   unlockWithPassword,
 } from '@/core/security/vault';
 import { currentPosition, GeoPositionError } from '@/core/geo/useGeolocation';
-import { AUTO_LOCK_OPTIONS, COUNTRIES, LANGUAGES, THEMES, useSettings, type RedSchedule, type Settings } from '@/core/settings/settings';
+import { AUTO_LOCK_OPTIONS, LANGUAGES, THEMES, useSettings, type RedSchedule, type Settings } from '@/core/settings/settings';
 import { roundForDusk } from '@/core/settings/theme';
 import { serverIsDown, serverMaps, type MapSourceMode, type ServerMaps } from '@/modules/maps/sources';
+import { CountryPackPicker } from '@/modules/emergency/CountryPackPicker';
 import { Segmented } from '@/ui/Segmented';
 import { NewPasswordForm } from '@/ui/NewPasswordForm';
 import { useLibrary } from '@/modules/library/store';
@@ -52,12 +53,7 @@ export function SettingsPage() {
             void update({ language });
           }}
         />
-        <Segmented
-          label={t('country.label')}
-          value={settings.country}
-          options={COUNTRIES.map((c) => ({ value: c, label: t(`country.${c}`) }))}
-          onChange={(country) => void update({ country })}
-        />
+        <CountryPackPicker />
         <p className="hint" style={{ margin: 0 }}>{t('country.hint')}</p>
         <Segmented
           label={t('settings.theme')}
