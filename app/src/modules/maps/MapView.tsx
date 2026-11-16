@@ -178,10 +178,39 @@ function data(p: Props) {
   };
 }
 
+/**
+ * Capas de áreas (ecorregiones y geología): se agregan recién cuando se prende cada una (con sus fuentes de datos), no al crear el mapa:
+ * el mapa de seguimiento y el 3D, que corren sin placa de video en las pruebas y en teléfonos modestos, no cargan capas que no se usan.
+ */
+function ensureAreaLayers(map: MlMap, c: MapColors, p: Props) {
+  const d = data(p);
+  if (p.layers.ecoregions && !map.getLayer('ecoregion-fill')) {
+    if (!map.getSource('ecoregions')) map.addSource('ecoregions', { type: 'geojson', data: d.ecoregions });
+    // Ecorregiones: relleno suave con el color de cada una, borde fino y el nombre (debajo de caminos y rótulos del mapa base).
+    map.addLayer({ id: 'ecoregion-fill', type: 'fill', source: 'ecoregions', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.3 } }, 'landcover-wood');
+    map.addLayer({ id: 'ecoregion-line', type: 'line', source: 'ecoregions', paint: { 'line-color': ['get', 'color'], 'line-width': 1.2, 'line-opacity': 0.8 } }, 'landcover-wood');
+    map.addLayer({
+      id: 'ecoregion-names',
+      type: 'symbol',
+      source: 'ecoregions',
+      minzoom: 4,
+      layout: { 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Italic'], 'text-size': 12, 'symbol-placement': 'point', 'text-max-width': 8 },
+      paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2, 'text-opacity': 0.85 },
+    });
+  }
+  if (p.layers.geology && !map.getLayer('geology-fill')) {
+    if (!map.getSource('geology')) map.addSource('geology', { type: 'geojson', data: d.geology });
+    // Geología: relleno por edad de la roca y borde fino (en el mismo lugar que las ecorregiones: nunca se prenden las dos a la vez).
+    map.addLayer({ id: 'geology-fill', type: 'fill', source: 'geology', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.5 } }, 'landcover-wood');
+    map.addLayer({ id: 'geology-line', type: 'line', source: 'geology', paint: { 'line-color': '#5d4037', 'line-width': 0.6, 'line-opacity': 0.5 } }, 'landcover-wood');
+  }
+}
+
 /** Capas propias encima del estilo base; se vuelven a agregar cada vez que cambia el estilo (tema). */
 function addOverlays(map: MlMap, c: MapColors, p: Props) {
   const d = data(p);
-  for (const [id, fc] of Object.entries(d)) if (!map.getSource(id)) map.addSource(id, { type: 'geojson', data: fc });
+  for (const [id, fc] of Object.entries(d)) if (id !== 'ecoregions' && id !== 'geology' && !map.getSource(id)) map.addSource(id, { type: 'geojson', data: fc });
+  ensureAreaLayers(map, c, p);
   const mine = p.showMine ? 'visible' : 'none';
   // El contorno va debajo de todo lo dibujado del mapa, pero arriba del fondo.
   // Contorno de referencia (sin teselas): provincias de un color y países de otro, más marcados.
@@ -197,22 +226,6 @@ function addOverlays(map: MlMap, c: MapColors, p: Props) {
     },
     'landcover-wood',
   );
-  // Ecorregiones: relleno suave con el color de cada una, borde fino y el nombre (debajo de caminos y rótulos del mapa base).
-  const eco = p.layers.ecoregions ? 'visible' : 'none';
-  map.addLayer({ id: 'ecoregion-fill', type: 'fill', source: 'ecoregions', layout: { visibility: eco }, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.3 } }, 'landcover-wood');
-  map.addLayer({ id: 'ecoregion-line', type: 'line', source: 'ecoregions', layout: { visibility: eco }, paint: { 'line-color': ['get', 'color'], 'line-width': 1.2, 'line-opacity': 0.8 } }, 'landcover-wood');
-  map.addLayer({
-    id: 'ecoregion-names',
-    type: 'symbol',
-    source: 'ecoregions',
-    minzoom: 4,
-    layout: { visibility: eco, 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Italic'], 'text-size': 12, 'symbol-placement': 'point', 'text-max-width': 8 },
-    paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2, 'text-opacity': 0.85 },
-  });
-  // Geología: relleno por edad de la roca y borde fino (en el mismo lugar que las ecorregiones: nunca se prenden las dos a la vez).
-  const geo = p.layers.geology ? 'visible' : 'none';
-  map.addLayer({ id: 'geology-fill', type: 'fill', source: 'geology', layout: { visibility: geo }, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.5 } }, 'landcover-wood');
-  map.addLayer({ id: 'geology-line', type: 'line', source: 'geology', layout: { visibility: geo }, paint: { 'line-color': '#5d4037', 'line-width': 0.6, 'line-opacity': 0.5 } }, 'landcover-wood');
   map.addLayer({ id: 'zones-fill', type: 'fill', source: 'zones', paint: { 'fill-color': c.info, 'fill-opacity': 0.07 } });
   map.addLayer({ id: 'zones', type: 'line', source: 'zones', paint: { 'line-color': c.info, 'line-width': 1.5, 'line-dasharray': [3, 2] } });
   map.addLayer({ id: 'preview-fill', type: 'fill', source: 'preview', paint: { 'fill-color': c.accent, 'fill-opacity': 0.12 } });
@@ -410,6 +423,7 @@ export function MapView(props: Props) {
     const m = map.current;
     // `isStyleLoaded()` da falso mientras bajan teselas: se usa la carga del estilo en sí.
     if (!m || !styleReady.current) return;
+    ensureAreaLayers(m, themeColors(), props);
     for (const id of ['geology-fill', 'geology-line']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.geology ? 'visible' : 'none');
     for (const id of ['ecoregion-fill', 'ecoregion-line', 'ecoregion-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.ecoregions ? 'visible' : 'none');
     for (const id of ['hillshade']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.hillshade ? 'visible' : 'none');

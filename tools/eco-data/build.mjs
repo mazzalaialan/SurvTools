@@ -25,12 +25,14 @@ const { unzipSync } = require('fflate');
 const OUT = process.env.VIKARG_DATA_OUT ? `${process.env.VIKARG_DATA_OUT.replace(/\/$/, '')}/ecoregions.json` : fileURLToPath(new URL('../../app/public/data/ecoregions.json', import.meta.url));
 const URL_ZIP = 'https://storage.googleapis.com/teow2016/Ecoregions2017.zip';
 const TOL = 0.01;
+/** Con `--continente`: [oeste, sur, este, norte] de lo que se conserva (América del Sur, Panamá y la Península Antártica). */
+const CONTINENT = process.argv.includes('--continente') ? [-95, -90, -30, 13] : null;
 /** Islas de Chile sin frontera en el mapa de países: Juan Fernández y San Félix-San Ambrosio. */
 const EXTRA_IDS = new Set(['560', '562']);
 const MIN_AREA = 0.002; // grados²: sin islotes ni manchas minúsculas
 
 async function zipBytes() {
-  const arg = process.argv[2];
+  const arg = process.argv.slice(2).find((a) => !a.startsWith('--'));
   if (arg) return readFile(arg);
   const cached = `${tmpdir()}/Ecoregions2017.zip`;
   if (existsSync(cached)) return readFile(cached);
@@ -116,6 +118,11 @@ for (let i = 0; i < geoms.length; i++) {
   // Solo lo que toca alguno de los seis países (algún vértice o el centro de su caja adentro).
   const kept = polys.filter((p) => {
     if (EXTRA_IDS.has(attrs[i].ECO_ID)) return true;
+    // `--continente`: toda América del Sur y la Antártida (sector de la Península), sin limitarse a los seis países.
+    if (CONTINENT) {
+      const b = bbox(p[0]);
+      return b[2] > CONTINENT[0] && b[0] < CONTINENT[2] && b[3] > CONTINENT[1] && b[1] < CONTINENT[3];
+    }
     const b = bbox(p[0]);
     if (b[2] < -83 || b[0] > -34 || b[3] < -56 || b[1] > 0.5) return false;
     return p[0].some((pt, k) => k % 7 === 0 && inCountries(pt)) || inCountries([(b[0] + b[2]) / 2, (b[1] + b[3]) / 2]);
