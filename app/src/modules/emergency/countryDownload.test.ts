@@ -10,7 +10,8 @@ describe('descarga de los datos de un país', () => {
     expect(pe).toContain('parks-PE.json');
     expect(pe).toContain('fuel-PE.json');
     expect(pe).not.toContain('repeaters-CL.json');
-    expect(pe.length).toBe(1 + SERVICE_CATEGORIES.length + 1 + 1);
+    // Sin contar la geología (el paquete de cada país se suma solo cuando existe su archivo).
+    expect(pe.filter((f) => !f.startsWith('geology-')).length).toBe(1 + SERVICE_CATEGORIES.length + 1 + 1);
     expect(pe).toContain('ecoregions.json');
     // Argentina: sin paquete (viene con la app), pero con los servicios y, por la cordillera, los parques y repetidoras de Chile.
     const ar = countryFiles('AR');

@@ -4,7 +4,7 @@ import { Mountain } from 'lucide-react';
 import { formatDistance } from '@/core/units/units';
 import { useSettings } from '@/core/settings/settings';
 import { useRecorder } from '@/modules/tracks/recorder';
-import { GEOLOGY_CREDIT, geologyAlong, geologyAt, inGeologyCoverage, loadGeologyIndex, unitAge, type GeologyIndex } from './geology';
+import { geologyAlong, geologyAt, inGeologyCoverage, loadGeologyIndex, unitAge, type GeologyIndex } from './geology';
 import { onLayersChange } from './zoneLayers';
 
 /** La base nacional y el detalle guardado de las zonas; `null` mientras carga. Se vuelve a leer si cambian las zonas. */
@@ -78,7 +78,7 @@ export function TrackGeology({ segments }: { segments: readonly (readonly (reado
           </li>
         ))}
       </ul>
-      <p className="hint" style={{ margin: 0 }}>{t('geology.alongHint', { credit: GEOLOGY_CREDIT })}</p>
+      <p className="hint" style={{ margin: 0 }}>{t('geology.alongHint', { credit: idx?.credits.join('; ') ?? '' })}</p>
     </section>
   );
 }

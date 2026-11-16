@@ -4,7 +4,7 @@ import { loadEmergencyData, loadParksCL, loadParksFile, type EmergencyData } fro
 import { prefetchServices } from './services';
 import { countryFiles } from './countryDownload';
 import { downloadVegetationCL, loadEcoregions } from '@/modules/ecoregions/ecoregions';
-import { loadGeologyBase } from '@/modules/layers/geology';
+import { downloadGeologyPack } from '@/modules/layers/geology';
 import { DATA_CACHE as CACHE, loadDataFile, refreshStored } from './dataFile';
 export { CountryDataError } from './dataFile';
 import { loadOfficialRepeaters } from './officialRepeaters';
@@ -71,8 +71,8 @@ export async function prefetchCountry(country: Country): Promise<void> {
     country !== 'AR' ? quiet(loadCountryData(country)) : undefined,
     // Ecorregiones (un archivo para todos los países, ~0,8 MB).
     quiet(loadEcoregions()),
-    // Geología de Argentina (base nacional 1:2,5 M).
-    country === 'AR' ? quiet(loadGeologyBase()) : undefined,
+    // Geología del país (base nacional; cada país tiene la suya, ver layers/geology.ts).
+    quiet(downloadGeologyPack(country)),
     // Pisos de vegetación de Chile.
     country === 'CL' ? quiet(downloadVegetationCL()) : undefined,
     // Servicios del país (estaciones, farmacias, agua, refugios…; también Argentina: van aparte para no agrandar la descarga inicial).

@@ -18,7 +18,7 @@ import { outlineFeatures } from './outline';
 import { withLayer } from './layerExclusion';
 import { biomeName, ecoregionName, ecoregionsGeoJSON, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
 import { fineCredit, useFineEcoregions } from '@/modules/ecoregions/EcoregionViews';
-import { GEOLOGY_CREDIT, geologyAt, geologyGeoJSON, inGeologyCoverage, unitAge, type GeologyUnit } from '@/modules/layers/geology';
+import { geologyAt, geologyGeoJSON, inGeologyCoverage, unitAge, type GeologyUnit } from '@/modules/layers/geology';
 import { useGeologyIndex } from '@/modules/layers/GeologyViews';
 import { FullscreenStage } from '@/ui/FullscreenStage';
 import './appSources';
@@ -569,7 +569,7 @@ export function MapsPage() {
           ))}
         </div>
         {layers.ecoregions && <p className="hint" style={{ margin: 0 }}>{t('maps.ecoCredit', { credit: ECOREGIONS_CREDIT })}{fine ? ' ' + t('maps.ecoCreditFine', { credit: fineCredit(fine) }) : ''}</p>}
-        {layers.geology && <p className="hint" style={{ margin: 0 }}>{t('geology.credit', { credit: GEOLOGY_CREDIT })} {t('geology.legend')}</p>}
+        {layers.geology && <p className="hint" style={{ margin: 0 }}>{t('geology.credit', { credit: geoIdx?.credits.join('; ') ?? '' })} {t('geology.legend')}</p>}
         {layers.tracks && <TrackPicker tracks={trackMap.values()} recordingActive={recStatus !== 'idle'} />}
         {layers.slope && (
           <div className="stack" style={{ gap: 4 }} data-testid="slope-legend">

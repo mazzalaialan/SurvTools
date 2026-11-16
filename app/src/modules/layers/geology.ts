@@ -1,4 +1,6 @@
-import { loadDataFile } from '@/modules/emergency/dataFile';
+import type { Country } from '@/core/settings/settings';
+import { hasDataFile, loadDataFile } from '@/modules/emergency/dataFile';
+import { COMMERCIAL_BUILD } from '@/modules/navigation/sources';
 import { loadStoredLayers } from './zoneLayers';
 import { periodColor } from './periods';
 
@@ -27,23 +29,65 @@ export interface GeologyData {
   polys: GeologyPoly[];
 }
 
-export const GEOLOGY_FILE = 'geology-AR.json';
-/** Solo hay geología para Argentina (con margen): fuera de acá no se carga nada. */
-export const inGeologyCoverage = (lat: number, lon: number): boolean => lat > -56 && lat < -21 && lon > -74 && lon < -53;
+/**
+ * Un paquete de geología por país (`geology-<CC>.json`, mismo formato): Argentina (SEGEMAR, CC BY 4.0), Chile (SERNAGEOMIN vía CIGIDEN, solo
+ * uso no comercial), Perú (INGEMMET, acceso público, se cita), Uruguay (DINAMIGE, Loureiro et al. 2024), Bolivia y Paraguay (Macrostrat, CC BY 4.0).
+ * Los de uso no comercial se apagan en una copia paga, con publicidad o institucional (`VITE_COMMERCIAL=1`, ver navigation/sources.ts).
+ * `box` es [oeste, sur, este, norte] (con margen): fuera de todas las cajas no se carga nada.
+ */
+export interface GeologyPack {
+  country: Country;
+  file: string;
+  box: [number, number, number, number];
+  nonCommercial: boolean;
+}
+export const GEOLOGY_PACKS: GeologyPack[] = [
+  { country: 'AR', file: 'geology-AR.json', box: [-74, -56, -53, -21], nonCommercial: false },
+  { country: 'CL', file: 'geology-CL.json', box: [-76.5, -56.5, -66, -17], nonCommercial: true },
+  { country: 'PE', file: 'geology-PE.json', box: [-82, -19, -68, 0.5], nonCommercial: true },
+  { country: 'UY', file: 'geology-UY.json', box: [-58.6, -35.1, -53, -30], nonCommercial: false },
+  { country: 'BO', file: 'geology-BO.json', box: [-70, -23, -57, -9], nonCommercial: false },
+  { country: 'PY', file: 'geology-PY.json', box: [-63, -28, -54, -19], nonCommercial: false },
+];
+/** Los paquetes que esta copia puede usar (en una copia comercial no entran los de uso no comercial). */
+export const availablePacks = (commercial: boolean = COMMERCIAL_BUILD): GeologyPack[] => GEOLOGY_PACKS.filter((p) => !(commercial && p.nonCommercial));
+export const geologyFile = (country: Country): string | null => GEOLOGY_PACKS.find((p) => p.country === country)?.file ?? null;
+/** ¿Algún paquete cubre el punto? (por la caja de cada país). */
+export const inGeologyCoverage = (lat: number, lon: number, commercial: boolean = COMMERCIAL_BUILD): boolean =>
+  availablePacks(commercial).some((p) => lon > p.box[0] && lon < p.box[2] && lat > p.box[1] && lat < p.box[3]);
+
+/** «Sin fuente»: la cita de cada paquete cargado se saca de su propio campo `source`. */
 export const GEOLOGY_CREDIT = 'SEGEMAR (SIGAM), CC BY 4.0';
 
 export const unitColor = (u: GeologyUnit): string => periodColor(u.to || u.from);
 /** «Plioceno» o «Devónico – Carbonífero». */
 export const unitAge = (u: GeologyUnit): string => (u.from && u.to && u.from !== u.to ? `${u.from} – ${u.to}` : u.to || u.from);
 
-let basePending: Promise<GeologyData | null> | null = null;
-/** La base nacional (guardada con los datos del país); `null` si no se pudo bajar y no hay copia. */
-export function loadGeologyBase(): Promise<GeologyData | null> {
-  basePending ??= loadDataFile<GeologyData>(GEOLOGY_FILE).catch(() => {
-    basePending = null;
+const basePending = new Map<string, Promise<GeologyData | null>>();
+/**
+ * Un paquete de país (guardado con los datos del país). Con `download` lo baja si falta; sin él, solo si ya está guardado (la capa nunca
+ * baja por su cuenta los de otros países).
+ */
+export function loadGeologyPack(pack: GeologyPack, download = false): Promise<GeologyData | null> {
+  const cached = basePending.get(pack.file);
+  if (cached) return cached;
+  const p = (async () => {
+    if (!download && !(await hasDataFile(pack.file))) {
+      basePending.delete(pack.file);
+      return null;
+    }
+    return loadDataFile<GeologyData>(pack.file);
+  })().catch(() => {
+    basePending.delete(pack.file);
     return null;
   });
-  return basePending;
+  basePending.set(pack.file, p);
+  return p;
+}
+/** Baja el paquete de geología de un país (para el paquete del país); no falla si ese país no tiene. */
+export async function downloadGeologyPack(country: Country): Promise<void> {
+  const pack = GEOLOGY_PACKS.find((p) => p.country === country);
+  if (pack && availablePacks().includes(pack)) await loadGeologyPack(pack, true);
 }
 
 interface Boxed {
@@ -54,6 +98,8 @@ interface Boxed {
 export interface GeologyIndex {
   detail: Boxed[];
   base: Boxed[];
+  /** Citas de las fuentes cargadas (una por paquete de país y el detalle por zona). */
+  credits: string[];
 }
 
 function box(p: number[][], u: GeologyUnit): Boxed {
@@ -94,10 +140,16 @@ export function geologyAt(idx: GeologyIndex, lat: number, lon: number): { unit: 
   return b ? { unit: b, detail: false } : null;
 }
 
-/** Índice con la base y todo el detalle guardado. */
+/** Índice con las bases de los países guardados y todo el detalle de las zonas. */
 export async function loadGeologyIndex(): Promise<GeologyIndex> {
-  const [base, stored] = await Promise.all([loadGeologyBase(), loadStoredLayers()]);
-  return { detail: stored.geology.map((t) => boxedFrom(t)).flat(), base: boxedFrom(base) };
+  const packs = availablePacks();
+  const [datas, stored] = await Promise.all([Promise.all(packs.map((p) => loadGeologyPack(p))), loadStoredLayers()]);
+  const loaded = datas.filter((d): d is GeologyData => !!d);
+  return {
+    detail: stored.geology.map((t) => boxedFrom(t)).flat(),
+    base: loaded.flatMap((d) => boxedFrom(d)),
+    credits: [...new Set([...loaded.map((d) => d.source ?? ''), ...(stored.geology.length ? ['SEGEMAR (SIGAM), 1:250.000, CC BY 4.0'] : [])].filter(Boolean))],
+  };
 }
 
 const R = 6_371_000;

@@ -6,7 +6,7 @@ import { layerKey, layerTiles, MAX_LAYER_TILES, mergeForest, zoneLayerTiles } fr
 import { zoneKeys } from '@/modules/maps/store';
 import type { EcoregionData } from '@/modules/ecoregions/ecoregions';
 
-const idx: GeologyIndex = { detail: [], base: boxedFrom(base as unknown as GeologyData) };
+const idx: GeologyIndex = { detail: [], base: boxedFrom(base as unknown as GeologyData), credits: [] };
 
 describe('geología: base nacional', () => {
   it('cubre el país y da una unidad con edad en puntos conocidos', () => {
@@ -40,7 +40,11 @@ describe('geología: base nacional', () => {
     const g = geologyGeoJSON(idx);
     expect(g.features.length).toBeGreaterThan(1000);
     expect(inGeologyCoverage(-40, -71)).toBe(true);
-    expect(inGeologyCoverage(-12, -77)).toBe(false); // Lima
+    expect(inGeologyCoverage(40, -3)).toBe(false); // Madrid
+    // En una copia comercial no entran los paquetes de uso no comercial (Chile y Perú); Argentina sí (Arica, Chile, queda afuera).
+    expect(inGeologyCoverage(-18.5, -70.3, true)).toBe(false);
+    expect(inGeologyCoverage(-18.5, -70.3, false)).toBe(true);
+    expect(inGeologyCoverage(-40, -71, true)).toBe(true);
   });
 });
 
@@ -72,5 +76,36 @@ describe('capas por zona: teselas', () => {
     expect(m.ecoregions).toHaveLength(1);
     expect(m.ecoregions[0]!.polys).toHaveLength(2);
     expect(mergeForest([])).toBeNull();
+  });
+});
+
+describe('geología: paquetes de los demás países', () => {
+  const load = async (cc: string) => {
+    const mod = (await import(`../../../public/data/geology-${cc}.json`)).default as unknown as GeologyData;
+    return { data: mod, idx: { detail: [], base: boxedFrom(mod), credits: [] } as GeologyIndex };
+  };
+  it.each(['AR', 'CL', 'PE', 'UY', 'BO', 'PY'])('%s: formato válido, con cita y colores', async (cc) => {
+    const { data } = await load(cc);
+    expect(data.source).toBeTruthy();
+    expect(data.units.length).toBeGreaterThan(5);
+    for (const p of data.polys) {
+      expect(data.units[p.u]).toBeTruthy();
+      for (const r of p.p) {
+        expect(r.length % 2).toBe(0);
+        expect(r.length).toBeGreaterThanOrEqual(8);
+      }
+    }
+    expect(JSON.stringify(data)).not.toMatch(/�|Ã/);
+  });
+  it('puntos conocidos', async () => {
+    const at = async (cc: string, lat: number, lon: number) => geologyAt((await load(cc)).idx, lat, lon)?.unit;
+    expect((await at('CL', -39.28, -71.98))?.name).toMatch(/Q1g1/); // Pucón
+    expect((await at('CL', -33.05, -71.62))?.to).toBe('Jurásico'); // Valparaíso
+    expect(await at('PE', -13.52, -71.97)).toBeTruthy(); // Cusco
+    expect(await at('PE', -12.05, -77.04)).toBeTruthy(); // Lima
+    expect((await at('BO', -16.5, -68.15))?.name).toMatch(/Devónico/); // La Paz
+    expect((await at('PY', -25.3, -57.6))?.name).toMatch(/Cretácico/); // Asunción
+    expect((await at('PY', -25.51, -54.61))?.name).toMatch(/basálticas/); // Ciudad del Este
+    expect((await at('UY', -33.12, -58.3))?.name).toMatch(/Fray Bentos/);
   });
 });
