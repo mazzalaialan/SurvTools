@@ -99,6 +99,20 @@ test('mapas offline: descargar una zona, verla sin conexión y borrarla', async 
   await expect(page.getByTestId('zone-list')).toContainText('Casa');
   await expect(page.getByTestId('zone-list')).toContainText('2 km de radio');
 
+  // Agrandar la zona ya bajada (solo baja lo que falta) y volver a achicarla (borra lo que queda afuera).
+  const before = (await cacheKeys(page)).length;
+  await page.getByRole('button', { name: 'Editar Casa' }).click();
+  await page.getByLabel('Radio alrededor del centro del mapa').selectOption({ label: '5 km' });
+  await page.getByRole('button', { name: 'Guardar cambios' }).click();
+  await expect(page.getByTestId('zone-message')).toContainText('«Casa» actualizada', { timeout: 30_000 });
+  await expect(page.getByTestId('zone-list')).toContainText('5 km de radio');
+  expect((await cacheKeys(page)).length).toBeGreaterThan(before);
+  await page.getByRole('button', { name: 'Editar Casa' }).click();
+  await page.getByLabel('Radio alrededor del centro del mapa').selectOption({ label: '2 km' });
+  await page.getByRole('button', { name: 'Guardar cambios' }).click();
+  await expect(page.getByTestId('zone-list')).toContainText('2 km de radio', { timeout: 30_000 });
+  expect((await cacheKeys(page)).length).toBe(before);
+
   const keys = await cacheKeys(page);
   expect(keys.some((k) => k.startsWith('https://vikarg.local/tiles/14/'))).toBe(true);
   expect(keys.some((k) => k.includes('/elevation-tiles-prod/terrarium/12/'))).toBe(true);
@@ -534,4 +548,32 @@ test('importar un KML en Tracks y convertirlo en ruta planificada: sin crear lug
   await page.goto('/#/orientation/tracks');
   await page.getByTestId('tracks-file').setInputFiles({ name: 'nada.txt', mimeType: 'text/plain', buffer: Buffer.from('hola') });
   await expect(page.getByRole('alert')).toContainText('no es un GPX');
+});
+
+test('mapas offline: la capa de ecorregiones dice en cuál está el centro del mapa, también sin conexión', async ({ page, context }) => {
+  test.setTimeout(120_000);
+  await mockMaps(page);
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  await page.goto('/#/orientation/maps');
+  await expect(page.getByTestId('map-center')).toHaveText(/zoom 12$/, { timeout: 15_000 });
+  // Apagada por defecto: sin línea de ecorregión.
+  await expect(page.getByTestId('map-ecoregion')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Ecorregiones', exact: true }).click();
+  // Buenos Aires (el GPS de la prueba): la Pampa húmeda.
+  await expect(page.getByTestId('map-ecoregion')).toContainText('Pampa húmeda', { timeout: 15_000 });
+  await expect(page.getByText('RESOLVE Ecoregions 2017')).toBeVisible();
+  // Tocar el mapa: la ficha pasa a ser la del punto tocado (con «Volver al centro»).
+  await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 480, y: 300 } });
+  await expect(page.getByTestId('map-ecoregion')).toContainText('punto tocado', { timeout: 10_000 });
+  await page.getByTestId('eco-pick-clear').click();
+  await expect(page.getByTestId('map-ecoregion')).toContainText('centro del mapa');
+  // El archivo quedó guardado en el dispositivo (con los datos del país): se usa sin conexión.
+  const stored = await page.evaluate(async () => !!(await (await caches.open('vikarg-country')).match(new URL('data/ecoregions.json', location.href).href)));
+  expect(stored).toBe(true);
 });

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Download, Locate, MapPin, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Download, Locate, MapPin, Pencil, Trash2, X } from 'lucide-react';
 import { useCapabilities } from '@/core/capabilities/capabilities';
 import { formatDms } from '@/core/geo/geo';
 import { useGeolocation } from '@/core/geo/useGeolocation';
@@ -15,6 +15,7 @@ import { useTracks } from '@/modules/tracks/store';
 import { routePoints, useWaypoints } from '@/modules/waypoints/store';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { outlineFeatures } from './outline';
+import { biomeName, ecoregionAt, ecoregionName, ecoregionsGeoJSON, ECOREGIONS_CREDIT, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
 import { FullscreenStage } from '@/ui/FullscreenStage';
 import './appSources';
 import { CameraButtons } from './CameraButtons';
@@ -22,18 +23,18 @@ import { ImportedMaps } from './ImportedMaps';
 import type { ImportedMap } from './imported';
 import { MapView, type MapTrack, type ViewState } from './MapView';
 import { useMapTools } from './MapTools';
-import { useMapZones, type MapZone } from './store';
+import { useMapZones, zoneKeys, type MapZone } from './store';
 import { TrackPicker } from './TrackPicker';
 import { tracksToShow } from './trackSelect';
 import { carryPrevailing, chooseSnowline, chooseWind, fetchFreezingSeries, fetchSnowline, needsLivePrevailing, needsRefresh, readSnowline, saveSnowline, type Snowline } from './snowline';
 import { compassList, fetchPrevailing, leeAspects } from './wind';
 import { archiveContains, serverMaps, type ServerMaps } from './sources';
-import { DETAILS, downloadZone, planZone, zoneSource, type DetailId, type DownloadProgress } from './tiles';
+import { DETAILS, downloadZone, planZone, removeZoneTiles, zoneSource, type DetailId, type DownloadProgress } from './tiles';
 import { confirmAction } from '@/ui/confirm';
 
 // 100 y 200 km solo entran en el límite del servidor propio.
 const RADII = [2, 5, 10, 20, 50, 100, 200];
-const LAYER_KEYS: (keyof MapLayers)[] = ['hillshade', 'contours', 'slope', 'mine', 'tracks'];
+const LAYER_KEYS: (keyof MapLayers)[] = ['hillshade', 'contours', 'slope', 'ecoregions', 'mine', 'tracks'];
 const SLOPE_ZONES = ['low', 'caution', 'avalanche', 'steep', 'extreme'] as const;
 /** Vista que muestra un track entero (centro y zoom según lo que ocupa). */
 function trackView(tr: { segments: [number, number, number | null, number?][][] }): ViewState | null {
@@ -86,8 +87,13 @@ export function MapsPage() {
   const [view, setView] = useState<ViewState>(initial);
   const [flyTo, setFlyTo] = useState<(ViewState & { key: number }) | null>(null);
   const [outline, setOutline] = useState<FeatureCollection | null>(null);
+  // Ecorregiones: el archivo se carga la primera vez que se prende la capa (y queda guardado para usarlo sin conexión).
+  const [eco, setEco] = useState<EcoregionData | null>(null);
+  const [ecoFailed, setEcoFailed] = useState(false);
+  /** Punto tocado en el mapa (con la capa prendida): la ficha de ecorregión es de ese punto y no del centro. */
+  const [picked, setPicked] = useState<{ lat: number; lon: number } | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [panel, setPanel] = useState<{ name: string; radiusKm: number; detail: DetailId } | null>(null);
+  const [panel, setPanel] = useState<{ name: string; radiusKm: number; detail: DetailId; editId?: string } | null>(null);
   const [progress, setProgress] = useState<DownloadProgress | null>(null);
   const [abort, setAbort] = useState<AbortController | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -258,13 +264,31 @@ export function MapsPage() {
   const recorded = useRecordedLines();
   const here = useMemo(() => (fix ? { lat: fix.lat, lon: fix.lon, accuracy: fix.accuracy } : null), [fix]);
   const tools = useMapTools(fix ? { lat: fix.lat, lon: fix.lon, alt: fix.alt } : null);
+  useEffect(() => {
+    if (!layers.ecoregions || eco) return;
+    let cancelled = false;
+    void loadEcoregions().then((d) => {
+      if (cancelled) return;
+      setEco(d);
+      setEcoFailed(!d);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [layers.ecoregions, eco]);
+  const ecoGeo = useMemo(() => (layers.ecoregions && eco ? ecoregionsGeoJSON(eco, i18n.language) : null), [layers.ecoregions, eco, i18n.language]);
+  const ecoPoint = picked && layers.ecoregions ? picked : view;
+  const ecoHere = layers.ecoregions && eco ? ecoregionAt(eco, ecoPoint.lat, ecoPoint.lon) : null;
   const zoneCircles = useMemo(() => zones.map((z) => ({ id: z.id, name: z.name, lat: z.lat, lon: z.lon, radiusKm: z.radiusKm })), [zones]);
   const maxZoom = panel ? DETAILS.find((d) => d.id === panel.detail)!.maxZoom : 0;
-  const plan = useMemo(() => (panel ? planZone(view.lat, view.lon, panel.radiusKm, maxZoom) : null), [panel, view.lat, view.lon, maxZoom]);
+  // Al editar una zona el centro es el de la zona (no el del mapa).
+  const editing = panel?.editId ? zones.find((z) => z.id === panel.editId) : undefined;
+  const center = editing ?? view;
+  const plan = useMemo(() => (panel ? planZone(center.lat, center.lon, panel.radiusKm, maxZoom) : null), [panel, center.lat, center.lon, maxZoom]);
   const source = plan && serverInfo !== undefined ? zoneSource(plan, serverInfo, sourceMode) : null;
   // Una zona que ya está entera en un mapa importado no hace falta bajarla.
   const coveredBy = plan ? imported.find((m) => m.kind === 'vector' && archiveContains({ ...m, updatedAt: m.importedAt }, plan.bounds, plan.maxZoom)) : undefined;
-  const preview = useMemo(() => (panel ? { id: 'preview', name: panel.name, lat: view.lat, lon: view.lon, radiusKm: panel.radiusKm } : null), [panel, view.lat, view.lon]);
+  const preview = useMemo(() => (panel ? { id: 'preview', name: panel.name, lat: center.lat, lon: center.lon, radiusKm: panel.radiusKm } : null), [panel, center.lat, center.lon]);
 
   const mb = (bytes: number) => new Intl.NumberFormat(i18n.language, { maximumFractionDigits: bytes < 10 * 1024 * 1024 ? 1 : 0 }).format(bytes / 1024 / 1024);
   const setLayer = (key: keyof MapLayers, on: boolean) => void update({ mapLayers: { ...layers, [key]: on } });
@@ -275,6 +299,13 @@ export function MapsPage() {
     if (view.zoom < 9) setFlyTo({ ...view, zoom: 10, key: Date.now() });
   }
 
+  function openEdit(z: MapZone) {
+    setMessage(null);
+    const detail = DETAILS.find((d) => d.maxZoom <= z.maxZoom)?.id ?? 'trails';
+    setPanel({ name: z.name, radiusKm: z.radiusKm, detail, editId: z.id });
+    setFlyTo({ lat: z.lat, lon: z.lon, zoom: Math.max(5, 11 - Math.round(Math.log2(Math.max(1, z.radiusKm / 10)))), key: Date.now() });
+  }
+
   const bajarOpened = useRef(false);
   useEffect(() => {
     if (bajar && online && !bajarOpened.current) {
@@ -283,6 +314,46 @@ export function MapsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bajar, online]);
+
+  /** Agranda o achica una zona ya bajada: baja solo las teselas que faltan y borra las que ya no usa ninguna zona. */
+  async function saveEdit(zone: MapZone) {
+    if (!panel || !plan) return;
+    const name = panel.name.trim() || zone.name;
+    if (panel.radiusKm === zone.radiusKm && maxZoom === zone.maxZoom) {
+      await add({ ...zone, name });
+      setPanel(null);
+      setMessage(name === zone.name ? t('maps.noChanges') : t('maps.zoneUpdated', { name, mb: mb(zone.bytes) }));
+      return;
+    }
+    const oldKeys = new Set(zoneKeys(zone));
+    const newKeys = zoneKeys({ lat: zone.lat, lon: zone.lon, radiusKm: panel.radiusKm, maxZoom });
+    const grows = newKeys.some((k) => !oldKeys.has(k));
+    const controller = new AbortController();
+    setAbort(controller);
+    setMessage(null);
+    try {
+      let bytes = Math.round((zone.bytes * plan.bytes) / Math.max(1, planZone(zone.lat, zone.lon, zone.radiusKm, zone.maxZoom).bytes));
+      let failed = zone.failed;
+      if (grows) {
+        setProgress({ done: 0, total: 1, bytes: 0, failed: 0 });
+        const result = await downloadZone(plan, setProgress, controller.signal, { vectorPublic: source?.ok ? source.vectorPublic : true });
+        bytes = result.bytes;
+        failed = result.failed;
+      }
+      const updated: MapZone = { ...zone, name, radiusKm: panel.radiusKm, maxZoom, bytes, failed };
+      await add(updated);
+      // Lo que quedó afuera de la zona nueva se borra, salvo que lo use otra zona.
+      const keep = new Set([...newKeys, ...useMapZones.getState().zones.filter((z) => z.id !== zone.id).flatMap(zoneKeys)]);
+      await removeZoneTiles([...oldKeys], keep);
+      setPanel(null);
+      setMessage(t('maps.zoneUpdated', { name, mb: mb(bytes) }));
+    } catch {
+      setMessage(controller.signal.aborted ? t('maps.cancelled') : t('maps.failed'));
+    } finally {
+      setProgress(null);
+      setAbort(null);
+    }
+  }
 
   async function startDownload() {
     if (!panel || !plan || !source?.ok) return;
@@ -354,6 +425,7 @@ export function MapsPage() {
           zones={zoneCircles}
           preview={preview}
           outline={outline}
+          ecoregions={ecoGeo}
           flyTo={flyTo}
           tilesVersion={tilesVersion}
           follow={follow && !!fix}
@@ -370,6 +442,7 @@ export function MapsPage() {
           measure={tools.measure}
           target={tools.target}
           onMapClick={tools.onMapClick}
+          onPick={(p) => layers.ecoregions && setPicked(p)}
           onContextMenu={tools.onContextMenu}
           onMoveStart={tools.closeMenu}
         />
@@ -389,6 +462,22 @@ export function MapsPage() {
       <p className="hint maps-center" data-testid="map-center">
         {t('maps.center', { coords: formatDms(view, t('geo.westLetter')), zoom: Math.round(view.zoom) })}
       </p>
+
+      {layers.ecoregions && (eco || ecoFailed) && (
+        <p className="hint" style={{ margin: 0 }} data-testid="map-ecoregion">
+          {ecoFailed || !eco
+            ? t('maps.ecoUnavailable')
+            : ecoHere
+              ? t(picked ? 'maps.ecoPicked' : 'maps.ecoHere', { name: ecoregionName(ecoHere, i18n.language), biome: biomeName(eco, ecoHere), coords: formatDms(ecoPoint, t('geo.westLetter')) })
+              : t(picked ? 'maps.ecoPickedNone' : 'maps.ecoNone', { coords: formatDms(ecoPoint, t('geo.westLetter')) })}
+          {picked && (
+            <>
+              {' '}
+              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid="eco-pick-clear">{t('maps.ecoPickClear')}</button>
+            </>
+          )}
+        </p>
+      )}
 
       {selectedWp && (
         <section className="card row-between" data-testid="map-waypoint">
@@ -413,6 +502,7 @@ export function MapsPage() {
             </button>
           ))}
         </div>
+        {layers.ecoregions && <p className="hint" style={{ margin: 0 }}>{t('maps.ecoCredit', { credit: ECOREGIONS_CREDIT })}</p>}
         {layers.tracks && <TrackPicker tracks={trackMap.values()} recordingActive={recStatus !== 'idle'} />}
         {layers.slope && (
           <div className="stack" style={{ gap: 4 }} data-testid="slope-legend">
@@ -553,7 +643,7 @@ export function MapsPage() {
                 ))}
               </select>
             </div>
-            <p className="hint" style={{ margin: 0 }}>{t('maps.centerHint')}</p>
+            <p className="hint" style={{ margin: 0 }}>{editing ? t('maps.editHint', { name: editing.name }) : t('maps.centerHint')}</p>
             {plan && (
               <p className={!source || source.ok ? 'hint' : 'error'} style={{ margin: 0 }} data-testid="zone-estimate">
                 {t('maps.estimate', { tiles: plan.vectorTiles + plan.demTiles, mb: mb(plan.bytes) })}
@@ -587,8 +677,8 @@ export function MapsPage() {
                   <button className="btn" type="button" onClick={() => setPanel(null)}>
                     {t('common.cancel')}
                   </button>
-                  <button className="btn btn-primary" type="button" onClick={() => void startDownload()} disabled={!online || !source?.ok}>
-                    <Download size={18} /> {t('maps.download')}
+                  <button className="btn btn-primary" type="button" onClick={() => void (editing ? saveEdit(editing) : startDownload())} disabled={editing ? !!progress : !online || !source?.ok}>
+                    <Download size={18} /> {editing ? t('maps.saveChanges') : t('maps.download')}
                   </button>
                 </>
               )}
@@ -613,6 +703,9 @@ export function MapsPage() {
                       ? t('maps.notOnDevice')
                       : t('maps.zoneSummary', { km: z.radiusKm, mb: mb(z.bytes), date: new Date(z.createdAt).toLocaleDateString(i18n.language) })}
                   </span>
+                </button>
+                <button className="icon-btn" type="button" data-testid={`zone-edit-${z.id}`} onClick={() => openEdit(z)} disabled={!!progress || missing.has(z.id)} aria-label={t('maps.editZone', { name: z.name })}>
+                  <Pencil size={18} />
                 </button>
                 <button className="icon-btn" type="button" onClick={() => void handleRemove(z)} aria-label={t('maps.delete', { name: z.name })}>
                   <Trash2 size={18} />

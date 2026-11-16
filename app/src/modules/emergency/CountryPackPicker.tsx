@@ -52,7 +52,8 @@ export function CountryPackPicker() {
         {COUNTRIES.map((c) => {
           const pack = packs[c];
           const state = pack?.state;
-          const size = pack && pack.bytes ? ` (${formatBytes(pack.bytes, i18n.language)})` : '';
+          const sizeText = pack && pack.bytes ? formatBytes(pack.bytes, i18n.language) : '';
+          const size = sizeText ? ` (${sizeText})` : '';
           const name = t(`country.${c}`);
           return (
             <div key={c} className="country-pack-item" data-testid={`country-pack-${c}`} data-state={state ?? 'unknown'}>
@@ -85,6 +86,11 @@ export function CountryPackPicker() {
                   onClick={() => void download(c)}
                 >
                   {state === 'outdated' ? <RefreshCw size={16} aria-hidden /> : <ArrowDownToLine size={16} aria-hidden />}
+                  {sizeText && (
+                    <span className="country-pack-size" data-testid={`country-pack-size-${c}`}>
+                      {sizeText}
+                    </span>
+                  )}
                 </button>
               ) : null}
             </div>

@@ -175,6 +175,8 @@ export interface MapLayers {
   cornices: boolean;
   /** Relieve en 3D (el mapa se puede inclinar); apagado es el mapa plano. */
   terrain3d: boolean;
+  /** Ecorregiones (RESOLVE 2017): relleno suave por ecorregión y su nombre. */
+  ecoregions: boolean;
 }
 
 /** Capas del Mapa de Meteorología. Las que usan internet solo se descargan si están prendidas. */
@@ -255,7 +257,7 @@ export const DEFAULT_SETTINGS: Settings = {
   weatherMapValue: 'temp',
   fireHighOnly: false,
   mapSource: 'auto',
-  mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false },
+  mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false, ecoregions: false },
   snowlineManual: null,
   snowlineFallback: 1500,
   trackFollowView: 'drawing',

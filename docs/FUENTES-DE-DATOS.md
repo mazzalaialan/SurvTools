@@ -177,3 +177,7 @@ Decisión de quien dirige: la base mundial **WDPA / Protected Planet** (UNEP-WCM
 | Uruguay | 0 → **18** | SNAP, 22 (Ministerio de Ambiente) | **nuevo** `parks-UY.json` desde OpenStreetMap con el contacto del Ministerio (2917 3380). Faltan en OSM Islas del Queguay, Quebrada de los Cuervos y Sierras del Yerbal (hoy figura como «Quebrada de los cuervos»), Humedales e Islas del Hum y Laguna Negra; el Ministerio no publica límites |
 
 Frecuencias de radio de parques: **no se encontraron en ningún país**. Teléfonos propios de cada área: solo la central de cada administración. Contradicciones anotadas: Bolivia 22 áreas (IRFA) o 23 (Atlas SERNAP, que incluye El Cardón); Paraguay 46 o 62 según la fuente; OSM marca «Parque Nacional Llica» como del SERNAP y no está entre las 23.
+
+
+## Ecorregiones (RESOLVE Ecoregions 2017)
+Dinerstein, E. et al. (2017), «An Ecoregion-Based Approach to Protecting Half the Terrestrial Realm», BioScience 67(6):534-545. Licencia **CC BY 4.0** (el campo `LICENSE` del propio archivo dice «CC-BY 4.0»): se puede redistribuir y derivar citando la fuente; la app la cita en la capa del mapa y en la tarjeta del recorrido. Descarga: `https://storage.googleapis.com/teow2016/Ecoregions2017.zip` (150 MB, shapefile). Se usa `tools/eco-data/build.mjs`: conserva las partes que tocan los seis países, simplifica a ~1 km y traduce los nombres (el resto de los datos es el original). Es una referencia gruesa (en el Lolog solo distingue bosque valdiviano y estepa patagónica).

@@ -1,3 +1,4 @@
+import { circleBounds } from './tiles';
 import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
@@ -48,6 +49,8 @@ interface Props {
   preview: MapCircle | null;
   /** Contorno de la región (sin conexión y fuera de las zonas, al menos se ve dónde estás). */
   outline: FeatureCollection | null;
+  /** Ecorregiones (capa opcional): un polígono por ecorregión con su color y nombre. */
+  ecoregions?: FeatureCollection | null;
   /** Cambia cuando se importa o borra un mapa: se vuelven a pedir las teselas. */
   tilesVersion?: number;
   /** Cambia `key` para mover la vista. */
@@ -73,6 +76,8 @@ interface Props {
   /** Línea desde el origen hasta el punto marcado, en [lon, lat]. */
   target?: { from: [number, number]; to: [number, number] | null } | null;
   onMapClick?: (p: { lat: number; lon: number }) => void;
+  /** Toque en el mapa sin herramienta activa (por ejemplo para ver la ecorregión de ese punto). */
+  onPick?: (p: { lat: number; lon: number }) => void;
   /** Clic derecho (o mantener apretado): menú con las herramientas en ese punto (x, y dentro del mapa). */
   onContextMenu?: (p: { lat: number; lon: number }, x: number, y: number, width: number, height: number) => void;
   /** Se movió el mapa: se cierra el menú. */
@@ -101,9 +106,15 @@ export function circlePolygon(lat: number, lon: number, radiusKm: number): [numb
   return out;
 }
 
+/** El cuadrado que de verdad se baja (lado de 2 × el radio): es el rectángulo de teselas de `circleBounds`, no el círculo. */
+export function squarePolygon(lat: number, lon: number, halfKm: number): [number, number][] {
+  const b = circleBounds(lat, lon, halfKm);
+  return [[b.west, b.north], [b.east, b.north], [b.east, b.south], [b.west, b.south], [b.west, b.north]];
+}
+
 const circlesGeo = (circles: MapCircle[]): FeatureCollection => ({
   type: 'FeatureCollection',
-  features: circles.map((c) => ({ type: 'Feature', properties: { id: c.id, name: c.name }, geometry: { type: 'Polygon', coordinates: [circlePolygon(c.lat, c.lon, c.radiusKm)] } })),
+  features: circles.map((c) => ({ type: 'Feature', properties: { id: c.id, name: c.name }, geometry: { type: 'Polygon', coordinates: [squarePolygon(c.lat, c.lon, c.radiusKm)] } })),
 });
 
 function data(p: Props) {
@@ -139,6 +150,7 @@ function data(p: Props) {
     zones: circlesGeo(p.zones),
     preview: circlesGeo(p.preview ? [p.preview] : []),
     outline: p.outline ?? EMPTY,
+    ecoregions: p.ecoregions ?? EMPTY,
     'measure-line': (p.measure && p.measure.length > 1
       ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: p.measure } }] }
       : EMPTY) as FeatureCollection,
@@ -182,6 +194,19 @@ function addOverlays(map: MlMap, c: MapColors, p: Props) {
     },
     'landcover-wood',
   );
+  // Ecorregiones: relleno suave con el color de cada una, borde fino y el nombre (debajo de caminos y rótulos del mapa base).
+  const eco = p.layers.ecoregions ? 'visible' : 'none';
+  map.addLayer({ id: 'ecoregion-fill', type: 'fill', source: 'ecoregions', layout: { visibility: eco }, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.3 } }, 'landcover-wood');
+  map.addLayer({ id: 'ecoregion-line', type: 'line', source: 'ecoregions', layout: { visibility: eco }, paint: { 'line-color': ['get', 'color'], 'line-width': 1.2, 'line-opacity': 0.8 } }, 'landcover-wood');
+  map.addLayer({
+    id: 'ecoregion-names',
+    type: 'symbol',
+    source: 'ecoregions',
+    minzoom: 4,
+    layout: { visibility: eco, 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Italic'], 'text-size': 12, 'symbol-placement': 'point', 'text-max-width': 8 },
+    paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2, 'text-opacity': 0.85 },
+  });
+  map.addLayer({ id: 'zones-fill', type: 'fill', source: 'zones', paint: { 'fill-color': c.info, 'fill-opacity': 0.07 } });
   map.addLayer({ id: 'zones', type: 'line', source: 'zones', paint: { 'line-color': c.info, 'line-width': 1.5, 'line-dasharray': [3, 2] } });
   map.addLayer({ id: 'preview-fill', type: 'fill', source: 'preview', paint: { 'fill-color': c.accent, 'fill-opacity': 0.12 } });
   map.addLayer({ id: 'preview-line', type: 'line', source: 'preview', paint: { 'line-color': c.accent, 'line-width': 2 } });
@@ -341,6 +366,7 @@ export function MapView(props: Props) {
     // Con una herramienta activa, el toque marca un punto.
     m.on('click', (e) => {
       if (latest.current.tool) latest.current.onMapClick?.({ lat: e.lngLat.lat, lon: e.lngLat.lng });
+      else latest.current.onPick?.({ lat: e.lngLat.lat, lon: e.lngLat.lng });
     });
     m.on('click', 'mine-waypoints', (e) => {
       if (latest.current.tool) return;
@@ -377,12 +403,13 @@ export function MapView(props: Props) {
     const m = map.current;
     // `isStyleLoaded()` da falso mientras bajan teselas: se usa la carga del estilo en sí.
     if (!m || !styleReady.current) return;
+    for (const id of ['ecoregion-fill', 'ecoregion-line', 'ecoregion-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.ecoregions ? 'visible' : 'none');
     for (const id of ['hillshade']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.hillshade ? 'visible' : 'none');
     if (m.getLayer('slope')) m.setLayoutProperty('slope', 'visibility', props.layers.slope ? 'visible' : 'none');
     for (const id of ['contour-lines', 'contour-labels']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.contours ? 'visible' : 'none');
     for (const id of ['mine-routes', 'mine-waypoints', 'mine-waypoint-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.showMine ? 'visible' : 'none');
     for (const id of ['track-lines', 'track-points', 'track-point-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.showTracks ? 'visible' : 'none');
-  }, [props.layers.hillshade, props.layers.contours, props.layers.slope, props.showMine, props.showTracks]);
+  }, [props.layers.hillshade, props.layers.contours, props.layers.slope, props.layers.ecoregions, props.showMine, props.showTracks]);
 
   // Nueva línea de nieve: se vuelven a pintar las teselas de pendiente.
   useEffect(() => {
@@ -400,7 +427,7 @@ export function MapView(props: Props) {
     // Rectas de corte y recorridos guardados a la vista (para las pruebas).
     container.current?.setAttribute('data-gap-lines', String(props.gapLines?.length ?? 0));
     container.current?.setAttribute('data-tracks-shown', String(props.tracks.length));
-  }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.measure, props.target]);
+  }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.measure, props.target]);
 
   useEffect(() => {
     const m = map.current;

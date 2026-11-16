@@ -14,6 +14,7 @@ import { routeFromTrack } from '@/modules/waypoints/importRoute';
 import { trackSheetInput } from '@/modules/maps/print/data';
 import { PrintTopoDialog } from '@/modules/maps/print/PrintTopoDialog';
 import { useWaypoints } from '@/modules/waypoints/store';
+import { TrackEcoregions } from '@/modules/ecoregions/EcoregionViews';
 import { ElevationProfile } from './ElevationProfile';
 import { useRecorder } from './recorder';
 import { formatDuration } from './Recording';
@@ -264,6 +265,8 @@ function TrackDetail({ track }: { track: Track }) {
           )}
         </p>
       </section>
+
+      <TrackEcoregions segments={track.segments} />
 
       <section className="card stack" aria-labelledby="track-points">
         <h2 id="track-points" className="section-title" style={{ margin: 0 }}>

@@ -3,6 +3,7 @@ import { useSettings, type Country } from '@/core/settings/settings';
 import { loadEmergencyData, loadParksCL, loadParksFile, type EmergencyData } from './data';
 import { prefetchServices } from './services';
 import { countryFiles } from './countryDownload';
+import { loadEcoregions } from '@/modules/ecoregions/ecoregions';
 import { DATA_CACHE as CACHE, loadDataFile, refreshStored } from './dataFile';
 export { CountryDataError } from './dataFile';
 import { loadOfficialRepeaters } from './officialRepeaters';
@@ -62,11 +63,13 @@ export function useCountryPrefetch(): void {
   }, [country]);
 }
 
-/** Baja todo lo del país que se usa sin conexión: el paquete, los servicios, las repetidoras oficiales y los parques. Falla en silencio. */
+/** Baja todo lo del país que se usa sin conexión: el paquete, los servicios, las repetidoras oficiales, los parques y las ecorregiones. Falla en silencio. */
 export async function prefetchCountry(country: Country): Promise<void> {
   const quiet = (p: Promise<unknown>) => p.catch(() => undefined);
   await Promise.all([
     country !== 'AR' ? quiet(loadCountryData(country)) : undefined,
+    // Ecorregiones (un archivo para todos los países, ~0,8 MB).
+    quiet(loadEcoregions()),
     // Servicios del país (estaciones, farmacias, agua, refugios…; también Argentina: van aparte para no agrandar la descarga inicial).
     quiet(prefetchServices(country)),
     // Repetidoras oficiales de Chile: también con Argentina (en la cordillera se está cerca).

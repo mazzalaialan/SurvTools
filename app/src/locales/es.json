@@ -829,7 +829,8 @@
     "goHere": "Ir a mi ubicación",
     "center": "Centro: {{coords}} · zoom {{zoom}}",
     "layers": "Capas",
-    "layer": { "hillshade": "Relieve", "slope": "Riesgo de avalancha", "contours": "Curvas de nivel", "mine": "Mis waypoints y rutas", "tracks": "Tracks" },
+    "layer": {
+      "ecoregions": "Ecorregiones", "hillshade": "Relieve", "slope": "Riesgo de avalancha", "contours": "Curvas de nivel", "mine": "Mis waypoints y rutas", "tracks": "Tracks" },
     "snowlineAuto": "Se pinta desde los {{m}}: la isoterma de 0 °C más baja de los últimos días en esta zona ({{freezing}}, Open-Meteo, {{ago}}) menos 300 m, donde puede haber nieve.",
     "snowlineManualStatus": "Se pinta desde los {{m}} (línea de nieve puesta a mano).",
     "snowlineNone": "Sin datos de isoterma para esta zona (sin conexión y sin una zona descargada cerca con su pronóstico): se pinta desde los {{m}} que elegiste abajo. Cambialo si sabés desde dónde hay nieve.",
@@ -877,7 +878,14 @@
       "towns": "Rutas y pueblos",
       "overview": "General (solo rutas principales)"
     },
-    "centerHint": "La zona es el círculo naranja: mové el mapa para cambiar el centro.",
+    "ecoHere": "Ecorregión en el centro del mapa: {{name}} ({{biome}}).",
+    "ecoNone": "En el centro del mapa no hay una ecorregión (mar o fuera de la región cubierta).",
+    "ecoUnavailable": "No se pudieron cargar las ecorregiones: hace falta conexión la primera vez para bajarlas.",
+    "ecoCredit": "Ecorregiones: {{credit}}. Los límites son una referencia simplificada (~1 km): en la realidad el paso de una ecorregión a otra es gradual.",
+    "ecoPicked": "Ecorregión en el punto tocado ({{coords}}): {{name}} ({{biome}}).",
+    "ecoPickedNone": "En el punto tocado ({{coords}}) no hay una ecorregión (mar o fuera de la región cubierta).",
+    "ecoPickClear": "Volver al centro",
+    "centerHint": "La zona es el cuadrado naranja (el radio es la mitad del lado): mové el mapa para cambiar el centro.",
     "estimate": "Unas {{tiles}} teselas, ~{{mb}} MB (aproximado: depende de cuánto hay dibujado).",
     "tooBig": "Es demasiado para bajar de los servidores públicos (permiten hasta 3.000 teselas o 50 MB por zona): achicá el radio o bajá el detalle. Con un servidor VikArg que tenga mapas de este lugar se pueden bajar zonas más grandes.",
     "tooBigServer": "Es demasiado para una sola descarga (tu servidor permite hasta {{tiles}} teselas o {{mb}} MB por zona): achicá el radio o bajá el detalle.",
@@ -928,6 +936,11 @@
     "cancelled": "Descarga cancelada. Lo que ya se bajó queda guardado para la próxima.",
     "failed": "No se pudo descargar: revisá la conexión.",
     "noZones": "Todavía no descargaste ninguna zona.",
+    "editZone": "Editar {{name}}",
+    "saveChanges": "Guardar cambios",
+    "editHint": "Editando «{{name}}»: cambiá el radio o el detalle; el centro se mantiene. Si la agrandás se baja solo lo que falta; si la achicás se borra lo que queda afuera.",
+    "zoneUpdated": "«{{name}}» actualizada: {{mb}} MB.",
+    "noChanges": "Sin cambios.",
     "zoneSummary": "{{km}} km de radio · {{mb}} MB · {{date}}",
     "notOnDevice": "No está en este dispositivo (vino de un backup): descargala de nuevo.",
     "confirmDelete": "¿Borrar la zona \"{{name}}\"? Se libera el espacio de lo que no usen otras zonas.",
@@ -3303,5 +3316,7 @@
     "hide": "Ocultar",
     "empty": "No hay fichas médicas cargadas.",
     "updated": "Actualizado: {{date}}"
-  }
+  },
+  "ecoregions": {
+    "entered": "Entraste en: {{name}}","now": "Ecorregión: {{name}}", "alongTitle": "Ecorregiones del recorrido", "alongHint": "Según {{credit}}: referencia aproximada (límites simplificados a ~1 km)."}
 }

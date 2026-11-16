@@ -10,7 +10,8 @@ import sizes from './data-sizes.json';
 
 /** Los archivos de `public/data/` que usa un país (los que se guardan en el dispositivo). */
 export function countryFiles(country: Country): string[] {
-  const files: string[] = [];
+  // Ecorregiones: un solo archivo para todos los países (se baja una vez; ver modules/ecoregions).
+  const files: string[] = ['ecoregions.json'];
   if (country !== 'AR') files.push(`${country}.json`);
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).

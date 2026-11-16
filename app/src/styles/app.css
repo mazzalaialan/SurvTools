@@ -4669,6 +4669,13 @@ a.module-card:hover {
 button.country-pack-icon {
   cursor: pointer;
   font: inherit;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.country-pack-size {
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .country-pack-ready {

@@ -829,7 +829,8 @@
     "goHere": "Go to my location",
     "center": "Center: {{coords}} · zoom {{zoom}}",
     "layers": "Layers",
-    "layer": { "hillshade": "Terrain", "slope": "Avalanche risk", "contours": "Contour lines", "mine": "My waypoints and routes", "tracks": "Tracks" },
+    "layer": {
+      "ecoregions": "Ecoregions", "hillshade": "Terrain", "slope": "Avalanche risk", "contours": "Contour lines", "mine": "My waypoints and routes", "tracks": "Tracks" },
     "snowlineAuto": "Painted from {{m}}: the lowest 0 °C isotherm of the last few days in this area ({{freezing}}, Open-Meteo, {{ago}}) minus 300 m, where there may be snow.",
     "snowlineManualStatus": "Painted from {{m}} (snow line set by hand).",
     "snowlineNone": "No isotherm data for this area (offline and no downloaded area nearby with its forecast): painted from the {{m}} you chose below. Change it if you know where the snow starts.",
@@ -877,7 +878,14 @@
       "towns": "Roads and towns",
       "overview": "Overview (main roads only)"
     },
-    "centerHint": "The area is the orange circle: move the map to change its center.",
+    "ecoHere": "Ecoregion at the map center: {{name}} ({{biome}}).",
+    "ecoNone": "No ecoregion at the map center (sea or outside the covered region).",
+    "ecoUnavailable": "Could not load the ecoregions: a connection is needed the first time to download them.",
+    "ecoCredit": "Ecoregions: {{credit}}. Boundaries are a simplified reference (~1 km): in reality one ecoregion fades gradually into the next.",
+    "ecoPicked": "Ecoregion at the tapped point ({{coords}}): {{name}} ({{biome}}).",
+    "ecoPickedNone": "No ecoregion at the tapped point ({{coords}}) (sea or outside the covered region).",
+    "ecoPickClear": "Back to the center",
+    "centerHint": "The area is the orange square (the radius is half its side): move the map to change its center.",
     "estimate": "About {{tiles}} tiles, ~{{mb}} MB (approximate: depends on how much is mapped).",
     "tooBig": "Too much to download from the public servers (they allow up to 3,000 tiles or 50 MB per zone): use a smaller radius or less detail. A VikArg server with maps of this place allows larger zones.",
     "tooBigServer": "Too much for one download (your server allows up to {{tiles}} tiles or {{mb}} MB per zone): use a smaller radius or less detail.",
@@ -928,6 +936,11 @@
     "cancelled": "Download cancelled. What was already downloaded is kept for next time.",
     "failed": "Couldn't download: check your connection.",
     "noZones": "You haven't downloaded any areas yet.",
+    "editZone": "Edit {{name}}",
+    "saveChanges": "Save changes",
+    "editHint": "Editing \"{{name}}\": change the radius or the detail; the center stays. Growing it downloads only what is missing; shrinking it deletes what falls outside.",
+    "zoneUpdated": "\"{{name}}\" updated: {{mb}} MB.",
+    "noChanges": "No changes.",
     "zoneSummary": "{{km}} km radius · {{mb}} MB · {{date}}",
     "notOnDevice": "Not on this device (it came from a backup): download it again.",
     "confirmDelete": "Delete the area \"{{name}}\"? Space not used by other areas is freed.",
@@ -3303,5 +3316,7 @@
     "hide": "Hide",
     "empty": "No medical records yet.",
     "updated": "Updated: {{date}}"
-  }
+  },
+  "ecoregions": {
+    "entered": "You entered: {{name}}","now": "Ecoregion: {{name}}", "alongTitle": "Ecoregions along the route", "alongHint": "From {{credit}}: approximate reference (boundaries simplified to ~1 km)."}
 }

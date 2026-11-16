@@ -63,6 +63,7 @@ export interface MapLayersOn {
   /** Sotavento para marcar posibles cornisas (vacío = apagado). */
   slopeCornice?: number[];
   terrain3d: boolean;
+  ecoregions?: boolean;
 }
 
 /** Teselas de la capa de pendiente para una línea de nieve y un sotavento. */
