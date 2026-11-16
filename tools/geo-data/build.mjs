@@ -15,6 +15,7 @@
  * - Ríos de América del Sur: líneas centrales de Natural Earth 1:10m (dominio público) y, para que todo río con
  *   estación de nivel (INA, SENAMHI Bolivia) aparezca, los cursos de OpenStreetMap (ODbL, © OpenStreetMap contributors)
  *   a menos de 12 km de una estación, como el Paraná de las Palmas, que Natural Earth no trae.
+ * - `node build.mjs --solo-contornos` suma al archivo ya generado el contorno de América Central y de la Antártida (sector de la Península).
  *   `node build.mjs --solo-rios` reemplaza solo los ríos en el archivo ya generado (sin volver a bajar volcanos ni provincias).
  *
  * Las geometrías se simplifican (Douglas-Peucker) y se redondean: el mapa es un
@@ -50,6 +51,7 @@ const get = async (url) => {
 };
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
+const label = (p) => [r3(p.LABEL_X), r3(p.LABEL_Y)];
 
 function perpDist([x, y], [x1, y1], [x2, y2]) {
   const dx = x2 - x1;
@@ -156,6 +158,60 @@ if (process.argv.includes('--solo-rios')) {
   process.exit(0);
 }
 
+/** América Central (de Guatemala a Panamá): solo el contorno, como el resto de los vecinos. */
+const CENTRAL_AMERICA = ['GTM', 'BLZ', 'SLV', 'HND', 'NIC', 'CRI', 'PAN'];
+/** Antártida: solo el sector de la Península y el mar de Weddell, donde hay estaciones de mareas ([oeste, sur, este, norte]). */
+const ANTARCTICA_BOX = [-100, -80, -20, -60];
+
+/** Recorta un anillo [[lon, lat], …] a un rectángulo (Sutherland–Hodgman). */
+function clipRing(ring, [w, s, e, n]) {
+  const edges = [
+    [([x]) => x >= w, (a, b) => { const t = (w - a[0]) / (b[0] - a[0]); return [w, a[1] + t * (b[1] - a[1])]; }],
+    [([x]) => x <= e, (a, b) => { const t = (e - a[0]) / (b[0] - a[0]); return [e, a[1] + t * (b[1] - a[1])]; }],
+    [([, y]) => y >= s, (a, b) => { const t = (s - a[1]) / (b[1] - a[1]); return [a[0] + t * (b[0] - a[0]), s]; }],
+    [([, y]) => y <= n, (a, b) => { const t = (n - a[1]) / (b[1] - a[1]); return [a[0] + t * (b[0] - a[0]), n]; }],
+  ];
+  let out = ring;
+  for (const [inside, cut] of edges) {
+    const input = out;
+    out = [];
+    input.forEach((cur, i) => {
+      const prev = input[(i + input.length - 1) % input.length];
+      if (inside(cur)) {
+        if (!inside(prev)) out.push(cut(prev, cur));
+        out.push(cur);
+      } else if (inside(prev)) out.push(cut(prev, cur));
+    });
+    if (!out.length) return [];
+  }
+  return out;
+}
+
+if (process.argv.includes('--solo-contornos')) {
+  // Suma el contorno de América Central y la Antártida al archivo ya generado, sin volver a bajar el resto.
+  const data = JSON.parse(await readFile(OUT, 'utf8'));
+  const admin0 = await get(`${NE}/ne_50m_admin_0_countries.geojson`);
+  const extra = [];
+  for (const f of admin0.features.filter((f) => CENTRAL_AMERICA.includes(f.properties.ADM0_A3))) {
+    extra.push({ code: f.properties.ISO_A2_EH, rings: rings(f.geometry, NEIGHBOR_TOLERANCE), name: { es: f.properties.NAME_ES, en: f.properties.NAME_EN }, label: label(f.properties) });
+  }
+  const ata = admin0.features.find((f) => f.properties.ADM0_A3 === 'ATA');
+  const polys = ata.geometry.type === 'Polygon' ? [ata.geometry.coordinates] : ata.geometry.coordinates;
+  const ataRings = polys
+    .map((poly) => clipRing(poly[0], ANTARCTICA_BOX))
+    .filter((ring) => ring.length >= 4 && area(ring) >= MIN_RING_AREA)
+    .map((ring) => simplify(ring, NEIGHBOR_TOLERANCE))
+    .filter((ring) => ring.length >= 4)
+    .map((ring) => ring.flatMap(([lon, lat]) => [r3(lon), r3(lat)]));
+  extra.push({ code: 'AQ', rings: ataRings, name: { es: 'Antártida', en: 'Antarctica' }, label: [-75, -77] });
+  const codes = new Set(extra.map((e) => e.code));
+  data.neighbors = [...data.neighbors.filter((n) => !codes.has(n.code)), ...extra.map(({ code, rings }) => ({ code, rings }))];
+  data.countries = [...data.countries.filter((c) => !codes.has(c.code)), ...extra.map(({ code, name, label }) => ({ code, name, label }))].sort((a, b) => a.code.localeCompare(b.code));
+  await writeFile(OUT, JSON.stringify(data));
+  console.log(`contornos: ${[...codes].join(', ')} → ${OUT} (${JSON.stringify(data).length} bytes)`);
+  process.exit(0);
+}
+
 const [admin1, admin0hi, places, admin0, volcanoes] = await Promise.all([
   get(`${NE}/ne_10m_admin_1_states_provinces.geojson`),
   get(`${NE}/ne_10m_admin_0_countries.geojson`),
@@ -179,7 +235,6 @@ const regions = admin1.features
 const flk = admin0.features.find((f) => f.properties.ADM0_A3 === 'FLK');
 regions.push({ id: 'AR-MALVINAS', country: 'AR', name: 'Islas Malvinas', label: [-59.5, -51.75], rings: rings(flk.geometry, TOLERANCE) });
 
-const label = (p) => [r3(p.LABEL_X), r3(p.LABEL_Y)];
 const neighbors = admin0.features
   .filter((f) => NEIGHBORS.includes(f.properties.ADM0_A3))
   .map((f) => ({ code: f.properties.ISO_A2_EH, rings: rings(f.geometry, NEIGHBOR_TOLERANCE) }));

@@ -45,8 +45,8 @@ export const COUNTRY_BOUNDS: Record<string, typeof REGION_BOUNDS> = {
   PE: { west: -81.5, east: -68.5, south: -18.5, north: 0 },
 };
 export const homeBounds = (country: string) => COUNTRY_BOUNDS[country] ?? REGION_BOUNDS;
-/** Toda América del Sur: hasta donde se puede alejar el mapa. */
-export const CONTINENT_BOUNDS = { west: -82, east: -34, south: -56, north: 13 };
+/** Toda América del Sur, América Central y la Península Antártica: hasta donde se puede alejar el mapa. */
+export const CONTINENT_BOUNDS = { west: -95, east: -34, south: -75, north: 19 };
 
 export function fitBounds(b: typeof REGION_BOUNDS, size: Size, padding = 8): View {
   const sw = toMercator(b.west, b.south);
