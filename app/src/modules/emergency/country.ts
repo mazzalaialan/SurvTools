@@ -3,6 +3,7 @@ import { useSettings, type Country } from '@/core/settings/settings';
 import { loadEmergencyData, loadParksCL, loadParksFile, type EmergencyData } from './data';
 import { prefetchServices } from './services';
 import { countryFiles } from './countryDownload';
+import { loadOfficialTides } from '@/modules/navigation/officialTides';
 import { downloadVegetationCL, loadEcoregions } from '@/modules/ecoregions/ecoregions';
 import { downloadGeologyPack } from '@/modules/layers/geology';
 import { DATA_CACHE as CACHE, loadDataFile, refreshStored } from './dataFile';
@@ -73,6 +74,8 @@ export async function prefetchCountry(country: Country): Promise<void> {
     quiet(loadEcoregions()),
     // Geología del país (base nacional; cada país tiene la suya, ver layers/geology.ts).
     quiet(downloadGeologyPack(country)),
+    // Tablas de marea oficiales (Argentina y Uruguay).
+    country === 'AR' || country === 'UY' ? quiet(loadOfficialTides()) : undefined,
     // Pisos de vegetación de Chile.
     country === 'CL' ? quiet(downloadVegetationCL()) : undefined,
     // Servicios del país (estaciones, farmacias, agua, refugios…; también Argentina: van aparte para no agrandar la descarga inicial).

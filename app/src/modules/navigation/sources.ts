@@ -3,7 +3,7 @@
  * dato) y con licencia no comercial o con derechos reservados se usa mientras la app sea gratuita y sin publicidad. Para una copia paga,
  * con publicidad o institucional (por ejemplo la de una escuela) se compila con `VITE_COMMERCIAL=1` y se apagan esas fuentes.
  */
-export type SourceId = 'shn' | 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py';
+export type SourceId = 'shn' | 'sohma' | 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py';
 export type LicenseKind = 'open' | 'undeclared' | 'reserved' | 'non-commercial';
 
 export interface NavSource {
@@ -21,9 +21,18 @@ export interface NavSource {
 
 export const NAV_SOURCES: NavSource[] = [
   {
+    id: 'sohma',
+    name: 'SOHMA — Tablas de mareas de Uruguay',
+    provides: 'Alturas horarias de la marea oficial de Montevideo, Colonia, Punta del Este y La Paloma (pleamares y bajamares por interpolación)',
+    license: 'undeclared',
+    licenseText: 'Sin licencia ni términos declarados en la página ni en los PDF; se cita la fuente',
+    url: 'https://sohma.armada.mil.uy/index.php/servicios/informacion-mareografica',
+    cite: 'Servicio de Oceanografía, Hidrografía y Meteorología de la Armada (SOHMA), Armada Nacional de Uruguay: Tablas de mareas',
+  },
+  {
     id: 'shn',
-    name: 'SHN — Pronóstico mareológico del Río de la Plata',
-    provides: 'Pleamares y bajamares oficiales corregidas por viento (La Plata, Buenos Aires, San Fernando y Punta Indio)',
+    name: 'SHN — Pronóstico mareológico del Río de la Plata y tablas de marea',
+    provides: 'Pleamares y bajamares oficiales corregidas por viento (La Plata, Buenos Aires, San Fernando y Punta Indio) y las tablas de marea de 48 puertos argentinos',
     license: 'reserved',
     licenseText: '© Todos los Derechos Reservados, Servicio de Hidrografía Naval; sin términos aparte ni anti-bot; se lee desde el servidor propio (sin CORS)',
     url: 'https://www.hidro.gob.ar/oceanografia/pronostico.asp',

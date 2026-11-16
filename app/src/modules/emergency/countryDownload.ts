@@ -17,6 +17,8 @@ export function countryFiles(country: Country): string[] {
   // Geología del país (base nacional de la capa de geología del mapa sin conexión), si hay paquete y esta copia puede usarlo.
   const geology = geologyFile(country);
   if (geology && fileBytes(geology) > 0 && availablePacks().some((p) => p.file === geology)) files.push(geology);
+  // Tablas de marea oficiales (SHN de Argentina y SOHMA de Uruguay), un archivo con los dos.
+  if (country === 'AR' || country === 'UY') files.push('tides-official.json');
   // Pisos de vegetación de Chile (Luebert y Pliscoff, ~3,5 MB): ecorregión fina de Chile.
   if (country === 'CL') files.push('vegetation-CL.json');
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);

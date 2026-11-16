@@ -26,6 +26,11 @@ test('Navegación: mareas sin conexión de la estación más cercana, con el avi
   await expect(page.getByTestId('navigation-notice')).toContainText('No reemplaza las cartas náuticas');
   await expect(page.getByTestId('tide-station')).toContainText('Puerto Madryn', { timeout: 15_000 });
   await expect(page.getByTestId('tide-far')).toHaveCount(0);
+  // Tabla oficial del SHN del puerto más cercano (guardada en el teléfono): con la fuente y la aclaración del cero.
+  const official = page.getByTestId('official-table');
+  await expect(official).toContainText('Tabla oficial del SHN', { timeout: 15_000 });
+  await expect(official).toContainText('PUERTO MADRYN');
+  await expect(official).toContainText('Servicio de Hidrografía Naval');
   await expect(page.getByTestId('tide-estuary')).toHaveCount(0);
   await expect(page.getByTestId('tide-now')).toContainText(/Ahora [+−-]\d,\d\d m \((subiendo|bajando)\)/);
   await expect(page.getByTestId('tide-chart')).toBeVisible();

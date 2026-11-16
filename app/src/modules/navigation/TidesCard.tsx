@@ -10,6 +10,7 @@ import { loadRivers, type RiverStation } from './rivers';
 import { fetchSurge, loadSavedSurge, nearSurgePoints, saveSurge, surgeAt, surgeSummary, type SurgeForecast } from './surge';
 import { distanceMeters } from '@/core/geo/geo';
 import { isEstuary, loadTides, nearestStations, NEAR_KM, tideCurve, tideExtremes, tideLevelAt, type TideExtreme, type TidesData } from './tides';
+import { asShnEvents, loadOfficialTides, nearestOfficial, officialBetween, type OfficialData } from './officialTides';
 import { compareWithCalculated, fetchShnForecast, loadSavedShn, nearestShn, saveShn, shnExpired, type ShnForecast } from './shnTides';
 
 const DAY_MS = 86_400_000;
@@ -126,6 +127,63 @@ function ShnForecastBlock({ place, calculated, now }: { place: PickedPlace; calc
       </p>
       <p className="hint" style={{ margin: 0 }}>
         {t('navigation.tides.shnNote', { date: when(forecast.fetchedAt) })}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Tabla oficial del puerto más cercano (SHN en Argentina, SOHMA en Uruguay), guardada en el teléfono: las próximas pleamares y bajamares con su
+ * hora comparada con la calculada. Las alturas son sobre el cero de la fuente. Solo cubre el año de la tabla.
+ */
+function OfficialTableBlock({ place, calculated, now }: { place: PickedPlace; calculated: TideExtreme[]; now: Date }) {
+  const { t, i18n } = useTranslation();
+  const [data, setData] = useState<OfficialData | null>(null);
+  useEffect(() => {
+    void loadOfficialTides().then(setData);
+  }, []);
+  const near = useMemo(() => (data ? nearestOfficial(data.ports.filter((p) => sourceEnabled(p.src === 'SHN' ? 'shn' : 'sohma')), place.lat, place.lon) : null), [data, place.lat, place.lon]);
+  const events = useMemo(() => (data && near ? officialBetween(near.port, data.year, now.getTime() - 3_600_000, now.getTime() + 36 * 3_600_000).slice(0, 8) : []), [data, near, now.getHours()]); // eslint-disable-line react-hooks/exhaustive-deps
+  const rows = useMemo(() => compareWithCalculated(asShnEvents(events), calculated), [events, calculated]);
+  if (!data || !near) return null;
+  const km = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 });
+  const nf = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const when = (ms: number) => new Date(ms).toLocaleString(i18n.language, { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const hhmm = (d: Date) => d.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+  const src = near.port.src === 'SHN' ? t('navigation.tides.officialSHN') : t('navigation.tides.officialSOHMA');
+  return (
+    <div className="stack" style={{ gap: 6 }} data-testid="official-table">
+      <h3 className="section-title" style={{ margin: 0, fontSize: '1rem' }}>
+        {t('navigation.tides.officialTitle', { src })}
+      </h3>
+      <p className="hint" style={{ margin: 0 }}>
+        {t('navigation.tides.officialIntro', { name: near.port.name, km: km.format(near.km), year: data.year })}
+      </p>
+      {events.length === 0 ? (
+        <p className="hint" style={{ margin: 0 }} data-testid="official-none">
+          {t('navigation.tides.officialNone', { year: data.year })}
+        </p>
+      ) : (
+        <ul className="list" data-testid="official-events">
+          {rows.map(({ event, calculated: calc, diffMin }) => (
+            <li key={event.at} className="list-row">
+              <span className="list-main">
+                <span className="list-title">
+                  {t(event.type === 'high' ? 'navigation.tides.shnHigh' : 'navigation.tides.shnLow')} {when(Date.parse(event.at))} · {nf.format(event.height)} m
+                </span>
+                {calc && diffMin !== null && (
+                  <span className="list-sub">
+                    {t('navigation.tides.shnVsCalculated', { time: hhmm(calc.time) })}{' '}
+                    {Math.abs(diffMin) < 1 ? t('navigation.tides.shnSame') : t(diffMin > 0 ? 'navigation.tides.officialLater' : 'navigation.tides.officialEarlier', { min: Math.abs(diffMin) })}
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="hint" style={{ margin: 0 }}>
+        {near.port.src === 'SOHMA' ? t('navigation.tides.officialNoteSohma') : t('navigation.tides.officialNoteShn')}
       </p>
     </div>
   );
@@ -312,6 +370,7 @@ export function TidesCard({ place }: { place: PickedPlace | null }) {
             </p>
           )}
           {isEstuary(station, place.lat, place.lon) && shnOn && <ShnForecastBlock place={place} calculated={extremes} now={now} />}
+          <OfficialTableBlock place={place} calculated={extremes} now={now} />
           {isEstuary(station, place.lat, place.lon) && <EstuaryForecast place={place} now={now} />}
           {station.issues.length > 0 && (
             <p className="hint" data-testid="tide-issues" style={{ margin: 0 }}>
