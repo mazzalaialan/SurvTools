@@ -83,12 +83,27 @@ const floorTo10 = (d: Date) => {
 
 export const isoMinute = (d: Date) => `${d.toISOString().slice(0, 16)}:00Z`;
 
-/** Última imagen publicada: se prueba hacia atrás con pedidos diminutos (16×16 px). */
+/**
+ * Una imagen de satélite más vieja que esto no se muestra de ningún origen: una imagen de hace horas se confunde con el estado actual de las
+ * nubes (decisión de quien dirige, 2026-11-16). Si ninguna fuente tiene algo más fresco, el mapa dice que el satélite no está disponible.
+ */
+export const SATELLITE_MAX_AGE_MS = 2 * 3_600_000;
+
+/** Las imágenes que hay son más viejas que `SATELLITE_MAX_AGE_MS` (la fuente respondió, pero está atrasada). */
+export class SatelliteStaleError extends MapSourceError {
+  constructor() {
+    super('satellite');
+    this.name = 'SatelliteStaleError';
+  }
+}
+
+/** Última imagen publicada: se prueba hacia atrás con pedidos diminutos (16×16 px), hasta `SATELLITE_MAX_AGE_MS`. */
 export async function latestGibsTime(layer: string, now = new Date()): Promise<Date> {
   const probeView: View = { cx: -7_100_000, cy: -4_900_000, scale: 16 / 2_600_000 };
   const probeSize: Size = { width: 16, height: 16 };
+  const oldest = now.getTime() - SATELLITE_MAX_AGE_MS;
   let t = floorTo10(new Date(now.getTime() - 20 * 60_000));
-  for (let i = 0; i < 12; i++, t = new Date(t.getTime() - STEP_MIN * 60_000)) {
+  for (; t.getTime() >= oldest; t = new Date(t.getTime() - STEP_MIN * 60_000)) {
     try {
       const res = await fetch(gibsUrl(layer, isoMinute(t), probeView, probeSize), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
       if (res.ok && (await res.blob()).size > EMPTY_PNG_MAX_BYTES) return t;
@@ -96,6 +111,94 @@ export async function latestGibsTime(layer: string, now = new Date()): Promise<D
       throw new MapSourceError('satellite');
     }
   }
+  throw new SatelliteStaleError();
+}
+
+// ---------- Satélite de respaldo (NOAA nowCOAST) ----------
+
+/**
+ * Mosaico global de satélites geoestacionarios de NOAA (GMGSI), infrarrojo: una imagen por hora con 2 a 3 horas de demora, solo las últimas 6,
+ * a unos 3 km. Cubre Sudamérica, mismo tipo de pedido (WMS, EPSG:3857) y permite pedidos desde el navegador. Se usa solo si NASA no tiene nada
+ * de las últimas 2 horas.
+ */
+export const NOAA_WMS = 'https://nowcoast.noaa.gov/geoserver/satellite/wms';
+export const NOAA_LAYER = 'global_longwave_imagery_mosaic';
+
+export type SatelliteSource = 'gibs' | 'noaa';
+
+/** Dirección de una imagen de satélite del origen que sea (la hora va en ISO a la minuto). */
+export function satelliteUrl(source: SatelliteSource, time: string, view: View, size: Size, ratio = 1): string {
+  if (source === 'gibs') return gibsUrl(SATELLITE_LAYER, time, view, size, ratio);
+  const b = viewBBox(view, size);
+  const params = new URLSearchParams({
+    SERVICE: 'WMS',
+    REQUEST: 'GetMap',
+    VERSION: '1.3.0',
+    LAYERS: NOAA_LAYER,
+    STYLES: '',
+    CRS: 'EPSG:3857',
+    BBOX: [b.minX, b.minY, b.maxX, b.maxY].map((n) => Math.round(n)).join(','),
+    WIDTH: String(Math.round(size.width * ratio)),
+    HEIGHT: String(Math.round(size.height * ratio)),
+    FORMAT: 'image/png',
+    TRANSPARENT: 'TRUE',
+    TIME: time,
+  });
+  return `${NOAA_WMS}?${params}`;
+}
+
+/** Los horarios de la capa en el GetCapabilities de NOAA (lista separada por comas), del más viejo al más nuevo. */
+export function parseNoaaTimes(capabilities: string): Date[] {
+  const at = capabilities.indexOf(`<Name>${NOAA_LAYER}</Name>`);
+  if (at < 0) return [];
+  const dim = /<Dimension[^>]*name="time"[^>]*>([^<]*)<\/Dimension>/.exec(capabilities.slice(at, at + 20_000));
+  if (!dim) return [];
+  return dim[1]!
+    .split(',')
+    .map((s) => new Date(s.trim()))
+    .filter((d) => Number.isFinite(d.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime());
+}
+
+/** Los horarios del mosaico de NOAA que todavía valen (de las últimas 2 horas), del más viejo al más nuevo. */
+export async function noaaSatelliteTimes(now = new Date(), count = 6): Promise<Date[]> {
+  let xml: string;
+  try {
+    const res = await fetch(`${NOAA_WMS}?service=WMS&request=GetCapabilities`, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    if (!res.ok) throw new MapSourceError('satellite');
+    xml = await res.text();
+  } catch {
+    throw new MapSourceError('satellite');
+  }
+  const times = parseNoaaTimes(xml).filter((t) => t.getTime() <= now.getTime());
+  const latest = times.at(-1);
+  if (!latest || now.getTime() - latest.getTime() > SATELLITE_MAX_AGE_MS) throw new SatelliteStaleError();
+  return times.slice(-count);
+}
+
+export interface SatelliteSet {
+  source: SatelliteSource;
+  /** Del más viejo al más nuevo. */
+  times: Date[];
+}
+
+/**
+ * La mejor imagen de satélite que hay: NASA (cada 10 minutos, más detalle) si tiene algo de las últimas 2 horas; si no, el mosaico de NOAA
+ * (cada hora); si tampoco, `'stale'` (las dos respondieron pero están atrasadas: no se muestra nada) o error si no hubo conexión.
+ */
+export async function latestSatellite(now = new Date(), count = FRAME_COUNT): Promise<SatelliteSet | 'stale'> {
+  let stale = false;
+  try {
+    return { source: 'gibs', times: frameTimes(await latestGibsTime(SATELLITE_LAYER, now), count) };
+  } catch (err) {
+    if (err instanceof SatelliteStaleError) stale = true;
+  }
+  try {
+    return { source: 'noaa', times: await noaaSatelliteTimes(now, count) };
+  } catch (err) {
+    if (err instanceof SatelliteStaleError) stale = true;
+  }
+  if (stale) return 'stale';
   throw new MapSourceError('satellite');
 }
 

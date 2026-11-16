@@ -37,14 +37,14 @@ import {
   FIRE_LAYER,
   fireDays,
   FRAME_COUNT,
-  frameTimes,
   gibsUrl,
   isoMinute,
-  latestGibsTime,
+  latestSatellite,
   RADAR_MAX_ZOOM,
   radarTileUrl,
   readMapCache,
-  SATELLITE_LAYER,
+  satelliteUrl,
+  type SatelliteSource,
   writeMapCache,
   type Hazard,
   type LightningBatch,
@@ -107,6 +107,9 @@ export function WeatherMapPage() {
   const showOfficial = layers.official && !!serverUrl;
   const [zones, setZones] = useState<{ fetchedAt: string; items: ZoneWeather[] } | null>(null);
   const [satTimes, setSatTimes] = useState<Date[] | null>(null);
+  /** De dónde sale la imagen de satélite (NASA, o NOAA de respaldo) y si las dos están atrasadas (más de 2 horas: no se muestra nada). */
+  const [satSource, setSatSource] = useState<SatelliteSource>('gibs');
+  const [satStale, setSatStale] = useState(false);
   const [radar, setRadar] = useState<RadarFrames | null>(null);
   const [errors, setErrors] = useState<Set<SourceKey>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -191,9 +194,18 @@ export function WeatherMapPage() {
       }
       if (layers.satellite) {
         jobs.push(
-          latestGibsTime(SATELLITE_LAYER).then(
-            (latest) => {
-              setSatTimes(frameTimes(latest, saver ? 1 : FRAME_COUNT));
+          latestSatellite(new Date(), saver ? 1 : FRAME_COUNT).then(
+            (sat) => {
+              if (sat === 'stale') {
+                // Ninguna fuente tiene algo de las últimas 2 horas: no se muestra una imagen vieja (se confunde con el estado actual).
+                setSatTimes(null);
+                setSatStale(true);
+                fail('satellite', false);
+                return;
+              }
+              setSatStale(false);
+              setSatSource(sat.source);
+              setSatTimes(sat.times);
               fail('satellite', false);
             },
             () => fail('satellite', true),
@@ -351,7 +363,7 @@ export function WeatherMapPage() {
     const out: Overlay[] = [];
     if (layers.satellite && satTimes?.length) {
       const time = isoMinute(satTimes[idxAt(i, satTimes.length)]!);
-      out.push({ url: gibsUrl(SATELLITE_LAYER, time, request.view, request.size, ratio), bbox: viewBBox(request.view, request.size), opacity: 0.75 });
+      out.push({ url: satelliteUrl(satSource, time, request.view, request.size, ratio), bbox: viewBBox(request.view, request.size), opacity: 0.75 });
     }
     if (layers.radar && radar?.frames.length) {
       const f = radar.frames[idxAt(i, radar.frames.length)]!;
@@ -386,7 +398,7 @@ export function WeatherMapPage() {
       cancelled = true;
     };
     // frameOverlays depende de estos mismos datos.
-  }, [request, satTimes, radar, radarTiles, layers.satellite, layers.fires, gibsFires, layers.radar, online, ratio, frameCount]);
+  }, [request, satTimes, satSource, radar, radarTiles, layers.satellite, layers.fires, gibsFires, layers.radar, online, ratio, frameCount]);
 
   // Se saltean los cuadros que todavía no bajaron (si no, el radar aparece vacío en esa parte).
   useEffect(() => {
@@ -447,6 +459,11 @@ export function WeatherMapPage() {
       </div>
 
       {!online && <p className="hint" role="status">{t('weatherMap.offline')}</p>}
+      {layers.satellite && satStale && (
+        <p className="hint" role="status" data-testid="satellite-stale">
+          {t('weatherMap.satelliteStale')}
+        </p>
+      )}
       {errors.size > 0 && (
         <p className="hint" role="status" data-testid="map-errors">
           {t('weatherMap.failed', { sources: [...errors].map((k) => t(`weatherMap.source.${k}`)).join(', ') })}
@@ -455,7 +472,7 @@ export function WeatherMapPage() {
 
       <FullscreenStage
         className="wmap"
-        overlay={<MapTimes sat={layers.satellite ? satTime : undefined} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fires={firesTime} fmt={timeFmt} />}
+        overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fires={firesTime} fmt={timeFmt} />}
       >
         {geo ? (
           <MapCanvas
@@ -536,7 +553,7 @@ export function WeatherMapPage() {
         )}
       </FullscreenStage>
 
-      <MapTimes sat={layers.satellite ? satTime : undefined} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fires={firesTime} fmt={timeFmt} />
+      <MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fires={firesTime} fmt={timeFmt} />
 
       {selected && <FeatureCard feature={selected} u={u} now={now} volcanoAlerts={showOfficial ? official?.volcanoes : undefined} firesFetchedAt={fires.data?.fetchedAt} onClose={() => setSelected(null)} />}
       {showOfficial && official && <AlertsHere alerts={activeAlerts} here={here} waypoints={waypointMap} onSelect={(a) => setSelected({ kind: 'official', item: a })} />}
@@ -578,7 +595,7 @@ export function WeatherMapPage() {
             ))}
           </div>
         )}
-        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} firesHidden={fires.data?.hidden ?? 0} />
+        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} firesHidden={fires.data?.hidden ?? 0} satNoaa={satSource === 'noaa'} />
         {showLightning && (
           <p className="hint" style={{ margin: 0 }} data-testid="lightning-status">
             {lightning?.updatedAt
@@ -594,13 +611,14 @@ export function WeatherMapPage() {
   );
 }
 
-function MapTimes({ sat, rain, radar, fires, fmt }: { sat: Date | undefined; rain?: Date; radar: Date | undefined; fires?: Date; fmt: Intl.DateTimeFormat }) {
+function MapTimes({ sat, satNoaa, stale, rain, radar, fires, fmt }: { sat: Date | undefined; satNoaa?: boolean; stale?: boolean; rain?: Date; radar: Date | undefined; fires?: Date; fmt: Intl.DateTimeFormat }) {
   const { t } = useTranslation();
-  if (!sat && !radar && !rain && !fires) return null;
+  if (!sat && !radar && !rain && !fires && !stale) return null;
   return (
     <p className="hint wmap-times" data-testid="map-times">
       {[
-        sat && t('weatherMap.satelliteAt', { time: fmt.format(sat) }),
+        sat && t(satNoaa ? 'weatherMap.satelliteNoaaAt' : 'weatherMap.satelliteAt', { time: fmt.format(sat) }),
+        stale && t('weatherMap.satelliteStaleShort'),
         rain && t('weatherMap.satRainAt', { time: fmt.format(rain) }),
         radar && t('weatherMap.radarAt', { time: fmt.format(radar) }),
         fires && t('weatherMap.firesAt', { time: fmt.format(fires) }),
@@ -611,12 +629,12 @@ function MapTimes({ sat, rain, radar, fires, fmt }: { sat: Date | undefined; rai
   );
 }
 
-function Legend({ layers, zoneValue, windUnit, firmsFires, firesHidden }: { layers: WeatherMapLayers; zoneValue: WeatherMapValue; windUnit: string; firmsFires: boolean; firesHidden: number }) {
+function Legend({ layers, zoneValue, windUnit, firmsFires, firesHidden, satNoaa }: { layers: WeatherMapLayers; zoneValue: WeatherMapValue; windUnit: string; firmsFires: boolean; firesHidden: number; satNoaa?: boolean }) {
   const { t } = useTranslation();
   const items: [boolean, string, string][] = [
     [layers.official, 'official', t('weatherMap.legend.official')],
     [layers.regionWeather && zoneValue === 'wind', 'wind', t('weatherMap.legend.wind', { unit: windUnit })],
-    [layers.satellite, 'satellite', t('weatherMap.legend.satellite')],
+    [layers.satellite, 'satellite', t(satNoaa ? 'weatherMap.legend.satelliteNoaa' : 'weatherMap.legend.satellite')],
     [layers.satRain, 'satRain', t('weatherMap.legend.satRain')],
     [layers.radar, 'radar', t('weatherMap.legend.radar')],
     [layers.earthquakes, 'quake', t('weatherMap.legend.earthquakes')],

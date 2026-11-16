@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fitBounds, fromMercator, project, REGION_BOUNDS, tileBBox, tilesFor, toMercator, unproject, zoomAt } from './projection';
-import { fireDays, frameTimes, parseHazards, parseQuakes, parseZoneWeather, zoneWeatherUrl } from './sources';
+import { fireDays, frameTimes, latestSatellite, MapSourceError, parseHazards, parseNoaaTimes, parseQuakes, parseZoneWeather, satelliteUrl, zoneWeatherUrl } from './sources';
 
 describe('proyección Mercator', () => {
   it('ida y vuelta', () => {
@@ -102,5 +102,76 @@ describe('rayos en el mapa', () => {
     // En Mercator, 30 km en Ushuaia ocupan más píxeles que en Salta.
     expect(kmToPx(30, -54.8, 1)).toBeGreaterThan(kmToPx(30, -24.8, 1));
     expect(kmToPx(30, 0, 0.001)).toBeCloseTo(30, 5);
+  });
+});
+
+describe('satélite: NASA primero, NOAA de respaldo y nada de imágenes de más de 2 horas', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  // Fragmento real del GetCapabilities de NOAA nowCOAST (16-nov-2026): una imagen por hora.
+  const capabilities = `<Layer><Name>global_longwave_imagery_mosaic</Name><Title>Global Satellite Longwave Imagery</Title><Dimension name="time" default="2026-11-16T21:00:00Z" units="ISO8601" nearestValue="1">2026-11-16T16:00:00.000Z,2026-11-16T17:00:00.000Z,2026-11-16T18:00:00.000Z,2026-11-16T19:00:00.000Z,2026-11-16T20:00:00.000Z,2026-11-16T21:00:00.000Z</Dimension></Layer>`;
+
+  it('lee los horarios del mosaico de NOAA', () => {
+    const times = parseNoaaTimes(capabilities);
+    expect(times).toHaveLength(6);
+    expect(times[0]!.toISOString()).toBe('2026-11-16T16:00:00.000Z');
+    expect(times.at(-1)!.toISOString()).toBe('2026-11-16T21:00:00.000Z');
+    expect(parseNoaaTimes('<Layer><Name>otra</Name></Layer>')).toEqual([]);
+  });
+
+  /** fetch falso: NASA responde según `gibsFresh` (imagen con contenido o PNG vacío de 75 bytes, como el real) y NOAA con el GetCapabilities de arriba. */
+  function fakeFetch(opts: { gibsFresh: boolean; noaa?: 'ok' | 'down' }) {
+    return vi.fn(async (url: string | URL) => {
+      const u = String(url);
+      if (u.includes('gibs.earthdata.nasa.gov')) return new Response(new Uint8Array(opts.gibsFresh ? 930 : 75), { status: 200 });
+      if (u.includes('nowcoast.noaa.gov')) {
+        if (opts.noaa === 'down') throw new TypeError('sin red');
+        return new Response(capabilities, { status: 200 });
+      }
+      throw new Error(`pedido inesperado: ${u}`);
+    });
+  }
+  const at = (iso: string) => new Date(iso);
+
+  it('con NASA al día usa NASA (cada 10 minutos)', async () => {
+    vi.stubGlobal('fetch', fakeFetch({ gibsFresh: true }));
+    const r = await latestSatellite(at('2026-11-16T22:36:00Z'));
+    expect(r).not.toBe('stale');
+    if (r === 'stale') return;
+    expect(r.source).toBe('gibs');
+    expect(r.times).toHaveLength(13);
+    expect(r.times.at(-1)!.toISOString()).toBe('2026-11-16T22:10:00.000Z');
+  });
+
+  it('con NASA atrasada (hoy: 6 horas) usa el mosaico de NOAA, con sus horas', async () => {
+    vi.stubGlobal('fetch', fakeFetch({ gibsFresh: false }));
+    const r = await latestSatellite(at('2026-11-16T22:36:00Z'));
+    expect(r).not.toBe('stale');
+    if (r === 'stale') return;
+    expect(r.source).toBe('noaa');
+    expect(r.times.at(-1)!.toISOString()).toBe('2026-11-16T21:00:00.000Z');
+    expect(r.times.length).toBeLessThanOrEqual(6);
+  });
+
+  it('si las dos están a más de 2 horas no se muestra ninguna: «stale» (nunca una imagen vieja)', async () => {
+    vi.stubGlobal('fetch', fakeFetch({ gibsFresh: false }));
+    // NOAA: la última es de las 21:00 y son las 23:30 (2 h 30): fuera del límite.
+    expect(await latestSatellite(at('2026-11-16T23:30:00Z'))).toBe('stale');
+  });
+
+  it('sin conexión a ninguna fuente es un error y no un «stale»', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('sin red'); }));
+    await expect(latestSatellite(at('2026-11-16T22:36:00Z'))).rejects.toBeInstanceOf(MapSourceError);
+  });
+
+  it('la dirección de cada fuente trae su capa y la hora', () => {
+    const view = { cx: -7_100_000, cy: -4_900_000, scale: 256 / 2_600_000 };
+    const size = { width: 256, height: 256 };
+    const gibs = satelliteUrl('gibs', '2026-11-16T22:10:00Z', view, size);
+    expect(gibs).toContain('gibs.earthdata.nasa.gov');
+    expect(gibs).toContain('GOES-East_ABI_Band13_Clean_Infrared');
+    const noaa = satelliteUrl('noaa', '2026-11-16T21:00:00Z', view, size);
+    expect(noaa).toContain('nowcoast.noaa.gov');
+    expect(noaa).toContain('global_longwave_imagery_mosaic');
+    expect(noaa).toContain('TIME=2026-11-16T21%3A00%3A00Z');
   });
 });

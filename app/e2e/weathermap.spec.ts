@@ -529,3 +529,30 @@ test('mapa de tiempo: focos de calor de FIRMS, llama solo para alta confianza, n
   await tap(page, -64.15, -31.45);
   await expect(card).toContainText('4 detecciones en esta zona: 4 nominales');
 });
+
+test('mapa de tiempo: con NASA atrasada usa el mosaico de NOAA de respaldo, y si ninguna fuente tiene algo de las últimas 2 horas no muestra imagen vieja', async ({ page, context }) => {
+  await mockSources(page);
+  const png = await sharp(Buffer.from(Array.from({ length: 64 * 64 * 3 }, (_, i) => (i * 97) % 251)), { raw: { width: 64, height: 64, channels: 3 } }).png().toBuffer();
+  // NASA responde, pero con imágenes vacías (75 bytes, como cuando está atrasada).
+  await context.route('https://gibs.earthdata.nasa.gov/**', (route) => route.fulfill({ body: Buffer.alloc(75), contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  // NOAA: una imagen por hora; la última de hace 1 h 30.
+  let noaaLatest = Math.floor((Date.now() - 90 * 60_000) / 3_600_000) * 3_600_000;
+  await context.route('https://nowcoast.noaa.gov/**', (route) => {
+    if (route.request().url().includes('GetCapabilities')) {
+      const times = Array.from({ length: 6 }, (_, i) => new Date(noaaLatest - (5 - i) * 3_600_000).toISOString()).join(',');
+      return route.fulfill({ contentType: 'text/xml', headers: { 'Access-Control-Allow-Origin': '*' }, body: `<Layer><Name>global_longwave_imagery_mosaic</Name><Dimension name="time" default="${new Date(noaaLatest).toISOString()}" units="ISO8601">${times}</Dimension></Layer>` });
+    }
+    return route.fulfill({ body: png, contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
+  await setup(page);
+  await page.goto('/#/weather/map');
+  await expect(page.getByTestId('map-times').first()).toContainText('Satélite (NOAA, respaldo)', { timeout: 20_000 });
+  await expect(page.getByTestId('satellite-stale')).toHaveCount(0);
+
+  // Todo atrasado (NOAA con 3 horas): no se muestra ninguna imagen y se explica por qué.
+  noaaLatest = Math.floor((Date.now() - 3 * 3_600_000) / 3_600_000) * 3_600_000;
+  await page.goto('/#/weather');
+  await page.goto('/#/weather/map');
+  await expect(page.getByTestId('satellite-stale')).toContainText('más de 2 horas', { timeout: 20_000 });
+  await expect(page.getByTestId('map-times').first()).not.toContainText('Satélite (NOAA');
+});
