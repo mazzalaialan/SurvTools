@@ -99,6 +99,12 @@ test('mapas offline: descargar una zona, verla sin conexión y borrarla', async 
   await expect(page.getByTestId('zone-list')).toContainText('Casa');
   await expect(page.getByTestId('zone-list')).toContainText('2 km de radio');
 
+  // Armar otra zona encima de la ya bajada: avisa que eso ya lo tiene.
+  await page.getByRole('button', { name: 'Descargar una zona' }).click();
+  await page.getByLabel('Radio alrededor del centro del mapa').selectOption({ label: '2 km' });
+  await expect(page.getByTestId('zone-overlap')).toContainText('ya está descargada casi entera');
+  await page.getByRole('button', { name: 'Cancelar' }).click();
+
   // Agrandar la zona ya bajada (solo baja lo que falta) y volver a achicarla (borra lo que queda afuera).
   const before = (await cacheKeys(page)).length;
   await page.getByRole('button', { name: 'Editar Casa' }).click();

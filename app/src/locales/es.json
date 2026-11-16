@@ -888,6 +888,8 @@
     "ecoPickClear": "Volver al centro",
     "zoneWithDetail": "con detalle de geología y vegetación",
     "ecoCreditFine": "Donde hay detalle de zona descargada, la vegetación es de: {{credit}}.",
+    "overlapAll": "Esta zona ya está descargada casi entera: no hace falta bajarla de nuevo (podés correr el mapa para elegir otra).",
+    "overlap": "El {{pct}} % de esta zona ya lo tenés en otras zonas descargadas: se bajaría solo lo nuevo, unos {{mb}} MB.",
     "centerHint": "La zona es el cuadrado naranja (el radio es la mitad del lado): mové el mapa para cambiar el centro.",
     "estimate": "Unas {{tiles}} teselas, ~{{mb}} MB (aproximado: depende de cuánto hay dibujado).",
     "tooBig": "Es demasiado para bajar de los servidores públicos (permiten hasta 3.000 teselas o 50 MB por zona): achicá el radio o bajá el detalle. Con un servidor VikArg que tenga mapas de este lugar se pueden bajar zonas más grandes.",

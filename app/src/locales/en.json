@@ -888,6 +888,8 @@
     "ecoPickClear": "Back to the center",
     "zoneWithDetail": "with geology and vegetation detail",
     "ecoCreditFine": "Where a downloaded area has detail, vegetation is from: {{credit}}.",
+    "overlapAll": "This area is already almost entirely downloaded: no need to download it again (move the map to pick another).",
+    "overlap": "{{pct}} % of this area is already in your downloaded areas: only the new part would download, about {{mb}} MB.",
     "centerHint": "The area is the orange square (the radius is half its side): move the map to change its center.",
     "estimate": "About {{tiles}} tiles, ~{{mb}} MB (approximate: depends on how much is mapped).",
     "tooBig": "Too much to download from the public servers (they allow up to 3,000 tiles or 50 MB per zone): use a smaller radius or less detail. A VikArg server with maps of this place allows larger zones.",

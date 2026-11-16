@@ -17,6 +17,7 @@ import { loadGeoData } from '@/modules/weathermap/geo';
 import { outlineFeatures } from './outline';
 import { withLayer } from './layerExclusion';
 import { nextAreaBox } from './viewBounds';
+import { overlapWithZones } from './overlap';
 import { useBlobUrl } from './useBlobUrl';
 import { biomeName, ecoregionName, ecoregionsGeoJSONText, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
 import { fineCredit, useFineEcoregions } from '@/modules/ecoregions/EcoregionViews';
@@ -338,6 +339,8 @@ export function MapsPage() {
   const center = editing ?? view;
   const plan = useMemo(() => (panel ? planZone(center.lat, center.lon, panel.radiusKm, maxZoom) : null), [panel, center.lat, center.lon, maxZoom]);
   const source = plan && serverInfo !== undefined ? zoneSource(plan, serverInfo, sourceMode) : null;
+  // Cuánto de la zona que estás armando ya lo tenés en otras zonas (sin contar la que estás editando).
+  const overlap = useMemo(() => (plan ? overlapWithZones(zones.filter((z) => z.id !== panel?.editId), plan) : null), [plan, zones, panel?.editId]);
   // Una zona que ya está entera en un mapa importado no hace falta bajarla.
   const coveredBy = plan ? imported.find((m) => m.kind === 'vector' && archiveContains({ ...m, updatedAt: m.importedAt }, plan.bounds, plan.maxZoom)) : undefined;
   const preview = useMemo(() => (panel ? { id: 'preview', name: panel.name, lat: center.lat, lon: center.lon, radiusKm: panel.radiusKm } : null), [panel, center.lat, center.lon]);
@@ -738,6 +741,11 @@ export function MapsPage() {
                   (source.ok
                     ? t(source.from === 'server' ? 'maps.fromServer' : 'maps.fromPublic')
                     : t(`maps.${source.reason}`, { tiles: serverInfo?.maxZoneTiles ?? 0, mb: serverInfo?.maxZoneMb ?? 0 }))}
+              </p>
+            )}
+            {overlap && !editing && overlap.fraction >= 0.05 && (
+              <p className={overlap.fraction >= 0.95 ? 'warning-box' : 'hint'} style={{ margin: 0 }} data-testid="zone-overlap">
+                {overlap.fraction >= 0.95 ? t('maps.overlapAll') : t('maps.overlap', { pct: Math.round(overlap.fraction * 100), mb: mb(overlap.newBytes) })}
               </p>
             )}
             {coveredBy && (
