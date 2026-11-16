@@ -78,7 +78,7 @@ test('notificaciones sin servidor', async ({ page, context }) => {
   await server.locator('xpath=ancestor::form').getByRole('button', { name: 'Guardar' }).click();
   await page.getByRole('button', { name: 'Activar notificaciones' }).click();
   await expect(page.getByText(/Sin servidor: aviso diario aproximado/)).toBeVisible();
-  await page.getByRole('button', { name: 'Probar' }).click();
+  await page.getByRole('button', { name: 'Probar', exact: true }).click();
   await expect(page.getByTestId('test-sent')).toHaveText('Mostrada por la app, sin pasar por el servidor.');
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.getByRole('button', { name: 'Desactivar' }).click();
