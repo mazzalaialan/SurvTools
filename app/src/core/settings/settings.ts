@@ -177,6 +177,8 @@ export interface MapLayers {
   terrain3d: boolean;
   /** Ecorregiones (RESOLVE 2017): relleno suave por ecorregión y su nombre. */
   ecoregions: boolean;
+  /** Geología (unidades y edades, SEGEMAR en Argentina). Como la pendiente y las ecorregiones, pinta el mapa: solo una de las tres a la vez. */
+  geology: boolean;
 }
 
 /** Capas del Mapa de Meteorología. Las que usan internet solo se descargan si están prendidas. */
@@ -257,7 +259,7 @@ export const DEFAULT_SETTINGS: Settings = {
   weatherMapValue: 'temp',
   fireHighOnly: false,
   mapSource: 'auto',
-  mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false, ecoregions: false },
+  mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false, ecoregions: false, geology: false },
   snowlineManual: null,
   snowlineFallback: 1500,
   trackFollowView: 'drawing',

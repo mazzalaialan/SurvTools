@@ -4,7 +4,8 @@ import type { PrevailingWind } from './wind';
 import { create } from 'zustand';
 import { blobStore } from '@/core/db/repository';
 import { isUnlocked, onSessionChange } from '@/core/security/session';
-import { DEM_URL, eachTile, fill, LOCAL_TILE, MAP_CACHE, planZone, removeZoneTiles } from './tiles';
+import { invalidateLayers, zoneLayerTiles } from '@/modules/layers/zoneLayers';
+import { circleBounds, DEM_URL, eachTile, fill, LOCAL_TILE, MAP_CACHE, planZone, removeZoneTiles } from './tiles';
 
 /**
  * Zonas offline descargadas. Solo se guardan sus datos (cifrados, porque
@@ -24,6 +25,8 @@ export interface MapZone {
   freezing?: FreezingSeries;
   /** Viento habitual con nieve (histórico), para el rayado de sotavento sin datos recientes (ver wind.ts). */
   prevailing?: PrevailingWind;
+  /** Se bajó con el detalle de geología y de vegetación (teselas del servidor propio, ver modules/layers). */
+  layers?: boolean;
 }
 
 const BLOB_ID = 'map-zones';
@@ -40,9 +43,10 @@ interface ZonesState {
 }
 
 /** Claves de caché de una zona (mismas que usa la descarga). */
-export function zoneKeys(z: Pick<MapZone, 'lat' | 'lon' | 'radiusKm' | 'maxZoom'>): string[] {
+export function zoneKeys(z: Pick<MapZone, 'lat' | 'lon' | 'radiusKm' | 'maxZoom'> & { layers?: boolean }): string[] {
   const plan = planZone(z.lat, z.lon, z.radiusKm, z.maxZoom);
-  return [...[...eachTile(plan.vector)].map((t) => fill(LOCAL_TILE, t.z, t.x, t.y)), ...[...eachTile(plan.dem)].map((t) => fill(DEM_URL, t.z, t.x, t.y))];
+  const layers = z.layers ? zoneLayerTiles(circleBounds(z.lat, z.lon, z.radiusKm)).map((t) => t.key) : [];
+  return [...layers, ...[...eachTile(plan.vector)].map((t) => fill(LOCAL_TILE, t.z, t.x, t.y)), ...[...eachTile(plan.dem)].map((t) => fill(DEM_URL, t.z, t.x, t.y))];
 }
 
 async function persist(zones: MapZone[]) {
@@ -91,6 +95,7 @@ export const useMapZones = create<ZonesState>((set, get) => ({
     const zones = get().zones.filter((z) => z.id !== id);
     if (zone && 'caches' in globalThis) await removeZoneTiles(zoneKeys(zone), new Set(zones.flatMap(zoneKeys)));
     await persist(zones);
+    invalidateLayers();
     set({ zones });
   },
 }));

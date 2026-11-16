@@ -103,6 +103,15 @@ export function distanceM(a: [number, number], b: [number, number]): number {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
+/** Búsqueda de una ecorregión por punto (la gruesa sola o la fina con la gruesa de respaldo). */
+export type EcoLookup = (lat: number, lon: number) => Ecoregion | null;
+
+/** Dónde hay datos finos (Bosque Andino Patagónico, pisos de Chile) vale la ecorregión fina; en el resto, la gruesa de RESOLVE. */
+export function finerLookup(coarse: EcoregionData | null, fine: EcoregionData | null): { lookup: EcoLookup; fineAt: EcoLookup } {
+  const fineAt: EcoLookup = (lat, lon) => (fine ? exactAt(fine, lat, lon) : null);
+  return { fineAt, lookup: (lat, lon) => fineAt(lat, lon) ?? (coarse ? ecoregionAt(coarse, lat, lon) : null) };
+}
+
 export interface EcoregionStretch {
   ecoregion: Ecoregion;
   meters: number;
@@ -113,11 +122,15 @@ export interface EcoregionStretch {
  * de su punto medio; los tramos fuera de toda ecorregión no se cuentan.
  */
 export function ecoregionsAlong(data: EcoregionData, line: [number, number][]): EcoregionStretch[] {
+  return ecoregionsAlongWith((lat, lon) => ecoregionAt(data, lat, lon), line);
+}
+
+export function ecoregionsAlongWith(lookup: EcoLookup, line: [number, number][]): EcoregionStretch[] {
   const out = new Map<number, EcoregionStretch>();
   for (let i = 1; i < line.length; i++) {
     const a = line[i - 1]!;
     const b = line[i]!;
-    const e = ecoregionAt(data, (a[1] + b[1]) / 2, (a[0] + b[0]) / 2);
+    const e = lookup((a[1] + b[1]) / 2, (a[0] + b[0]) / 2);
     if (!e) continue;
     const cur = out.get(e.id) ?? { ecoregion: e, meters: 0 };
     cur.meters += distanceM(a, b);

@@ -15,6 +15,7 @@ import { trackSheetInput } from '@/modules/maps/print/data';
 import { PrintTopoDialog } from '@/modules/maps/print/PrintTopoDialog';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { TrackEcoregions } from '@/modules/ecoregions/EcoregionViews';
+import { TrackGeology } from '@/modules/layers/GeologyViews';
 import { ElevationProfile } from './ElevationProfile';
 import { useRecorder } from './recorder';
 import { formatDuration } from './Recording';
@@ -267,6 +268,7 @@ function TrackDetail({ track }: { track: Track }) {
       </section>
 
       <TrackEcoregions segments={track.segments} />
+      <TrackGeology segments={track.segments} />
 
       <section className="card stack" aria-labelledby="track-points">
         <h2 id="track-points" className="section-title" style={{ margin: 0 }}>

@@ -16,6 +16,7 @@ import { createOfficialStore, officialRoutes, type OfficialStore } from './offic
 import { mapRoutes } from './routes/maps.ts';
 import { libraryRoutes } from './routes/library.ts';
 import { dataRoutes } from './routes/data.ts';
+import { layersRoutes } from './routes/layers.ts';
 import { riversRoutes } from './routes/rivers.ts';
 import { iocRoutes } from './routes/ioc.ts';
 import { firesRoutes } from './routes/fires.ts';
@@ -61,6 +62,7 @@ export async function buildApp(
   libraryRoutes(app, config);
   dataRoutes(app, config);
   riversRoutes(app, config);
+  layersRoutes(app);
   iocRoutes(app, config);
   firesRoutes(app);
   officialRoutes(app, official);

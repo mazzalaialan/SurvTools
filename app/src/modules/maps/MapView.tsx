@@ -51,6 +51,8 @@ interface Props {
   outline: FeatureCollection | null;
   /** Ecorregiones (capa opcional): un polígono por ecorregión con su color y nombre. */
   ecoregions?: FeatureCollection | null;
+  /** Geología (capa opcional): unidades de SEGEMAR pintadas por edad. */
+  geology?: FeatureCollection | null;
   /** Cambia cuando se importa o borra un mapa: se vuelven a pedir las teselas. */
   tilesVersion?: number;
   /** Cambia `key` para mover la vista. */
@@ -151,6 +153,7 @@ function data(p: Props) {
     preview: circlesGeo(p.preview ? [p.preview] : []),
     outline: p.outline ?? EMPTY,
     ecoregions: p.ecoregions ?? EMPTY,
+    geology: p.geology ?? EMPTY,
     'measure-line': (p.measure && p.measure.length > 1
       ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: p.measure } }] }
       : EMPTY) as FeatureCollection,
@@ -206,6 +209,10 @@ function addOverlays(map: MlMap, c: MapColors, p: Props) {
     layout: { visibility: eco, 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Italic'], 'text-size': 12, 'symbol-placement': 'point', 'text-max-width': 8 },
     paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2, 'text-opacity': 0.85 },
   });
+  // Geología: relleno por edad de la roca y borde fino (en el mismo lugar que las ecorregiones: nunca se prenden las dos a la vez).
+  const geo = p.layers.geology ? 'visible' : 'none';
+  map.addLayer({ id: 'geology-fill', type: 'fill', source: 'geology', layout: { visibility: geo }, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.5 } }, 'landcover-wood');
+  map.addLayer({ id: 'geology-line', type: 'line', source: 'geology', layout: { visibility: geo }, paint: { 'line-color': '#5d4037', 'line-width': 0.6, 'line-opacity': 0.5 } }, 'landcover-wood');
   map.addLayer({ id: 'zones-fill', type: 'fill', source: 'zones', paint: { 'fill-color': c.info, 'fill-opacity': 0.07 } });
   map.addLayer({ id: 'zones', type: 'line', source: 'zones', paint: { 'line-color': c.info, 'line-width': 1.5, 'line-dasharray': [3, 2] } });
   map.addLayer({ id: 'preview-fill', type: 'fill', source: 'preview', paint: { 'fill-color': c.accent, 'fill-opacity': 0.12 } });
@@ -403,13 +410,14 @@ export function MapView(props: Props) {
     const m = map.current;
     // `isStyleLoaded()` da falso mientras bajan teselas: se usa la carga del estilo en sí.
     if (!m || !styleReady.current) return;
+    for (const id of ['geology-fill', 'geology-line']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.geology ? 'visible' : 'none');
     for (const id of ['ecoregion-fill', 'ecoregion-line', 'ecoregion-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.ecoregions ? 'visible' : 'none');
     for (const id of ['hillshade']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.hillshade ? 'visible' : 'none');
     if (m.getLayer('slope')) m.setLayoutProperty('slope', 'visibility', props.layers.slope ? 'visible' : 'none');
     for (const id of ['contour-lines', 'contour-labels']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.layers.contours ? 'visible' : 'none');
     for (const id of ['mine-routes', 'mine-waypoints', 'mine-waypoint-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.showMine ? 'visible' : 'none');
     for (const id of ['track-lines', 'track-points', 'track-point-names']) if (m.getLayer(id)) m.setLayoutProperty(id, 'visibility', props.showTracks ? 'visible' : 'none');
-  }, [props.layers.hillshade, props.layers.contours, props.layers.slope, props.layers.ecoregions, props.showMine, props.showTracks]);
+  }, [props.layers.hillshade, props.layers.contours, props.layers.slope, props.layers.ecoregions, props.layers.geology, props.showMine, props.showTracks]);
 
   // Nueva línea de nieve: se vuelven a pintar las teselas de pendiente.
   useEffect(() => {
@@ -427,7 +435,7 @@ export function MapView(props: Props) {
     // Rectas de corte y recorridos guardados a la vista (para las pruebas).
     container.current?.setAttribute('data-gap-lines', String(props.gapLines?.length ?? 0));
     container.current?.setAttribute('data-tracks-shown', String(props.tracks.length));
-  }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.measure, props.target]);
+  }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.geology, props.measure, props.target]);
 
   useEffect(() => {
     const m = map.current;

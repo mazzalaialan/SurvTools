@@ -1,4 +1,5 @@
 import { EcoregionLine } from '@/modules/ecoregions/EcoregionViews';
+import { GeologyLine } from '@/modules/layers/GeologyViews';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -213,6 +214,7 @@ export function MyLocationPage() {
             </p>
             <p className="location-dms" data-testid="location-dms">{formatDms(fix, west)}</p>
             <EcoregionLine lat={fix.lat} lon={fix.lon} testId="location-ecoregion" />
+            <GeologyLine lat={fix.lat} lon={fix.lon} testId="location-geology" />
             <p className="hint" style={{ margin: 0 }}>
               {t('location.accuracy', { m: Math.round(fix.accuracy) })}
               {fix.alt !== null && ` · ${t('location.altitude', { m: Math.round(fix.alt) })}`}

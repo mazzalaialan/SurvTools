@@ -4,7 +4,8 @@ import { Trees } from 'lucide-react';
 import { formatDistance } from '@/core/units/units';
 import { useSettings } from '@/core/settings/settings';
 import { useRecorder } from '@/modules/tracks/recorder';
-import { biomeName, ecoregionAt, ecoregionName, ecoregionsAlong, ECOREGIONS_CREDIT, loadEcoregions, type EcoregionData } from './ecoregions';
+import { loadStoredLayers, mergeForest, onLayersChange } from '@/modules/layers/zoneLayers';
+import { biomeName, ecoregionName, ecoregionsAlongWith, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoLookup, type Ecoregion, type EcoregionData } from './ecoregions';
 
 /** El archivo de ecorregiones (guardado con los datos del país); `null` mientras carga o si no está. */
 export function useEcoregionData(): EcoregionData | null {
@@ -19,15 +20,52 @@ export function useEcoregionData(): EcoregionData | null {
   return data;
 }
 
+/** Las ecorregiones finas guardadas (cobertura de bosque de las zonas descargadas); se vuelven a leer si cambian las zonas. */
+export function useFineEcoregions(): EcoregionData | null {
+  const [data, setData] = useState<EcoregionData | null>(null);
+  useEffect(() => {
+    let live = true;
+    const read = () => void loadStoredLayers().then((l) => live && setData(mergeForest(l.forest)));
+    read();
+    const off = onLayersChange(read);
+    return () => {
+      live = false;
+      off();
+    };
+  }, []);
+  return data;
+}
+
+export interface EcoContext {
+  coarse: EcoregionData | null;
+  fine: EcoregionData | null;
+  /** La fina donde hay datos, si no la gruesa. */
+  lookup: EcoLookup;
+  fineAt: EcoLookup;
+  biome: (e: Ecoregion) => string;
+}
+
+/** La ecorregión gruesa (RESOLVE) y la fina (Bosque Andino Patagónico de las zonas descargadas), listas para consultar por punto. */
+export function useEcoContext(): EcoContext | null {
+  const coarse = useEcoregionData();
+  const fine = useFineEcoregions();
+  return useMemo(() => {
+    if (!coarse) return null;
+    const { lookup, fineAt } = finerLookup(coarse, fine);
+    const fineIds = new Set(fine?.ecoregions.map((e) => e.id));
+    return { coarse, fine, lookup, fineAt, biome: (e) => biomeName(fineIds.has(e.id) && fine ? fine : coarse, e) };
+  }, [coarse, fine]);
+}
+
 /** «Ecorregión: Bosques templados valdivianos» para un punto; nada si no hay datos o no cae en ninguna. */
 export function EcoregionLine({ lat, lon, testId = 'ecoregion-now' }: { lat: number; lon: number; testId?: string }) {
   const { t, i18n } = useTranslation();
-  const data = useEcoregionData();
+  const ctx = useEcoContext();
   // Con el GPS cambiando cada segundo alcanza con una cifra de ~100 m para saber en qué ecorregión se está.
-  const e = useMemo(() => (data ? ecoregionAt(data, Math.round(lat * 1000) / 1000, Math.round(lon * 1000) / 1000) : null), [data, lat, lon]);
-  if (!data || !e) return null;
+  const e = useMemo(() => ctx?.lookup(Math.round(lat * 1000) / 1000, Math.round(lon * 1000) / 1000) ?? null, [ctx, lat, lon]);
+  if (!ctx || !e) return null;
   return (
-    <span className="rec-hint" data-testid={testId} title={biomeName(data, e)}>
+    <span className="rec-hint" data-testid={testId} title={ctx.biome(e)}>
       <Trees size={14} aria-hidden /> {t('ecoregions.now', { name: ecoregionName(e, i18n.language) })}
     </span>
   );
@@ -40,8 +78,8 @@ export function EcoregionLine({ lat, lon, testId = 'ecoregion-now' }: { lat: num
 export function RecordingEcoregion() {
   const { t, i18n } = useTranslation();
   const last = useRecorder((s) => s.track?.segments.at(-1)?.at(-1));
-  const data = useEcoregionData();
-  const current = useMemo(() => (data && last ? ecoregionAt(data, Math.round(last[0] * 1000) / 1000, Math.round(last[1] * 1000) / 1000) : null), [data, last]);
+  const ctx = useEcoContext();
+  const current = useMemo(() => (ctx && last ? ctx.lookup(Math.round(last[0] * 1000) / 1000, Math.round(last[1] * 1000) / 1000) : null), [ctx, last]);
   const prev = useRef<number | null>(null);
   const [entered, setEntered] = useState<string | null>(null);
   useEffect(() => {
@@ -72,10 +110,10 @@ export function RecordingEcoregion() {
 export function TrackEcoregions({ segments }: { segments: readonly (readonly (readonly unknown[])[])[] }) {
   const { t, i18n } = useTranslation();
   const units = useSettings((s) => s.settings.units);
-  const data = useEcoregionData();
+  const ctx = useEcoContext();
   const list = useMemo(
-    () => (data ? segments.flatMap((seg) => ecoregionsAlong(data, seg.map((p) => [p[1] as number, p[0] as number] as [number, number]))) : []),
-    [data, segments],
+    () => (ctx ? segments.flatMap((seg) => ecoregionsAlongWith(ctx.lookup, seg.map((p) => [p[1] as number, p[0] as number] as [number, number]))) : []),
+    [ctx, segments],
   );
   // Un mismo recorrido con varios tramos repite ecorregiones: se suman.
   const merged = useMemo(() => {
@@ -86,7 +124,7 @@ export function TrackEcoregions({ segments }: { segments: readonly (readonly (re
     }
     return [...m.values()];
   }, [list]);
-  if (!data || merged.length === 0) return null;
+  if (!ctx || merged.length === 0) return null;
   const total = merged.reduce((n, s) => n + s.meters, 0) || 1;
   return (
     <section className="card stack" aria-labelledby="track-ecoregions" data-testid="track-ecoregions">
@@ -97,7 +135,7 @@ export function TrackEcoregions({ segments }: { segments: readonly (readonly (re
             <span className="list-main">
               <span className="list-title">{ecoregionName(s.ecoregion, i18n.language)}</span>
               <span className="list-sub">
-                {biomeName(data, s.ecoregion)} · {formatDistance(s.meters, units, i18n.language)} ({Math.round((100 * s.meters) / total)} %)
+                {ctx.biome(s.ecoregion)} · {formatDistance(s.meters, units, i18n.language)} ({Math.round((100 * s.meters) / total)} %)
               </span>
             </span>
           </li>

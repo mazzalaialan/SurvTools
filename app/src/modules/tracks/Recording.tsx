@@ -12,6 +12,7 @@ import { useKmVoice } from '@/modules/training/kmVoice';
 import { useBodyWeight, useTrainingFormat } from '@/modules/training/format';
 import { Dialog } from '@/ui/Dialog';
 import { RecordingEcoregion } from '@/modules/ecoregions/EcoregionViews';
+import { RecordingGeology } from '@/modules/layers/GeologyViews';
 import { MAX_ACCURACY_M } from './record';
 import { elapsedS, useRecorder } from './recorder';
 import { useStartDialog } from './StartRecording';
@@ -228,6 +229,7 @@ export function RecordingBar() {
           {formatDistance(track.distanceM, units, i18n.language)} · {formatDuration(elapsedS({ elapsedMs, since }))}
         </span>
         <RecordingEcoregion />
+        <RecordingGeology />
         {status === 'recording' &&
           (error ? (
             <span className="rec-hint rec-error">{t(`gps.error.${error}`)}</span>

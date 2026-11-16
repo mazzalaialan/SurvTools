@@ -15,7 +15,11 @@ import { useTracks } from '@/modules/tracks/store';
 import { routePoints, useWaypoints } from '@/modules/waypoints/store';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { outlineFeatures } from './outline';
-import { biomeName, ecoregionAt, ecoregionName, ecoregionsGeoJSON, ECOREGIONS_CREDIT, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
+import { withLayer } from './layerExclusion';
+import { biomeName, ecoregionName, ecoregionsGeoJSON, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoregionData } from '@/modules/ecoregions/ecoregions';
+import { useFineEcoregions } from '@/modules/ecoregions/EcoregionViews';
+import { GEOLOGY_CREDIT, geologyAt, geologyGeoJSON, inGeologyCoverage, unitAge, type GeologyUnit } from '@/modules/layers/geology';
+import { useGeologyIndex } from '@/modules/layers/GeologyViews';
 import { FullscreenStage } from '@/ui/FullscreenStage';
 import './appSources';
 import { CameraButtons } from './CameraButtons';
@@ -23,18 +27,20 @@ import { ImportedMaps } from './ImportedMaps';
 import type { ImportedMap } from './imported';
 import { MapView, type MapTrack, type ViewState } from './MapView';
 import { useMapTools } from './MapTools';
+import { invalidateLayers } from '@/modules/layers/zoneLayers';
 import { useMapZones, zoneKeys, type MapZone } from './store';
 import { TrackPicker } from './TrackPicker';
 import { tracksToShow } from './trackSelect';
 import { carryPrevailing, chooseSnowline, chooseWind, fetchFreezingSeries, fetchSnowline, needsLivePrevailing, needsRefresh, readSnowline, saveSnowline, type Snowline } from './snowline';
 import { compassList, fetchPrevailing, leeAspects } from './wind';
 import { archiveContains, serverMaps, type ServerMaps } from './sources';
-import { DETAILS, downloadZone, planZone, removeZoneTiles, zoneSource, type DetailId, type DownloadProgress } from './tiles';
+import { downloadLayerTiles, zoneLayerTiles } from '@/modules/layers/zoneLayers';
+import { circleBounds, DETAILS, downloadZone, planZone, removeZoneTiles, zoneSource, type DetailId, type DownloadProgress } from './tiles';
 import { confirmAction } from '@/ui/confirm';
 
 // 100 y 200 km solo entran en el límite del servidor propio.
 const RADII = [2, 5, 10, 20, 50, 100, 200];
-const LAYER_KEYS: (keyof MapLayers)[] = ['hillshade', 'contours', 'slope', 'ecoregions', 'mine', 'tracks'];
+const LAYER_KEYS: (keyof MapLayers)[] = ['hillshade', 'contours', 'slope', 'ecoregions', 'geology', 'mine', 'tracks'];
 const SLOPE_ZONES = ['low', 'caution', 'avalanche', 'steep', 'extreme'] as const;
 /** Vista que muestra un track entero (centro y zoom según lo que ocupa). */
 function trackView(tr: { segments: [number, number, number | null, number?][][] }): ViewState | null {
@@ -276,9 +282,36 @@ export function MapsPage() {
       cancelled = true;
     };
   }, [layers.ecoregions, eco]);
-  const ecoGeo = useMemo(() => (layers.ecoregions && eco ? ecoregionsGeoJSON(eco, i18n.language) : null), [layers.ecoregions, eco, i18n.language]);
+  const fine = useFineEcoregions();
+  // La cobertura fina (bosque andino patagónico de las zonas descargadas) va encima de la gruesa de RESOLVE.
+  const ecoGeo = useMemo(() => {
+    if (!layers.ecoregions || !eco) return null;
+    const coarse = ecoregionsGeoJSON(eco, i18n.language);
+    return fine ? { ...coarse, features: [...coarse.features, ...ecoregionsGeoJSON(fine, i18n.language).features] } : coarse;
+  }, [layers.ecoregions, eco, fine, i18n.language]);
   const ecoPoint = picked && layers.ecoregions ? picked : view;
-  const ecoHere = layers.ecoregions && eco ? ecoregionAt(eco, ecoPoint.lat, ecoPoint.lon) : null;
+  const ecoHere = layers.ecoregions && eco ? finerLookup(eco, fine).lookup(ecoPoint.lat, ecoPoint.lon) : null;
+  const ecoFine = !!(ecoHere && fine?.ecoregions.some((e) => e.id === ecoHere.id));
+  // Geología: lo guardado (base nacional y detalle de las zonas) y, si no hay detalle y hay conexión y servidor propio, una consulta en línea.
+  const geoOn = layers.geology && inGeologyCoverage(ecoPoint.lat, ecoPoint.lon);
+  const geoIdx = useGeologyIndex(layers.geology);
+  const geoHit = geoOn && geoIdx ? geologyAt(geoIdx, ecoPoint.lat, ecoPoint.lon) : null;
+  const [geoOnline, setGeoOnline] = useState<{ key: string; unit: GeologyUnit | null } | null>(null);
+  const geoKey = `${ecoPoint.lat.toFixed(4)},${ecoPoint.lon.toFixed(4)}`;
+  useEffect(() => {
+    if (!geoOn || geoHit?.detail || !online || !serverUrl.trim()) return;
+    const timer = setTimeout(() => {
+      fetch(`${serverUrl.trim().replace(/\/+$/, '')}/api/layers/geology/point?lat=${ecoPoint.lat.toFixed(4)}&lon=${ecoPoint.lon.toFixed(4)}`, { signal: AbortSignal.timeout(15_000) })
+        .then((r) => (r.ok ? (r.json() as Promise<{ unit: GeologyUnit | null }>) : null))
+        .then((j) => j && setGeoOnline({ key: geoKey, unit: j.unit }))
+        .catch(() => undefined);
+    }, 600);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geoOn, geoKey, online, serverUrl, !!geoHit?.detail]);
+  const geoUnit = geoHit?.detail ? geoHit.unit : geoOnline?.key === geoKey && geoOnline.unit ? geoOnline.unit : (geoHit?.unit ?? null);
+  const geoViaOnline = !geoHit?.detail && geoOnline?.key === geoKey && !!geoOnline.unit;
+  const geoGeo = useMemo(() => (layers.geology && geoIdx ? geologyGeoJSON(geoIdx) : null), [layers.geology, geoIdx]);
   const zoneCircles = useMemo(() => zones.map((z) => ({ id: z.id, name: z.name, lat: z.lat, lon: z.lon, radiusKm: z.radiusKm })), [zones]);
   const maxZoom = panel ? DETAILS.find((d) => d.id === panel.detail)!.maxZoom : 0;
   // Al editar una zona el centro es el de la zona (no el del mapa).
@@ -291,7 +324,7 @@ export function MapsPage() {
   const preview = useMemo(() => (panel ? { id: 'preview', name: panel.name, lat: center.lat, lon: center.lon, radiusKm: panel.radiusKm } : null), [panel, center.lat, center.lon]);
 
   const mb = (bytes: number) => new Intl.NumberFormat(i18n.language, { maximumFractionDigits: bytes < 10 * 1024 * 1024 ? 1 : 0 }).format(bytes / 1024 / 1024);
-  const setLayer = (key: keyof MapLayers, on: boolean) => void update({ mapLayers: { ...layers, [key]: on } });
+  const setLayer = (key: keyof MapLayers, on: boolean) => void update({ mapLayers: withLayer(layers, key, on) });
 
   function openPanel() {
     setMessage(null);
@@ -315,18 +348,31 @@ export function MapsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bajar, online]);
 
+  /**
+   * Baja el detalle de geología (SEGEMAR 1:250.000) y de vegetación (bosque andino patagónico) de la zona, del servidor propio: sin servidor,
+   * o fuera de Argentina, la zona queda sin detalle (la base nacional sigue valiendo).
+   */
+  async function fetchLayers(lat: number, lon: number, radiusKm: number, signal: AbortSignal): Promise<{ layers: boolean; failed: number; covered: boolean }> {
+    const tiles = zoneLayerTiles(circleBounds(lat, lon, radiusKm));
+    if (!tiles.length) return { layers: false, failed: 0, covered: false };
+    if (!serverUrl.trim() || !navigator.onLine) return { layers: false, failed: 0, covered: true };
+    const r = await downloadLayerTiles(serverUrl, tiles, signal, (done, total) => setProgress((p) => ({ bytes: 0, failed: 0, ...p, done, total })));
+    return { layers: r.ok > 0, failed: r.failed, covered: true };
+  }
+
   /** Agranda o achica una zona ya bajada: baja solo las teselas que faltan y borra las que ya no usa ninguna zona. */
   async function saveEdit(zone: MapZone) {
     if (!panel || !plan) return;
     const name = panel.name.trim() || zone.name;
-    if (panel.radiusKm === zone.radiusKm && maxZoom === zone.maxZoom) {
+    const missingDetail = !zone.layers && !!serverUrl.trim() && zoneLayerTiles(circleBounds(zone.lat, zone.lon, panel.radiusKm)).length > 0;
+    if (panel.radiusKm === zone.radiusKm && maxZoom === zone.maxZoom && !missingDetail) {
       await add({ ...zone, name });
       setPanel(null);
       setMessage(name === zone.name ? t('maps.noChanges') : t('maps.zoneUpdated', { name, mb: mb(zone.bytes) }));
       return;
     }
     const oldKeys = new Set(zoneKeys(zone));
-    const newKeys = zoneKeys({ lat: zone.lat, lon: zone.lon, radiusKm: panel.radiusKm, maxZoom });
+    const newKeys = zoneKeys({ lat: zone.lat, lon: zone.lon, radiusKm: panel.radiusKm, maxZoom, layers: zone.layers || missingDetail });
     const grows = newKeys.some((k) => !oldKeys.has(k));
     const controller = new AbortController();
     setAbort(controller);
@@ -340,13 +386,15 @@ export function MapsPage() {
         bytes = result.bytes;
         failed = result.failed;
       }
-      const updated: MapZone = { ...zone, name, radiusKm: panel.radiusKm, maxZoom, bytes, failed };
+      const lay = await fetchLayers(zone.lat, zone.lon, panel.radiusKm, controller.signal);
+      const updated: MapZone = { ...zone, name, radiusKm: panel.radiusKm, maxZoom, bytes, failed, layers: lay.layers || !!zone.layers };
       await add(updated);
       // Lo que quedó afuera de la zona nueva se borra, salvo que lo use otra zona.
-      const keep = new Set([...newKeys, ...useMapZones.getState().zones.filter((z) => z.id !== zone.id).flatMap(zoneKeys)]);
+      const keep = new Set([...zoneKeys(updated), ...useMapZones.getState().zones.filter((z) => z.id !== zone.id).flatMap(zoneKeys)]);
       await removeZoneTiles([...oldKeys], keep);
+      invalidateLayers();
       setPanel(null);
-      setMessage(t('maps.zoneUpdated', { name, mb: mb(bytes) }));
+      setMessage(t('maps.zoneUpdated', { name, mb: mb(bytes) }) + (lay.failed ? ' ' + t('geology.detailPartial', { count: lay.failed }) : ''));
     } catch {
       setMessage(controller.signal.aborted ? t('maps.cancelled') : t('maps.failed'));
     } finally {
@@ -371,6 +419,7 @@ export function MapsPage() {
         fetchFreezingSeries(weatherUrl, view.lat, view.lon).catch(() => undefined),
         fetchPrevailing(weatherUrl, view.lat, view.lon).catch(() => undefined),
       ]);
+      const lay = await fetchLayers(view.lat, view.lon, panel.radiusKm, controller.signal);
       const zone: MapZone = {
         id: crypto.randomUUID(),
         name: panel.name.trim() || t('maps.defaultName', { n: zones.length + 1 }),
@@ -381,12 +430,14 @@ export function MapsPage() {
         bytes: result.bytes,
         failed: result.failed,
         createdAt: new Date().toISOString(),
+        ...(lay.layers ? { layers: true } : {}),
         ...(freezing ? { freezing } : {}),
         ...(prevailing ? { prevailing } : {}),
       };
       await add(zone);
       setPanel(null);
-      setMessage(result.failed ? t('maps.doneWithErrors', { name: zone.name, count: result.failed }) : t('maps.done', { name: zone.name, mb: mb(result.bytes) }));
+      const detail = lay.layers ? t(lay.failed ? 'geology.detailPartial' : 'geology.detailOn', { count: lay.failed }) : lay.covered ? t('geology.detailOff') : '';
+      setMessage((result.failed ? t('maps.doneWithErrors', { name: zone.name, count: result.failed }) : t('maps.done', { name: zone.name, mb: mb(result.bytes) })) + (detail ? ' ' + detail : ''));
     } catch {
       setMessage(controller.signal.aborted ? t('maps.cancelled') : t('maps.failed'));
     } finally {
@@ -426,6 +477,7 @@ export function MapsPage() {
           preview={preview}
           outline={outline}
           ecoregions={ecoGeo}
+          geology={geoGeo}
           flyTo={flyTo}
           tilesVersion={tilesVersion}
           follow={follow && !!fix}
@@ -442,7 +494,7 @@ export function MapsPage() {
           measure={tools.measure}
           target={tools.target}
           onMapClick={tools.onMapClick}
-          onPick={(p) => layers.ecoregions && setPicked(p)}
+          onPick={(p) => (layers.ecoregions || layers.geology) && setPicked(p)}
           onContextMenu={tools.onContextMenu}
           onMoveStart={tools.closeMenu}
         />
@@ -468,12 +520,26 @@ export function MapsPage() {
           {ecoFailed || !eco
             ? t('maps.ecoUnavailable')
             : ecoHere
-              ? t(picked ? 'maps.ecoPicked' : 'maps.ecoHere', { name: ecoregionName(ecoHere, i18n.language), biome: biomeName(eco, ecoHere), coords: formatDms(ecoPoint, t('geo.westLetter')) })
+              ? t(picked ? 'maps.ecoPicked' : 'maps.ecoHere', { name: ecoregionName(ecoHere, i18n.language), biome: biomeName(ecoFine && fine ? fine : eco, ecoHere), coords: formatDms(ecoPoint, t('geo.westLetter')) })
               : t(picked ? 'maps.ecoPickedNone' : 'maps.ecoNone', { coords: formatDms(ecoPoint, t('geo.westLetter')) })}
           {picked && (
             <>
               {' '}
               <button className="btn" type="button" onClick={() => setPicked(null)} data-testid="eco-pick-clear">{t('maps.ecoPickClear')}</button>
+            </>
+          )}
+        </p>
+      )}
+
+      {layers.geology && (
+        <p className="hint" style={{ margin: 0 }} data-testid="map-geology">
+          {geoUnit
+            ? t(picked ? 'geology.picked' : 'geology.here', { name: geoUnit.name, age: unitAge(geoUnit), litho: geoUnit.litho, coords: formatDms(ecoPoint, t('geo.westLetter')) }) + (geoViaOnline ? ' ' + t('geology.online') : '')
+            : t('geology.none')}
+          {picked && (
+            <>
+              {' '}
+              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid="geo-pick-clear">{t('maps.ecoPickClear')}</button>
             </>
           )}
         </p>
@@ -503,6 +569,7 @@ export function MapsPage() {
           ))}
         </div>
         {layers.ecoregions && <p className="hint" style={{ margin: 0 }}>{t('maps.ecoCredit', { credit: ECOREGIONS_CREDIT })}</p>}
+        {layers.geology && <p className="hint" style={{ margin: 0 }}>{t('geology.credit', { credit: GEOLOGY_CREDIT })} {t('geology.legend')}</p>}
         {layers.tracks && <TrackPicker tracks={trackMap.values()} recordingActive={recStatus !== 'idle'} />}
         {layers.slope && (
           <div className="stack" style={{ gap: 4 }} data-testid="slope-legend">
@@ -701,7 +768,7 @@ export function MapsPage() {
                   <span className="list-sub">
                     {missing.has(z.id)
                       ? t('maps.notOnDevice')
-                      : t('maps.zoneSummary', { km: z.radiusKm, mb: mb(z.bytes), date: new Date(z.createdAt).toLocaleDateString(i18n.language) })}
+                      : t('maps.zoneSummary', { km: z.radiusKm, mb: mb(z.bytes), date: new Date(z.createdAt).toLocaleDateString(i18n.language) }) + (z.layers ? ' · ' + t('maps.zoneWithDetail') : '')}
                   </span>
                 </button>
                 <button className="icon-btn" type="button" data-testid={`zone-edit-${z.id}`} onClick={() => openEdit(z)} disabled={!!progress || missing.has(z.id)} aria-label={t('maps.editZone', { name: z.name })}>

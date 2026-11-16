@@ -13,6 +13,8 @@ export function countryFiles(country: Country): string[] {
   // Ecorregiones: un solo archivo para todos los países (se baja una vez; ver modules/ecoregions).
   const files: string[] = ['ecoregions.json'];
   if (country !== 'AR') files.push(`${country}.json`);
+  // Geología de Argentina (SEGEMAR 1:2,5 M, ~1,2 MB): base nacional de la capa de geología del mapa sin conexión.
+  if (country === 'AR') files.push('geology-AR.json');
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).
   if (country === 'AR' || country === 'CL') files.push('parks-CL.json', 'repeaters-CL.json');

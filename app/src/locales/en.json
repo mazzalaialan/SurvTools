@@ -830,6 +830,7 @@
     "center": "Center: {{coords}} · zoom {{zoom}}",
     "layers": "Layers",
     "layer": {
+      "geology": "Geology",
       "ecoregions": "Ecoregions", "hillshade": "Terrain", "slope": "Avalanche risk", "contours": "Contour lines", "mine": "My waypoints and routes", "tracks": "Tracks" },
     "snowlineAuto": "Painted from {{m}}: the lowest 0 °C isotherm of the last few days in this area ({{freezing}}, Open-Meteo, {{ago}}) minus 300 m, where there may be snow.",
     "snowlineManualStatus": "Painted from {{m}} (snow line set by hand).",
@@ -885,6 +886,7 @@
     "ecoPicked": "Ecoregion at the tapped point ({{coords}}): {{name}} ({{biome}}).",
     "ecoPickedNone": "No ecoregion at the tapped point ({{coords}}) (sea or outside the covered region).",
     "ecoPickClear": "Back to the center",
+    "zoneWithDetail": "with geology and vegetation detail",
     "centerHint": "The area is the orange square (the radius is half its side): move the map to change its center.",
     "estimate": "About {{tiles}} tiles, ~{{mb}} MB (approximate: depends on how much is mapped).",
     "tooBig": "Too much to download from the public servers (they allow up to 3,000 tiles or 50 MB per zone): use a smaller radius or less detail. A VikArg server with maps of this place allows larger zones.",
@@ -3318,5 +3320,6 @@
     "updated": "Updated: {{date}}"
   },
   "ecoregions": {
-    "entered": "You entered: {{name}}","now": "Ecoregion: {{name}}", "alongTitle": "Ecoregions along the route", "alongHint": "From {{credit}}: approximate reference (boundaries simplified to ~1 km)."}
+    "entered": "You entered: {{name}}","now": "Ecoregion: {{name}}", "alongTitle": "Ecoregions along the route", "alongHint": "From {{credit}}: approximate reference (boundaries simplified to ~1 km)."},
+  "geology": {"now": "Geology: {{name}} ({{age}})", "alongTitle": "Geology along the route", "alongHint": "From {{credit}}: approximate reference (1:250,000 in areas downloaded with detail; 1:2,500,000 elsewhere).", "layerName": "Geology", "here": "Geology at the map center: {{name}}, {{age}}. {{litho}}", "picked": "Geology at the tapped point ({{coords}}): {{name}}, {{age}}. {{litho}}", "none": "No geology data at this point (Argentina only).", "online": "(online lookup)", "detailOn": "With geology and vegetation detail (1:250,000)", "detailOff": "Without geology and vegetation detail: needs your own server, or the area is too large", "detailPartial": "Geology and vegetation detail incomplete: {{count}} tiles failed", "credit": "Geology: {{credit}}. A reference: the national base is 1:2,500,000 and downloaded areas have 1:250,000 detail.", "legend": "Colors by rock age (period)."}
 }

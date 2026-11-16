@@ -577,3 +577,57 @@ test('mapas offline: la capa de ecorregiones dice en cuál está el centro del m
   const stored = await page.evaluate(async () => !!(await (await caches.open('vikarg-country')).match(new URL('data/ecoregions.json', location.href).href)));
   expect(stored).toBe(true);
 });
+
+test('mapas offline: geología (excluyente con ecorregiones) y zona descargada con el detalle del servidor', async ({ page }) => {
+  test.setTimeout(120_000);
+  await mockMaps(page);
+  // Teselas de geología del servidor propio (una unidad que cubre la zona).
+  let tileCalls = 0;
+  await page.context().route(`${SERVER}/api/layers/**`, (route) => {
+    tileCalls++;
+    route.fulfill({
+      json: { x: 0, y: 0, units: [{ name: 'Formación Prueba', litho: 'Limos y arcillas', from: 'Pleistoceno', to: 'Holoceno' }], polys: [{ u: 0, p: [[-60, -36, -57, -36, -57, -33, -60, -33, -60, -36]] }], stale: false },
+    });
+  });
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  await page.goto('/#/orientation/maps');
+  await expect(page.getByTestId('map-center')).toHaveText(/zoom 12$/, { timeout: 15_000 });
+
+  // Ecorregiones, riesgo de avalancha y geología no se prenden a la vez: la última que se prende apaga las otras.
+  const chip = (name: string) => page.getByRole('button', { name, exact: true });
+  await chip('Ecorregiones').click();
+  await expect(chip('Ecorregiones')).toHaveAttribute('aria-pressed', 'true');
+  await chip('Geología').click();
+  await expect(chip('Geología')).toHaveAttribute('aria-pressed', 'true');
+  await expect(chip('Ecorregiones')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByTestId('map-ecoregion')).toHaveCount(0);
+  await expect(page.getByTestId('map-geology')).toContainText('Geología en el centro del mapa', { timeout: 15_000 });
+  await chip('Riesgo de avalancha').click();
+  await expect(chip('Geología')).toHaveAttribute('aria-pressed', 'false');
+  await chip('Geología').click();
+  await expect(chip('Riesgo de avalancha')).toHaveAttribute('aria-pressed', 'false');
+
+  // Una zona de 2 km: baja también el detalle de geología del servidor propio y lo guarda con la zona.
+  await page.getByRole('button', { name: 'Descargar una zona' }).click();
+  await page.getByLabel('Nombre').fill('Casa');
+  await page.getByLabel('Radio alrededor del centro del mapa').selectOption({ label: '2 km' });
+  await page.getByRole('button', { name: 'Descargar', exact: true }).click();
+  await expect(page.getByTestId('zone-message')).toContainText(/detalle de geología y vegetación/i, { timeout: 60_000 });
+  await expect(page.getByTestId('zone-list')).toContainText('con detalle de geología y vegetación');
+  expect(tileCalls).toBeGreaterThan(0);
+  const stored = (await cacheKeys(page)).filter((k) => k.startsWith('https://vikarg.local/layers/geology/'));
+  expect(stored.length).toBeGreaterThan(0);
+  // Con el detalle guardado, la ficha usa la unidad de la zona.
+  await expect(page.getByTestId('map-geology')).toContainText('Formación Prueba', { timeout: 15_000 });
+
+  // Borrar la zona limpia también sus teselas de geología.
+  await page.getByRole('button', { name: 'Borrar Casa' }).click();
+  await page.getByTestId('confirm-ok').click();
+  await expect.poll(async () => (await cacheKeys(page)).filter((k) => k.startsWith('https://vikarg.local/layers/')).length, { timeout: 15_000 }).toBe(0);
+});

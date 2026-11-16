@@ -64,6 +64,7 @@ export interface MapLayersOn {
   slopeCornice?: number[];
   terrain3d: boolean;
   ecoregions?: boolean;
+  geology?: boolean;
 }
 
 /** Teselas de la capa de pendiente para una línea de nieve y un sotavento. */
