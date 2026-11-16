@@ -2,6 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
 // En GitHub Pages la app vive en /<repo>/; el workflow de deploy define BASE_PATH.
@@ -28,7 +29,17 @@ export default defineConfig({
         // .mjs: el worker de MapLibre (los mapas tienen que andar sin conexión).
         globPatterns: ['**/*.{js,mjs,css,html,svg,png,webp,woff2,json}'],
         // data/: paquetes por país (Chile, Uruguay); se bajan solo si se elige ese país.
-        globIgnores: ['sw.mjs', 'data/**'],
+        globIgnores: ['sw.mjs', 'data/**', 'update-info.json'],
+        // Peso de cada archivo que se guarda en el teléfono (dist/update-info.json): el service worker lo usa para decir cuánto pesa una
+        // actualización antes de bajarla (src/sw.ts, src/app/UpdatePrompt.tsx). Se devuelven las entradas tal cual.
+        manifestTransforms: [
+          async (entries) => {
+            const files: Record<string, number> = {};
+            for (const e of entries) files[e.url] = (e as { size?: number }).size ?? 0;
+            writeFileSync(fileURLToPath(new URL('./dist/update-info.json', import.meta.url)), JSON.stringify({ version: process.env.npm_package_version ?? '0.0.0', files }));
+            return { manifest: entries, warnings: [] };
+          },
+        ],
       },
       includeAssets: ['favicon.svg', 'brand/*.png'],
       manifest: {

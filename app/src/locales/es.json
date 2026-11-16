@@ -2762,6 +2762,12 @@
     "updateAvailable": "Hay una versión nueva disponible.",
     "update": "Actualizar",
     "downloading": "Bajando la versión nueva…",
+    "updatePending": "Hay una versión nueva. Para actualizar hay que bajar hasta {{size}}.",
+    "updatePendingFiles": "Hay una versión nueva. Para actualizar hay que bajar {{count}} archivos.",
+    "mobileData": "Estás con datos móviles: conviene esperar al Wi-Fi.",
+    "download": "Descargar ahora",
+    "progress": "Bajando la versión nueva: {{done}} de {{total}}",
+    "progressFiles": "Bajando la versión nueva: {{done}} de {{total}} archivos",
     "later": "Más tarde",
     "offlineReady": "Lista para usar sin conexión."
   },

@@ -2762,6 +2762,12 @@
     "updateAvailable": "A new version is available.",
     "update": "Update",
     "downloading": "Downloading the new version…",
+    "updatePending": "There is a new version. Updating means downloading up to {{size}}.",
+    "updatePendingFiles": "There is a new version. Updating means downloading {{count}} files.",
+    "mobileData": "You are on mobile data: it is better to wait for Wi-Fi.",
+    "download": "Download now",
+    "progress": "Downloading the new version: {{done}} of {{total}}",
+    "progressFiles": "Downloading the new version: {{done}} of {{total}} files",
     "later": "Later",
     "offlineReady": "Ready to use offline."
   },

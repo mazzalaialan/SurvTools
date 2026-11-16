@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
+import { PrecacheController, PrecacheRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { db } from '@/core/db/db';
 import {
@@ -36,7 +36,115 @@ const ALERTS_URL = '#/inventory/alerts';
 
 // ---------- Offline ----------
 
-precacheAndRoute(self.__WB_MANIFEST);
+// El precache se maneja a mano (en vez de `precacheAndRoute`) para poder DEJAR PARA DESPUÉS la descarga de una versión nueva: la primera
+// instalación baja todo sola (sin eso no habría app sin conexión), pero una actualización pregunta antes de bajar (ver `onInstall`).
+const precacheProgress = { active: false, total: 0, done: 0, files: 0, filesDone: 0, sizes: {} as Record<string, number> };
+const scopePath = new URL(self.registration.scope).pathname;
+/** Ruta relativa al scope, como figura en `update-info.json` y en el manifiesto de Workbox. */
+const relative = (url: string) => new URL(url, self.registration.scope).pathname.slice(scopePath.length);
+
+const precache = new PrecacheController({
+  plugins: [
+    {
+      // Cuenta cada archivo que termina de bajar durante la actualización confirmada, para la barra de progreso.
+      fetchDidSucceed: async ({ request, response }) => {
+        if (precacheProgress.active) {
+          precacheProgress.filesDone += 1;
+          precacheProgress.done += precacheProgress.sizes[relative(request.url)] ?? 0;
+          void broadcast({ type: 'UPDATE_PROGRESS', ...progressMessage() });
+        }
+        return response;
+      },
+    },
+  ],
+});
+precache.addToCacheList(self.__WB_MANIFEST);
+registerRoute(new PrecacheRoute(precache));
+
+type ClientMessage = { type: 'UPDATE_PENDING' | 'UPDATE_PROGRESS'; bytes: number | null; done?: number; files: number; filesDone?: number };
+const progressMessage = () => ({ bytes: precacheProgress.total || null, done: precacheProgress.done, files: precacheProgress.files, filesDone: precacheProgress.filesDone });
+
+// Canal entre el service worker nuevo y las páginas abiertas (BroadcastChannel): un worker que todavía se está instalando no recibe de forma
+// confiable los `postMessage` de la página, y así tampoco hace falta saber qué pestañas hay.
+const updateChannel = new BroadcastChannel('vikarg-update');
+async function broadcast(message: ClientMessage): Promise<void> {
+  updateChannel.postMessage(message);
+}
+updateChannel.onmessage = (event: MessageEvent) => {
+  const type = (event.data as { type?: string } | undefined)?.type;
+  // La página responde a «hay una versión nueva» (si ninguna responde, baja solo), confirma la descarga o pregunta cómo está.
+  if (type === 'UPDATE_ACK') for (const resolve of ackResolvers.splice(0)) resolve();
+  if (type === 'UPDATE_START') for (const resolve of startResolvers.splice(0)) resolve();
+  if (type === 'UPDATE_QUERY') {
+    if (awaitingPlan) void broadcast({ type: 'UPDATE_PENDING', bytes: awaitingPlan.bytes, files: awaitingPlan.files });
+    else if (precacheProgress.active) void broadcast({ type: 'UPDATE_PROGRESS', ...progressMessage() });
+  }
+};
+
+/** Qué archivos de la versión nueva todavía no están guardados y cuánto pesan (null si no se pudo saber el peso). */
+async function planUpdate(): Promise<{ files: number; bytes: number | null }> {
+  const cache = await caches.open(precache.strategy.cacheName);
+  const pending: string[] = [];
+  for (const [url, key] of precache.getURLsToCacheKeys()) if (!(await cache.match(key))) pending.push(url);
+  let sizes: Record<string, number> = {};
+  try {
+    const res = await fetch(new URL(`update-info.json?v=${Date.now()}`, self.registration.scope), { cache: 'no-store' });
+    if (res.ok) sizes = ((await res.json()) as { files?: Record<string, number> }).files ?? {};
+  } catch {
+    /* sin el archivo de pesos se baja igual: solo no se puede decir cuánto */
+  }
+  precacheProgress.sizes = sizes;
+  // Los pocos archivos sin peso (como el manifiesto) son chicos: el total es «hasta» la suma de los que sí lo tienen. Sin archivo de pesos, no se sabe.
+  const known = Object.keys(sizes).length > 0;
+  precacheProgress.files = pending.length;
+  precacheProgress.total = known ? pending.reduce((n, u) => n + (sizes[relative(u)] ?? 0), 0) : 0;
+  return { files: pending.length, bytes: known ? precacheProgress.total : null };
+}
+
+/** La actualización que está esperando la confirmación (para volver a avisar si la página se recarga mientras tanto). */
+let awaitingPlan: { files: number; bytes: number | null } | null = null;
+let ackResolvers: (() => void)[] = [];
+let startResolvers: (() => void)[] = [];
+const waitFor = (list: 'ack' | 'start', ms?: number) =>
+  new Promise<boolean>((resolve) => {
+    const done = () => resolve(true);
+    (list === 'ack' ? ackResolvers : startResolvers).push(done);
+    if (ms) setTimeout(() => resolve(false), ms);
+  });
+
+/**
+ * Instalación de la versión nueva. Primera instalación: baja todo. Actualización: si hay algo para bajar, le avisa a la página y ESPERA a que
+ * la persona confirme (la versión vieja sigue funcionando; mientras el worker espera en «installing» no se puede activar a medias). Si ninguna
+ * página responde (una versión vieja de la app que no sabe preguntar), baja todo solo como siempre.
+ */
+async function onInstall(event: ExtendableEvent): Promise<unknown> {
+  const isUpdate = !!self.registration.active;
+  if (!isUpdate) return precache.install(event);
+  let plan: { files: number; bytes: number | null };
+  try {
+    plan = await planUpdate();
+  } catch {
+    return precache.install(event);
+  }
+  if (plan.files === 0) return precache.install(event);
+  // La espera de la respuesta se arma antes de avisar, para no perder una respuesta rápida.
+  const answered = waitFor('ack', 4000);
+  await broadcast({ type: 'UPDATE_PENDING', bytes: plan.bytes, files: plan.files });
+  if (!(await answered)) return precache.install(event);
+  awaitingPlan = plan;
+  await waitFor('start');
+  awaitingPlan = null;
+  precacheProgress.active = true;
+  await broadcast({ type: 'UPDATE_PROGRESS', ...progressMessage() });
+  try {
+    return await precache.install(event);
+  } finally {
+    precacheProgress.active = false;
+  }
+}
+self.addEventListener('install', (event) => event.waitUntil(onInstall(event)));
+// Al activarse se borra lo viejo del precache (solo entonces: antes la versión vieja lo necesita).
+self.addEventListener('activate', (event) => event.waitUntil(precache.activate(event)));
 
 // Libros bajados de la biblioteca: solo desde el dispositivo (se registran antes que la navegación,
 // porque el visor abre cada capítulo como página).
@@ -49,7 +157,7 @@ registerRoute(
     new Response('Este libro no está en el dispositivo.', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } }),
 );
 
-registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
+registerRoute(new NavigationRoute(precache.createHandlerBoundToURL('index.html')));
 
 // Elevación de los mapas offline: primero lo descargado por zona (curvas de nivel sin conexión).
 const MAP_CACHE = 'vikarg-maps';
