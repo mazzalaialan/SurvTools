@@ -14,6 +14,15 @@ const keyUrl = (file: string) => new URL(`${import.meta.env.BASE_URL}data/${file
 const dateOf = (d: unknown): string => (d && typeof d === 'object' && 'generatedAt' in d ? String((d as { generatedAt: unknown }).generatedAt) : '');
 const serverBase = () => useSettings.getState().settings.serverUrl?.trim().replace(/\/+$/, '') || null;
 
+async function fetchText(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
+    return res.ok ? await res.text() : null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchJson(url: string): Promise<unknown | null> {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
@@ -144,14 +153,25 @@ export async function loadDataFile<T>(file: string): Promise<T> {
     void refresh(file, data, cache).catch(() => undefined);
     return data;
   }
-  let data: unknown = await fetchJson(url);
+  // El texto de la app se guarda tal cual (sin volver a serializar: los archivos grandes, como la geología, tardaban en el hilo principal).
+  const fromApp = await fetchText(url);
+  let data: unknown = null;
+  try {
+    data = fromApp === null ? null : (JSON.parse(fromApp) as unknown);
+  } catch {
+    data = null;
+  }
+  let text = data === null ? null : fromApp;
   const server = serverBase();
   if (server && navigator.onLine) {
     const fromServer = await fetchJson(`${server}/api/data/${file}`);
-    if (fromServer && dateOf(fromServer) > dateOf(data)) data = fromServer;
+    if (fromServer && dateOf(fromServer) > dateOf(data)) {
+      data = fromServer;
+      text = null;
+    }
   }
   if (data === null) throw new CountryDataError();
-  await cache?.put(url, new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } }));
+  await cache?.put(url, new Response(text ?? JSON.stringify(data), { headers: { 'content-type': 'application/json' } }));
   return data as T;
 }
 

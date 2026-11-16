@@ -282,7 +282,7 @@ export function MapsPage() {
       cancelled = true;
     };
   }, [layers.ecoregions, eco]);
-  const fine = useFineEcoregions();
+  const fine = useFineEcoregions(0);
   // La cobertura fina (bosque andino patagónico de las zonas descargadas) va encima de la gruesa de RESOLVE.
   const ecoGeo = useMemo(() => {
     if (!layers.ecoregions || !eco) return null;
@@ -294,7 +294,7 @@ export function MapsPage() {
   const ecoFine = !!(ecoHere && fine?.ecoregions.some((e) => e.id === ecoHere.id));
   // Geología: lo guardado (base nacional y detalle de las zonas) y, si no hay detalle y hay conexión y servidor propio, una consulta en línea.
   const geoOn = layers.geology && inGeologyCoverage(ecoPoint.lat, ecoPoint.lon);
-  const geoIdx = useGeologyIndex(layers.geology);
+  const geoIdx = useGeologyIndex(layers.geology, 0);
   const geoHit = geoOn && geoIdx ? geologyAt(geoIdx, ecoPoint.lat, ecoPoint.lon) : null;
   const [geoOnline, setGeoOnline] = useState<{ key: string; unit: GeologyUnit | null } | null>(null);
   const geoKey = `${ecoPoint.lat.toFixed(4)},${ecoPoint.lon.toFixed(4)}`;

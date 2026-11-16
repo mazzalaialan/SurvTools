@@ -7,21 +7,26 @@ import { useRecorder } from '@/modules/tracks/recorder';
 import { FOREST_CREDIT, loadStoredLayers, mergeForest, onLayersChange } from '@/modules/layers/zoneLayers';
 import { loadVegetationCL, VEGETATION_CL_CREDIT, biomeName, ecoregionName, ecoregionsAlongWith, ECOREGIONS_CREDIT, finerLookup, loadEcoregions, type EcoLookup, type Ecoregion, type EcoregionData } from './ecoregions';
 
+/** Cuánto se espera antes de leer los archivos de las líneas «Ecorregión» y «Geología» (que salen en la barra de grabación y en otras pantallas). */
+export const IDLE_DELAY_MS = 1500;
+
 /** El archivo de ecorregiones (guardado con los datos del país); `null` mientras carga o si no está. */
-export function useEcoregionData(): EcoregionData | null {
+export function useEcoregionData(delayMs = IDLE_DELAY_MS): EcoregionData | null {
   const [data, setData] = useState<EcoregionData | null>(null);
   useEffect(() => {
     let live = true;
-    void loadEcoregions().then((d) => live && setData(d));
+    // Un rato después de dibujar la pantalla: leer y armar el archivo no debe frenar el cambio de página.
+    const timer = setTimeout(() => void loadEcoregions().then((d) => live && setData(d)), delayMs);
     return () => {
       live = false;
+      clearTimeout(timer);
     };
-  }, []);
+  }, [delayMs]);
   return data;
 }
 
 /** Las ecorregiones finas guardadas (cobertura de bosque de las zonas descargadas); se vuelven a leer si cambian las zonas. */
-export function useFineEcoregions(): EcoregionData | null {
+export function useFineEcoregions(delayMs = IDLE_DELAY_MS): EcoregionData | null {
   const [data, setData] = useState<EcoregionData | null>(null);
   useEffect(() => {
     let live = true;
@@ -32,13 +37,14 @@ export function useFineEcoregions(): EcoregionData | null {
         // Bosque andino patagónico (Argentina) y pisos de vegetación de Chile en un solo conjunto fino.
         setData(forest && cl ? { ...forest, biomes: { ...cl.biomes, ...forest.biomes }, ecoregions: [...cl.ecoregions, ...forest.ecoregions] } : (forest ?? cl));
       });
-    read();
+    const timer = setTimeout(read, delayMs);
     const off = onLayersChange(read);
     return () => {
       live = false;
+      clearTimeout(timer);
       off();
     };
-  }, []);
+  }, [delayMs]);
   return data;
 }
 

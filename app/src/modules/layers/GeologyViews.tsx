@@ -5,22 +5,25 @@ import { formatDistance } from '@/core/units/units';
 import { useSettings } from '@/core/settings/settings';
 import { useRecorder } from '@/modules/tracks/recorder';
 import { geologyAlong, geologyAt, inGeologyCoverage, loadGeologyIndex, unitAge, type GeologyIndex } from './geology';
+import { IDLE_DELAY_MS } from '@/modules/ecoregions/EcoregionViews';
 import { onLayersChange } from './zoneLayers';
 
 /** La base nacional y el detalle guardado de las zonas; `null` mientras carga. Se vuelve a leer si cambian las zonas. */
-export function useGeologyIndex(enabled = true): GeologyIndex | null {
+export function useGeologyIndex(enabled = true, delayMs = IDLE_DELAY_MS): GeologyIndex | null {
   const [idx, setIdx] = useState<GeologyIndex | null>(null);
   useEffect(() => {
     if (!enabled) return;
     let live = true;
     const read = () => void loadGeologyIndex().then((i) => live && setIdx(i));
-    read();
+    // Un rato después de dibujar la pantalla: leer y armar los polígonos no debe frenar el cambio de página.
+    const timer = setTimeout(read, delayMs);
     const off = onLayersChange(read);
     return () => {
       live = false;
+      clearTimeout(timer);
       off();
     };
-  }, [enabled]);
+  }, [enabled, delayMs]);
   return idx;
 }
 
