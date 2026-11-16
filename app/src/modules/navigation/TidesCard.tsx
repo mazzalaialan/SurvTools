@@ -9,7 +9,8 @@ import { fetchForecasts, loadSavedForecasts, saveForecasts, summarize, type Stat
 import { loadRivers, type RiverStation } from './rivers';
 import { fetchSurge, loadSavedSurge, nearSurgePoints, saveSurge, surgeAt, surgeSummary, type SurgeForecast } from './surge';
 import { distanceMeters } from '@/core/geo/geo';
-import { isEstuary, loadTides, nearestStations, NEAR_KM, tideCurve, tideExtremes, tideLevelAt, type TidesData } from './tides';
+import { isEstuary, loadTides, nearestStations, NEAR_KM, tideCurve, tideExtremes, tideLevelAt, type TideExtreme, type TidesData } from './tides';
+import { compareWithCalculated, fetchShnForecast, loadSavedShn, nearestShn, saveShn, shnExpired, type ShnForecast } from './shnTides';
 
 const DAY_MS = 86_400_000;
 const DAYS = 3;
@@ -57,6 +58,76 @@ function TideChart({ curve, now, label, locale, measured, adjusted }: { curve: {
       ))}
       {now.getTime() >= t0 && now.getTime() <= t1 && <line x1={x(now.getTime())} x2={x(now.getTime())} y1={pad.t} y2={H - pad.b} className="tide-now" />}
     </svg>
+  );
+}
+
+/**
+ * Pronóstico oficial del SHN para el estuario (con viento): pleamares y bajamares del puerto más cercano, con la hora comparada con la
+ * calculada por la app. Se pide al servidor propio y, sin conexión, queda el último guardado (con aviso si ya venció).
+ */
+function ShnForecastBlock({ place, calculated, now }: { place: PickedPlace; calculated: TideExtreme[]; now: Date }) {
+  const { t, i18n } = useTranslation();
+  const server = useSettings((s) => s.settings.serverUrl)?.trim() || null;
+  const [forecast, setForecast] = useState<ShnForecast | null>(() => loadSavedShn());
+  useEffect(() => {
+    if (!server || !navigator.onLine) return;
+    let cancelled = false;
+    void fetchShnForecast(server).then(
+      (f) => {
+        if (cancelled) return;
+        saveShn(f);
+        setForecast(f);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [server]);
+  const near = forecast ? nearestShn(forecast.stations, place.lat, place.lon) : null;
+  const rows = useMemo(() => (near ? compareWithCalculated(near.station.events, calculated) : []), [near, calculated]);
+  if (!forecast || !near || rows.length === 0) return null;
+  const expired = shnExpired(forecast, now.getTime());
+  const nf = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const when = (ms: number) => new Date(ms).toLocaleString(i18n.language, { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const hhmm = (d: Date) => d.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+  return (
+    <div className="stack" style={{ gap: 6 }} data-testid="shn-forecast">
+      <h3 className="section-title" style={{ margin: 0, fontSize: '1rem' }}>
+        {t('navigation.tides.shnTitle')}
+      </h3>
+      <p className="hint" style={{ margin: 0 }}>
+        {t('navigation.tides.shnIntro', { name: near.station.name, until: when(Date.parse(forecast.validTo)) })}
+      </p>
+      {expired && (
+        <p className="warning-box" role="status" style={{ margin: 0 }} data-testid="shn-expired">
+          {t('navigation.tides.shnExpired')}
+        </p>
+      )}
+      <ul className="list" data-testid="shn-events">
+        {rows.map(({ event, calculated: calc, diffMin }) => (
+          <li key={event.at} className="list-row">
+            <span className="list-main">
+              <span className="list-title">
+                {t(event.type === 'high' ? 'navigation.tides.shnHigh' : 'navigation.tides.shnLow')} {when(Date.parse(event.at))} · {nf.format(event.height)} m
+              </span>
+              {calc && diffMin !== null && (
+                <span className="list-sub">
+                  {t('navigation.tides.shnVsCalculated', { time: hhmm(calc.time) })}{' '}
+                  {diffMin === 0 ? t('navigation.tides.shnSame') : t(diffMin > 0 ? 'navigation.tides.shnLater' : 'navigation.tides.shnEarlier', { min: Math.abs(diffMin) })}
+                </span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="hint" style={{ margin: 0 }}>
+        {forecast.notes[near.station.section === 'exterior' ? 1 : 0] ?? forecast.notes[0] ?? ''}
+      </p>
+      <p className="hint" style={{ margin: 0 }}>
+        {t('navigation.tides.shnNote', { date: when(forecast.fetchedAt) })}
+      </p>
+    </div>
   );
 }
 
@@ -168,6 +239,7 @@ export function TidesCard({ place }: { place: PickedPlace | null }) {
   // Mareógrafo medido (IOC) a menos de 30 km de la estación: lo pide el servidor, que guarda la clave; sin conexión queda el último guardado.
   const server = useSettings((s) => s.settings.serverUrl)?.trim() || null;
   const iocOn = sourceEnabled('ioc');
+  const shnOn = sourceEnabled('shn') && !!server;
   const [iocCatalog, setIocCatalog] = useState<IocCatalog | null>(null);
   useEffect(() => {
     if (iocOn) void loadIocCatalog().then(setIocCatalog, () => undefined);
@@ -239,6 +311,7 @@ export function TidesCard({ place }: { place: PickedPlace | null }) {
               </span>
             </p>
           )}
+          {isEstuary(station, place.lat, place.lon) && shnOn && <ShnForecastBlock place={place} calculated={extremes} now={now} />}
           {isEstuary(station, place.lat, place.lon) && <EstuaryForecast place={place} now={now} />}
           {station.issues.length > 0 && (
             <p className="hint" data-testid="tide-issues" style={{ margin: 0 }}>

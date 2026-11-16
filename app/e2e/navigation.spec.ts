@@ -461,6 +461,56 @@ test('Navegación: en el Río de la Plata el pronóstico del INA para San Fernan
   await expect(page.getByTestId('estuary-peak')).toContainText('entre 2,30 y 3,00 m');
 });
 
+test('Navegación: en el Río de la Plata aparece el pronóstico oficial del SHN con viento, con la hora comparada con la calculada, y vencido avisa', async ({ page, context }) => {
+  await mockOpenMeteo(page);
+  await context.route('https://alerta.ina.gob.ar/a5/**', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: [] }));
+  // Emisión del SHN vigente por 8 horas, con tres extremos en Buenos Aires.
+  const H = 3_600_000;
+  const iso = (ms: number) => new Date(ms).toISOString();
+  const now = Date.now();
+  const forecast = (validTo: number) => ({
+    fetchedAt: now,
+    issuedOn: '2026-11-16',
+    validFrom: iso(now - 5 * H),
+    validTo: iso(validTo),
+    notes: ['VEINTE CENTIMETROS POR DEBAJO DE LOS VALORES INDICADOS EN LAS TABLAS DE MAREA', 'VEINTE CENTIMETROS POR DEBAJO DE LOS VALORES INDICADOS EN LAS TABLAS DE MAREA'],
+    stale: false,
+    stations: [
+      {
+        id: 'buenos-aires',
+        name: 'PUERTO DE BUENOS AIRES (Muelle de Pescadores)',
+        section: 'interior',
+        lat: -34.567,
+        lon: -58.4,
+        events: [
+          { type: 'low', at: iso(now + 1 * H), height: 0.35 },
+          { type: 'high', at: iso(now + 4 * H), height: 1.1 },
+          { type: 'low', at: iso(now + 9 * H), height: 0.5 },
+        ],
+      },
+    ],
+  });
+  let valid = true;
+  await context.route('**/api/tides/shn', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: forecast(valid ? now + 8 * H : now - 1 * H) }));
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 20 });
+  await start(page);
+  await page.goto('/#/weather/navigation');
+  const box = page.getByTestId('shn-forecast');
+  await expect(box).toContainText('Pronóstico oficial del SHN (con viento)', { timeout: 20_000 });
+  await expect(box).toContainText('PUERTO DE BUENOS AIRES');
+  await expect(page.getByTestId('shn-events').locator('li')).toHaveCount(3);
+  await expect(page.getByTestId('shn-events')).toContainText('Bajamar');
+  await expect(page.getByTestId('shn-events')).toContainText('Pleamar');
+  await expect(box).toContainText('Servicio de Hidrografía Naval');
+  await expect(page.getByTestId('shn-expired')).toHaveCount(0);
+  // Una emisión vencida avisa que hay que actualizarla.
+  valid = false;
+  await page.goto('/#/weather');
+  await page.goto('/#/weather/navigation');
+  await expect(page.getByTestId('shn-expired')).toBeVisible({ timeout: 20_000 });
+});
+
 test('Navegación: sin pronóstico del INA (Ushuaia, lejos de los ríos con modelo) no aparece el pronóstico de estuario', async ({ page, context }) => {
   await mockOpenMeteo(page);
   await context.grantPermissions(['geolocation']);

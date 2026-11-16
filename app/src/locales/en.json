@@ -1594,7 +1594,7 @@
       "stations": "Nearby stations",
       "distance": "{{km}} km away",
       "far": "The nearest station is {{km}} km away: the tide at your spot may be very different. Use it only as a reference (Uruguay and Bolivia have no station).",
-      "estuaryTitle": "Here the real tide can differ a lot from the calculated one",
+      "shnTitle": "Official SHN forecast (wind-corrected)", "shnIntro": "High and low tides from the Argentine Naval Hydrographic Service for {{name}}, corrected for wind. Valid until {{until}}.", "shnExpired": "This forecast has expired: the SHN issues a new one about 3 times a day. A connection to your server is needed to refresh it.", "shnHigh": "High tide", "shnLow": "Low tide", "shnVsCalculated": "Calculated by the app: {{time}}.", "shnSame": "Same time.", "shnLater": "The SHN has it {{min}} min later.", "shnEarlier": "The SHN has it {{min}} min earlier.", "shnNote": "Source: Servicio de Hidrografía Naval (SHN, all rights reserved), retrieved {{date}}. Heights are relative to the SHN tide-table datum (in Buenos Aires, 0.91 m below mean level): they are not compared with the curve above, so times are compared instead.", "estuaryTitle": "Here the real tide can differ a lot from the calculated one",
       "estuary": "In the Río de la Plata and the Delta, wind and river discharge matter more than the astronomical tide: with a southeasterly storm (sudestada) the water can rise over 1 m above the calculation, and with west or north winds it drops. For the real height check the SHN forecast and INA levels.",
       "issues": "This station has limited data quality (few years or very old): use it with care.",
       "now": "Now {{level}} m ({{trend}})",

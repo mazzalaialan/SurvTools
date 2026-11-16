@@ -3,7 +3,7 @@
  * dato) y con licencia no comercial o con derechos reservados se usa mientras la app sea gratuita y sin publicidad. Para una copia paga,
  * con publicidad o institucional (por ejemplo la de una escuela) se compila con `VITE_COMMERCIAL=1` y se apagan esas fuentes.
  */
-export type SourceId = 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py';
+export type SourceId = 'shn' | 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py';
 export type LicenseKind = 'open' | 'undeclared' | 'reserved' | 'non-commercial';
 
 export interface NavSource {
@@ -20,6 +20,15 @@ export interface NavSource {
 }
 
 export const NAV_SOURCES: NavSource[] = [
+  {
+    id: 'shn',
+    name: 'SHN — Pronóstico mareológico del Río de la Plata',
+    provides: 'Pleamares y bajamares oficiales corregidas por viento (La Plata, Buenos Aires, San Fernando y Punta Indio)',
+    license: 'reserved',
+    licenseText: '© Todos los Derechos Reservados, Servicio de Hidrografía Naval; sin términos aparte ni anti-bot; se lee desde el servidor propio (sin CORS)',
+    url: 'https://www.hidro.gob.ar/oceanografia/pronostico.asp',
+    cite: 'Servicio de Hidrografía Naval (SHN), Armada Argentina: Pronóstico mareológico del Río de la Plata',
+  },
   {
     id: 'ina',
     name: 'INA — Alerta Hidrológico',

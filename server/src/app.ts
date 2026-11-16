@@ -18,6 +18,7 @@ import { libraryRoutes } from './routes/library.ts';
 import { dataRoutes } from './routes/data.ts';
 import { layersRoutes } from './routes/layers.ts';
 import { riversRoutes } from './routes/rivers.ts';
+import { tidesRoutes } from './routes/tides.ts';
 import { iocRoutes } from './routes/ioc.ts';
 import { firesRoutes } from './routes/fires.ts';
 import { rainMapRoutes } from './routes/rainMap.ts';
@@ -63,6 +64,7 @@ export async function buildApp(
   dataRoutes(app, config);
   riversRoutes(app, config);
   layersRoutes(app);
+  tidesRoutes(app);
   iocRoutes(app, config);
   firesRoutes(app);
   officialRoutes(app, official);

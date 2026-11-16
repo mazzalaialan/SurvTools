@@ -1594,7 +1594,7 @@
       "stations": "Estaciones cercanas",
       "distance": "a {{km}} km",
       "far": "La estación más cercana está a {{km}} km: la marea de tu lugar puede ser muy distinta. Usala solo como referencia (Uruguay y Bolivia no tienen estación).",
-      "estuaryTitle": "Acá la marea real puede ser muy distinta de la calculada",
+      "shnTitle": "Pronóstico oficial del SHN (con viento)", "shnIntro": "Pleamares y bajamares del Servicio de Hidrografía Naval para {{name}}, corregidas por viento. Vale hasta el {{until}}.", "shnExpired": "Este pronóstico ya venció: el SHN emite uno nuevo unas 3 veces por día. Hace falta conexión con tu servidor para actualizarlo.", "shnHigh": "Pleamar", "shnLow": "Bajamar", "shnVsCalculated": "La calculada por la app: {{time}}.", "shnSame": "Coincide.", "shnLater": "El SHN la ve {{min}} min más tarde.", "shnEarlier": "El SHN la ve {{min}} min antes.", "shnNote": "Fuente: Servicio de Hidrografía Naval (derechos reservados del SHN), consultado el {{date}}. Las alturas son sobre el cero de las tablas del SHN (en Buenos Aires, 0,91 m por debajo del nivel medio): no se comparan con las de la curva de arriba, por eso se comparan las horas.", "estuaryTitle": "Acá la marea real puede ser muy distinta de la calculada",
       "estuary": "En el Río de la Plata y el Delta el viento y el caudal de los ríos pesan más que la marea astronómica: con sudestada el agua puede subir más de 1 m sobre lo calculado, y con viento del oeste o del norte baja. Para la altura real mirá el pronóstico del SHN y los niveles del INA.",
       "issues": "Esta estación tiene datos de calidad limitada (pocos años o muy viejos): tomala con cuidado.",
       "now": "Ahora {{level}} m ({{trend}})",

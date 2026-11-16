@@ -1,0 +1,1007 @@
+
+
+
+
+
+<!DOCTYPE html>
+  <html lang="es">
+    <head>
+
+			<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>SHN | Servicio de Hidrografía Naval</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta name="author" content="" />
+		<link rel="icon" type="image/png" href="/assets/images/favicon.ico" />
+		
+	  	<!-- Facebook and Twitter integration -->
+		<meta property="og:title" content=""/>
+		<meta property="og:image" content=""/>
+		<meta property="og:url" content=""/>
+		<meta property="og:site_name" content=""/>
+		<meta property="og:description" content=""/>
+		<meta name="twitter:title" content="" />
+		<meta name="twitter:image" content="" />
+		<meta name="twitter:url" content="" />
+		<meta name="twitter:card" content="" />
+
+
+
+       <!-- PONCHO CSS:
+    Recomendamos que descargues o instales 'ar-poncho' en tu proyecto.
+    <link href="{{ '/node_modules/ar-poncho/dist/css/roboto-fontface.css' | prepend: site.baseurl }}" rel="stylesheet">
+    <link href="{{ '/node_modules/ar-poncho/dist/css/poncho.min.css' | prepend: site.baseurl }}" rel="stylesheet">
+    <link href="{{ '/node_modules/ar-poncho/dist/css/documentacion.css' | prepend: site.baseurl }}" rel="stylesheet">
+    <link href="{{ '/node_modules/ar-poncho/dist/icono-arg.css' | prepend: site.baseurl }}" rel="stylesheet">
+    Al solo efecto de esta documentación, usaremos los estilos en línea en el proyecto GitHub Poncho
+  -->
+
+    <link href="https://cdn.jsdelivr.net/gh/argob/poncho@master/dist/css/encode-fontface.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/argob/poncho@master/dist/css/poncho.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/argob/poncho@master/dist/css/documentacion.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/argob/poncho@master/dist/css/icono-arg.css" rel="stylesheet">
+
+
+ <!-- FIN PONCHO -->
+
+
+
+
+
+
+		
+           <!-- Bootstrap  -->
+
+
+
+        <link rel="stylesheet" href="/dist/css/bootstrap.css">
+        <link rel="stylesheet" href="/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/dist/css/poncho.css">
+        <link rel="stylesheet" href="/dist/css/argentina.css">
+
+   <!--    <link rel="stylesheet" href="dist/css/PROPIOS.css"> -->
+
+      <!-- font-awesome  -->
+
+  <link rel="stylesheet" href="/dist/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/dist/css/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/dist/css/droid-serif.css">
+  <link rel="stylesheet" href="/dist/css/roboto-fontface.css">
+
+
+      <link rel="stylesheet" href="/dist/css/PROPIOS.css">
+
+
+
+
+
+
+ 
+
+
+
+
+<style>
+
+.mayusculas {
+
+text-transform: uppercase;
+
+}
+
+
+/* Para imprimir */
+@media print {
+#noimprimir0 {display:none;}
+#noimprimir1 {display:none;}
+#noimprimir2 {display:none;}
+#noimprimir3 {display:none;}
+
+body {
+
+font-size: smaller;
+
+
+}
+.table > tbody > tr > td {padding: 1px;}
+table {width: 77%;} 
+
+
+
+
+}
+
+
+
+
+
+.bordeinferior {border-bottom: 0px;}
+
+.jumbotron .jumbotron_bar{
+background-color: #082b48;
+}
+
+
+
+
+<script language="Javascript">
+	function Imprimir() {
+		window.parent.main.focus();  // main es el nombre del iframe (o el nombre del iframe o frame que asignes.
+		window.print();
+}
+</script>
+
+
+
+
+</style>
+
+
+   </head>
+
+
+
+
+  <BODY>
+
+    <header>
+
+	
+		<!--  INICIO BARRA DE NAVEGACION     -->	
+
+
+
+             		<a href="#main" class="skipcontenido">
+  Salta al contenido
+</a>
+
+
+           <nav class="navbar navbar-top navbar-default bordeinferior">
+				
+					<div class="container">
+						
+						
+						<div class="navbar-header">
+                        
+ 
+	                        <a class="navbar-brand" href="/" accesskey="1">
+	                            <img alt="Servicio de Hidrografia Naval" src="/assets/images/Logo_shn_RepArg.svg" height="49">
+	                            <h1 class="sr-only"><small>Servicio de Hidrografía Naval</small></h1>
+	                        </a>
+
+
+	                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+	                            <span class="sr-only">Toggle navigation</span>
+	                            <span class="icon-bar"></span>
+	                            <span class="icon-bar"></span>
+	                            <span class="icon-bar"></span>
+	                        </button>
+                    	</div>
+							
+						
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2"  >
+						<ul class="nav navbar-nav navbar-right" >
+
+
+							<li class="dropdown" >
+							<a href="#" aria-expanded="false" accesskey="2" class="dropdown-toggle" data-toggle="dropdown"> productos y servicios <span class="caret"></span></a>
+
+								<ul class="dropdown-menu submenu" role="menu">
+
+		                                <div>
+		                                                             
+		                                    <div>
+<UL class="sinbullets">
+
+		                                        <li><a href="http://geoportal.shn.gob.ar/#/geoportal" target="_blank">Geoportal</a></li>
+		                                        <li><a href="/ServiciosNauticos.asp">Servicios Náuticos</a></li>
+		                                        <li><a href="/ModelosPronosticos.asp">Modelos y Pronósticos</a></li>
+		                                        <li><a href="/Smara/glacio/sglaciologica.asp">Servicios de Hielo</a></li>
+		                                        <li><a href="/Observatorio/Astronomia.asp">Astronomía</a></li>
+		                                        <li><a href="/Observatorio/LaHora.asp">Hora Oficial y Frecuencia Patrón</a></li>
+
+</UL>		                                       
+		                                  </div>
+		                              
+		                                </div>
+
+
+		                                
+		                                <div>
+
+
+		                                
+		                                <div>
+
+
+		                                
+
+		                                
+		                            </ul>
+
+					</li>
+
+
+							
+					<li class="">
+					<a href="/Institucional/Institucional.asp" aria-expanded="false" class="" data-toggle="" accesskey="3"> institucional </a>
+
+
+					</li>
+
+
+ 							<li class="">
+							<a href="/ID/ID.asp" aria-expanded="false" class="" data-toggle="" accesskey="4"> I + D </a>
+								
+							</li>
+
+							<li class="">
+							 <a href="/DA/DatosAbiertos.asp" aria-expanded="false" class="" data-toggle="" accesskey="5"> Datos Abiertos </a>
+
+							</li>
+
+
+						
+
+							<li class="">
+							 <a href="/contactos/contactos.asp" aria-expanded="false" class="" data-toggle="" accesskey="6"> Contactos </a>
+
+							</li>
+
+
+						
+
+							<li class="">
+							 <a href="/ventas/ventas.asp" aria-expanded="false" class="" data-toggle="" accesskey="7"> ventas </a>
+
+							</li>
+
+
+
+							<li class="">
+
+							<a class="fa fa-download" accesskey="8" title="Descargas" aria-hidden="true" href="/download/download.asp"></a>
+
+							</li>
+
+
+
+
+							<li class="">
+
+							<a class="fa fa-search" accesskey="9" title="Buscador" aria-hidden="true" href="/buscador/tbuscador.asp"></a>
+
+							</li>
+
+
+
+
+
+
+
+							<li class="">
+
+							<a class="fa fa-instagram" aria-hidden="true" href="https://www.instagram.com/shn_argentina/?utm_medium=copy_link" title="Seguinos en Instagram"></a>
+
+							</li>
+
+
+
+
+
+
+
+							
+						</ul>
+							
+						</div>
+						
+
+					</div>
+
+
+				
+			</nav>
+
+
+
+
+
+    <script src="/dist/js/jquery.js"></script>
+    <script src="/dist/js/bootstrap.min.js"></script>
+
+    <script>
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover();
+
+      })
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+<style>
+
+.icono-arg-twitter-pajaro{
+
+font-size: 20px;
+}
+
+
+</style>
+
+
+
+		<!--  FIN BARRA DE NAVEGACION     -->	
+
+
+
+   </header>
+
+  <main id="main">
+
+
+<DIV ID="noimprimir3">
+
+	
+
+
+
+
+
+
+
+
+<section class="jumbotron bg-primary" style="background-image: url('/dist/images/TRANSPfondo.jpg');">
+
+  <div class="jumbotron_bar">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-12">
+
+          <ol class="breadcrumb pull-left">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/ModelosPronosticos.asp">Modelos y Pronósticos</a></li>
+            <li class="active"><span>Pronóstico Mareológico para el Río de la Plata</span></li>
+          </ol>
+
+
+<!-- INICIO SUBMENU DE LA DERECHA -->
+
+
+
+
+
+
+<!-- FIN SUBMENU DE LA DERECHA -->
+
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+  <div class="jumbotron_body">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2 text-center">
+          <h1>Pronóstico Mareológico para el Río de la Plata</h1>
+          <p>                       </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="overlay"> </div>
+</section>
+
+
+</DIV>
+
+
+
+
+
+
+
+<section>
+  <article class="container content_format">
+    <div class="col-md-8 col-md-offset-2">
+     <div class="row">
+
+<DIV ID="noimprimir2">
+
+        <div class="section-actions social-share">
+  <p>Compartir en <br> redes sociales</p>
+
+
+	  <ul class="list-inline">
+    <li><a href="http://www.facebook.com/sharer/sharer.php?u=http://www.hidro.gob.ar/oceanografia/pronostico.asp" title="Compartir en Facebook"><span class="icono-arg-facebook-f-"></span></a></li>
+    <li><a href="https://twitter.com/share" title="Compartir en Twitter"><span class="icono-arg-twitter-pajaro"></span></a></li>
+ 
+  </ul>
+
+
+
+
+</div>
+
+
+    </div>
+
+</DIV>
+
+
+
+
+
+<BR/>
+
+
+
+
+
+<BR>
+
+
+
+
+
+
+
+<p>FECHA: 16 DE NOVIEMBRE DE 2026</p>
+
+<DIV>
+
+<p>VALIDO DESDE LAS <STRONG>14:00</STRONG> Hs DE 16/11/2026 HASTA LAS <STRONG>03:00</STRONG> Hs DE 17/11/2026</p>
+
+
+
+</DIV>
+
+
+
+
+
+
+
+
+
+<h3 class="text-primary">RIO DE LA PLATA INTERIOR:</h3>
+
+<p>Corrección a las alturas de la Tablas de Marea para los puertos de La Plata, Buenos Aires, San Fernando e Isla Martín García.</p>
+
+
+<p><strong>VEINTE CENTIMETROS POR DEBAJO DE LOS VALORES INDICADOS EN LAS TABLAS DE MAREA.-</strong></p>
+<p><strong></strong></p>
+
+
+
+
+
+<table class="table table-striped">
+<caption>Valores corregidos</caption>
+
+<thead>
+
+         <tr>
+            <th>LUGAR</th>
+            <th>ESTADO</th>
+            <th>HORA</th>
+
+            <th>ALTURA (m)</th>
+            <th>FECHA</th>
+
+          </tr>
+
+</thead>
+<tbody>
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+PUERTO LA PLATA
+
+
+
+
+</td>
+
+    <td>BAJAMAR</td>
+    <td>16:00</td>
+
+    <td>0.35</td>
+    <td>16/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+</td>
+
+    <td>PLEAMAR</td>
+    <td>23:00</td>
+
+    <td>1.10</td>
+    <td>16/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+</td>
+
+    <td>BAJAMAR</td>
+    <td>06:30</td>
+
+    <td>0.50</td>
+    <td>17/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+PUERTO DE BUENOS AIRES (Muelle de Pescadores)
+
+
+
+
+</td>
+
+    <td>BAJAMAR</td>
+    <td>18:30</td>
+
+    <td>0.35</td>
+    <td>16/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+</td>
+
+    <td>PLEAMAR</td>
+    <td>01:00</td>
+
+    <td>1.10</td>
+    <td>17/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+</td>
+
+    <td>BAJAMAR</td>
+    <td>08:30</td>
+
+    <td>0.50</td>
+    <td>17/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+SAN FERNANDO
+
+
+
+
+</td>
+
+    <td>BAJAMAR</td>
+    <td>19:30</td>
+
+    <td>0.40</td>
+    <td>16/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+</td>
+
+    <td>PLEAMAR</td>
+    <td>02:00</td>
+
+    <td>1.10</td>
+    <td>17/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+</td>
+
+    <td>BAJAMAR</td>
+    <td>09:30</td>
+
+    <td>0.50</td>
+    <td>17/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+</tbody>
+
+   </table>
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+
+
+
+
+<h3 class="text-primary">RIO DE LA PLATA EXTERIOR:</h3>
+
+<p>Corrección a las alturas de la Tablas de Marea, para la zona del canal Punta Indio.</p>
+
+
+
+<p><strong>VEINTE CENTIMETROS POR DEBAJO DE LOS VALORES INDICADOS EN LAS TABLAS DE MAREA.-</strong></p>
+<p></p>
+
+
+
+
+<table class="table table-striped">
+<caption>Valores corregidos</caption>
+
+<thead>
+
+         <tr>
+            <th>LUGAR</th>
+            <th>ESTADO</th>
+            <th>HORA</th>
+
+            <th>ALTURA (m)</th>
+            <th>FECHA</th>
+
+          </tr>
+
+</thead>
+<tbody>
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+CANAL PUNTA INDIO (Oyarvide - Km 133)
+
+
+
+
+</td>
+    <td>PLEAMAR</td>
+    <td>19:30</td>
+    <td>1.10</td>
+    <td>16/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+
+
+  <tr>
+    <td>
+
+
+
+
+
+
+
+</td>
+    <td>BAJAMAR</td>
+    <td>03:00</td>
+    <td>0.60</td>
+    <td>17/11/2026</td>
+
+  </tr>
+
+
+
+
+
+
+
+
+
+</tbody>
+
+   </table>
+
+
+
+<DIV ID="noimprimir0">
+
+
+<br />
+<br />
+
+
+
+
+<div class="alert alert-info" role="alert"><p class="negrita">Sección Pronóstico Mareológico</p>
+Email: pronomarea@hidro.gov.ar<br />
+Tel. 4301-0062 / 4301-0064 INTs.: 4046 y 4028
+ 
+</div>
+
+</DIV>
+
+
+
+
+
+     
+    </div>
+  </article>
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+ 
+
+
+<DIV ID="noimprimir1">
+
+	
+
+
+
+<section class="modulo-contacto">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6">
+          <h2 class="section-title">Contacto</h2>
+          <div>
+            <h3 class="h5">Servicio de Hidrografía Naval</h3>
+
+<ul class="menu nav">
+    <li class="first leaf"> <strong>Dirección:</strong> Av. Montes de Oca 2124</li>
+    <li class="first leaf"> <strong>Código Postal:</strong> C1270ABV</li>
+    <li class="first leaf"> <strong>Teléfono:</strong> (+54 11) 4301-0062 / 4301-0064 / 4301-0066 / 4301-0067</li>
+    <li class="last leaf"> <strong>Correo electrónico: </strong>shn@hidro.gov.ar</li>
+</ul>
+<br>
+            <h3 class="h5">Redes sociales del área</h3>
+ <div class="social-btn">
+	<ul>
+
+
+
+
+	<li>
+		<a href="https://twitter.com/SHN_Argentina" target="blank" title="Seguinos en Twitter"><span class="maschico icono-arg-twitter-pajaro" aria-hidden="true"></span></a>
+			
+	</li>
+												
+
+	<li>
+		<a href="/rss/rss.asp" target="blank" title="Seguinos en RSS">	<span class="fa fa-rss" aria-hidden="true"></span></a>
+
+	</li>
+
+
+	<li>
+		<a href="https://instagram.com/shn_argentina?utm_medium=copy_link" target="blank" title="Seguinos en Instagram"><span class="fa fa-instagram" aria-hidden="true"></span></a>
+		</li>
+
+
+
+
+	<li>
+
+		<a href="https://www.youtube.com/channel/UCTWs-jNTBiGlqgfsAOGl8jQ" target="blank" title="Seguinos en YouTube"><span class="fa fa-youtube-square" aria-hidden="true"></span></a>
+
+	</li>
+
+
+															
+												
+	</ul>
+		</div>
+
+          </div>
+      </div>
+      <div class="col-xs-12 col-sm-6">
+        <div>
+ 
+
+
+<iframe class="ccsiframe" title="Mapa con la ubicación del Servicio de Hidrografía Naval" src="/nautica/mapashn_ArgenMap.asp"></iframe>
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+</section>
+
+ 
+
+
+</DIV>
+
+    </main>
+
+	 <footer class="main-footer">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <span class="text-muted small">© Copyright - Todos los Derechos Reservados - Servicio de Hidrografía Naval</span>&nbsp;|&nbsp;
+
+
+<span class="text-muted small"><a href="/sitio/sitio.asp" accesskey="0">Mapa del Sitio</a></span>&nbsp;|&nbsp;<span class="text-muted small"><a href="/accesibilidad/accesibilidad.asp">Accesibilidad Web</a></span>
+
+
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+
+
+
+
+
+
+  </body>
+</html>
