@@ -76,7 +76,7 @@ test('«Cambiar» pasa a Perú como país de la app: ya no se separan los númer
   await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
   await expect(page.getByTestId('national-home')).toHaveCount(0);
   await expect(page.getByTestId('national-here')).toHaveCount(0);
-  await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('con Wi-Fi baja los datos del país solo, sin preguntar', async ({ page }) => {

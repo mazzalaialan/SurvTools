@@ -53,7 +53,7 @@ export async function buildApp(
     observedRain,
     sourcesDown: (sourcesDown.all() as unknown as { source: string; since: number; failures: number }[]).map((r) => ({ ...r, since: new Date(r.since).toISOString() })),
   }));
-  deviceRoutes(app, db, push);
+  deviceRoutes(app, db, push, { requestsPerMin: config.deviceRequestsPerMin, failuresPer10Min: config.deviceFailuresPer10Min });
   transferRoutes(app, db, config);
   sharedOutingRoutes(app, db, config);
   liveSessionRoutes(app, db, config);

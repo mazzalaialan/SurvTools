@@ -19,7 +19,7 @@ test('Perú y Bolivia: números, radio, parques y la red de radioaficionados de 
 
   // Perú: números oficiales y el CICOTOX; los sin confirmar, avisados.
   await page.goto('/#/first-aid/contacts');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true }).click();
   const numbers = page.getByTestId('national-numbers');
   await expect(numbers).toContainText('Policía Nacional');
   await expect(numbers.getByTestId('national-pePoison')).toContainText('CICOTOX');
@@ -43,7 +43,7 @@ test('Perú y Bolivia: números, radio, parques y la red de radioaficionados de 
   // Bolivia: Sajama, con el contacto del SERNAP y sin la red de Perú.
   await context.setGeolocation(SAJAMA);
   await page.goto('/#/first-aid/contacts');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Bolivia' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Bolivia', exact: true }).click();
   await expect(page.getByTestId('national-numbers').getByTestId('unconfirmed-boAmbulance')).toBeVisible();
   await page.goto('/#/first-aid/radio');
   await expect(page.getByTestId('park-here')).toContainText('Parque Nacional Sajama · estás adentro');
@@ -64,7 +64,7 @@ test('radio: las emisoras, los parques y las repetidoras son las del país del l
 
   // Ajustes con Argentina y el lugar en Perú (Huascarán): salen las de Perú.
   await page.goto('/#/first-aid/contacts');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Argentina' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Argentina', exact: true }).click();
   await page.goto('/#/first-aid/radio');
   const stations = page.getByTestId('radio-stations');
   await expect(stations.locator('li').first()).toContainText('Radio Nacional del Perú · Yungay');
@@ -74,7 +74,7 @@ test('radio: las emisoras, los parques y las repetidoras son las del país del l
 
   // Al revés: Ajustes con Perú y el lugar en la Argentina (Bariloche): salen las argentinas.
   await page.goto('/#/first-aid/contacts');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true }).click();
   await context.setGeolocation({ latitude: -41.13, longitude: -71.31 });
   await page.goto('/#/first-aid/radio');
   await expect(stations.locator('li').first()).not.toContainText('Radio Nacional del Perú');

@@ -60,6 +60,9 @@ export interface Config {
   publicUrl: string | null;
   /** Paquetes de datos que se regeneran cada mes (parques, Chile, Uruguay); null = no se ofrecen. */
   dataPacksDir: string | null;
+  /** Topes por IP de /api/devices (ver routes/devices.ts); las pruebas e2e los suben porque un equipo rápido corre toda la batería en pocos minutos desde una sola IP. */
+  deviceRequestsPerMin: number;
+  deviceFailuresPer10Min: number;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -97,6 +100,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     mailFrom: env.MAIL_FROM?.trim() || null,
     publicUrl: env.PUBLIC_URL?.trim() || null,
     dataPacksDir: env.DATA_PACKS_DIR === '' ? null : (env.DATA_PACKS_DIR ?? `${env.DATA_DIR ?? './data'}/packs`),
+    deviceRequestsPerMin: Number(env.DEVICE_REQUESTS_PER_MIN ?? 300),
+    deviceFailuresPer10Min: Number(env.DEVICE_FAILURES_PER_10MIN ?? 30),
     mapsMaxZoneTiles: Number(env.MAPS_MAX_ZONE_TILES ?? 60_000),
     mapsMaxZoneMb: Number(env.MAPS_MAX_ZONE_MB ?? 1_500),
     libraryDir: env.LIBRARY_DIR?.trim() || null,

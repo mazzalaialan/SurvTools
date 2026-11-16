@@ -143,7 +143,7 @@ export const DEVICE_REQUESTS_PER_MIN = 300;
 export const DEVICE_FAILURES_PER_10MIN = 30;
 
 /** Límite de pedidos por IP, en memoria (se reinicia con el servidor; alcanza para frenar abusos simples). */
-export function createDeviceLimiter(now: () => number = Date.now) {
+export function createDeviceLimiter(now: () => number = Date.now, limits: { requestsPerMin: number; failuresPer10Min: number } = { requestsPerMin: DEVICE_REQUESTS_PER_MIN, failuresPer10Min: DEVICE_FAILURES_PER_10MIN }) {
   const requests = new Map<string, { count: number; resetAt: number }>();
   const failures = new Map<string, { count: number; resetAt: number }>();
   const bump = (map: Map<string, { count: number; resetAt: number }>, ip: string, windowMs: number) => {
@@ -160,8 +160,8 @@ export function createDeviceLimiter(now: () => number = Date.now) {
     /** true si este pedido hay que rechazar con 429. */
     blocked(ip: string): boolean {
       const f = failures.get(ip);
-      if (f && f.resetAt > now() && f.count >= DEVICE_FAILURES_PER_10MIN) return true;
-      return bump(requests, ip, 60_000) > DEVICE_REQUESTS_PER_MIN;
+      if (f && f.resetAt > now() && f.count >= limits.failuresPer10Min) return true;
+      return bump(requests, ip, 60_000) > limits.requestsPerMin;
     },
     /** Se anota un intento con código inválido. */
     failed(ip: string): void {
@@ -170,8 +170,8 @@ export function createDeviceLimiter(now: () => number = Date.now) {
   };
 }
 
-export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender): void {
-  const limiter = createDeviceLimiter();
+export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender, limits?: { requestsPerMin: number; failuresPer10Min: number }): void {
+  const limiter = createDeviceLimiter(Date.now, limits);
   // Solo las rutas de dispositivos: frena el abuso por IP sin tocar al resto del servidor.
   app.addHook('onRequest', async (req, reply) => {
     if (!req.url.startsWith('/api/devices')) return;

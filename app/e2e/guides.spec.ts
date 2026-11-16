@@ -105,11 +105,11 @@ test('números de emergencia y guía según el país: Chile y Uruguay', async ({
 
   // El país se elige en Ajustes (y también en Contactos y en la guía).
   await page.goto('/#/settings');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Chile' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Chile', exact: true }).click();
 
   // Chile: números propios en Contactos.
   await page.goto('/#/first-aid/contacts');
-  await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Chile' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Chile', exact: true })).toHaveAttribute('aria-pressed', 'true');
   const national = page.getByTestId('national-numbers');
   await expect(national).toContainText('Ambulancia (SAMU)');
   await expect(national.getByRole('link', { name: '131' })).toHaveAttribute('href', 'tel:131');
@@ -123,7 +123,7 @@ test('números de emergencia y guía según el país: Chile y Uruguay', async ({
 
   // Uruguay: todo por el 911, sin repetir botones; el CIAT para intoxicaciones.
   await page.goto('/#/first-aid/guides');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Uruguay' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Uruguay', exact: true }).click();
   await page.goto('/#/first-aid/guides/bleeding');
   await expect(page.getByTestId('guide-calls').getByRole('link', { name: '911' })).toHaveCount(1);
   await page.goto('/#/first-aid/guides/snakebite');
@@ -144,7 +144,7 @@ test('paquete de Chile: se baja al elegir el país, queda guardado y da radio, c
 
   // Al elegir Chile se baja el paquete en segundo plano y queda guardado en el dispositivo.
   await page.goto('/#/settings');
-  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Chile' }).click();
+  await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Chile', exact: true }).click();
   await expect
     .poll(() => page.evaluate(async () => !!(await (await caches.open('vikarg-country')).match(new URL('data/CL.json', location.href).href))), { timeout: 15_000 })
     .toBe(true);
