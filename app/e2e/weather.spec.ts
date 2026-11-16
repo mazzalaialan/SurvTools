@@ -77,7 +77,7 @@ test('clima: descarga, avisos, y sin conexión muestra lo guardado', async ({ pa
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 
   await page.goto('/#/weather');
-  await page.getByRole('link', { name: /Clima/ }).click();
+  await page.getByRole('link', { name: /^Clima Pronóstico/ }).click();
   await expect(page.getByTestId('weather-temp')).toHaveText('21°');
   await expect(page.getByText('Parcialmente nublado · sensación 20°')).toBeVisible();
   // Ahora: solo se colorea lo que merece atención; lo normal queda con el color común.
@@ -160,7 +160,7 @@ test('clima: descarga, avisos, y sin conexión muestra lo guardado', async ({ pa
 
   // Al volver con un pronóstico reciente no se descarga de nuevo.
   await page.goto('/#/weather');
-  await page.getByRole('link', { name: /Clima/ }).click();
+  await page.getByRole('link', { name: /^Clima Pronóstico/ }).click();
   await expect(page.getByTestId('weather-temp')).toHaveText('21°');
   expect(requests).toBe(1);
 
