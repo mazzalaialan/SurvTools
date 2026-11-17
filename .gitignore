@@ -15,6 +15,7 @@ e2e-results/
 playwright-report/
 server/data/
 deploy/maps/
+deploy/osm/
 *.pmtiles
 !app/e2e/fixtures/*.pmtiles
 *.pmtiles.parts.sqlite

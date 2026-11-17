@@ -315,7 +315,21 @@ const AROUND_TIMEOUT_MS = 30_000;
  * (Overpass) van en tres consultas chicas a la vez: cada una vuelve a llamar a `onPartial` con lo acumulado cuando llega, así lo
  * liviano aparece primero y lo pesado (el mojón a 3 km) se suma después. El resultado final tiene todo.
  */
-export async function describeLocation(lat: number, lon: number, lang: string, onPartial?: (info: LocationInfo) => void): Promise<LocationInfo> {
+/** La base propia del servidor (tools/osm-index): rápida y sin depender de servicios públicos. `null` si no hay servidor, no la tiene o no responde. */
+export async function fetchLocalAround(serverUrl: string | undefined, lat: number, lon: number, timeoutMs = 5000): Promise<OsmElement[] | null> {
+  const base = serverUrl?.trim().replace(/\/+$/, '');
+  if (!base) return null;
+  try {
+    const res = await fetch(`${base}/api/osm/around?lat=${lat.toFixed(6)}&lon=${lon.toFixed(6)}`, { signal: AbortSignal.timeout(timeoutMs) });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { elements?: OsmElement[] };
+    return Array.isArray(json.elements) ? json.elements : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function describeLocation(lat: number, lon: number, lang: string, onPartial?: (info: LocationInfo) => void, serverUrl?: string): Promise<LocationInfo> {
   const params = new URLSearchParams({ format: 'jsonv2', lat: lat.toFixed(6), lon: lon.toFixed(6), zoom: '18', addressdetails: '1', 'accept-language': lang });
   const reversing = fetch(`${NOMINATIM}?${params}`, { signal: AbortSignal.timeout(15_000) })
     .then((r) => (r.ok ? (r.json() as Promise<NominatimReverse>) : {}))
@@ -333,17 +347,27 @@ export async function describeLocation(lat: number, lon: number, lang: string, o
     const around = parseSurroundings(found, lat, lon, o.road);
     return { ...around, address: completeAddress(o, around, lang), locality: o.locality };
   };
-  const arounding = queries.map((q) =>
-    overpass(q, AROUND_TIMEOUT_MS)
-      .then((els) => {
-        found.push(...els);
-        // Si la dirección todavía no llegó, se entrega junto con ella más abajo.
-        if (own) onPartial?.(build());
-      })
-      .catch(() => undefined),
-  );
+  // Primero la base de tu servidor; solo si no está o no responde se consulta a los servicios públicos de OpenStreetMap.
+  const arounding = fetchLocalAround(serverUrl, lat, lon).then(async (local) => {
+    if (local) {
+      found.push(...local);
+      if (own) onPartial?.(build());
+      return;
+    }
+    await Promise.all(
+      queries.map((q) =>
+        overpass(q, AROUND_TIMEOUT_MS)
+          .then((els) => {
+            found.push(...els);
+            // Si la dirección todavía no llegó, se entrega junto con ella más abajo.
+            if (own) onPartial?.(build());
+          })
+          .catch(() => undefined),
+      ),
+    );
+  });
   own = describeAddress(await reversing);
   onPartial?.(build());
-  await Promise.all(arounding);
+  await arounding;
   return build();
 }

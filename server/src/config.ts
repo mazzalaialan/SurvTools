@@ -43,6 +43,8 @@ export interface Config {
   hazardsEnabled: boolean;
   /** Carpeta con vector.pmtiles y elevation.pmtiles (mapas offline); sin archivos, la app usa las fuentes públicas. */
   mapsDir: string | null;
+  /** Base de calles y números de OpenStreetMap (tools/osm-index); sin ella, «Mi ubicación» usa los servicios públicos. */
+  osmIndexPath: string | null;
   /** Pedidos de teselas a la vez; más que eso responde 503 y la app pasa a las fuentes públicas. */
   mapsMaxConcurrent: number;
   /** Tamaño máximo de una zona que se baja del servidor (teselas y MB). */
@@ -93,6 +95,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     lightningRadiusKm: Number(env.LIGHTNING_RADIUS_KM ?? 30),
     rainObserved: (env.RAIN_OBSERVED ?? 'true') !== 'false',
     hazardsEnabled: (env.HAZARDS_ENABLED ?? 'true') !== 'false',
+    osmIndexPath: env.OSM_INDEX === '' ? null : (env.OSM_INDEX ?? `${env.DATA_DIR ?? './data'}/osm/around.sqlite`),
     mapsDir: env.MAPS_DIR === '' ? null : (env.MAPS_DIR ?? `${env.DATA_DIR ?? './data'}/maps`),
     mapsMaxConcurrent: Number(env.MAPS_MAX_CONCURRENT ?? 48),
     adminEmail: env.ADMIN_EMAIL === '' ? null : (env.ADMIN_EMAIL?.trim() ?? 'contacto.vikarg@gmail.com'),

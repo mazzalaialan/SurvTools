@@ -14,6 +14,7 @@ import { CALLS } from '@/modules/firstAid/guides/types';
 import type { NewWaypointDraft } from '@/modules/waypoints/WaypointEditPage';
 import { nearestWithRole } from '@/modules/waypoints/roles';
 import { useWaypoints } from '@/modules/waypoints/store';
+import { useSettings } from '@/core/settings/settings';
 import { describeLocation, type LocationInfo } from './osm';
 import { CopyButton, formatDistance } from './parts';
 
@@ -39,6 +40,7 @@ export function MyLocationPage() {
   const calls = CALLS[callCountry];
   const emergencyNumber = calls.emergency ?? '911';
   const waypoints = useWaypoints((s) => s.waypoints);
+  const serverUrl = useSettings((s) => s.settings.serverUrl);
   const [info, setInfo] = useState<LocationInfo | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'error' | 'offline'>('idle');
   const lastLookup = useRef<{ lat: number; lon: number } | null>(null);
@@ -54,7 +56,7 @@ export function MyLocationPage() {
     setState('loading');
     try {
       // La dirección aparece apenas responde; las calles y rutas se suman después.
-      setInfo(await describeLocation(lat, lon, i18n.language, (partial) => lastLookup.current?.lat === lat && setInfo(partial)));
+      setInfo(await describeLocation(lat, lon, i18n.language, (partial) => lastLookup.current?.lat === lat && setInfo(partial), serverUrl));
       setState('idle');
     } catch {
       setState('error');

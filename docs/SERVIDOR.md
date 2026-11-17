@@ -83,6 +83,8 @@ La app queda servida en `https://TU_DOMINIO/` y se puede instalar desde ahí.
 | `LIGHTNING_PARTIAL` | `true` | Bajar solo las coordenadas de los rayos de cada archivo (~36 KB, ~155 MB por día con los tres por minuto); `false` baja el archivo completo (~380 KB, ~1,6 GB por día) |
 | `LIGHTNING_RADIUS_KM` | `30` | Distancia para avisar de rayos |
 | `MAPS_DIR` | `/maps` (con el compose; si no, `DATA_DIR/maps`) | Carpeta con `vector.pmtiles` y `elevation.pmtiles`; vacío = sin mapas |
+| `OSM_INDEX_PATH` | `./osm` | (Solo compose) carpeta del host con `around.sqlite`, la base de calles y números (ver «Base de calles y números»), que se monta en `/osm` de solo lectura |
+| `OSM_INDEX` | `$DATA_DIR/osm/around.sqlite` | Ruta de esa base dentro del contenedor; vacío, se apaga |
 | `MAPS_PATH` | `./maps` | (Solo compose) carpeta del host que se monta en `/maps`, de solo lectura |
 | `MAPS_MAX_CONCURRENT` | `48` | Teselas que entrega a la vez; con más responde 503 y la app usa las fuentes públicas un rato |
 | `MAPS_MAX_ZONE_TILES` | `60000` | Teselas máximas de una zona que la app baja del servidor |
@@ -127,6 +129,18 @@ El registro queda en `deploy/maps/update.log`. Cada reconstrucción cuesta unas 
 - **Solo servidores públicos**, como antes.
 
 API: `GET /api/maps` informa los archivos (zooms, zona, fecha) y los límites, y `GET /api/maps/{vector|elevation}/z/x/y` entrega una tesela (204 si no hay datos en ese lugar). Las teselas del mapa salen comprimidas tal como están en el archivo (`Content-Encoding: gzip`).
+
+## Base de calles y números (opcional, para «Mi ubicación»)
+
+Con esta base, «Mi ubicación» da la dirección con la altura, las entrecalles, la ruta y el kilómetro en milisegundos, desde tu servidor, en vez de esperar a los servicios públicos de OpenStreetMap (Overpass), que son lentos o se caen. La app consulta primero `GET /api/osm/around?lat=&lon=` de tu servidor; si no responde (503 sin base, o sin servidor), usa los servicios públicos como antes.
+
+Se arma con osmium en Docker (no hay que instalar nada) a partir del extracto de Sudamérica que ya baja el mapa:
+
+```sh
+sh tools/osm-index/build.sh deploy/maps/planetiler/sources/south_america.osm.pbf deploy/osm
+```
+
+Deja `deploy/osm/around.sqlite` (se escribe aparte y se renombra al terminar) y el servidor lo abre al reiniciar. Conviene rehacerla una vez por mes, después de actualizar el mapa (`update-maps.sh` baja el extracto nuevo). Los datos son © colaboradores de OpenStreetMap (ODbL). Detalle en `tools/osm-index/README.md`.
 
 ## Mantenimiento
 
