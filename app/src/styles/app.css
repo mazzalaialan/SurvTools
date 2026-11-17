@@ -4937,3 +4937,46 @@ button.country-pack-icon {
   gap: 6px;
   font-size: 0.85rem;
 }
+
+/* Faltantes del botiquín: un botón fuerte por fila y el resto en un menú */
+.km-row .kb-name {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.km-actions {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.km-primary {
+  flex: 1;
+}
+.km-more {
+  width: 48px;
+  padding: 0;
+  flex: none;
+}
+.km-menu {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  background: var(--surface-2);
+  border-radius: 10px;
+}
+.km-share-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.km-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-left: 4px solid var(--ok);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}

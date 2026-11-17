@@ -150,18 +150,25 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await missingBox.locator('li', { hasText: 'Guantes de nitrilo' }).getByRole('button', { name: 'Compré' }).click();
   await expect(page.getByTestId('km-qty')).toHaveValue('1');
   await page.getByTestId('km-confirm').click();
-  await expect(missingBox).not.toContainText('Guantes de nitrilo');
+  await expect(missingBox.locator('li', { hasText: 'Guantes de nitrilo' })).toHaveCount(0);
+  await expect(page.getByTestId('km-message')).toContainText('pasó al contenido');
   await expect(page.getByRole('heading', { name: 'Contenido' })).toBeVisible();
   await expect(page.getByText('Guantes de nitrilo').first()).toBeVisible();
 
   // «No lo necesito»: se saca de los faltantes (con confirmación) sin tocar el artículo.
   const marker = missingBox.locator('li', { hasText: 'Marcador indeleble' });
   await expect(marker).toBeVisible();
-  await marker.getByRole('button', { name: 'No lo necesito' }).click();
+  // «No lo necesito» está en el menú de la fila (a dos toques), para no tocarlo por error.
+  await expect(marker.getByRole('button', { name: /No lo necesito/ })).toHaveCount(0);
+  await marker.getByRole('button', { name: /Más acciones/ }).click();
+  await marker.getByRole('button', { name: /No lo necesito/ }).click();
   await expect(page.getByTestId('confirm-message')).toContainText('Marcador indeleble');
   await page.getByTestId('confirm-ok').click();
   await expect(page.getByTestId('km-message')).toContainText('ya no figura como faltante');
   await expect(missingBox.locator('li', { hasText: 'Marcador indeleble' })).toHaveCount(0);
+  // Se puede deshacer desde el aviso, que aparece arriba de la lista.
+  await page.getByTestId('km-undo').click();
+  await expect(missingBox.locator('li', { hasText: 'Marcador indeleble' })).toBeVisible();
 
   // «¿Qué le falta?»: se compara con la plantilla y se puede dejar como mínimo.
   await page.getByTestId('kc-toggle').click();
@@ -249,6 +256,6 @@ test('el asistente pasa al botiquín nuevo lo que ya tenés fuera de los botiqui
   await page.goto('/#/first-aid/kits');
   await page.locator('a[href^="#/first-aid/kits/"]:not([href$="/build"])', { hasText: 'Segundo botiquín' }).first().click();
   await expect(page.getByTestId('kit-missing')).toContainText('Tenés 1 guardado en Placard');
-  await page.getByTestId('kit-missing').getByRole('button', { name: 'Pasar 1 al botiquín' }).click();
+  await page.getByTestId('kit-missing').getByRole('button', { name: /Pasar 1 de Torniquete CAT/ }).click();
   await expect(page.getByTestId('kit-missing').locator('li', { hasText: 'Torniquete CAT' })).toHaveCount(0);
 });

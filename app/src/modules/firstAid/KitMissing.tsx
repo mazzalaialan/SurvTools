@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Check, EllipsisVertical, FileText, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
@@ -22,11 +23,15 @@ import { CATALOG, GROUP_NAMES, GROUPS, matchesCatalog, unitFor } from './kitTemp
 export function KitMissing({ kit, shortages }: { kit: Location; shortages: StockShortage[] }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith('en') ? 'en' : 'es';
-  const { items, categories, lots, locations, setStockMin, saveLot } = useInventory(
-    useShallow((s) => ({ items: s.items, categories: s.categories, lots: s.lots, locations: s.locations, setStockMin: s.setStockMin, saveLot: s.saveLot })),
+  const { items, categories, lots, locations, setStockMin, saveLot, deleteLot } = useInventory(
+    useShallow((s) => ({ items: s.items, categories: s.categories, lots: s.lots, locations: s.locations, setStockMin: s.setStockMin, saveLot: s.saveLot, deleteLot: s.deleteLot })),
   );
   const [buying, setBuying] = useState<StockShortage | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  /** Último aviso y, si se puede, cómo deshacerlo (se muestra arriba, cerca de lo que se tocó). */
+  const [notice, setNotice] = useState<{ text: string; undo?: () => Promise<void> } | null>(null);
+  const setMessage = (text: string | null) => setNotice(text ? { text } : null);
+  /** La fila que tiene abierto el menú de más acciones. */
+  const [menuFor, setMenuFor] = useState<string | null>(null);
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
 
   const entries: ShopEntry[] = shortages.flatMap(({ stockMin, current }) => {
@@ -51,13 +56,23 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
   async function dismiss(s: StockShortage) {
     const item = items.get(s.stockMin.itemId);
     if (!item || !(await confirmAction(t('kitMissing.dismissConfirm', { name: item.name })))) return;
+    const previous = s.stockMin.minQuantity;
     await setStockMin(item.id, kit.id, null);
-    setMessage(t('kitMissing.dismissed', { name: item.name }));
+    setMenuFor(null);
+    setNotice({ text: t('kitMissing.dismissed', { name: item.name }), undo: async () => void (await setStockMin(item.id, kit.id, previous)) });
   }
 
   return (
     <section className="card stack" aria-labelledby="km-title" data-testid="kit-missing">
       <h2 id="km-title" className="section-title" style={{ margin: 0 }}>{t('kits.missing')}</h2>
+      {notice && (
+        <div className="km-notice" role="status" data-testid="km-message">
+          <span>{notice.text}</span>
+          {notice.undo && (
+            <button className="btn-link" type="button" onClick={async () => { const undo = notice.undo!; setNotice(null); await undo(); }} data-testid="km-undo">{t('kitMissing.undo')}</button>
+          )}
+        </div>
+      )}
       <ul className="list">
         {shortages.map((s) => {
           const item = items.get(s.stockMin.itemId);
@@ -66,38 +81,55 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
           const out = lotsOutsideKits(item.id, [...lots.values()], [...locations.values()]);
           const outside = lotsQuantity(out);
           const bring = Math.min(s.missing, outside);
+          const open = menuFor === item.id;
+          const boughtBtn = (primary: boolean) => (
+            <button className={primary ? 'btn btn-primary km-primary' : 'btn'} type="button" onClick={() => { setMenuFor(null); setBuying(s); }} aria-label={t('kitMissing.boughtLabel', { name: item.name })} data-testid={`km-bought-${item.id}`}>
+              <Check size={18} aria-hidden /> {t('kitMissing.bought')}
+            </button>
+          );
           return (
-            <li key={s.stockMin.id} className="kb-row" data-testid={`km-row-${item.id}`}>
+            <li key={s.stockMin.id} className="kb-row km-row" data-testid={`km-row-${item.id}`}>
               <div className="kb-row-main">
                 <Link className="kb-name" to={`/inventory/items/${item.id}`}>{item.name}</Link>
-                <span className="pill pill-warn">{t('stockMin.status', { current: fmt.format(s.current), min: fmt.format(s.stockMin.minQuantity), unit })}</span>
+                <span className="pill pill-warn">{t('stockMin.status', { current: fmt.format(s.current), min: fmt.format(s.stockMin.minQuantity), unit: unitFor(s.stockMin.minQuantity, unit) })}</span>
               </div>
-              <div className="kb-row-sub">
-                <span className="hint">{t('kitMissing.toBuy', { qty: fmt.format(s.missing), unit: unitFor(s.missing, unit) })}</span>
-                {outside > 0 && (
-                  <>
-                    <span className="hint" data-testid={`km-outside-${item.id}`}>{t('kitMissing.outside', { qty: fmt.format(outside), places: sourcePlaces(out, locations) })}</span>
-                    <button className="btn" type="button" onClick={() => void bringHere(s, bring)} data-testid={`km-bring-${item.id}`}>{t('kitMissing.bring', { qty: fmt.format(bring) })}</button>
-                  </>
+              <p className="hint" style={{ margin: 0 }}>
+                {t('kitMissing.toBuy', { qty: fmt.format(s.missing), unit: unitFor(s.missing, unit) })}
+                {outside > 0 && <span data-testid={`km-outside-${item.id}`}> · {t('kitMissing.outside', { qty: fmt.format(outside), places: sourcePlaces(out, locations) })}</span>}
+              </p>
+              {/* Un solo botón fuerte por fila: pasar lo que ya tenés guardado afuera o, si no hay, «Compré». Lo demás, en el menú de la derecha. */}
+              <div className="km-actions">
+                {outside > 0 ? (
+                  <button className="btn btn-primary km-primary" type="button" onClick={() => void bringHere(s, bring)} aria-label={t('kitMissing.bringLabel', { qty: fmt.format(bring), name: item.name })} data-testid={`km-bring-${item.id}`}>
+                    <Check size={18} aria-hidden /> {t('kitMissing.bring', { qty: fmt.format(bring) })}
+                  </button>
+                ) : (
+                  boughtBtn(true)
                 )}
-                <button className="btn" type="button" onClick={() => setBuying(s)} data-testid={`km-bought-${item.id}`}>{t('kitMissing.bought')}</button>
-                <button className="btn" type="button" onClick={() => void dismiss(s)} data-testid={`km-dismiss-${item.id}`}>{t('kitMissing.dismiss')}</button>
+                <button className="btn km-more" type="button" onClick={() => setMenuFor(open ? null : item.id)} aria-expanded={open} aria-label={t('kitMissing.moreLabel', { name: item.name })} data-testid={`km-more-${item.id}`}>
+                  <EllipsisVertical size={20} aria-hidden />
+                </button>
               </div>
+              {open && (
+                <div className="km-menu" data-testid={`km-menu-${item.id}`}>
+                  {outside > 0 && boughtBtn(false)}
+                  <button className="btn btn-danger-outline" type="button" onClick={() => void dismiss(s)} aria-label={t('kitMissing.dismissLabel', { name: item.name })} data-testid={`km-dismiss-${item.id}`}>{t('kitMissing.dismiss')}</button>
+                </div>
+              )}
             </li>
           );
         })}
       </ul>
-      <div className="row-end" style={{ gap: 8, flexWrap: 'wrap' }}>
-        <button className="btn" type="button" onClick={async () => setMessage(await shareShoppingText(entries, ctx()))} data-testid="km-share">{t('kitCompare.share')}</button>
-        <button className="btn" type="button" onClick={async () => setMessage(await exportShoppingPdf(entries, ctx()))} data-testid="km-pdf">{t('kitCompare.pdf')}</button>
+      <div className="km-share-grid">
+        <button className="btn" type="button" onClick={async () => setMessage(await shareShoppingText(entries, ctx()))} data-testid="km-share"><Share2 size={18} aria-hidden /> {t('kitMissing.share')}</button>
+        <button className="btn" type="button" onClick={async () => setMessage(await exportShoppingPdf(entries, ctx()))} data-testid="km-pdf"><FileText size={18} aria-hidden /> {t('kitMissing.pdf')}</button>
       </div>
-      {message && <p className="hint" role="status" style={{ margin: 0 }} data-testid="km-message">{message}</p>}
-      {buying && <BoughtDialog kit={kit} shortage={buying} item={items.get(buying.stockMin.itemId)!} hasExpiry={effectiveConfig(items.get(buying.stockMin.itemId)!, categories.get(items.get(buying.stockMin.itemId)!.categoryId)).controlType === 'expiryDate'} onClose={() => setBuying(null)} />}
+      {buying && <BoughtDialog onBought={(lotId) => setNotice({ text: t('kitMissing.boughtDone', { name: items.get(buying.stockMin.itemId)?.name ?? '' }), undo: async () => void (await deleteLot(lotId)) })} kit={kit} shortage={buying} item={items.get(buying.stockMin.itemId)!} hasExpiry={effectiveConfig(items.get(buying.stockMin.itemId)!, categories.get(items.get(buying.stockMin.itemId)!.categoryId)).controlType === 'expiryDate'} onClose={() => setBuying(null)} />}
     </section>
   );
 }
 
-function BoughtDialog({ kit, shortage, item, hasExpiry, onClose }: { kit: Location; shortage: StockShortage; item: Item; hasExpiry: boolean; onClose: () => void }) {
+function BoughtDialog({ kit, shortage, item, hasExpiry, onClose, onBought }: { kit: Location; shortage: StockShortage; item: Item; hasExpiry: boolean; onClose: () => void; onBought: (lotId: string) => void }) {
   const { t } = useTranslation();
   const saveLot = useInventory((s) => s.saveLot);
   const [qty, setQty] = useState(shortage.missing);
@@ -107,12 +139,12 @@ function BoughtDialog({ kit, shortage, item, hasExpiry, onClose }: { kit: Locati
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!(qty > 0)) return;
-    await saveLot(
-      newEntity<Lot>({
+    const lot = newEntity<Lot>({
         itemId: item.id, locationId: kit.id, quantity: qty, packageCount: null, packageSize: null, packageName: null, packageTareGrams: null, expiryDate: expiry || null,
         manufactureDate: null, shelfLifeMonths: null, capacityTotal: null, capacityRemaining: null, capacityUnit: null, notes: '',
-      }),
-    );
+      });
+    await saveLot(lot);
+    onBought(lot.id);
     onClose();
   }
 
