@@ -98,6 +98,11 @@ export function MapsPage() {
   const [outline, setOutline] = useState<FeatureCollection | null>(null);
   // Ecorregiones: el archivo se carga la primera vez que se prende la capa (y queda guardado para usarlo sin conexión).
   const [layersOpen, setLayersOpen] = useState(false);
+  // El cartel de la capa de avalancha en pantalla completa se cierra; vuelve al prender la capa de nuevo.
+  const [slopeHidden, setSlopeHidden] = useState(false);
+  useEffect(() => {
+    if (layers.slope) setSlopeHidden(false);
+  }, [layers.slope]);
   const [eco, setEco] = useState<EcoregionData | null>(null);
   const [ecoFailed, setEcoFailed] = useState(false);
   /** Punto tocado en el mapa (con la capa prendida): la ficha de ecorregión es de ese punto y no del centro. */
@@ -488,7 +493,7 @@ export function MapsPage() {
           {picked && (
             <>
               {' '}
-              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid={`${pre}eco-pick-clear`}>{t('maps.ecoPickClear')}</button>
+              <button className="icon-btn area-close" type="button" onClick={() => setPicked(null)} aria-label={t('maps.ecoPickClear')} title={t('maps.ecoPickClear')} data-testid={`${pre}eco-pick-clear`}><X size={14} /></button>
             </>
           )}
         </p>
@@ -502,7 +507,7 @@ export function MapsPage() {
           {picked && (
             <>
               {' '}
-              <button className="btn" type="button" onClick={() => setPicked(null)} data-testid={`${pre}geo-pick-clear`}>{t('maps.ecoPickClear')}</button>
+              <button className="icon-btn area-close" type="button" onClick={() => setPicked(null)} aria-label={t('maps.ecoPickClear')} title={t('maps.ecoPickClear')} data-testid={`${pre}geo-pick-clear`}><X size={14} /></button>
             </>
           )}
         </p>
@@ -526,10 +531,15 @@ export function MapsPage() {
         overlay={
           <>
             {tools.overlay}
-            {((picked && (layers.ecoregions || layers.geology)) || layers.slope) && (
+            {((picked && (layers.ecoregions || layers.geology)) || (layers.slope && !slopeHidden)) && (
               <div className="maps-area-overlay" data-testid="fs-area-info">
                 {picked && (layers.ecoregions || layers.geology) && areaInfo('fs-')}
-                {layers.slope && <p className="hint" style={{ margin: 0 }}>{t('maps.layer.slope')}: {SLOPE_ZONES.map((z) => t(`inclinometer.legend.${z}`)).join(' · ')}</p>}
+                {layers.slope && !slopeHidden && (
+                  <p className="hint" style={{ margin: 0 }} data-testid="fs-slope-legend">
+                    {t('maps.layer.slope')}: {SLOPE_ZONES.map((z) => t(`inclinometer.legend.${z}`)).join(' · ')}{' '}
+                    <button className="icon-btn area-close" type="button" onClick={() => setSlopeHidden(true)} aria-label={t('maps.ecoPickClear')} title={t('maps.ecoPickClear')} data-testid="fs-slope-close"><X size={14} /></button>
+                  </p>
+                )}
               </div>
             )}
           </>

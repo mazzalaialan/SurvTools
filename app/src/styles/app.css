@@ -4779,3 +4779,14 @@ button.country-pack-icon {
   margin-top: 6px;
   pointer-events: auto;
 }
+
+/* Cruz chica para cerrar los carteles del mapa. */
+.area-close {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0;
+  vertical-align: middle;
+}

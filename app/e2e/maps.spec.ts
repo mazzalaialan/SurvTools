@@ -593,6 +593,10 @@ test('mapas offline: la capa de ecorregiones dice en cuál está el centro del m
   await page.getByTestId('fs-layers-btn').click();
   await page.getByTestId('fs-layer-slope').click();
   await expect(page.getByTestId('fs-layer-slope')).toHaveAttribute('aria-pressed', 'true');
+  // El cartel de avalancha se cierra con su cruz.
+  await expect(page.getByTestId('fs-slope-legend')).toBeVisible();
+  await page.getByTestId('fs-slope-close').click();
+  await expect(page.getByTestId('fs-slope-legend')).toHaveCount(0);
   await expect(page.getByTestId('fs-layer-ecoregions')).toHaveAttribute('aria-pressed', 'false');
   await page.getByTestId('fs-layer-ecoregions').click();
   await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 480, y: 300 } });
