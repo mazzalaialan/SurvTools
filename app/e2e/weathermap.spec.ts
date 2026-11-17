@@ -570,13 +570,18 @@ test('clima histórico: elegir una fecha trae el día del historial, con sus hor
       precipitation_sum: [0, 0, 6.5, 0, 0, 0, 0], snowfall_sum: Array(7).fill(0), wind_speed_10m_max: Array(7).fill(25), wind_gusts_10m_max: Array(7).fill(40), wind_direction_10m_dominant: Array(7).fill(180),
     },
   };
-  await context.route('https://archive-api.open-meteo.com/**', (route) => route.fulfill({ json: body, headers: { 'Access-Control-Allow-Origin': '*' } }));
+  let archiveCalls = 0;
+  await context.route('https://archive-api.open-meteo.com/**', (route) => (archiveCalls++, route.fulfill({ json: body, headers: { 'Access-Control-Allow-Origin': '*' } })));
   await setup(page);
   await page.goto('/#/weather');
   await page.getByRole('link', { name: /Clima histórico/ }).click();
   await page.getByTestId('history-date').fill('2026-06-15');
   await expect(page.getByTestId('history-temps')).toContainText('Mínima 4° · máxima 14°');
   await expect(page.getByTestId('history-hour')).toHaveCount(24);
+  // Sin tocar nada no se vuelve a pedir (antes se actualizaba solo cada segundo).
+  const callsAfterLoad = archiveCalls;
+  await page.waitForTimeout(3500);
+  expect(archiveCalls).toBe(callsAfterLoad);
   await page.getByTestId('history-day-2026-06-14').click();
   await expect(page.getByTestId('history-facts')).toContainText('6,5 mm');
   await context.setOffline(true);

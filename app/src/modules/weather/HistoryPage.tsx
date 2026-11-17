@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Droplets, RefreshCw, Snowflake } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
@@ -12,6 +12,9 @@ import { SkyIcon, useUnits, WindArrow } from './parts';
  * la fecha: los de hace más de 5 días, del historial de Open-Meteo (reanálisis ERA5) y los más recientes, de su pronóstico (ver history.ts).
  * Lo consultado queda guardado para verlo sin conexión.
  */
+/** Con días recientes (el pronóstico se corrige), lo guardado se vuelve a pedir pasados 30 minutos. */
+const RECENT_STALE_MS = 30 * 60_000;
+
 const mean = (xs: (number | null)[]): number | null => {
   const v = xs.filter((x): x is number => x !== null);
   return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
@@ -36,8 +39,13 @@ export function HistoryPage() {
   const alt = place?.alt ?? null;
   const key = lat === null || lon === null ? null : historyKey(lat, lon, date);
 
+  // El GPS se mueve metros todo el tiempo: la carga depende de la celda (`key`) y de la fecha, no de cada fix.
+  const where = useRef({ lat, lon, alt });
+  where.current = { lat, lon, alt };
+
   const load = useCallback(
     async (force = false) => {
+      const { lat, lon, alt } = where.current;
       if (lat === null || lon === null || !key) return;
       setError(null);
       const cached = await cachedHistory(key);
@@ -46,7 +54,7 @@ export function HistoryPage() {
         setViewDate(cached.date);
         // Un día cerrado del historial no cambia: no se vuelve a pedir salvo que se pida a mano o incluya días recientes.
         const recent = cached.end >= addDays(today, -6);
-        if (!force && !recent) return;
+        if (!force && (!recent || Date.now() - Date.parse(cached.fetchedAt) < RECENT_STALE_MS)) return;
       } else {
         setHistory(null);
         setViewDate(null);
@@ -67,7 +75,7 @@ export function HistoryPage() {
         setLoading(false);
       }
     },
-    [key, base, alt, date, today, lat, lon],
+    [key, base, date, today],
   );
   useEffect(() => {
     void load();
