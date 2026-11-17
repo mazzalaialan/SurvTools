@@ -21,6 +21,7 @@ function makeDb(): string {
   db.exec(`CREATE TABLE road (cell INTEGER, lat REAL, lon REAL, name TEXT, ref TEXT, hw TEXT);
     CREATE TABLE num (cell INTEGER, lat REAL, lon REAL, street TEXT, number TEXT);
     CREATE TABLE mile (cell INTEGER, lat REAL, lon REAL, km TEXT, ref TEXT);
+    CREATE TABLE place (cell INTEGER, lat REAL, lon REAL, cat TEXT, osm TEXT, tags TEXT);
     CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
     INSERT INTO meta VALUES ('builtAt', '2026-11-17T00:00:00.000Z');`);
   const road = db.prepare('INSERT INTO road VALUES (?, ?, ?, ?, ?, ?)');
@@ -32,9 +33,41 @@ function makeDb(): string {
   num.run(cellOf(-41.13355, -71.3103), -41.13355, -71.3103, 'Moreno', '248'); // a ~6 m
   num.run(cellOf(-41.1345, -71.3103), -41.1345, -71.3103, 'Moreno', '300'); // a ~105 m: fuera de los 80 m
   mile.run(cellOf(-41.14, -71.31), -41.14, -71.31, '1990', 'RN 40'); // a ~740 m
+  const place = db.prepare('INSERT INTO place VALUES (?, ?, ?, ?, ?, ?)');
+  place.run(cellOf(-41.1340, -71.3100), -41.134, -71.31, 'core', 'n11', JSON.stringify({ amenity: 'police', name: 'Comisaría 28' })); // ~120 m
+  place.run(cellOf(-41.2, -71.35), -41.2, -71.35, 'core', 'w12', JSON.stringify({ amenity: 'hospital', name: 'Hospital Zonal' })); // ~8 km
+  place.run(cellOf(-41.135, -71.31), -41.135, -71.31, 'fuel', 'n13', JSON.stringify({ amenity: 'fuel', brand: 'YPF' })); // ~200 m
+  place.run(cellOf(-41.45, -71.3), -41.45, -71.3, 'core', 'n14', JSON.stringify({ amenity: 'police', name: 'Lejana' })); // ~35 km
   db.close();
   return path;
 }
+
+describe('base propia: lugares de «Buscar cercanos»', () => {
+  it('trae lo de emergencias a menos del radio, ordenado por cercanía, con el tipo de OpenStreetMap', () => {
+    const idx = openAroundIndex(makeDb())!;
+    const r = idx.nearby(-41.1335, -71.3103, 10_000, null);
+    assert.deepEqual(r.elements.map((e) => e.tags.name), ['Comisaría 28', 'Hospital Zonal']);
+    assert.equal(r.elements[1]!.type, 'way');
+    assert.equal(r.elements[1]!.id, 12);
+    // Sin pedir la categoría, el combustible no viene; con ella, sí.
+    assert.equal(r.elements.some((e) => e.tags.amenity === 'fuel'), false);
+    assert.equal(idx.nearby(-41.1335, -71.3103, 10_000, 'fuel').elements.some((e) => e.tags.amenity === 'fuel'), true);
+    // El radio manda: a 50 km aparece lo lejano.
+    assert.equal(idx.nearby(-41.1335, -71.3103, 50_000, null).elements.length, 3);
+    idx.close();
+  });
+  it('la ruta valida los datos y responde 503 sin base', async () => {
+    const app = Fastify();
+    osmRoutes(app, openAroundIndex(makeDb()));
+    const ok = await app.inject({ url: '/api/osm/nearby?lat=-41.1335&lon=-71.3103&radius=10000' });
+    assert.equal(ok.statusCode, 200);
+    assert.equal(ok.json().elements.length, 2);
+    assert.equal((await app.inject({ url: '/api/osm/nearby?lat=x&lon=1' })).statusCode, 400);
+    const none = Fastify();
+    osmRoutes(none, null);
+    assert.equal((await none.inject({ url: '/api/osm/nearby?lat=-41&lon=-71' })).statusCode, 503);
+  });
+});
 
 describe('base propia de calles y números', () => {
   it('da lo que hay a cada distancia, con el mismo formato que usa la app', () => {

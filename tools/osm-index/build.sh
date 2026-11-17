@@ -26,17 +26,18 @@ echo "filtrando"
 osm tags-filter region.pbf w/highway=motorway,trunk,primary,secondary,tertiary,unclassified,residential,living_street,road,motorway_link,trunk_link,primary_link,secondary_link,tertiary_link -o roads.pbf --overwrite
 osm tags-filter region.pbf nwr/addr:housenumber -o numbers.pbf --overwrite
 osm tags-filter region.pbf n/highway=milestone -o milestones.pbf --overwrite
+osm tags-filter region.pbf nwr/amenity=police,fire_station,hospital,clinic,pharmacy,fuel,veterinary,drinking_water,water_point,boat_storage,boat_rental,atm,bank,shelter nwr/emergency=ambulance_station,defibrillator nwr/healthcare=pharmacy nwr/shop=tyres,car_repair,boat,boat_repair,ship_chandler nwr/office=government nwr/man_made=water_tap,pier nwr/natural=spring nwr/tourism=alpine_hut,wilderness_hut nwr/waterway=fuel nwr/leisure=marina,slipway nwr/craft=boatbuilder nwr/mooring nwr/seamark:type=mooring -o places.pbf --overwrite
 
 TMP="$OUT/around.sqlite.new"
 rm -f "$TMP"
-for kind in roads numbers milestones; do
+for kind in roads numbers milestones places; do
   echo "cargando $kind"
-  osm export "$kind.pbf" -f geojsonseq --geometry-types="$( [ "$kind" = roads ] && echo linestring || echo point,polygon )" -o - | node "$HERE/import.mjs" "$TMP" "$kind"
+  osm export "$kind.pbf" -f geojsonseq --add-unique-id=type_id --geometry-types="$( [ "$kind" = roads ] && echo linestring || echo point,polygon )" -o - | node "$HERE/import.mjs" "$TMP" "$kind"
 done
 node -e "
 const { DatabaseSync } = require('node:sqlite');
 const db = new DatabaseSync(process.argv[1]);
-db.exec('CREATE INDEX road_cell ON road(cell); CREATE INDEX num_cell ON num(cell); CREATE INDEX mile_cell ON mile(cell);');
+db.exec('CREATE INDEX road_cell ON road(cell); CREATE INDEX num_cell ON num(cell); CREATE INDEX mile_cell ON mile(cell); CREATE INDEX place_cell ON place(cell);');
 db.exec('CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)');
 db.prepare('INSERT INTO meta VALUES (?, ?)').run('builtAt', new Date().toISOString());
 db.prepare('INSERT INTO meta VALUES (?, ?)').run('source', process.argv[2]);

@@ -132,7 +132,7 @@ API: `GET /api/maps` informa los archivos (zooms, zona, fecha) y los límites, y
 
 ## Base de calles y números (opcional, para «Mi ubicación»)
 
-Con esta base, «Mi ubicación» da la dirección con la altura, las entrecalles, la ruta y el kilómetro en milisegundos, desde tu servidor, en vez de esperar a los servicios públicos de OpenStreetMap (Overpass), que son lentos o se caen. La app consulta primero `GET /api/osm/around?lat=&lon=` de tu servidor; si no responde (503 sin base, o sin servidor), usa los servicios públicos como antes.
+Con esta base, «Mi ubicación» da la dirección con la altura, las entrecalles, la ruta y el kilómetro en milisegundos, desde tu servidor, en vez de esperar a los servicios públicos de OpenStreetMap (Overpass), que son lentos o se caen. La app consulta primero `GET /api/osm/around?lat=&lon=` (y, para «Buscar cercanos», `GET /api/osm/nearby?lat=&lon=&radius=&service=`) de tu servidor; si no responde (503 sin base, o sin servidor), usa los servicios públicos como antes.
 
 Se arma con osmium en Docker (no hay que instalar nada) a partir del extracto de Sudamérica que ya baja el mapa:
 

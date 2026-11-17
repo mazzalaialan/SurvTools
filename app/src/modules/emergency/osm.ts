@@ -219,7 +219,10 @@ export function parseNearby(elements: OsmElement[], lat: number, lon: number): N
  * `service`: también esa categoría de servicios (solo la que se está mirando:
  * hay muchos y agrandan la consulta).
  */
-export async function fetchOsmNearby(lat: number, lon: number, radiusM: number, service: ServiceCategory | null = null): Promise<NearbyPlace[]> {
+export async function fetchOsmNearby(lat: number, lon: number, radiusM: number, service: ServiceCategory | null = null, serverUrl?: string): Promise<NearbyPlace[]> {
+  // Primero la base de tu servidor (tools/osm-index): milisegundos y sin servicios públicos; si no está o no responde, Overpass.
+  const local = await fetchLocalNearby(serverUrl, lat, lon, radiusM, service);
+  if (local) return parseNearby(local, lat, lon);
   const around = `(around:${Math.round(radiusM)},${lat.toFixed(5)},${lon.toFixed(5)})`;
   const query = `[out:json][timeout:25];(
     nwr["amenity"~"^(police|fire_station|hospital|clinic)$"]${around};
@@ -228,6 +231,22 @@ export async function fetchOsmNearby(lat: number, lon: number, radiusM: number, 
     ${sel}${around};`).join('') : ''}
   );out center tags;`;
   return parseNearby(await overpass(query), lat, lon);
+}
+
+/** Los lugares cercanos de la base propia del servidor; `null` si no hay servidor, no tiene la base o no responde. */
+export async function fetchLocalNearby(serverUrl: string | undefined, lat: number, lon: number, radiusM: number, service: ServiceCategory | null, timeoutMs = 8000): Promise<OsmElement[] | null> {
+  const base = serverUrl?.trim().replace(/\/+$/, '');
+  if (!base) return null;
+  try {
+    const params = new URLSearchParams({ lat: lat.toFixed(5), lon: lon.toFixed(5), radius: String(Math.round(radiusM)) });
+    if (service) params.set('service', service);
+    const res = await fetch(`${base}/api/osm/nearby?${params}`, { signal: AbortSignal.timeout(timeoutMs) });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { elements?: OsmElement[] };
+    return Array.isArray(json.elements) ? json.elements : null;
+  } catch {
+    return null;
+  }
 }
 
 // ---------- Dónde estoy, para los socorristas ----------

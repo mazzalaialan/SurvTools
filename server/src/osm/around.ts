@@ -47,9 +47,35 @@ function cells(lat: number, lon: number, radiusM: number): number[] {
   return out;
 }
 
+export interface NearbyElement {
+  type: 'node' | 'way' | 'relation';
+  id: number;
+  lat: number;
+  lon: number;
+  tags: Record<string, string>;
+}
+
 export interface AroundIndex {
   around(lat: number, lon: number): Around;
+  /** Lugares de «Buscar cercanos» (policía, bomberos, salud, Defensa Civil y, si se pide, una categoría de servicios) a menos de `radiusM`. */
+  nearby(lat: number, lon: number, radiusM: number, service: string | null): { elements: NearbyElement[]; builtAt: string | null };
   close(): void;
+}
+
+/** Categorías de servicios que existen en la base (las mismas de tools/osm-index/import.mjs). */
+export const SERVICE_CATS = ['fuel', 'tyres', 'repair', 'pharmacy', 'aed', 'vet', 'water', 'shelter', 'atm', 'nautical'] as const;
+export const MAX_NEARBY_RADIUS_M = 60_000;
+export const MAX_NEARBY_RESULTS = 600;
+
+/** Rangos de celdas por fila de latitud (más barato que una lista enorme de celdas cuando el radio es de decenas de km). */
+function cellRanges(lat: number, lon: number, radiusM: number): [number, number][] {
+  const dLat = radiusM / 111_000;
+  const dLon = radiusM / (111_000 * Math.max(0.2, Math.cos(rad(lat))));
+  const x0 = Math.floor((lon - dLon + 180) * 50);
+  const x1 = Math.floor((lon + dLon + 180) * 50);
+  const out: [number, number][] = [];
+  for (let y = Math.floor((lat - dLat + 90) * 50); y <= Math.floor((lat + dLat + 90) * 50); y++) out.push([y * 20000 + x0, y * 20000 + x1]);
+  return out;
 }
 
 interface RoadRow { lat: number; lon: number; name: string | null; ref: string | null; hw: string | null }
@@ -60,7 +86,25 @@ export function openAroundIndex(path: string | null): AroundIndex | null {
   if (!path || !existsSync(path)) return null;
   const db = new DatabaseSync(path, { readOnly: true });
   const builtAt = (db.prepare("SELECT value FROM meta WHERE key = 'builtAt'").get() as { value: string } | undefined)?.value ?? null;
+  const hasPlaces = !!db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'place'").get();
   return {
+    nearby(lat, lon, radiusM, service) {
+      if (!hasPlaces) return { elements: [], builtAt };
+      const cats = service && (SERVICE_CATS as readonly string[]).includes(service) ? ['core', service] : ['core'];
+      const radius = Math.min(Math.max(radiusM, 100), MAX_NEARBY_RADIUS_M);
+      const stmt = db.prepare(`SELECT lat, lon, cat, osm, tags FROM place WHERE cell BETWEEN ? AND ? AND cat IN (${cats.map(() => '?').join(',')})`);
+      const found = new Map<string, { d: number; el: NearbyElement }>();
+      for (const [a, b] of cellRanges(lat, lon, radius)) {
+        for (const r of stmt.all(a, b, ...cats) as unknown as { lat: number; lon: number; cat: string; osm: string; tags: string }[]) {
+          const d = meters(lat, lon, r.lat, r.lon);
+          if (d > radius || found.has(r.osm)) continue;
+          const type = r.osm.startsWith('w') ? 'way' : r.osm.startsWith('r') ? 'relation' : 'node';
+          found.set(r.osm, { d, el: { type, id: Number(r.osm.slice(1)) || 0, lat: r.lat, lon: r.lon, tags: JSON.parse(r.tags) as Record<string, string> } });
+        }
+      }
+      const elements = [...found.values()].sort((x, y) => x.d - y.d).slice(0, MAX_NEARBY_RESULTS).map((x) => x.el);
+      return { elements, builtAt };
+    },
     around(lat, lon) {
       const elements: AroundElement[] = [];
       let id = 0;

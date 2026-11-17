@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { describeLocation, fetchLocalAround } from './osm';
+import { describeLocation, fetchLocalAround, fetchOsmNearby } from './osm';
 
 // Lo que responde /api/osm/around de la base propia (server/src/osm/around.ts), con calles reales de Montevideo.
 const local = {
@@ -66,5 +66,19 @@ describe('Mi ubicación: base propia del servidor primero, servicios públicos d
     const info = await describeLocation(-34.9058, -56.1913, 'es', undefined, 'https://mi.servidor');
     expect(info.address).toBe('Mitre');
     expect(calls.some((u) => u.includes('overpass'))).toBe(true);
+  });
+
+  it('Buscar cercanos: primero la base del servidor y, si no responde, Overpass', async () => {
+    const police = { type: 'node', id: 7, lat: -34.906, lon: -56.19, tags: { amenity: 'police', name: 'Comisaría 3.ª' } };
+    let calls = stub((url) => (url.includes('/api/osm/nearby') ? new Response(JSON.stringify({ elements: [police] })) : new Response('{"elements":[]}')));
+    const ok = await fetchOsmNearby(-34.9058, -56.1913, 25_000, 'fuel', 'https://mi.servidor');
+    expect(ok.map((p) => p.name)).toEqual(['Comisaría 3.ª']);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toContain('service=fuel');
+    expect(calls[0]).toContain('radius=25000');
+    calls = stub((url) => (url.includes('/api/osm/nearby') ? new Response('{}', { status: 503 }) : new Response(JSON.stringify({ elements: [police] }))));
+    const fallback = await fetchOsmNearby(-34.9058, -56.1913, 25_000, null, 'https://mi.servidor');
+    expect(fallback.map((p) => p.name)).toEqual(['Comisaría 3.ª']);
+    expect(calls.some((u) => u.includes('overpass') || u.includes('maps.mail.ru'))).toBe(true);
   });
 });

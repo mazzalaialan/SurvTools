@@ -15,4 +15,16 @@ export function osmRoutes(app: FastifyInstance, index: AroundIndex | null): void
     reply.header('Cache-Control', 'public, max-age=3600');
     return index.around(lat, lon);
   });
+
+  /** `GET /api/osm/nearby?lat=&lon=&radius=<metros>&service=<categoría>`: lugares de «Buscar cercanos» (misma respuesta que Overpass). */
+  app.get('/api/osm/nearby', async (req, reply) => {
+    const q = req.query as { lat?: string; lon?: string; radius?: string; service?: string };
+    const lat = Number(q.lat);
+    const lon = Number(q.lon);
+    const radius = Number(q.radius ?? 25_000);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !Number.isFinite(radius) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return reply.code(400).send({ error: 'lat, lon o radius inválidos' });
+    if (!index) return reply.code(503).send({ error: 'sin base de calles' });
+    reply.header('Cache-Control', 'public, max-age=3600');
+    return index.nearby(lat, lon, radius, q.service ?? null);
+  });
 }

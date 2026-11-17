@@ -10,6 +10,7 @@ import { loadParks, mergeNearby, nearestPerKind, officialNearby, withParks, type
 import { CATEGORY_KIND, loadService, SERVICE_KINDS, serviceNearby, type ServiceCategory, type ServiceData } from './services';
 
 const EMPTY_DATA: EmergencyData = { sources: { fire: '', police: '', health: '', radio: '' }, fire: [], police: [], health: [], radio: [] };
+import { useSettings } from '@/core/settings/settings';
 import { fetchOsmNearby } from './osm';
 import { NAUTICAL_IDS, nauticalIdOf, type NauticalId } from './nautical';
 import { formatDistance, KindIcon, MapLink, ParkRadioList, PhoneActions } from './parts';
@@ -91,6 +92,7 @@ export function NearbyPage() {
   }
   const [onMap, setOnMap] = useState(false);
   const [osm, setOsm] = useState<{ key: string; items: NearbyPlace[] } | null>(null);
+  const serverUrl = useSettings((s) => s.settings.serverUrl);
   const [osmState, setOsmState] = useState<'idle' | 'loading' | 'error' | 'offline'>('idle');
   const [attempt, setAttempt] = useState(0);
 
@@ -155,7 +157,7 @@ export function NearbyPage() {
     }
     let cancelled = false;
     setOsmState('loading');
-    fetchOsmNearby(place.lat, place.lon, Math.min(radiusKm || OSM_MAX_KM, OSM_MAX_KM) * 1000, service).then(
+    fetchOsmNearby(place.lat, place.lon, Math.min(radiusKm || OSM_MAX_KM, OSM_MAX_KM) * 1000, service, serverUrl).then(
       (items) => {
         if (cancelled) return;
         setOsm({ key: searchKey, items });
