@@ -307,30 +307,43 @@ export function completeAddress(own: { address: string; houseNumber: string; roa
   return own.address;
 }
 
-/** Plazo para las calles y rutas de alrededor: la dirección no espera por ellas. */
-const AROUND_TIMEOUT_MS = 12_000;
+/** Plazo para cada consulta de los alrededores: la dirección no espera por ellas y cada una se suma apenas llega. */
+const AROUND_TIMEOUT_MS = 30_000;
 
 /**
- * La dirección (Nominatim, rápido) se entrega apenas llega por `onPartial`; las calles, rutas y el kilómetro (Overpass, más lento) se
- * suman después. El resultado final tiene todo.
+ * La dirección (Nominatim, rápido) se entrega apenas llega por `onPartial`. Las calles y números de puerta, las rutas y el kilómetro
+ * (Overpass) van en tres consultas chicas a la vez: cada una vuelve a llamar a `onPartial` con lo acumulado cuando llega, así lo
+ * liviano aparece primero y lo pesado (el mojón a 3 km) se suma después. El resultado final tiene todo.
  */
 export async function describeLocation(lat: number, lon: number, lang: string, onPartial?: (info: LocationInfo) => void): Promise<LocationInfo> {
   const params = new URLSearchParams({ format: 'jsonv2', lat: lat.toFixed(6), lon: lon.toFixed(6), zoom: '18', addressdetails: '1', 'accept-language': lang });
   const reversing = fetch(`${NOMINATIM}?${params}`, { signal: AbortSignal.timeout(15_000) })
     .then((r) => (r.ok ? (r.json() as Promise<NominatimReverse>) : {}))
     .catch(() => ({}) as NominatimReverse);
-  const arounding = overpass(
-    `[out:json][timeout:25];(
-      way(around:120,${lat.toFixed(6)},${lon.toFixed(6)})["highway"]["name"];
-      way(around:400,${lat.toFixed(6)},${lon.toFixed(6)})["highway"]["ref"];
-      nwr(around:80,${lat.toFixed(6)},${lon.toFixed(6)})["addr:housenumber"]["addr:street"];
-      node(around:3000,${lat.toFixed(6)},${lon.toFixed(6)})["highway"="milestone"];
-    );out center tags;`,
-    AROUND_TIMEOUT_MS,
-  ).catch(() => [] as OsmElement[]);
-  const reverse = await reversing;
-  const { address, locality, road, houseNumber } = describeAddress(reverse);
-  onPartial?.({ address, locality, nearbyStreets: [], roads: [], nearestNumber: null, milestone: null });
-  const around = parseSurroundings(await arounding, lat, lon, road);
-  return { ...around, address: completeAddress({ address, houseNumber, road }, around, lang), locality };
+  const at = `${lat.toFixed(6)},${lon.toFixed(6)}`;
+  const queries = [
+    `[out:json][timeout:25];(way(around:120,${at})["highway"]["name"];nwr(around:80,${at})["addr:housenumber"]["addr:street"];);out center tags;`,
+    `[out:json][timeout:25];way(around:400,${at})["highway"]["ref"];out center tags;`,
+    `[out:json][timeout:25];node(around:3000,${at})["highway"="milestone"];out center tags;`,
+  ];
+  let own: { address: string; locality: string; road: string; houseNumber: string } | null = null;
+  const found: OsmElement[] = [];
+  const build = (): LocationInfo => {
+    const o = own!;
+    const around = parseSurroundings(found, lat, lon, o.road);
+    return { ...around, address: completeAddress(o, around, lang), locality: o.locality };
+  };
+  const arounding = queries.map((q) =>
+    overpass(q, AROUND_TIMEOUT_MS)
+      .then((els) => {
+        found.push(...els);
+        // Si la dirección todavía no llegó, se entrega junto con ella más abajo.
+        if (own) onPartial?.(build());
+      })
+      .catch(() => undefined),
+  );
+  own = describeAddress(await reversing);
+  onPartial?.(build());
+  await Promise.all(arounding);
+  return build();
 }
