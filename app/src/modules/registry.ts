@@ -31,7 +31,7 @@ import {
   Sprout,
   Tags,
   Triangle,
-  Warehouse, Scale, Shirt, Timer, Metronome, Waves, History } from 'lucide-react';
+  Warehouse, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
 import type { Capability, CapabilityMap } from '@/core/capabilities/capabilities';
 
 /** En el orden en que se muestran en Inicio. */
@@ -85,6 +85,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'gear', section: 'training', icon: Shirt, implemented: true, path: '/training/gear', hideWhenOff: 'trainingGear' },
   { id: 'weather', section: 'weather', icon: CloudSun, implemented: true, path: '/weather/forecast' },
   { id: 'weatherHistory', section: 'weather', icon: History, implemented: true, path: '/weather/history', degradesWithout: ['geolocation'] },
+  { id: 'weatherCompare', section: 'weather', icon: GitCompareArrows, implemented: true, path: '/weather/compare', degradesWithout: ['geolocation'] },
   { id: 'weatherMap', section: 'weather', icon: MapIcon, implemented: true, path: '/weather/map' },
   { id: 'navigation', section: 'weather', icon: Waves, implemented: true, path: '/weather/navigation', degradesWithout: ['geolocation'] },
   { id: 'astronomy', section: 'weather', icon: Moon, implemented: true, path: '/weather/sky', degradesWithout: ['geolocation'] },

@@ -2013,7 +2013,7 @@ a.module-card:hover {
 
 .wmap-progress {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
@@ -4789,4 +4789,102 @@ button.country-pack-icon {
   min-height: 22px;
   padding: 0;
   vertical-align: middle;
+}
+
+/* Comparación de pronósticos */
+.cmp-chart {
+  width: 100%;
+  height: auto;
+  color: var(--text);
+}
+.cmp-scroll {
+  overflow-x: auto;
+}
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.cmp-table th,
+.cmp-table td {
+  padding: 0.35rem 0.5rem;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+.cmp-table th:first-child {
+  text-align: left;
+}
+.cmp-agree-high {
+  color: var(--ok);
+}
+.cmp-agree-low {
+  color: var(--danger);
+}
+.cmp-scroll {
+  position: relative;
+}
+.cmp-grid {
+  border-collapse: separate;
+  border-spacing: 1px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.cmp-grid th,
+.cmp-grid td {
+  padding: 0.25rem 0.3rem;
+  text-align: center;
+  min-width: 2.1rem;
+}
+.cmp-grid .cmp-model {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 5.2rem;
+  text-align: left;
+  background: var(--surface);
+  font-weight: 600;
+}
+.cmp-grid .cmp-day {
+  text-align: left;
+  border-left: 2px solid var(--border);
+  text-transform: capitalize;
+}
+.cmp-grid .cmp-hour {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+.cmp-grid tr.cmp-median .cmp-cell {
+  font-weight: 700;
+  outline: 1px solid currentColor;
+  outline-offset: -1px;
+}
+.cmp-cell-empty {
+  color: var(--text-muted);
+}
+.cmp-read {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.cmp-read li {
+  display: grid;
+  gap: 0.1rem;
+}
+.cmp-read strong {
+  text-transform: capitalize;
+}
+.cmp-rain-dry {
+  color: var(--text-muted);
+}
+.cmp-rain-maybe,
+.cmp-rain-likely {
+  color: var(--warn);
+}
+.cmp-rain-wet {
+  color: var(--accent);
+  font-weight: 600;
 }

@@ -1,6 +1,7 @@
 import { strFromU8, strToU8 } from 'fflate';
 import { blobStore } from '@/core/db/repository';
 import type { Forecast } from './forecast';
+import type { Compare } from './compare';
 import type { History } from './history';
 
 /**
@@ -73,4 +74,34 @@ export async function storeHistory(key: string, history: History): Promise<void>
     .sort(([, a], [, b]) => b.fetchedAt.localeCompare(a.fetchedAt))
     .slice(0, MAX_HISTORY);
   await blobStore.put(HISTORY_CACHE_ID, strToU8(JSON.stringify(Object.fromEntries(kept))) as Uint8Array<ArrayBuffer>);
+}
+
+// ---------- Comparación de pronósticos ----------
+
+const COMPARE_CACHE_ID = 'weather-compare-cache';
+const MAX_COMPARE = 8;
+
+type CompareCache = Record<string, Compare>;
+
+async function readCompare(): Promise<CompareCache> {
+  const bytes = await blobStore.get(COMPARE_CACHE_ID);
+  if (!bytes) return {};
+  try {
+    return JSON.parse(strFromU8(bytes)) as CompareCache;
+  } catch {
+    return {};
+  }
+}
+
+export async function cachedCompare(key: string): Promise<Compare | null> {
+  return (await readCompare())[key] ?? null;
+}
+
+export async function storeCompare(key: string, compare: Compare): Promise<void> {
+  const all = await readCompare();
+  all[key] = compare;
+  const kept = Object.entries(all)
+    .sort(([, a], [, b]) => b.fetchedAt.localeCompare(a.fetchedAt))
+    .slice(0, MAX_COMPARE);
+  await blobStore.put(COMPARE_CACHE_ID, strToU8(JSON.stringify(Object.fromEntries(kept))) as Uint8Array<ArrayBuffer>);
 }

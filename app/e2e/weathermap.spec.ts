@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import { inaRunRoute } from './fixtures/inaForecast';
 import { expect, test, type Page } from '@playwright/test';
@@ -596,4 +597,45 @@ test('clima histórico: elegir una fecha trae el día del historial, con sus hor
   await page.getByRole('link', { name: /Clima histórico/ }).click();
   await page.getByTestId('history-date').fill('2026-06-15');
   await expect(page.getByTestId('history-temps')).toContainText('Mínima 4°');
+});
+
+test('comparación de pronósticos: resumen con grilla por modelo y, en otra solapa, el detalle técnico', async ({ page, context }) => {
+  // Respuesta real de Open-Meteo con varios modelos (lat -34.6, lon -58.64), guardada en el repo.
+  const body = JSON.parse(readFileSync('src/modules/weather/fixtures/compare.sample.json', 'utf8')) as unknown;
+  const urls: string[] = [];
+  await context.route('https://api.open-meteo.com/v1/forecast**', (route) => (urls.push(route.request().url()), route.fulfill({ json: body, headers: { 'Access-Control-Allow-Origin': '*' } })));
+  await setup(page);
+  await page.goto('/#/weather');
+  await page.getByRole('link', { name: /Comparación de pronósticos/ }).click();
+  // Resumen: lectura día por día y una grilla por variable (consenso + un renglón por modelo).
+  await expect(page.getByTestId('compare-read')).toBeVisible({ timeout: 20_000 });
+  expect(urls[0]).toContain('models=ecmwf_ifs025');
+  await expect(page.getByTestId('compare-read').locator('li')).toHaveCount(7);
+  await expect(page.getByTestId('compare-read-2026-11-17')).toContainText('modelos');
+  for (const v of ['temperature_2m', 'precipitation', 'wind_speed_10m', 'cloud_cover']) {
+    await expect(page.getByTestId(`compare-grid-${v}`).locator('tbody tr')).toHaveCount(7);
+  }
+  await expect(page.getByTestId('compare-grid-temperature_2m').locator('tbody tr').first()).toContainText('Consenso');
+  await expect(page.getByTestId('compare-grid-temperature_2m').locator('tbody tr').nth(1)).toContainText('ECMWF');
+  // Detalle técnico: un gráfico con una línea por modelo, que se pueden apagar.
+  await page.getByTestId('compare-tab-detail').click();
+  await expect(page.getByTestId('compare-chart')).toBeVisible();
+  for (const id of ['ecmwf_ifs025', 'gfs_global', 'icon_global', 'meteofrance_arpege_world', 'ukmo_global_deterministic_10km', 'jma_gsm']) {
+    await expect(page.getByTestId(`compare-line-${id}`)).toHaveCount(1);
+  }
+  await expect(page.getByTestId('compare-table').locator('tbody tr')).toHaveCount(7);
+  // ARPEGE solo llega a 4 días: los días siguientes quedan con guion.
+  await expect(page.getByTestId('compare-table').locator('tbody tr').last()).toContainText('–');
+  await page.getByTestId('compare-model-gfs_global').click();
+  await expect(page.getByTestId('compare-line-gfs_global')).toHaveCount(0);
+  // Máxima contra máxima y mínima contra mínima.
+  await expect(page.getByTestId('compare-var-temperature_2m')).toContainText('Temperatura máxima');
+  await page.getByTestId('compare-var-temperature_min').click();
+  await expect(page.getByTestId('compare-table').locator('thead')).toContainText('ECMWF');
+  await expect(page.getByText('Temperatura mínima de cada día según cada modelo.')).toBeVisible();
+  await page.getByTestId('compare-var-precipitation').click();
+  await expect(page.getByText(/Lluvia acumulada desde ahora/)).toBeVisible();
+  // Un solo modelo extremo (JMA con 40 mm) no hace decir que «discrepan»: se lo marca aparte.
+  await page.getByTestId('compare-model-gfs_global').click();
+  await expect(page.getByTestId('compare-summary')).toContainText('Se aleja de los demás: JMA GSM');
 });
