@@ -40,6 +40,8 @@ async function mockOsm(page: Page) {
       });
     }
   });
+  // La base propia del servidor (por defecto, el de producción) no entra en estas pruebas: sin ella la app usa los servicios simulados de abajo.
+  await ctx.route(/\/api\/osm\//, (route) => route.fulfill({ status: 503, json: { error: 'sin base de calles' } }));
   // El segundo servidor de Overpass se consulta a la vez: sin red en la prueba, falla y gana el primero.
   await ctx.route('https://maps.mail.ru/**', (route) => route.abort());
   await ctx.route('https://nominatim.openstreetmap.org/**', (route) =>
