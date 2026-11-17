@@ -28,7 +28,8 @@ export const MODELS: CompareModel[] = [
 
 /** Lo que se compara en el detalle. `temperature_2m` es la temperatura máxima de cada día y `temperature_min`, la mínima (las dos salen de la misma serie por hora). */
 export type CompareVar = 'temperature_2m' | 'temperature_min' | 'precipitation' | 'wind_speed_10m' | 'cloud_cover' | 'relative_humidity_2m';
-export const VARS: CompareVar[] = ['temperature_2m', 'temperature_min', 'precipitation', 'wind_speed_10m', 'cloud_cover', 'relative_humidity_2m'];
+/** Lo que se elige en el detalle: la temperatura es una sola (su gráfico es el mismo) y compara máximas y mínimas a la vez. */
+export const VARS: CompareVar[] = ['temperature_2m', 'precipitation', 'wind_speed_10m', 'cloud_cover', 'relative_humidity_2m'];
 /** Series que se piden a Open-Meteo: además, de dónde sopla el viento (para las flechas de la grilla). */
 export type SeriesVar = Exclude<CompareVar, 'temperature_min'> | 'wind_direction_10m';
 const SERIES_VARS: SeriesVar[] = ['temperature_2m', 'precipitation', 'wind_speed_10m', 'cloud_cover', 'relative_humidity_2m', 'wind_direction_10m'];

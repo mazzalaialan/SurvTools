@@ -630,13 +630,14 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
   await expect(page.getByTestId('compare-table').locator('tbody tr').last()).toContainText('–');
   await page.getByTestId('compare-model-gfs_global').click();
   await expect(page.getByTestId('compare-line-gfs_global')).toHaveCount(0);
-  // Máxima contra máxima y mínima contra mínima.
-  await expect(page.getByTestId('compare-var-temperature_2m')).toContainText('Temperatura máxima');
-  await page.getByTestId('compare-var-temperature_min').click();
-  await expect(page.getByTestId('compare-table').locator('thead')).toContainText('ECMWF');
-  await expect(page.getByText('Temperatura mínima de cada día según cada modelo.')).toBeVisible();
+  // Temperatura: una sola solapa que compara máximas y mínimas a la vez (mínima / máxima por modelo y una frase para cada una).
+  await expect(page.getByTestId('compare-var-temperature_2m')).toContainText('Temperatura');
+  await expect(page.getByTestId('compare-var-temperature_min')).toHaveCount(0);
+  await expect(page.getByTestId('compare-summary-temperature_2m')).toContainText('Máximas');
+  await expect(page.getByTestId('compare-summary-temperature_min')).toContainText('Mínimas');
+  await expect(page.getByTestId('compare-table').locator('tbody tr').first().locator('td').first()).toContainText('/');
+  await expect(page.getByTestId('compare-table').locator('tbody tr').first()).toContainText('Máx:');
+  await expect(page.getByTestId('compare-table').locator('tbody tr').first()).toContainText('Mín:');
   await page.getByTestId('compare-var-precipitation').click();
   await expect(page.getByText(/Lluvia acumulada desde ahora/)).toBeVisible();
-  // La frase de coincidencia dice entre qué valores va la mayoría (el modelo extremo se marca aparte: ver compare.test.ts).
-  await expect(page.getByTestId('compare-summary')).toContainText(/de .* a .*\(/);
 });

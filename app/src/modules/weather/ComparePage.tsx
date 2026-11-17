@@ -271,11 +271,12 @@ export function ComparePage() {
 
   const present = useMemo(() => (data ? MODELS.filter((m) => data.series[m.id]?.[sourceOf(v)]) : []), [data, v]);
   const enabled = present.map((m) => m.id).filter((id) => !off.includes(id));
-  const days = useMemo(() => (data ? compareDays(data, v, enabled) : []), [data, v, enabled.join(',')]);
-  const worst = widestDay(days);
+  /** La temperatura compara las máximas y las mínimas de cada día; lo demás, un solo valor por día. */
+  const kinds: CompareVar[] = v === 'temperature_2m' ? ['temperature_2m', 'temperature_min'] : [v];
+  const daysBy = useMemo(() => (data ? kinds.map((k) => compareDays(data, k, enabled)) : []), [data, v, enabled.join(',')]);
+  const rows = daysBy[0] ?? [];
   const dayFmt = new Intl.DateTimeFormat(i18n.language, { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
   const dayAt = (d: string) => new Date(`${d}T12:00:00Z`);
-  const worstLevel = worst ? agreementOf(v, worst.spread) : null;
 
   return (
     <div className="stack">
@@ -335,13 +336,19 @@ export function ComparePage() {
             {v === 'precipitation' && <p className="hint" style={{ margin: 0 }}>{t('compare.accumulated')}</p>}
           </section>
 
-          {worst && worstLevel && worst.core && (
-            <p className={worstLevel === 'low' ? 'error' : 'hint'} data-testid="compare-summary">
-              {t(`compare.summary.${worstLevel}`, { day: dayFmt.format(dayAt(worst.date)), from: formatDay(v, worst.core[0], u, i18n.language), to: formatDay(v, worst.core[1], u, i18n.language) })}
-              {worst.outliers.length > 0 &&
-                ` ${t('compare.outliers', { models: worst.outliers.map((id) => MODELS.find((m) => m.id === id)?.label).join(', '), values: worst.outliers.map((id) => formatDay(v, worst.byModel[id]!, u, i18n.language)).join(', ') })}`}
-            </p>
-          )}
+          {kinds.map((k, i) => {
+            const worst = widestDay(daysBy[i] ?? []);
+            const level = worst ? agreementOf(k, worst.spread) : null;
+            if (!worst || !level || !worst.core) return null;
+            return (
+              <p key={k} className={level === 'low' ? 'error' : 'hint'} data-testid={`compare-summary-${k}`} style={{ margin: 0 }}>
+                {v === 'temperature_2m' && <strong>{t(`compare.kind.${k}`)}: </strong>}
+                {t(`compare.summary.${level}`, { day: dayFmt.format(dayAt(worst.date)), from: formatDay(k, worst.core[0], u, i18n.language), to: formatDay(k, worst.core[1], u, i18n.language) })}
+                {worst.outliers.length > 0 &&
+                  ` ${t('compare.outliers', { models: worst.outliers.map((id) => MODELS.find((m) => m.id === id)?.label).join(', '), values: worst.outliers.map((id) => formatDay(k, worst.byModel[id]!, u, i18n.language)).join(', ') })}`}
+              </p>
+            );
+          })}
 
           <section className="card stack" aria-labelledby="cmp-days-title">
             <h2 id="cmp-days-title" className="section-title" style={{ margin: 0 }}>{t('compare.byDay')}</h2>
@@ -357,18 +364,29 @@ export function ComparePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {days.map((d) => {
-                    const level = agreementOf(v, d.spread);
-                    return (
-                      <tr key={d.date}>
-                        <th scope="row">{new Intl.DateTimeFormat(i18n.language, { weekday: 'short', day: 'numeric', timeZone: 'UTC' }).format(dayAt(d.date))}</th>
-                        {present.filter((m) => !off.includes(m.id)).map((m) => (
-                          <td key={m.id} className={d.byModel[m.id] === null || d.byModel[m.id] === undefined ? 'cmp-na' : undefined}>{d.byModel[m.id] === null || d.byModel[m.id] === undefined ? '–' : format(v, d.byModel[m.id]!, u, i18n.language)}</td>
-                        ))}
-                        <td className={`cmp-agree cmp-agree-${level ?? 'none'}`}>{level ? t(`compare.agree.${level}`) : '–'}</td>
-                      </tr>
-                    );
-                  })}
+                  {rows.map((d, r) => (
+                    <tr key={d.date}>
+                      <th scope="row">{new Intl.DateTimeFormat(i18n.language, { weekday: 'short', day: 'numeric', timeZone: 'UTC' }).format(dayAt(d.date))}</th>
+                      {present.filter((m) => !off.includes(m.id)).map((m) => {
+                        const vals = daysBy.map((ds) => ds[r]!.byModel[m.id]);
+                        // Temperatura: mínima / máxima; si falta alguna, el modelo no llega a ese día.
+                        if (vals.some((x) => x === null || x === undefined)) return <td key={m.id} className="cmp-na">–</td>;
+                        const text = v === 'temperature_2m' ? `${format('temperature_min', vals[1]!, u, i18n.language)} / ${format(v, vals[0]!, u, i18n.language)}` : format(v, vals[0]!, u, i18n.language);
+                        return <td key={m.id}>{text}</td>;
+                      })}
+                      <td>
+                        {kinds.map((k, i) => {
+                          const level = agreementOf(k, daysBy[i]![r]!.spread);
+                          return (
+                            <div key={k} className={`cmp-agree cmp-agree-${level ?? 'none'}`}>
+                              {v === 'temperature_2m' && `${t(`compare.kindShort.${k}`)}: `}
+                              {level ? t(`compare.agree.${level}`) : '–'}
+                            </div>
+                          );
+                        })}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
