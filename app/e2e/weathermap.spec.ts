@@ -536,7 +536,8 @@ test('mapa de tiempo: con NASA atrasada usa el mosaico de NOAA de respaldo, y si
   // NASA responde, pero con imágenes vacías (75 bytes, como cuando está atrasada).
   await context.route('https://gibs.earthdata.nasa.gov/**', (route) => route.fulfill({ body: Buffer.alloc(75), contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } }));
   // NOAA: una imagen por hora; la última de hace 1 h 30.
-  let noaaLatest = Math.floor((Date.now() - 90 * 60_000) / 3_600_000) * 3_600_000;
+  // NOAA: una imagen por hora; la última de hace entre 45 y 105 minutos (siempre dentro de las 2 horas, sea cual sea el minuto del reloj).
+  let noaaLatest = Math.floor((Date.now() - 45 * 60_000) / 3_600_000) * 3_600_000;
   await context.route('https://nowcoast.noaa.gov/**', (route) => {
     if (route.request().url().includes('GetCapabilities')) {
       const times = Array.from({ length: 6 }, (_, i) => new Date(noaaLatest - (5 - i) * 3_600_000).toISOString()).join(',');
