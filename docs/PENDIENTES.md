@@ -46,7 +46,8 @@ Resultados y fuentes en `docs/FUENTES-DE-DATOS.md` («Control de los parques con
 
 ### Open-Meteo propio como primera opción (2026-11-17, sin publicar)
 - Hecho y probado: `app/src/modules/weather/omFetch.ts` (propio primero, público de respaldo, en los 11 pedidos de clima), `server/src/routes/om.ts` + `server/src/weather/openMeteoLocal.ts` (proxy `/api/om` y `fetch` con la copia propia primero para los avisos de lluvia y huerta), `deploy/docker-compose.yml` (servicios `openmeteo` y `openmeteo-sync`), `deploy/openmeteo/{sync.sh,region.json}`. Detalle y números medidos en `docs/SERVIDOR.md` («Open-Meteo propio»).
-- **Para publicar:** mover los datos del piloto (`~/openmeteo-pilot/data`, ~34 GB) a `~/vikarg/deploy/openmeteo-data` (mismo disco, es instantáneo) y levantar los dos servicios; el primer ciclo de `sync.sh` completa lo que falte. Hace falta el permiso de Open-Meteo para usar el bucket con fines comerciales/institucionales (correo sin enviar).
+- **Permiso de Open-Meteo (respuesta por correo, 2026-11-17):** se puede usar la copia local (bajar los datos y servirlos desde el propio servidor); el historial desde la API pública también, si es de bajo consumo y desde los dispositivos de cada persona. Por eso el historial anterior a lo que se baja sigue yendo al servicio público desde cada dispositivo (no pasa por el servidor).
+- **Para publicar:** mover los datos del piloto (`~/openmeteo-pilot/data`, ~34 GB) a `~/vikarg/deploy/openmeteo-data` (mismo disco, es instantáneo) y levantar los dos servicios; el primer ciclo de `sync.sh` completa lo que falte.
 - Diferencia a vigilar: sin elegir modelo, la mezcla de la API pública no es igual a la copia propia (~1,5 °C de temperatura promedio); con el mismo modelo coinciden al decimal.
 
 ### «Conexiones» oculta en Ajustes (2026-11-17, sin publicar)
