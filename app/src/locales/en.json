@@ -887,7 +887,7 @@
     "ecoCredit": "Ecoregions: {{credit}}. Boundaries are a simplified reference (~1 km): in reality one ecoregion fades gradually into the next.",
     "ecoPicked": "Ecoregion at the tapped point ({{coords}}): {{name}} ({{biome}}).",
     "ecoPickedNone": "No ecoregion at the tapped point ({{coords}}) (sea or outside the covered region).",
-    "ecoPickClear": "Back to the center",
+    "ecoPickClear": "Dismiss",
     "zoneWithDetail": "with geology and vegetation detail",
     "ecoCreditFine": "Where a downloaded area has detail, vegetation is from: {{credit}}.",
     "overlapAll": "This area is already almost entirely downloaded: no need to download it again (move the map to pick another).",

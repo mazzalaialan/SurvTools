@@ -526,9 +526,9 @@ export function MapsPage() {
         overlay={
           <>
             {tools.overlay}
-            {(layers.ecoregions || layers.geology || layers.slope) && (
+            {((picked && (layers.ecoregions || layers.geology)) || layers.slope) && (
               <div className="maps-area-overlay" data-testid="fs-area-info">
-                {areaInfo('fs-')}
+                {picked && (layers.ecoregions || layers.geology) && areaInfo('fs-')}
                 {layers.slope && <p className="hint" style={{ margin: 0 }}>{t('maps.layer.slope')}: {SLOPE_ZONES.map((z) => t(`inclinometer.legend.${z}`)).join(' · ')}</p>}
               </div>
             )}

@@ -574,7 +574,7 @@ test('mapas offline: la capa de ecorregiones dice en cuál está el centro del m
   // Buenos Aires (el GPS de la prueba): la Pampa húmeda.
   await expect(page.getByTestId('map-ecoregion')).toContainText('Pampa húmeda', { timeout: 15_000 });
   await expect(page.getByText('RESOLVE Ecoregions 2017')).toBeVisible();
-  // Tocar el mapa: la ficha pasa a ser la del punto tocado (con «Volver al centro»).
+  // Tocar el mapa: la ficha pasa a ser la del punto tocado (con «Descartar»).
   await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 480, y: 300 } });
   await expect(page.getByTestId('map-ecoregion')).toContainText('punto tocado', { timeout: 10_000 });
   await page.getByTestId('eco-pick-clear').click();
@@ -582,12 +582,20 @@ test('mapas offline: la capa de ecorregiones dice en cuál está el centro del m
   // Pantalla completa: el botón de capas elige una a la vez y los datos de la ecorregión se ven sobre el mapa.
   await expect(page.getByTestId('fs-layers-btn')).toBeHidden();
   await page.getByRole('button', { name: 'Pantalla completa' }).click();
+  // En pantalla completa no hay nada hasta tocar el mapa; «Descartar» lo saca y otro toque lo vuelve a mostrar.
+  await expect(page.getByTestId('fs-area-info')).toHaveCount(0);
+  await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 480, y: 300 } });
+  await expect(page.getByTestId('fs-area-info')).toContainText('Pampa húmeda');
+  await page.getByTestId('fs-eco-pick-clear').click();
+  await expect(page.getByTestId('fs-area-info')).toHaveCount(0);
+  await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 400, y: 260 } });
   await expect(page.getByTestId('fs-area-info')).toContainText('Pampa húmeda');
   await page.getByTestId('fs-layers-btn').click();
   await page.getByTestId('fs-layer-slope').click();
   await expect(page.getByTestId('fs-layer-slope')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('fs-layer-ecoregions')).toHaveAttribute('aria-pressed', 'false');
   await page.getByTestId('fs-layer-ecoregions').click();
+  await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 480, y: 300 } });
   await expect(page.getByTestId('fs-area-info')).toContainText('Pampa húmeda');
   await page.getByRole('button', { name: 'Salir de pantalla completa' }).click();
   // El archivo quedó guardado en el dispositivo (con los datos del país): se usa sin conexión.

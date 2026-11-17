@@ -887,7 +887,7 @@
     "ecoCredit": "Ecorregiones: {{credit}}. Los límites son una referencia simplificada (~1 km): en la realidad el paso de una ecorregión a otra es gradual.",
     "ecoPicked": "Ecorregión en el punto tocado ({{coords}}): {{name}} ({{biome}}).",
     "ecoPickedNone": "En el punto tocado ({{coords}}) no hay una ecorregión (mar o fuera de la región cubierta).",
-    "ecoPickClear": "Volver al centro",
+    "ecoPickClear": "Descartar",
     "zoneWithDetail": "con detalle de geología y vegetación",
     "ecoCreditFine": "Donde hay detalle de zona descargada, la vegetación es de: {{credit}}.",
     "overlapAll": "Esta zona ya está descargada casi entera: no hace falta bajarla de nuevo (podés correr el mapa para elegir otra).",
