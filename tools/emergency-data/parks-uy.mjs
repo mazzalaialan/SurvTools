@@ -17,7 +17,7 @@
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { centerOf, osmPolygons, simplified } from '../lib/osm-geo.mjs';
-import { overpass } from '../lib/overpass.mjs';
+import { parksByCountry } from '../lib/osm-local.mjs';
 
 // Con VIKARG_DATA_OUT escribe en la carpeta que sirve el servidor (actualización mensual).
 const OUT = process.env.VIKARG_DATA_OUT ? `${process.env.VIKARG_DATA_OUT.replace(/\/$/, '')}/parks-UY.json` : fileURLToPath(new URL('../../app/public/data/parks-UY.json', import.meta.url));
@@ -33,13 +33,7 @@ const SNAP = [
 ];
 
 const elements = (
-  await overpass(`[out:json][timeout:300];
-area["ISO3166-1"="UY"][admin_level=2]->.a;
-(
-  nwr["boundary"~"^(protected_area|national_park)$"]["name"](area.a);
-  nwr["leisure"="nature_reserve"]["name"](area.a);
-);
-out geom;`)
+  await parksByCountry('UY', ['nwr["boundary"~"^(protected_area|national_park)$"]["name"]', 'nwr["leisure"="nature_reserve"]["name"]'])
 ).filter((e) => SNAP.some((re) => re.test((e.tags?.name ?? '').toLowerCase())) && (e.type === 'relation' ? e.members?.length : e.geometry?.length > 3));
 
 const seen = new Set();

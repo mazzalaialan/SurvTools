@@ -17,7 +17,7 @@
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { centerOf, osmPolygons, simplified } from '../lib/osm-geo.mjs';
-import { overpass } from '../lib/overpass.mjs';
+import { parksByCountry } from '../lib/osm-local.mjs';
 
 // Con VIKARG_DATA_OUT escribe en la carpeta que sirve el servidor (actualización mensual).
 const OUT = process.env.VIKARG_DATA_OUT ? `${process.env.VIKARG_DATA_OUT.replace(/\/$/, '')}/parks-PY.json` : fileURLToPath(new URL('../../app/public/data/parks-PY.json', import.meta.url));
@@ -29,16 +29,15 @@ const EMERGENCY = [{ label: 'MADES (sede central, Asunción)', phone: '+595 21 2
 // Parques, reservas y monumentos: pueden estar mapeados como relación o como vía cerrada. Se descartan los sitios del Patrimonio
 // (clase 22), las comunidades indígenas (24), las «matas ciliares» de la represa de Itaipú, los sitios históricos o urbanos mal etiquetados
 // y los lugares cuyo nombre no dice que sean un parque, reserva, refugio, monumento o área protegida (lotes y estancias con etiqueta de reserva).
+/**
+ * Áreas de la orilla de los ríos fronterizos (Pilcomayo, Paraná, Paraguay) que el recorte por frontera trae pero que son de Argentina o de
+ * Bolivia: no hay forma geométrica de separarlas (sus vértices caen sobre la línea) y OpenStreetMap dice quién las administra.
+ */
+const FOREIGN_OPERATOR = /^(Provincia de |Administraci[oó]n (de )?Parques Nacionales|APN\b|SERNAP|Servicio Nacional de [AÁ]reas Protegidas|ICMBio)/i;
+
 const elements = (
-  await overpass(`[out:json][timeout:300];
-area["ISO3166-1"="PY"][admin_level=2]->.a;
-(
-  nwr["boundary"="national_park"]["name"](area.a);
-  nwr["boundary"="protected_area"]["name"](area.a);
-  nwr["leisure"="nature_reserve"]["name"](area.a);
-);
-out geom;`)
-).filter((e) => !/^(22|24)$/.test(e.tags?.protect_class ?? '') && !/mata ciliar|centro hist[oó]rico|batall[oó]n|campo de batalla/i.test(e.tags?.name ?? '') && !/itabo.*bosque/i.test(e.tags?.name ?? '') && !/agroindustrial|s\.a\.|s\.r\.l/i.test(e.tags?.operator ?? '') && /parque|reserva|refug|monumento|[aá]rea|fort[ií]n/i.test(e.tags?.name ?? '') && (e.type === 'relation' ? e.members?.length : e.geometry?.length > 3));
+  await parksByCountry('PY', ['nwr["boundary"="national_park"]["name"]', 'nwr["boundary"="protected_area"]["name"]', 'nwr["leisure"="nature_reserve"]["name"]'])
+).filter((e) => !FOREIGN_OPERATOR.test(e.tags?.operator ?? '')).filter((e) => !/^(22|24)$/.test(e.tags?.protect_class ?? '') && !/mata ciliar|centro hist[oó]rico|batall[oó]n|campo de batalla/i.test(e.tags?.name ?? '') && !/itabo.*bosque/i.test(e.tags?.name ?? '') && !/agroindustrial|s\.a\.|s\.r\.l/i.test(e.tags?.operator ?? '') && /parque|reserva|refug|monumento|[aá]rea|fort[ií]n/i.test(e.tags?.name ?? '') && (e.type === 'relation' ? e.members?.length : e.geometry?.length > 3));
 
 const seen = new Set();
 const parks = [];

@@ -15,7 +15,7 @@
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { centerOf, osmPolygons, simplified } from '../lib/osm-geo.mjs';
-import { overpass } from '../lib/overpass.mjs';
+import { parksByCountry } from '../lib/osm-local.mjs';
 
 // Con VIKARG_DATA_OUT escribe en la carpeta que sirve el servidor (actualización mensual).
 const OUT = process.env.VIKARG_DATA_OUT ? `${process.env.VIKARG_DATA_OUT.replace(/\/$/, '')}/parks-BO.json` : fileURLToPath(new URL('../../app/public/data/parks-BO.json', import.meta.url));
@@ -27,10 +27,7 @@ const EMERGENCY = [
   { label: 'SERNAP: línea gratuita', phone: '+591 2 2116169' },
 ];
 
-const elements = await overpass(`[out:json][timeout:300];
-area["ISO3166-1"="BO"][admin_level=2]->.a;
-relation["boundary"~"^(protected_area|national_park)$"]["operator"~"SERNAP|Servicio Nacional de Áreas Protegidas",i](area.a);
-out geom;`);
+const elements = await parksByCountry('BO', ['relation["boundary"~"^(protected_area|national_park)$"]["operator"~"SERNAP|Servicio Nacional de Áreas Protegidas",i]']);
 
 const parks = [];
 for (const e of elements) {

@@ -18,7 +18,7 @@
  */
 
 import { writeFile } from 'node:fs/promises';
-import { overpass } from '../lib/overpass.mjs';
+import { parksByCountry, parksById } from '../lib/osm-local.mjs';
 import { fileURLToPath } from 'node:url';
 
 // Con VIKARG_DATA_OUT escribe en la carpeta que sirve el servidor (actualización mensual).
@@ -205,7 +205,7 @@ for (const url of urls) {
 }
 
 // Límites: nombres de OSM de una sola consulta; después la geometría de los elegidos.
-const tags = await overpass(`[out:json][timeout:180];area["ISO3166-1"="CL"][admin_level=2]->.cl;(relation["boundary"~"^(protected_area|national_park)$"](area.cl);way["boundary"~"^(protected_area|national_park)$"](area.cl);relation["leisure"="nature_reserve"](area.cl););out tags;`);
+const tags = await parksByCountry('CL', ['relation["boundary"~"^(protected_area|national_park)$"]', 'way["boundary"~"^(protected_area|national_park)$"]', 'relation["leisure"="nature_reserve"]'], { geom: false });
 const byName = new Map();
 for (const e of tags) if (e.tags?.name) byName.set(fold(e.tags.name), e);
 const wanted = new Map();
@@ -215,11 +215,8 @@ for (const a of areas) {
 }
 const ids = (type) => [...wanted.values()].filter((e) => e.type === type).map((e) => e.id);
 const geoms = new Map();
-const rel = ids('relation');
-for (let i = 0; i < rel.length; i += 20) {
-  for (const e of await overpass(`[out:json][timeout:180];relation(id:${rel.slice(i, i + 20).join(',')});out geom;`)) geoms.set(`relation/${e.id}`, e);
-}
-if (ids('way').length) for (const e of await overpass(`[out:json][timeout:180];way(id:${ids('way').join(',')});out geom;`)) geoms.set(`way/${e.id}`, e);
+for (const e of await parksById('CL', 'relation', ids('relation'))) geoms.set(`relation/${e.id}`, e);
+for (const e of await parksById('CL', 'way', ids('way'))) geoms.set(`way/${e.id}`, e);
 
 // Ubicación de las oficinas, por localidad (la última parte de la dirección).
 const located = new Map();

@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, it } from 'node:test';
-import { hasLocal, localByCountry, selectorToPredicate } from './osm-local.mjs';
+import { hasLocal, hasLocalParks, localByCountry, localRiversNearStations, parksByCountry, parksById, selectorToPredicate, stationsKey } from './osm-local.mjs';
 
 const dirs = [];
 afterEach(() => {
@@ -60,5 +60,42 @@ describe('archivo local por país', () => {
     withFile([]);
     process.env.OSM_LOCAL = '0';
     assert.equal(hasLocal('UY'), false);
+  });
+});
+
+describe('áreas protegidas y ríos cerca de las estaciones', () => {
+  function dirWith(files) {
+    const dir = mkdtempSync(join(tmpdir(), 'osm-local-'));
+    dirs.push(dir);
+    for (const [name, lines] of Object.entries(files)) writeFileSync(join(dir, name), lines.map((l) => JSON.stringify(l)).join('\n') + '\n');
+    process.env.OSM_LOCAL_DIR = dir;
+  }
+  it('los filtros respetan el tipo (relation/way) y la marca ,i de mayúsculas', () => {
+    const rel = selectorToPredicate('relation["boundary"~"^(protected_area|national_park)$"]["operator"~"SERNAP|Servicio Nacional",i]');
+    assert.equal(rel({ boundary: 'national_park', operator: 'sernap' }, 'relation'), true);
+    assert.equal(rel({ boundary: 'national_park', operator: 'sernap' }, 'way'), false);
+    assert.equal(rel({ boundary: 'national_park', operator: 'otro' }, 'relation'), false);
+    assert.equal(selectorToPredicate('nwr["leisure"="nature_reserve"]["name"]')({ leisure: 'nature_reserve', name: 'X' }, 'way'), true);
+  });
+  it('las áreas protegidas salen en el orden de Overpass (caminos antes que relaciones) y se piden por id', async () => {
+    dirWith({
+      'parks-UY.jsonl': [
+        { type: 'relation', id: 5, tags: { boundary: 'protected_area', name: 'Igual' }, members: [] },
+        { type: 'way', id: 9, tags: { boundary: 'protected_area', name: 'Igual' }, geometry: [] },
+        { type: 'way', id: 2, tags: { leisure: 'nature_reserve', name: 'Otra' }, geometry: [] },
+      ],
+    });
+    assert.equal(hasLocalParks('UY'), true);
+    const els = await parksByCountry('UY', ['nwr["boundary"="protected_area"]["name"]', 'nwr["leisure"="nature_reserve"]["name"]']);
+    assert.deepEqual(els.map((e) => `${e.type}/${e.id}`), ['way/2', 'way/9', 'relation/5']);
+    assert.deepEqual((await parksById('UY', 'relation', [5])).map((e) => e.id), [5]);
+    assert.deepEqual(await parksById('UY', 'way', []), []);
+  });
+  it('los ríos locales solo valen si se armaron con la misma lista de estaciones y radio', async () => {
+    const stations = [{ lat: -34.6, lon: -58.4 }, { lat: -26.8, lon: -65.2 }];
+    dirWith({ 'rivers-near-stations.jsonl': [{ meta: { stations: stationsKey(stations), radiusM: 12000 } }, { type: 'way', id: 1, tags: { name: 'Río X', waterway: 'river' }, geometry: [] }] });
+    assert.equal((await localRiversNearStations(stations, 12000)).length, 1);
+    assert.equal(await localRiversNearStations(stations, 5000), null);
+    assert.equal(await localRiversNearStations([...stations, { lat: 0, lon: 0 }], 12000), null);
   });
 });

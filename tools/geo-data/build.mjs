@@ -27,6 +27,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { overpass } from '../lib/overpass.mjs';
+import { localRiversNearStations } from '../lib/osm-local.mjs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -117,8 +118,13 @@ async function osmRiversNearStations(known) {
   const dir = new URL('../../app/public/data/', import.meta.url);
   const stations = [];
   for (const f of ['rivers-AR.json', 'rivers-BO.json']) stations.push(...JSON.parse(await readFile(new URL(f, dir), 'utf8')).stations);
-  const around = stations.map((s) => `way(around:${STATION_RADIUS_M},${s.lat},${s.lon})["waterway"="river"];`).join('\n');
-  const elements = await overpass(`[out:json][timeout:180];(\n${around}\n);out geom tags;`);
+  // Archivo local de Geofabrik (tools/osm-index/countries.sh) si fue armado con esta lista de estaciones; si no, Overpass.
+  let elements = await localRiversNearStations(stations, STATION_RADIUS_M);
+  if (elements) console.log(`Ríos de OpenStreetMap: archivo local (${elements.length} caminos)`);
+  else {
+    const around = stations.map((s) => `way(around:${STATION_RADIUS_M},${s.lat},${s.lon})["waterway"="river"];`).join('\n');
+    elements = await overpass(`[out:json][timeout:180];(\n${around}\n);out geom tags;`);
+  }
   const byName = new Map();
   for (const el of elements) {
     const name = el.tags?.name;
