@@ -33,8 +33,10 @@ import { BiometricTest } from '../screens/BiometricTest';
 import { BiometricUnlockSettings } from '../screens/BiometricUnlockSettings';
 import { NotificationsSection } from './NotificationsSection';
 import { confirmAction } from '@/ui/confirm';
+import { useConnectionsAccess } from './connectionsAccess';
 
 export function SettingsPage() {
+  const connections = useConnectionsAccess();
   const { t } = useTranslation();
   const settings = useSettings((s) => s.settings);
   const update = useSettings((s) => s.update);
@@ -135,7 +137,7 @@ export function SettingsPage() {
       )}
 
       <BackupSection />
-      <ConnectionsSection settings={settings} onSave={update} />
+      {connections.visible && <ConnectionsSection settings={settings} onSave={update} />}
       <NotificationsSection />
       <AccountSection />
       <DeviceSection />
@@ -144,7 +146,7 @@ export function SettingsPage() {
       <section className="card">
         <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.about')}</h2>
         <p style={{ margin: 0 }}>{t('app.name')}</p>
-        <p className="hint">{t('settings.version', { version: __APP_VERSION__ })}</p>
+        <p className="hint" onClick={connections.tap} data-testid="app-version">{t('settings.version', { version: __APP_VERSION__ })}</p>
         <PortableUpdateCheck />
         <p className="hint" style={{ fontStyle: 'italic' }}>{t('app.motto')}</p>
         <Link className="btn" to="/about">

@@ -16,7 +16,7 @@ test('transferir a un dispositivo nuevo con el QR (link) y código de un solo us
   await createVault(page);
 
   // Configurar y probar el servidor
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   // Con candado: no se puede cambiar por error.
   const serverInput = page.getByLabel('Servidor VikArg');
   await expect(serverInput).not.toBeEditable();
@@ -69,7 +69,7 @@ test('transferir a un dispositivo nuevo con el QR (link) y código de un solo us
 test('notificaciones sin servidor', async ({ page, context }) => {
   await context.grantPermissions(['notifications']);
   await createVault(page);
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   // Viene cargado el servidor por defecto; vaciado, queda sin servidor.
   const server = page.getByLabel('Servidor VikArg');
   await expect(server).toHaveValue('https://valhallarust2.ddns.net');

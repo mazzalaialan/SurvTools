@@ -13,7 +13,7 @@ test('eliminar mi cuenta: pide la contraseña y borra el dispositivo del servido
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 
   // Sin cuenta todavía: no hay nada para borrar.
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await expect(page.getByTestId('account-none')).toBeVisible();
 
   // El push real no anda en el navegador de pruebas: se registra el dispositivo en el
@@ -47,7 +47,7 @@ test('eliminar mi cuenta: pide la contraseña y borra el dispositivo del servido
   await page.reload();
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
 
   const account = page.getByTestId('account');
   await expect(page.getByTestId('account-device')).toContainText(deviceId);
@@ -106,7 +106,7 @@ test('desactivar las notificaciones sin conexión deja el borrado de la cuenta p
   await page.reload();
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await expect(page.getByTestId('disable-deletes')).toContainText('se elimina tu cuenta del servidor');
 
   // Servidor inalcanzable: se apagan igual, pero el borrado queda pendiente (no se olvida la cuenta).
@@ -122,4 +122,29 @@ test('desactivar las notificaciones sin conexión deja el borrado de la cuenta p
   await expect(page.getByTestId('account-done')).toBeVisible();
   await expect(page.getByTestId('account-pending')).toHaveCount(0);
   expect((await request.put(`${SERVER}/api/devices/${deviceId}/stock`, { headers: auth, data: { places: [] } })).status()).toBe(401);
+});
+
+test('Ajustes: «Conexiones» no se muestra; se abre con 7 toques en la versión o con el enlace interno', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  await page.goto('/#/settings');
+  await expect(page.getByTestId('app-version')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Conexiones' })).toHaveCount(0);
+  const version = page.getByTestId('app-version');
+  for (let i = 0; i < 6; i++) await version.click();
+  await expect(page.getByRole('heading', { name: 'Conexiones' })).toHaveCount(0);
+  await version.click();
+  await expect(page.getByRole('heading', { name: 'Conexiones' })).toBeVisible();
+  await expect(page.getByLabel('Servidor VikArg')).toBeVisible();
+
+  // El enlace interno también la abre (y los valores por defecto siguen funcionando sin abrirla).
+  await page.evaluate(() => sessionStorage.clear());
+  await page.goto('/#/settings?conexiones=1');
+  await expect(page.getByRole('heading', { name: 'Conexiones' })).toBeVisible();
 });

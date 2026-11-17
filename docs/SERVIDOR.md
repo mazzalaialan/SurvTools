@@ -53,7 +53,7 @@ La app queda servida en `https://TU_DOMINIO/` y se puede instalar desde ahí.
 
 ## Conectar la app
 
-1. En la app: **Ajustes → Conexiones → Servidor VikArg**, poné `https://TU_DOMINIO` y tocá **Probar conexión**.
+1. En la app: **Ajustes → tocá 7 veces el número de versión** (la sección «Conexiones» está oculta a propósito: es configuración interna) o abrí `#/settings?conexiones=1`. Después **Conexiones → Servidor VikArg**, poné `https://TU_DOMINIO` y tocá **Probar conexión**.
 2. **Guardar.**
 3. **Ajustes → Notificaciones → Activar notificaciones** y aceptá el permiso.
 4. Tocá **Probar**: tiene que llegar una notificación.
@@ -123,7 +123,7 @@ Si `osmdata.openstreetmap.de` (polígonos de agua) no responde, `WATER_URL=` per
 ```
 El registro queda en `deploy/maps/update.log`. Cada reconstrucción cuesta unas 3 horas de procesador, unos 7 GB de memoria (`MEMORY=7g`) y bajar el extracto de Geofabrik (unos 2 GB): conviene que no coincida con un respaldo ni con otra tarea pesada del servidor.
 
-**Cómo lo usa la app.** En *Ajustes → Conexiones → Bajar los mapas de* se elige entre tres opciones:
+**Cómo lo usa la app.** En *Ajustes → Conexiones (oculta: 7 toques en la versión) → Bajar los mapas de* se elige entre tres opciones:
 - **Automático** (por defecto): pide cada tesela a este servidor. Si no responde, está sobrecargado (503) o no tiene esa zona, la pide a las fuentes públicas, y deja de lado al servidor por un rato (lo que diga `Retry-After`, o 5 minutos). Una zona más grande que el límite público se baja solo del servidor: si falla a mitad de camino, quedan teselas sin bajar y se completa repitiendo la descarga más tarde.
 - **Solo mi servidor.**
 - **Solo servidores públicos**, como antes.

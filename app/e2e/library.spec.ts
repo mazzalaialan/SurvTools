@@ -13,7 +13,7 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 
   // Servidor de pruebas (con biblioteca y clave).
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await page.getByRole('button', { name: 'Desbloquear para modificar' }).first().click();
   await page.getByLabel('Servidor VikArg').fill(SERVER);
   await page.getByRole('button', { name: 'Guardar' }).last().click();
@@ -97,7 +97,7 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
   await context.setOffline(false);
 
   // Espacio: Ajustes muestra cuánto ocupan los libros bajados.
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await expect(page.getByTestId('storage-books')).toContainText('2 libros de la biblioteca');
 
   // Borrar varios libros a la vez: modo "Elegir para borrar", elegir los dos y borrarlos.
@@ -111,7 +111,7 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
   await expect(page.getByTestId('book-montanismo').getByLabel('En el dispositivo')).toHaveCount(0);
   await expect(page.getByTestId('book-enciclopedia').getByLabel('En el dispositivo')).toHaveCount(0);
   await expect(page.getByTestId('library-delete-mode')).toHaveCount(0);
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await expect(page.getByTestId('storage-books')).toContainText('0 libros de la biblioteca');
 });
 
@@ -123,7 +123,7 @@ test('biblioteca: cancelar una descarga en curso no gasta más datos y deja lo q
   await page.getByLabel('Ya la anoté en un lugar seguro').check();
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await page.getByRole('button', { name: 'Desbloquear para modificar' }).first().click();
   await page.getByLabel('Servidor VikArg').fill(SERVER);
   await page.getByRole('button', { name: 'Guardar' }).last().click();

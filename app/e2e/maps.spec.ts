@@ -278,7 +278,7 @@ test('mapas offline desde el servidor propio, con las fuentes públicas de respa
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
   // El origen se elige en Ajustes → Conexiones; por defecto, automático.
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await expect(page.getByLabel('Bajar los mapas de')).toHaveValue('auto');
   await expect(page.getByTestId('map-source-status')).toContainText('Tu servidor tiene mapas');
   await page.goto('/#/orientation/maps');
@@ -308,7 +308,7 @@ test('mapas offline desde el servidor propio, con las fuentes públicas de respa
   expect(fromPublic.n).toBeGreaterThan(publicBefore);
 
   // Solo servidores públicos: vuelve el límite de siempre.
-  await page.goto('/#/settings');
+  await page.goto('/#/settings?conexiones=1');
   await page.getByLabel('Bajar los mapas de').selectOption({ label: 'Solo servidores públicos' });
   await expect(page.getByTestId('map-source-status')).toContainText('Se usan OpenFreeMap');
   await page.goto('/#/orientation/maps');
