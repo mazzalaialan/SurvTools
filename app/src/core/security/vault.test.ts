@@ -15,6 +15,7 @@ import {
   unlockOpenVault,
   initializeVault,
   isVaultInitialized,
+  regenerateRecoveryKey,
   lockVault,
   setTestIterations,
   unlockWithPassword,
@@ -157,5 +158,18 @@ describe('bóveda sin contraseña', () => {
     lockVault();
     expect(await unlockOpenVault()).toBe(true);
     expect((await repos.waypoints.loadAll())).toHaveLength(1);
+  });
+
+  it('un código de recuperación nuevo reemplaza al anterior y conserva los datos y la contraseña', async () => {
+    const oldCode = await initializeVault('contraseña-segura');
+    await repos.waypoints.put(waypoint());
+    const fresh = await regenerateRecoveryKey();
+    expect(fresh).not.toBe(oldCode);
+    lockVault();
+    await expect(unlockWithRecoveryKey(oldCode)).rejects.toBeInstanceOf(WrongSecretError);
+    await unlockWithRecoveryKey(fresh);
+    expect((await repos.waypoints.loadAll()).map((w) => w.name)).toContain('Refugio Sierra');
+    lockVault();
+    await unlockWithPassword('contraseña-segura');
   });
 });

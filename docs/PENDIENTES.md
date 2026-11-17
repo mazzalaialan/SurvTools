@@ -23,6 +23,12 @@ Resultados y fuentes en `docs/FUENTES-DE-DATOS.md` («Control de los parques con
 ### Publicación de la 0.72.0 (2026-11-16): se retomó con el procesador nuevo y pasó
 - Con el Intel i7-9700 (8 núcleos, AVX2) la e2e completa dura **5,8 minutos** (antes 15 a 20): 141 pasaron, 1 inestable que pasó al reintentar (`account.spec.ts:74` «desactivar las notificaciones sin conexión deja el borrado de la cuenta pendiente…», vigilar) y 1 omitida por diseño; `tracks.spec.ts:256` tarda 1,5 min en celular y 1,2 en escritorio (en el Celeron 2,9 de un límite de 3). 750 unitarias de la app, 182 del servidor, tipos en verde. Los cambios que se hicieron para esquivar la lentitud (capas del mapa al prenderlas, líneas de ecorregión y geología con 1,5 s de espera, `loadDataFile` sin reserializar) se quedan: son mejoras. El parche de rollup en WebAssembly de `app/package.json` **se quitó el 2026-11-16** (build, tipos y 750 unitarias en verde con el Rollup nativo; el `package-lock.json` se injertó con el rollup nativo sin subir otras dependencias).
 
+### Para la 0.77 (2026-11-16)
+- **Cambiar la contraseña confirmando con la huella** (si está activada) en lugar de la contraseña actual, y **código de recuperación nuevo** confirmando con clave o huella (el anterior deja de valer; no se puede volver a mostrar porque no se guarda). `SettingsPage.tsx`, `vault.ts: regenerateRecoveryKey`, e2e en `vault-modes.spec.ts:198`.
+- **Mi ubicación:** la dirección aparece apenas responde Nominatim, los dos Overpass se consultan a la vez, va antes de las coordenadas en el mensaje y lleva la altura (puerta más cercana, «aprox.») o el km de la ruta.
+- Descripciones de módulos actualizadas (Navegación, Clima, Mapas offline, Mapa de alertas, Mi ubicación).
+- Aviso de lluvia sin duplicar «donde estoy»; «Descartar» en la ficha del mapa; Clima histórico sin refrescar solo.
+
 ### Aviso de lluvia duplicado (hecho el 2026-11-16, sin publicar; irá en la 0.77)
 - El servidor ya sacaba «donde estoy» si había un waypoint con aviso a menos de 10 km (`server/src/places.ts`), pero el vigilante local de la app (`weather/rainWatch.ts`) no: avisaba por los dos. Ahora usa la misma regla (`weather/samePlace.ts`, con prueba).
 

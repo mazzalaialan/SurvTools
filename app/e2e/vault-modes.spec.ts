@@ -209,6 +209,8 @@ test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir 
   await page.getByLabel('Nombre').fill('Refugio Huella');
   await page.getByLabel('Coordenadas').fill('-41.1, -71.3');
   await page.getByRole('button', { name: 'Guardar' }).click();
+  // Esperar a que termine de guardar: si no, la navegación a la ficha pisa el paso a Ajustes.
+  await expect(page.getByRole('heading', { name: 'Refugio Huella' })).toBeVisible();
 
   const cdp = await context.newCDPSession(page);
   await cdp.send('WebAuthn.enable');
@@ -230,9 +232,29 @@ test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir 
   await page.goto('/#/orientation/waypoints');
   await expect(page.getByText('Refugio Huella')).toBeVisible();
 
-  // La contraseña sigue valiendo.
+  // Cambiar la contraseña confirmando con la huella, sin escribir la actual (por si se olvidó).
+  await page.goto('/#/settings');
+  await page.getByTestId('change-password-bio').click();
+  await expect(page.getByTestId('change-password-bio-ok')).toBeVisible({ timeout: 20_000 });
+  await page.getByLabel('Contraseña nueva').fill('contraseña-nueva-456');
+  await page.getByRole('button', { name: 'Guardar', exact: true }).first().click();
+  await expect(page.getByText('Contraseña actualizada.')).toBeVisible();
+
+  // Código de recuperación nuevo, confirmando con la huella: se muestra una vez y hay que anotarlo.
+  await page.goto('/#/settings');
+  await page.getByTestId('new-recovery-bio').click();
+  await page.getByTestId('confirm-ok').click();
+  await expect(page.locator('.recovery-key')).toBeVisible({ timeout: 20_000 });
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // La contraseña nueva vale (y la vieja ya no).
   await page.locator('.topbar-lock').click();
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByRole('button', { name: 'Desbloquear', exact: true }).click();
+  await expect(page.getByText('Contraseña incorrecta', { exact: false })).toBeVisible();
+  await page.getByLabel('Contraseña', { exact: true }).fill('contraseña-nueva-456');
   await page.getByRole('button', { name: 'Desbloquear', exact: true }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 

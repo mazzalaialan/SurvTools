@@ -10,6 +10,7 @@ import { WrongSecretError } from '@/core/crypto/crypto';
 import { setLanguage } from '@/core/i18n/i18n';
 import { ServerError, checkServer, enableNotifications, normalizeServerUrl, isAcceptableServerUrl } from '@/core/notifications/notifications';
 import { useVault } from '@/core/security/useVault';
+import { BiometricError } from '@/core/security/vaultBiometric';
 import {
   MIN_PASSWORD_LENGTH,
   WeakPasswordError,
@@ -108,6 +109,7 @@ export function SettingsPage() {
             </label>
             <p className="hint" style={{ margin: 0 }}>{t('settings.emergencyOnLockHint')}</p>
             <ChangePasswordForm />
+            <NewRecoveryKeyForm />
             <button className="btn" type="button" onClick={lock}>
               <Lock size={18} /> {t('settings.lockNow')}
             </button>
@@ -308,18 +310,74 @@ function RemovePasswordForm() {
   );
 }
 
+/** Código de recuperación nuevo: el actual no se puede volver a ver (no se guarda), pero se puede reemplazar confirmando con la clave o la huella. */
+function NewRecoveryKeyForm() {
+  const { t } = useTranslation();
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const biometric = useVault((s) => s.biometric);
+  const unlockBiometric = useVault((s) => s.unlockBiometric);
+  const newRecoveryKey = useVault((s) => s.newRecoveryKey);
+
+  async function generate(confirm: () => Promise<void>) {
+    setError(null);
+    try {
+      await confirm();
+      if (!(await confirmAction(t('settings.newRecoveryConfirm')))) return;
+      await newRecoveryKey();
+      setPassword('');
+    } catch (err) {
+      if (err instanceof WrongSecretError) return setError(t('unlock.wrong'));
+      if (err instanceof BiometricError) return setError(t(`biometricUnlock.error.${err.code}`));
+      throw err;
+    }
+  }
+
+  return (
+    <form className="stack" data-testid="new-recovery" onSubmit={(e) => { e.preventDefault(); void generate(() => unlockWithPassword(password)); }}>
+      <h3 style={{ fontSize: '1rem' }}>{t('settings.newRecoveryTitle')}</h3>
+      <p className="hint" style={{ margin: 0 }}>{t('settings.newRecoveryHint')}</p>
+      <div className="field">
+        <label htmlFor="recovery-password">{t('settings.currentPassword')}</label>
+        <input id="recovery-password" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
+      {error && <p className="error" role="alert">{error}</p>}
+      <button className="btn" type="submit" disabled={!password}>{t('settings.newRecoveryButton')}</button>
+      {biometric && (
+        <button className="btn" type="button" onClick={() => void generate(unlockBiometric)} data-testid="new-recovery-bio">{t('settings.newRecoveryBio')}</button>
+      )}
+    </form>
+  );
+}
+
 function ChangePasswordForm() {
   const { t } = useTranslation();
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  // Con la huella activada, confirmarla reemplaza a la contraseña actual (por si se olvidó y no hay código de recuperación).
+  const biometric = useVault((s) => s.biometric);
+  const unlockBiometric = useVault((s) => s.unlockBiometric);
+  const [bioOk, setBioOk] = useState(false);
+
+  async function confirmWithBiometric() {
+    try {
+      await unlockBiometric();
+      setBioOk(true);
+      setMessage(null);
+    } catch (err) {
+      setBioOk(false);
+      setMessage({ ok: false, text: t(`biometricUnlock.error.${err instanceof BiometricError ? err.code : 'failed'}`) });
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     try {
-      // Verifica la contraseña actual antes de reemplazarla.
-      await unlockWithPassword(current);
+      // Verifica la contraseña actual antes de reemplazarla (o la huella, ya confirmada).
+      if (!(biometric && bioOk)) await unlockWithPassword(current);
       await changePassword(next);
+      setBioOk(false);
       setCurrent('');
       setNext('');
       setMessage({ ok: true, text: t('settings.passwordChanged') });
@@ -334,17 +392,28 @@ function ChangePasswordForm() {
   return (
     <form className="stack" onSubmit={handleSubmit}>
       <h3 style={{ fontSize: '1rem' }}>{t('settings.changePassword')}</h3>
-      <div className="field">
-        <label htmlFor="current-password">{t('settings.currentPassword')}</label>
-        <input
-          id="current-password"
-          className="input"
-          type="password"
-          autoComplete="current-password"
-          value={current}
-          onChange={(e) => setCurrent(e.target.value)}
-        />
-      </div>
+      {biometric && bioOk ? (
+        <p className="ok-box" style={{ margin: 0 }} data-testid="change-password-bio-ok">{t('settings.biometricConfirmed')}</p>
+      ) : (
+        <>
+          <div className="field">
+            <label htmlFor="current-password">{t('settings.currentPassword')}</label>
+            <input
+              id="current-password"
+              className="input"
+              type="password"
+              autoComplete="current-password"
+              value={current}
+              onChange={(e) => setCurrent(e.target.value)}
+            />
+          </div>
+          {biometric && (
+            <button className="btn" type="button" onClick={() => void confirmWithBiometric()} data-testid="change-password-bio">
+              {t('settings.confirmWithBiometric')}
+            </button>
+          )}
+        </>
+      )}
       <div className="field">
         <label htmlFor="next-password">{t('settings.newPassword')}</label>
         <input
@@ -357,7 +426,7 @@ function ChangePasswordForm() {
         />
       </div>
       {message && <p className={message.ok ? 'success' : 'error'} role="status">{message.text}</p>}
-      <button className="btn" type="submit" disabled={!current || !next}>
+      <button className="btn" type="submit" disabled={(!current && !(biometric && bioOk)) || !next}>
         {t('common.save')}
       </button>
     </form>

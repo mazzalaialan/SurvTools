@@ -213,6 +213,18 @@ export async function changePassword(newPassword: string): Promise<void> {
   await db.meta.put({ key: HEADER_KEY, value: updated });
 }
 
+/**
+ * Genera un código de recuperación nuevo (el anterior deja de valer: no se puede volver a mostrar porque solo se guarda la DEK envuelta
+ * con él). Hace falta estar desbloqueado y que la bóveda tenga contraseña; la confirmación con clave o huella la pide quien llama.
+ */
+export async function regenerateRecoveryKey(): Promise<string> {
+  const header = await requireHeader();
+  const recoveryKey = generateRecoveryKey();
+  const updated: VaultHeader = { ...header, recovery: await wrapDek(getDek(), normalizeRecoveryKey(recoveryKey), iterations) };
+  await db.meta.put({ key: HEADER_KEY, value: updated });
+  return recoveryKey;
+}
+
 export function lockVault(): void {
   setDek(null);
 }

@@ -4,6 +4,7 @@ import { biometricEnabled, disableBiometric, enableBiometric, unlockWithBiometri
 import {
   addPassword,
   changePassword,
+  regenerateRecoveryKey,
   initializeOpenVault,
   initializeVault,
   isOpenVault,
@@ -37,6 +38,8 @@ interface VaultState {
   /** Con contraseña → sin contraseña. Lanza `WrongSecretError` si la contraseña no es correcta. */
   removePassword: (password: string) => Promise<void>;
   acknowledgeRecoveryKey: () => void;
+  /** Código de recuperación nuevo (ya confirmado con clave o huella): se muestra una vez, igual que al crear la bóveda. */
+  newRecoveryKey: () => Promise<void>;
   unlock: (password: string) => Promise<void>;
   recover: (recoveryKey: string) => Promise<void>;
   /** Desbloquea con la biometría del dispositivo (lanza `BiometricError`). */
@@ -88,6 +91,9 @@ export const useVault = create<VaultState>((set, get) => ({
   async removePassword(password) {
     await removePassword(password);
     set({ open: true });
+  },
+  async newRecoveryKey() {
+    set({ pendingRecoveryKey: await regenerateRecoveryKey() });
   },
   acknowledgeRecoveryKey() {
     set({ pendingRecoveryKey: null });
