@@ -29,7 +29,8 @@ export function KitBuilderPage() {
   const [days, setDays] = useState(scenario.days);
   const [name, setName] = useState('');
   const [skip, setSkip] = useState<Set<string>>(new Set());
-  const [have, setHave] = useState<Set<string>>(new Set());
+  /** Cuántos tiene ya de cada cosa (0 si no puso nada): lo que no llega a la cantidad queda como faltante. */
+  const [have, setHave] = useState<Record<string, number>>({});
   const [qtys, setQtys] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export function KitBuilderPage() {
     setPeople(scenarioById(scenarioId)!.people);
     setDays(scenarioById(scenarioId)!.days);
     setSkip(new Set());
-    setHave(new Set());
+    setHave({});
     setQtys({});
   }, [scenarioId]);
 
@@ -92,10 +93,11 @@ export function KitBuilderPage() {
           await saveItem(item);
         }
         await setStockMin(item.id, kit.id, qty);
-        if (have.has(line.id)) {
+        const owned = Math.max(0, have[line.id] ?? 0);
+        if (owned > 0) {
           await saveLot(
             newEntity<Lot>({
-              itemId: item.id, locationId: kit.id, quantity: qty, packageCount: null, packageSize: null, packageName: null, packageTareGrams: null, expiryDate: null,
+              itemId: item.id, locationId: kit.id, quantity: owned, packageCount: null, packageSize: null, packageName: null, packageTareGrams: null, expiryDate: null,
               manufactureDate: null, shelfLifeMonths: null, capacityTotal: null, capacityRemaining: null, capacityUnit: null, notes: '',
             }),
           );
@@ -182,7 +184,19 @@ export function KitBuilderPage() {
                         {ex && <span className="hint">{t('kitBuilder.already', { name: ex.name, qty: fmt.format(stock) })}</span>}
                         {!skip.has(line.id) && (
                           <label className="kb-have">
-                            <input type="checkbox" checked={have.has(line.id)} onChange={() => toggle(have, line.id, setHave)} /> {t('kitBuilder.have')}
+                            {t('kitBuilder.have')}
+                            <input
+                              className="input kb-qty"
+                              type="number"
+                              min={0}
+                              value={have[line.id] ?? 0}
+                              onChange={(e) => setHave((h) => ({ ...h, [line.id]: Math.max(0, Number(e.target.value) || 0) }))}
+                              aria-label={t('kitBuilder.haveLabel', { name: line.item.name[lang] })}
+                              data-testid={`kb-have-${line.id}`}
+                            />
+                            <span className={(have[line.id] ?? 0) >= qtyOf(line.id, line.qty) ? 'hint' : 'error'} data-testid={`kb-gap-${line.id}`}>
+                              {(have[line.id] ?? 0) >= qtyOf(line.id, line.qty) ? t('kitBuilder.complete') : t('kitBuilder.missing', { count: qtyOf(line.id, line.qty) - (have[line.id] ?? 0) })}
+                            </span>
                           </label>
                         )}
                       </div>

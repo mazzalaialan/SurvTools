@@ -117,15 +117,18 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   // El torniquete explica para qué sirve y muestra las dos posturas de las fuentes.
   await page.getByTestId('kb-row-tourniquet').getByRole('button', { name: /Torniquete/ }).click();
   await expect(page.getByTestId('kb-row-tourniquet')).toContainText('Las fuentes difieren');
-  // Se destilda uno, se tilda otro como «ya lo tengo» y se crea.
+  // Se destilda uno y en otro se dice cuántos hay: con 1 de 2 guantes, queda 1 como faltante.
   await page.getByTestId('kb-row-shears').getByRole('checkbox', { name: /Incluir/ }).uncheck();
-  await page.getByTestId('kb-row-gloves').getByLabel('Ya lo tengo').check();
+  await page.getByTestId('kb-have-gloves').fill('1');
+  await expect(page.getByTestId('kb-gap-gloves')).toContainText('falta 1');
+  await expect(page.getByTestId('kb-gap-tourniquet')).toContainText('falta 1');
   await page.getByTestId('kb-name').fill('IFAK de la mochila');
   await page.getByTestId('kb-create').click();
 
-  // El botiquín nuevo: lo tildado como «ya lo tengo» está cargado y el resto figura como faltante.
+  // El botiquín nuevo: lo que se dijo que había está cargado y lo que no llega a la cantidad figura como faltante.
   await expect(page.getByRole('heading', { name: 'IFAK de la mochila' })).toBeVisible();
-  await expect(page.getByText('Guantes de nitrilo')).toBeVisible();
+  await expect(page.getByText('Guantes de nitrilo').first()).toBeVisible();
+  await expect(page.getByText('1 de 2 pares')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Falta', exact: true })).toBeVisible();
   await expect(page.getByText('Torniquete de molinete')).toBeVisible();
   await expect(page.getByText('Tijera de trauma')).toHaveCount(0);
