@@ -78,8 +78,6 @@ function KitDetail({ kit }: { kit: Location }) {
         </button>
       </div>
 
-      {missing.length > 0 && <KitMissing kit={kit} shortages={missing} />}
-
       <section className="card stack">
         <div className="page-head" style={{ marginBottom: 0 }}>
           <h2 className="section-title" style={{ margin: 0, flex: 1 }}>{t('kits.contents')}</h2>
@@ -116,6 +114,8 @@ function KitDetail({ kit }: { kit: Location }) {
         )}
         <p className="hint">{t('kits.minHint')}</p>
       </section>
+
+      {missing.length > 0 && <KitMissing kit={kit} shortages={missing} />}
 
       <KitCompare kit={kit} />
 

@@ -50,14 +50,6 @@ export function KitsPage() {
         </div>
       </div>
 
-      {(firstAidAlerts.length > 0 || kitMissing.length > 0) && (
-        <section className="card stack" style={{ marginBottom: 16 }}>
-          <h2 className="section-title" style={{ margin: 0 }}>{t('kits.toReview')}</h2>
-          {firstAidAlerts.length > 0 && <AlertList alerts={firstAidAlerts} />}
-          {kitMissing.length > 0 && <ShortageList shortages={kitMissing} />}
-        </section>
-      )}
-
       {kits.length === 0 ? (
         <p className="empty">{t('kits.empty')}</p>
       ) : (
@@ -84,6 +76,14 @@ export function KitsPage() {
           })}
         </ul>
       )}
+      {(firstAidAlerts.length > 0 || kitMissing.length > 0) && (
+        <section className="card stack" style={{ marginTop: 16 }}>
+          <h2 className="section-title" style={{ margin: 0 }}>{t('kits.toReview')}</h2>
+          {firstAidAlerts.length > 0 && <AlertList alerts={firstAidAlerts} />}
+          {kitMissing.length > 0 && <ShortageList shortages={kitMissing} />}
+        </section>
+      )}
+
       {creating && <LocationDialog location={creating} isNew title={t('kits.new')} onClose={() => setCreating(null)} />}
     </>
   );
