@@ -1,8 +1,10 @@
 #!/bin/sh
 # Un archivo de OpenStreetMap por país (lugares de emergencia, salud y servicios) para las herramientas de datos, sin Overpass.
 #   sh tools/osm-index/countries.sh <extracto.osm.pbf> <carpeta-de-salida> [PAÍSES]
-# Deja <salida>/countries/places-<PAÍS>.jsonl (lo lee tools/lib/osm-local.mjs). Los países se recortan con el contorno oficial que publica
-# Geofabrik (`.poly`), el mismo criterio que `area["ISO3166-1"=...]` de Overpass. Usa osmium y Node en Docker. Ver README.md.
+# Deja <salida>/countries/places-<PAÍS>.jsonl (lo lee tools/lib/osm-local.mjs). Los países se recortan con su frontera de OpenStreetMap (la
+# relación `boundary=administrative` de nivel 2, la misma de `area["ISO3166-1"=...]` de Overpass). Ojo: los `.poly` de Geofabrik NO sirven,
+# son el borde de su extracto con margen hacia los países vecinos (probado: 1.742 lugares «de Paraguay» caían en Argentina). Usa osmium y
+# Node en Docker. Ver README.md.
 set -eu
 
 PBF=$(readlink -f "${1:?Uso: countries.sh extracto.osm.pbf carpeta-de-salida [AR CL UY BO PE PY]}")
@@ -19,8 +21,9 @@ docker build -q -t vikarg-osmium "$HERE" >/dev/null
 osm() { docker run --rm -v "$SRC_DIR:/in:ro" -v "$WORK:/w" -w /w vikarg-osmium "$@"; }
 jsnode() { docker run --rm -i -v "$HERE:/t:ro" node:26-alpine node "$@"; }
 clean() { docker run --rm -v "$WORK:/w" alpine:3.20 sh -c 'rm -rf /w/*'; }
-poly_name() {
-  case "$1" in AR) echo argentina;; CL) echo chile;; UY) echo uruguay;; BO) echo bolivia;; PE) echo peru;; PY) echo paraguay;; *) echo "país desconocido: $1" >&2; return 1;; esac
+# Relación de OpenStreetMap con la frontera de cada país (admin_level=2).
+relation_id() {
+  case "$1" in AR) echo 286393;; CL) echo 167454;; UY) echo 287072;; BO) echo 252645;; PE) echo 288247;; PY) echo 287077;; *) echo "país desconocido: $1" >&2; return 1;; esac
 }
 
 echo "filtrando los lugares"
@@ -30,11 +33,19 @@ osm tags-filter "/in/$SRC_NAME" \
   nwr/man_made=water_tap,pier nwr/natural=spring nwr/tourism=alpine_hut,wilderness_hut nwr/waterway=fuel nwr/leisure=marina,slipway \
   nwr/craft=boatbuilder nwr/mooring nwr/seamark:type=mooring -o places.pbf --overwrite
 
+echo "extrayendo las fronteras"
+ids=""
+for cc in $COUNTRIES; do ids="$ids r$(relation_id "$cc")"; done
+# shellcheck disable=SC2086
+osm getid -r "/in/$SRC_NAME" $ids -o borders.pbf --overwrite
+
 for cc in $COUNTRIES; do
-  name=$(poly_name "$cc")
-  echo "$cc: contorno y recorte"
-  curl -sSf -m 60 -o "$WORK/$cc.poly" "https://download.geofabrik.de/south-america/$name.poly"
-  osm extract -p "$cc.poly" places.pbf -o "places-$cc.pbf" --overwrite
+  echo "$cc: frontera y recorte"
+  # En osmium, `getid -r` trae la relación con sus caminos y nodos; `export` arma el multipolígono del país.
+  osm getid -r borders.pbf "r$(relation_id "$cc")" -o "border-$cc.pbf" --overwrite
+  # Solo el contorno del país: la relación trae otras fronteras como miembros (islas), que no son el país.
+  osm export "border-$cc.pbf" -f geojsonseq --add-unique-id=type_id --geometry-types=polygon -o - | jsnode /t/pickarea.mjs "$(relation_id "$cc")" > "$WORK/$cc.geojson"
+  osm extract -p "$cc.geojson" places.pbf -o "places-$cc.pbf" --overwrite
   osm export "places-$cc.pbf" -f geojsonseq --add-unique-id=type_id --geometry-types=point,polygon -o - | jsnode /t/flatten.mjs > "$OUT/places-$cc.jsonl.new"
   mv "$OUT/places-$cc.jsonl.new" "$OUT/places-$cc.jsonl"
 done
