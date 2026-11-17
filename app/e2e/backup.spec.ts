@@ -44,6 +44,8 @@ test('exportar en un dispositivo y restaurar en otro, con todo lo cargado', asyn
   await page.goto('/#/first-aid/medical/new');
   await page.getByLabel('Nombre').fill('Ana');
   await page.getByRole('button', { name: 'Guardar' }).click();
+  // Esperar a que termine de guardar antes de seguir (si no, la navegación de abajo puede cortarlo y el resumen cuenta una ficha menos).
+  await expect(page).toHaveURL(/medical\/[0-9a-f-]{36}$/);
   await page.getByTestId('person-photo-file').setInputFiles(photo);
   await expect(page.getByRole('img', { name: 'Ana' })).toBeVisible();
 
