@@ -7,6 +7,7 @@ import { useSettings } from '@/core/settings/settings';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { CLEAR_AFTER_MS, nextEpisode, type RainEpisode } from './rainEpisode';
 import { fetchNowcast, rainOutlook, type RainOutlook } from './nowcast';
+import { hereIsDuplicate } from './samePlace';
 
 /**
  * Avisos de lluvia mientras la app está abierta: cada 15 minutos (60 con ahorro de batería) revisa "mi
@@ -102,7 +103,8 @@ export function useRainWatcher() {
           // Sin GPS en este momento: se usa la última posición conocida, si la hay.
         }
         const last = useRainWatch.getState().lastHere;
-        if (last) places.unshift({ id: HERE_ID, label: t('place.myLocation'), lat: last.lat, lon: last.lon });
+        // Si un waypoint con aviso está a menos de 10 km, ve la misma lluvia: avisa solo el waypoint (igual que el servidor).
+        if (last && !hereIsDuplicate(last, watched)) places.unshift({ id: HERE_ID, label: t('place.myLocation'), lat: last.lat, lon: last.lon });
       }
 
       for (const place of places) {
