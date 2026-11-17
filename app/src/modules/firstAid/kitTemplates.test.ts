@@ -80,6 +80,7 @@ describe('unidad en singular', () => {
     expect(unitFor(1, 'unidades')).toBe('unidad');
     expect(unitFor(1, 'units')).toBe('unit');
     expect(unitFor(2, 'pares')).toBe('pares');
-    expect(unitFor(1, 'latas')).toBe('latas');
+    expect(unitFor(1, 'latas')).toBe('lata');
+    expect(unitFor(1, 'litros')).toBe('litros');
   });
 });
