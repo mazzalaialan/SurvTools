@@ -7,7 +7,7 @@ describe('comparación de pronósticos', () => {
     const url = new URL(compareUrl('https://api.open-meteo.com/', -34.6, -58.64, 25));
     expect(url.pathname).toBe('/v1/forecast');
     expect(url.searchParams.get('models')).toBe(MODELS.map((m) => m.id).join(','));
-    expect(url.searchParams.get('forecast_days')).toBe('7');
+    expect(url.searchParams.get('forecast_days')).toBe('16');
     expect(url.searchParams.get('elevation')).toBe('25');
     expect(url.searchParams.get('hourly')).toContain('temperature_2m');
   });
@@ -15,10 +15,10 @@ describe('comparación de pronósticos', () => {
   it('lee la respuesta real: una serie por modelo y variable; omite las que vinieron vacías', () => {
     const c = parseCompare(sample as never, new Date('2026-11-17T12:00:00Z'));
     expect(c.timezone).toBe('America/Argentina/Buenos_Aires');
-    expect(c.time).toHaveLength(168);
+    expect(c.time).toHaveLength(384);
     expect(Object.keys(c.series)).toEqual(MODELS.map((m) => m.id));
-    expect(c.series.ukmo_global_deterministic_10km?.wind_speed_10m).toHaveLength(168);
-    expect(c.series.ecmwf_ifs025?.wind_direction_10m).toHaveLength(168);
+    expect(c.series.ukmo_global_deterministic_10km?.wind_speed_10m).toHaveLength(384);
+    expect(c.series.ecmwf_ifs025?.wind_direction_10m).toHaveLength(384);
   });
 
   it('una respuesta sin horas o sin ningún modelo es inválida', () => {
@@ -37,8 +37,9 @@ describe('comparación de pronósticos', () => {
   it('un modelo que trae el día incompleto no entra en la comparación de ese día', () => {
     const c = parseCompare(sample as never);
     const days = compareDays(c, 'temperature_2m');
-    expect(days).toHaveLength(7);
+    expect(days).toHaveLength(16);
     // ARPEGE llega a ~4 días: el último día no tiene valor y no cuenta en la diferencia.
+    expect(days.at(-1)!.byModel.gfs_global).not.toBeNull();
     expect(days.at(-1)!.byModel.meteofrance_arpege_world).toBeNull();
     expect(days[0]!.byModel.ecmwf_ifs025).not.toBeNull();
     expect(days[0]!.spread).toBeGreaterThanOrEqual(0);
@@ -115,7 +116,7 @@ describe('comparación de pronósticos', () => {
   it('la grilla: un paso cada 3 horas; la lluvia suma las 3 horas y lo demás es el valor a esa hora', () => {
     const c = parseCompare(sample as never);
     const steps = gridSteps(c);
-    expect(steps).toHaveLength(56);
+    expect(steps).toHaveLength(128);
     expect(c.time[steps[0]!]!.endsWith('T00:00')).toBe(true);
     const s = c.series.ecmwf_ifs025!;
     expect(gridValue(c, 'ecmwf_ifs025', 'temperature_2m', 3)).toBe(s.temperature_2m![3]);
@@ -145,7 +146,7 @@ describe('comparación de pronósticos', () => {
   it('lectura por día: mediana de temperatura y cuántos modelos esperan lluvia', () => {
     const c = parseCompare(sample as never);
     const days = daySummaries(c);
-    expect(days).toHaveLength(7);
+    expect(days).toHaveLength(16);
     const today = days[0]!;
     expect(today.models).toBeGreaterThanOrEqual(5);
     expect(today.rainModels).toBeGreaterThan(0);
@@ -153,5 +154,10 @@ describe('comparación de pronósticos', () => {
     expect(today.rain!).toBeGreaterThan(5);
     // Un día seco para todos.
     expect(days[2]!.rainModels).toBe(0);
+    // Los días lejanos solo los traen los modelos largos: los otros no cuentan.
+    const last = days.at(-1)!;
+    expect(last.models).toBeLessThan(last.total);
+    expect(last.models).toBeGreaterThanOrEqual(1);
+    expect(today.total).toBe(6);
   });
 });

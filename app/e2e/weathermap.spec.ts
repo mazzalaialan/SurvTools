@@ -610,7 +610,9 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
   // Resumen: lectura día por día y una grilla por variable (consenso + un renglón por modelo).
   await expect(page.getByTestId('compare-read')).toBeVisible({ timeout: 20_000 });
   expect(urls[0]).toContain('models=ecmwf_ifs025');
-  await expect(page.getByTestId('compare-read').locator('li')).toHaveCount(7);
+  await expect(page.getByTestId('compare-read').locator('li')).toHaveCount(16);
+  // Los días lejanos los traen pocos modelos: se dice cuántos.
+  await expect(page.getByTestId('compare-read').locator('li').last()).toContainText('modelos (los demás no llegan a ese día)');
   await expect(page.getByTestId('compare-read-2026-11-17')).toContainText('modelos');
   for (const v of ['temperature_2m', 'precipitation', 'wind_speed_10m', 'cloud_cover']) {
     await expect(page.getByTestId(`compare-grid-${v}`).locator('tbody tr')).toHaveCount(7);
@@ -623,7 +625,7 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
   for (const id of ['ecmwf_ifs025', 'gfs_global', 'icon_global', 'meteofrance_arpege_world', 'ukmo_global_deterministic_10km', 'jma_gsm']) {
     await expect(page.getByTestId(`compare-line-${id}`)).toHaveCount(1);
   }
-  await expect(page.getByTestId('compare-table').locator('tbody tr')).toHaveCount(7);
+  await expect(page.getByTestId('compare-table').locator('tbody tr')).toHaveCount(16);
   // ARPEGE solo llega a 4 días: los días siguientes quedan con guion.
   await expect(page.getByTestId('compare-table').locator('tbody tr').last()).toContainText('–');
   await page.getByTestId('compare-model-gfs_global').click();
@@ -635,7 +637,6 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
   await expect(page.getByText('Temperatura mínima de cada día según cada modelo.')).toBeVisible();
   await page.getByTestId('compare-var-precipitation').click();
   await expect(page.getByText(/Lluvia acumulada desde ahora/)).toBeVisible();
-  // Un solo modelo extremo (JMA con 40 mm) no hace decir que «discrepan»: se lo marca aparte.
-  await page.getByTestId('compare-model-gfs_global').click();
-  await expect(page.getByTestId('compare-summary')).toContainText('Se aleja de los demás: JMA GSM');
+  // La frase de coincidencia dice entre qué valores va la mayoría (el modelo extremo se marca aparte: ver compare.test.ts).
+  await expect(page.getByTestId('compare-summary')).toContainText(/de .* a .*\(/);
 });

@@ -196,6 +196,7 @@ function SummaryTab({ c, u, imperial, locale }: { c: Compare; u: Units; imperial
                   {d.tempMax !== null && d.tempMin !== null ? t('compare.readTemp', { min: u.temp(d.tempMin), max: u.temp(d.tempMax) }) : null}
                   {d.windMax !== null && ` · ${t('compare.readWind', { wind: u.wind(d.windMax) })}`}
                 </span>
+                {d.models < d.total && <span className="hint">{t('compare.fewModels', { n: d.models, total: d.total })}</span>}
                 {wet && (
                   <span className={`cmp-rain cmp-rain-${wet}`}>
                     {t(`compare.rain.${wet}`, { n: d.rainModels, total: d.models })}
@@ -362,7 +363,7 @@ export function ComparePage() {
                       <tr key={d.date}>
                         <th scope="row">{new Intl.DateTimeFormat(i18n.language, { weekday: 'short', day: 'numeric', timeZone: 'UTC' }).format(dayAt(d.date))}</th>
                         {present.filter((m) => !off.includes(m.id)).map((m) => (
-                          <td key={m.id}>{d.byModel[m.id] === null || d.byModel[m.id] === undefined ? '–' : format(v, d.byModel[m.id]!, u, i18n.language)}</td>
+                          <td key={m.id} className={d.byModel[m.id] === null || d.byModel[m.id] === undefined ? 'cmp-na' : undefined}>{d.byModel[m.id] === null || d.byModel[m.id] === undefined ? '–' : format(v, d.byModel[m.id]!, u, i18n.language)}</td>
                         ))}
                         <td className={`cmp-agree cmp-agree-${level ?? 'none'}`}>{level ? t(`compare.agree.${level}`) : '–'}</td>
                       </tr>

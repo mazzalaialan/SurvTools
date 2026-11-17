@@ -4860,8 +4860,10 @@ button.country-pack-icon {
   outline: 1px solid currentColor;
   outline-offset: -1px;
 }
-.cmp-cell-empty {
+.cmp-cell-empty,
+.cmp-table td.cmp-na {
   color: var(--text-muted);
+  background: color-mix(in srgb, var(--text-muted) 22%, transparent);
 }
 .cmp-read {
   list-style: none;

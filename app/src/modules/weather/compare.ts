@@ -20,7 +20,7 @@ export interface CompareModel {
 export const MODELS: CompareModel[] = [
   { id: 'ecmwf_ifs025', label: 'ECMWF IFS', by: 'Centro Europeo', days: 15 },
   { id: 'gfs_global', label: 'GFS', by: 'NOAA, EE. UU.', days: 16 },
-  { id: 'icon_global', label: 'ICON', by: 'DWD, Alemania', days: 7 },
+  { id: 'icon_global', label: 'ICON', by: 'DWD, Alemania', days: 8 },
   { id: 'meteofrance_arpege_world', label: 'ARPEGE', by: 'Météo-France', days: 4 },
   { id: 'ukmo_global_deterministic_10km', label: 'UKMO', by: 'Met Office, Reino Unido', days: 7 },
   { id: 'jma_gsm', label: 'JMA GSM', by: 'JMA, Japón', days: 11 },
@@ -35,8 +35,8 @@ const SERIES_VARS: SeriesVar[] = ['temperature_2m', 'precipitation', 'wind_speed
 /** La serie por hora de la que sale cada comparación. */
 export const sourceOf = (v: CompareVar | SeriesVar): SeriesVar => (v === 'temperature_min' ? 'temperature_2m' : v);
 
-/** Días que se piden: hasta donde llegan casi todos los modelos con cierta confianza. */
-export const COMPARE_DAYS = 7;
+/** Días que se piden: hasta donde llega el modelo más largo (GFS, 16). Cada modelo que no llega a un día queda sin dato ese día y no cuenta. */
+export const COMPARE_DAYS = 16;
 
 export interface Compare {
   fetchedAt: string;
@@ -248,13 +248,16 @@ export function cellColor(v: CompareVar, x: number): { bg: string; fg: string } 
 
 export interface DaySummary {
   date: string;
+  /** Cuántos modelos traen ese día completo (los demás quedan en gris y no cuentan). */
+  models: number;
+  /** Cuántos modelos hay en total para comparar. */
+  total: number;
   tempMax: number | null;
   tempMin: number | null;
   /** Mediana de la lluvia total del día entre los modelos. */
   rain: number | null;
   /** Cuántos modelos esperan lluvia (1 mm o más) de los que traen el día completo. */
   rainModels: number;
-  models: number;
   windMax: number | null;
 }
 
@@ -279,6 +282,7 @@ export function daySummaries(c: Compare): DaySummary[] {
       rain: median(r),
       rainModels: r.filter((x) => x >= WET_MM).length,
       models: r.length,
+      total: MODELS.filter((m) => c.series[m.id]?.precipitation).length,
       windMax: median(Object.values(wind[i]!.byModel).filter((x): x is number => x !== null)),
     };
   });
