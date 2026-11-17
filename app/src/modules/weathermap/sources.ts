@@ -535,7 +535,18 @@ export async function readMapCache(): Promise<MapCache> {
   }
 }
 
-export async function writeMapCache(changes: MapCache): Promise<void> {
-  const next = { ...(await readMapCache()), ...changes };
-  await blobStore.put(CACHE_ID, strToU8(JSON.stringify(next)) as Uint8Array<ArrayBuffer>);
+/**
+ * Las capas se descargan a la vez y cada una guarda su parte: sin ordenar las escrituras, dos que leen antes de que la otra guarde se pisan
+ * y una capa (por ejemplo las alertas oficiales) se pierde para ver sin conexión.
+ */
+let writing: Promise<void> = Promise.resolve();
+
+export function writeMapCache(changes: MapCache): Promise<void> {
+  const run = async () => {
+    const next = { ...(await readMapCache()), ...changes };
+    await blobStore.put(CACHE_ID, strToU8(JSON.stringify(next)) as Uint8Array<ArrayBuffer>);
+  };
+  const result = writing.then(run, run);
+  writing = result.catch(() => undefined);
+  return result;
 }
