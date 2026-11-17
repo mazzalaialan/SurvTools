@@ -20,6 +20,10 @@ export interface Config {
   schedulerIntervalMs: number;
   /** Pronóstico para los avisos de lluvia (API compatible con Open-Meteo). */
   weatherUrl: string;
+  /** Copia propia de Open-Meteo (contenedor `openmeteo`); vacía, se usa solo el servicio público. */
+  openMeteoLocalUrl: string | null;
+  /** Años de historial (ERA5) que mantiene la copia propia. */
+  openMeteoArchiveYears: number;
   /** Clave de la API del IOC (mareógrafos medidos); vacía, la función se apaga. */
   iocApiKey: string | null;
   /** Páginas de CARU y DINAGUA (Uruguay) por si cambian de dirección (ver rivers/uy.ts). */
@@ -83,6 +87,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     appDir: env.APP_DIR?.trim() || null,
     schedulerIntervalMs: Number(env.SCHEDULER_INTERVAL_MINUTES ?? 10) * 60_000,
     weatherUrl: env.WEATHER_URL?.trim() || 'https://api.open-meteo.com',
+    openMeteoLocalUrl: env.OPEN_METEO_LOCAL_URL?.trim() || null,
+    openMeteoArchiveYears: Number(env.OPEN_METEO_ARCHIVE_YEARS ?? 5),
     iocApiKey: env.IOC_API_KEY?.trim() || null,
     caruUrl: env.CARU_URL?.trim() || 'http://190.0.152.194:8080/alturas/web/user/alturas',
     dinaguaUrl: env.DINAGUA_URL?.trim() || 'https://www.ambiente.gub.uy/dinagua-obh/api/niveles-y-caudales',

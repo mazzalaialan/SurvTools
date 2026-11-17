@@ -1,3 +1,4 @@
+import { omFetch } from '@/modules/weather/omFetch';
 /**
  * Oleaje y viento para quien navega o rema: pronóstico de Open-Meteo Marine (olas y oleaje, modelo de Météo-France, ECMWF, NOAA y
  * DWD) y viento del pronóstico común. Es un modelo, no una medición, con celdas de ~9 km: no cubre ríos ni lagos (da vacío) y no sirve
@@ -107,7 +108,7 @@ export const knots = (kmh: number): number => kmh / 1.852;
 
 export async function fetchForecast(base: string, lat: number, lon: number): Promise<WaveForecast | null> {
   const get = async (url: string) => {
-    const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
+    const res = await omFetch(url, { signal: AbortSignal.timeout(30_000) });
     if (!res.ok) throw new Error(`Open-Meteo ${res.status}`);
     return res.json();
   };

@@ -1,4 +1,5 @@
 import { WeatherError } from './forecast';
+import { omFetch } from './omFetch';
 
 /**
  * Lluvia de las próximas 2 horas en intervalos de 15 minutos (Open-Meteo
@@ -45,7 +46,7 @@ export async function fetchNowcast(base: string, lat: number, lon: number): Prom
   });
   let res: Response;
   try {
-    res = await fetch(`${base.replace(/\/+$/, '')}/v1/forecast?${params}`, { signal: AbortSignal.timeout(15_000) });
+    res = await omFetch(`${base.replace(/\/+$/, '')}/v1/forecast?${params}`, { signal: AbortSignal.timeout(15_000) });
   } catch {
     throw new WeatherError('unreachable');
   }

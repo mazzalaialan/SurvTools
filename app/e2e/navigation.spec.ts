@@ -2,6 +2,11 @@ import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { inaRunRoute, inaSurgeRoute } from './fixtures/inaForecast';
 
+// La copia propia de Open-Meteo del servidor no entra en las pruebas: 404 = «no está ahí», y la app pasa al servicio simulado de abajo.
+test.beforeEach(async ({ context }) => {
+  await context.route(/\/api\/om\//, (route) => route.fulfill({ status: 404, json: { error: 'sin copia propia' } }));
+});
+
 const PASSWORD = 'prueba-segura-123';
 
 async function start(page: Page) {

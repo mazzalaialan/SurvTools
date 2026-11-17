@@ -1,3 +1,4 @@
+import { omFetch } from '@/modules/weather/omFetch';
 /**
  * Carga de nieve por viento para la capa de avalanchas: el viento levanta la
  * nieve de las laderas expuestas (barlovento) y la deposita del otro lado del
@@ -113,7 +114,7 @@ export async function fetchPrevailing(base: string, lat: number, lon: number, no
     wind_speed_unit: 'ms',
     timezone: 'GMT',
   });
-  const res = await fetch(`${archiveBase(base)}/v1/archive?${params}`, { signal: AbortSignal.timeout(30_000) });
+  const res = await omFetch(`${archiveBase(base)}/v1/archive?${params}`, { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error('prevailing');
   const data = (await res.json()) as {
     daily?: { time?: string[]; wind_direction_10m_dominant?: (number | null)[]; wind_speed_10m_max?: (number | null)[]; snowfall_sum?: (number | null)[] };

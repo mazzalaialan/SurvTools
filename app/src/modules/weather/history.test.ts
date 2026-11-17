@@ -1,3 +1,4 @@
+import { useSettings } from '@/core/settings/settings';
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { addDays, ARCHIVE_DELAY_DAYS, fetchHistory, FIRST_DAY, historyUrl, historyWindow, localToday, mergeDays, parseSegment, planHistory } from './history';
@@ -79,6 +80,8 @@ describe('clima histórico: lectura de las respuestas reales', () => {
 describe('clima histórico: pedido completo', () => {
   afterEach(() => vi.unstubAllGlobals());
   it('para una fecha reciente pide al historial y al pronóstico y entrega los días juntos', async () => {
+    // Sin servidor propio: solo importa lo que se pide al servicio público (el camino por el propio está en omFetch.test.ts).
+    useSettings.setState({ settings: { ...useSettings.getState().settings, serverUrl: '' } });
     const urls: string[] = [];
     vi.stubGlobal('navigator', { onLine: true });
     vi.stubGlobal('fetch', vi.fn(async (url: string | URL) => {

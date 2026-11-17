@@ -1,4 +1,5 @@
 import { nowcastParams, parseSlots, type RainSlot } from './nowcast';
+import { omFetch } from './omFetch';
 
 /**
  * Pronóstico de Open-Meteo (open source, autoalojable; la URL se configura en
@@ -129,7 +130,7 @@ export async function fetchForecast(base: string, lat: number, lon: number, now 
   if (!navigator.onLine) throw new WeatherError('offline');
   let res: Response;
   try {
-    res = await fetch(forecastUrl(base, lat, lon, elevationM), { signal: AbortSignal.timeout(15_000) });
+    res = await omFetch(forecastUrl(base, lat, lon, elevationM), { signal: AbortSignal.timeout(15_000) });
   } catch {
     throw new WeatherError('unreachable');
   }

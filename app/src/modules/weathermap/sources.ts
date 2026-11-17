@@ -2,6 +2,7 @@ import { strFromU8, strToU8 } from 'fflate';
 import { blobStore } from '@/core/db/repository';
 import type { Size, View } from './projection';
 import { viewBBox } from './projection';
+import { omFetch } from '@/modules/weather/omFetch';
 
 /**
  * Fuentes de datos del Mapa de Meteorología (ARQUITECTURA §12.4). Todas son
@@ -27,10 +28,10 @@ export class MapSourceError extends Error {
   }
 }
 
-async function getJson<T>(url: string, source: string): Promise<T> {
+async function getJson<T>(url: string, source: string, fetcher: typeof fetch = fetch): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    res = await fetcher(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
   } catch {
     throw new MapSourceError(source);
   }
@@ -510,7 +511,7 @@ export function parseZoneWeather(json: OpenMeteoCurrent | OpenMeteoCurrent[], po
 }
 
 export async function fetchZoneWeather(base: string, points: ZonePoint[]): Promise<ZoneWeather[]> {
-  return parseZoneWeather(await getJson(zoneWeatherUrl(base, points), 'zoneWeather'), points);
+  return parseZoneWeather(await getJson(zoneWeatherUrl(base, points), 'zoneWeather', omFetch), points);
 }
 
 // ---------- Lo último descargado, para verlo sin conexión ----------

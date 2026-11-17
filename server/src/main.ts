@@ -1,3 +1,4 @@
+import { localWeatherFetch } from './weather/openMeteoLocal.ts';
 import { buildApp } from './app.ts';
 import { loadConfig } from './config.ts';
 import { openDb } from './db.ts';
@@ -68,7 +69,8 @@ async function tick() {
   }
 }
 
-const forecastSource = openMeteoSource(config.weatherUrl);
+const weatherFetch = localWeatherFetch(config.weatherUrl, { localUrl: config.openMeteoLocalUrl, archiveYears: config.openMeteoArchiveYears });
+const forecastSource = openMeteoSource(config.weatherUrl, weatherFetch);
 const observer = irObserver();
 const rainSource = config.rainObserved ? withObservedRain(forecastSource, observer) : forecastSource;
 
@@ -322,7 +324,7 @@ async function officialTick() {
 const officialTimer = setInterval(() => void officialTick(), 10 * 60_000);
 void officialTick();
 
-const gardenWeather = openMeteoGarden(config.weatherUrl);
+const gardenWeather = openMeteoGarden(config.weatherUrl, weatherFetch);
 async function gardenTick() {
   try {
     const { sent, removed } = await runGardenWatch(db, push, gardenWeather);

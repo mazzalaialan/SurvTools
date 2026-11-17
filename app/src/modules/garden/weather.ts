@@ -2,6 +2,7 @@ import { strFromU8, strToU8 } from 'fflate';
 import { blobStore } from '@/core/db/repository';
 import type { IsoDay } from '@/core/model/types';
 import type { WaterDay } from './logic';
+import { omFetch } from '@/modules/weather/omFetch';
 
 /**
  * Clima de la huerta (Open-Meteo): evapotranspiración de referencia (ET0,
@@ -54,7 +55,7 @@ export function parseGardenWeather(data: ApiDaily, lat: number, lon: number, now
 }
 
 export async function fetchGardenWeather(base: string, lat: number, lon: number): Promise<GardenWeather> {
-  const res = await fetch(gardenWeatherUrl(base, lat, lon), { signal: AbortSignal.timeout(15_000) });
+  const res = await omFetch(gardenWeatherUrl(base, lat, lon), { signal: AbortSignal.timeout(15_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return parseGardenWeather((await res.json()) as ApiDaily, lat, lon);
 }

@@ -1,4 +1,5 @@
 import { marineBase } from '@/modules/navigation/waves';
+import { omFetch } from '@/modules/weather/omFetch';
 
 /**
  * Oleaje en el mapa de alertas y clima: una grilla de puntos de mar frente a las costas de Argentina, Uruguay, Chile y Perú, pedida
@@ -75,7 +76,7 @@ export function parseGrid(json: unknown, fetchedAt = Date.now()): WaveGrid | nul
   return spots.length ? { fetchedAt, at: at || fetchedAt, spots } : null;
 }
 
-export async function fetchWaveGrid(base: string, fetcher: typeof fetch = fetch): Promise<WaveGrid | null> {
+export async function fetchWaveGrid(base: string, fetcher: typeof fetch = omFetch): Promise<WaveGrid | null> {
   const res = await fetcher(gridUrl(base), { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`Open-Meteo Marine ${res.status}`);
   return parseGrid(await res.json());

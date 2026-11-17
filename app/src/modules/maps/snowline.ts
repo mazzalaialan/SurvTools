@@ -1,5 +1,6 @@
 import { db } from '@/core/db/db';
 import { DEFAULT_FROM, windLoadFrom, type PrevailingWind } from './wind';
+import { omFetch } from '@/modules/weather/omFetch';
 
 /**
  * Línea de nieve para la capa de riesgo de avalancha: solo se pinta la
@@ -68,7 +69,7 @@ export async function fetchSnowline(base: string, lat: number, lon: number): Pro
     wind_speed_unit: 'ms',
     timezone: 'GMT',
   });
-  const res = await fetch(`${base.replace(/\/+$/, '')}/v1/forecast?${params}`, { signal: AbortSignal.timeout(15_000) });
+  const res = await omFetch(`${base.replace(/\/+$/, '')}/v1/forecast?${params}`, { signal: AbortSignal.timeout(15_000) });
   if (!res.ok) throw new Error('snowline');
   const data = (await res.json()) as HourlyResponse;
   const now = Date.now();
@@ -130,7 +131,7 @@ export async function fetchFreezingSeries(base: string, lat: number, lon: number
     wind_speed_unit: 'ms',
     timezone: 'GMT',
   });
-  const res = await fetch(`${base.replace(/\/+$/, '')}/v1/forecast?${params}`, { signal: AbortSignal.timeout(15_000) });
+  const res = await omFetch(`${base.replace(/\/+$/, '')}/v1/forecast?${params}`, { signal: AbortSignal.timeout(15_000) });
   if (!res.ok) throw new Error('snowline');
   const data = (await res.json()) as HourlyResponse;
   const h = data.hourly;

@@ -287,3 +287,18 @@ Baja las listas públicas de NASA FIRMS (VIIRS NOAA-20 y NOAA-21, últimos 7 dí
 
 - **`/api/rivers/bo/extra`:** el resumen del pronóstico hidrológico del SENAMHI Bolivia, el boletín semanal del lago Titicaca y la **planilla por estación** del pronóstico (`rivers/boExtra.ts` y `rivers/boPlanilla.ts`: amenaza, tendencia, cuánto falta para el desborde y período, leídos por la posición de cada texto del PDF). Busca el PDF más nuevo en las páginas de listados del SENAMHI, lo lee con `unpdf` y devuelve `{ forecast, lake, fetchedAt, stale }`. Guarda 6 horas si salieron el pronóstico y el boletín del lago (si falta uno, reintenta a la hora); si falla, devuelve lo último bueno hasta 14 días con `stale: true`; cada uno puede fallar sin tirar al otro.
 - **`/api/rivers/uy`:** niveles de CARU y DINAGUA (`rivers/uy.ts`). Guarda 2 horas si salieron las dos fuentes (si falta una, reintenta a los 10 minutos y conserva las estaciones de la última lectura de la que falló); si falla del todo, lo último bueno hasta 3 días. CARU tiene 20 s de tiempo de espera (su servidor es lento a veces) y DINAGUA 60 s. Variables de entorno opcionales `CARU_URL` (por defecto `http://190.0.152.194:8080/alturas/web/user/alturas`; si CARU cambia de IP) y `DINAGUA_URL` (por defecto `https://www.ambiente.gub.uy/dinagua-obh/api/niveles-y-caudales`, 5,7 MB por consulta). Una fuente caída no tira a la otra. Sin migraciones ni cron.
+
+## Open-Meteo propio: GET /api/om/v1/{forecast|archive|marine}
+
+**Qué es.** Una copia propia de Open-Meteo (software AGPL-3.0, imagen `ghcr.io/open-meteo/open-meteo`) con los datos de la región (lat −57 a 1, lon −83 a −33) bajados del bucket público de Open-Meteo. Es la **primera opción** para el clima; el servicio público (`api.open-meteo.com`) queda de respaldo.
+
+**Piezas** (`deploy/docker-compose.yml`):
+- `openmeteo`: sirve la API en la red interna del compose (sin puerto publicado). Lee `OPEN_METEO_PATH` (por defecto `./openmeteo-data`).
+- `openmeteo-sync` (`deploy/openmeteo/sync.sh`): cada hora baja el pronóstico (ECMWF IFS, GFS 0,13° y 0,25°, ICON, probabilidad de lluvia, olas; 92 días atrás), cada día el historial ERA5 (`OPEN_METEO_ARCHIVE_YEARS`, por defecto 5: el año actual y los 4 anteriores) y una vez el relieve (DEM 90 m, necesario para corregir la temperatura por altura). La región está en `deploy/openmeteo/region.json`.
+- El servidor VikArg (`OPEN_METEO_LOCAL_URL`, por defecto `http://openmeteo:8080`) expone `/api/om/v1/...` y la usa también para los avisos de lluvia y de la huerta.
+
+**Cómo decide la app** (`app/src/modules/weather/omFetch.ts`): prueba `/api/om/...` y, si responde 404 («ese dato no está en la copia»: fechas de historial anteriores a lo que se baja, un lugar fuera de la región, una variable sin datos o huecos en el historial) o 503/error (copia apagada o caída), pide lo mismo al servicio público. Tras un error del servidor no vuelve a probar el propio por 5 minutos. Si la persona puso otra dirección de clima en Ajustes, se respeta y no se toca.
+
+**Medido (2026-11-17, piloto en esta máquina):** pronóstico completo con 92 días ≈ 14 GB; historial ERA5 ≈ 2,2 GB por año (11 variables); relieve 10 GB (se bajó el mundo entero); total del piloto 34 GB. Con un mismo modelo (ECMWF, GFS, ERA5) la copia propia da exactamente lo mismo que la API pública; sin elegir modelo, la API pública mezcla más modelos y la diferencia típica es de ~1,5 °C en temperatura. Sin datos de ICON hasta bajar a mano los 4 archivos de `dwd_icon_global_native/static` (el `sync` lo hace solo en la versión 1.8.0 si están).
+
+**Para cambiar el área o los años:** `deploy/openmeteo/region.json` y `OPEN_METEO_ARCHIVE_YEARS`. Sin la carpeta de datos (o sin los contenedores), todo sigue funcionando con el servicio público.

@@ -1,6 +1,11 @@
 import sharp from 'sharp';
 import { expect, test, type Page } from '@playwright/test';
 
+// La copia propia de Open-Meteo del servidor no entra en las pruebas: 404 = «no está ahí», y la app pasa al servicio simulado de abajo.
+test.beforeEach(async ({ context }) => {
+  await context.route(/\/api\/om\//, (route) => route.fulfill({ status: 404, json: { error: 'sin copia propia' } }));
+});
+
 const PASSWORD = 'prueba-segura-123';
 const SERVER = 'https://valhallarust2.ddns.net';
 

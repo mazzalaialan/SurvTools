@@ -1,4 +1,5 @@
 import { archiveBase } from '@/modules/maps/wind';
+import { omFetch } from '@/modules/weather/omFetch';
 
 /**
  * Fechas de helada del lugar de la huerta, calculadas con los últimos 5 años
@@ -71,7 +72,7 @@ export async function fetchFrostDates(base: string, lat: number, lon: number, no
     daily: 'temperature_2m_min',
     timezone: 'auto',
   });
-  const res = await fetch(`${archiveBase(base)}/v1/archive?${params}`, { signal: AbortSignal.timeout(30_000) });
+  const res = await omFetch(`${archiveBase(base)}/v1/archive?${params}`, { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const d = ((await res.json()) as { daily?: { time?: string[]; temperature_2m_min?: (number | null)[] } }).daily;
   if (!d?.time?.length) throw new Error('empty');

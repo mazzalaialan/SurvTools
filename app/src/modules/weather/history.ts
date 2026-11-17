@@ -7,6 +7,7 @@
  * Son datos de modelos, no lo que midió una estación: sirven para saber cuánto llovió o qué temperatura hubo en la zona.
  */
 import { archiveBase } from '@/modules/maps/wind';
+import { omFetch } from './omFetch';
 
 export type HistorySource = 'archive' | 'forecast';
 
@@ -194,7 +195,7 @@ export function mergeDays(...lists: HistoryDay[][]): HistoryDay[] {
 async function getSegment(seg: Segment, base: string, lat: number, lon: number, elevationM: number | null | undefined): Promise<{ days: HistoryDay[]; meta: ApiResponse }> {
   let res: Response;
   try {
-    res = await fetch(historyUrl(seg, base, lat, lon, elevationM), { signal: AbortSignal.timeout(20_000) });
+    res = await omFetch(historyUrl(seg, base, lat, lon, elevationM), { signal: AbortSignal.timeout(20_000) });
   } catch {
     throw new HistoryError('unreachable');
   }
