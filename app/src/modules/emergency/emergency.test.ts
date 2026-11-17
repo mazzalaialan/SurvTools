@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import data from './emergency-data.json';
 import { mergeNearby, nearestPerKind, nearestRadio, officialNearby, type EmergencyData, type NearbyPlace } from './data';
 import { dialable, mapsUrl } from './national';
-import { describeAddress, osmKind, parseNearby, parseSurroundings } from './osm';
+import { completeAddress, describeAddress, osmKind, parseNearby, parseSurroundings } from './osm';
 
 const D = data as EmergencyData;
 
@@ -91,6 +91,7 @@ describe('OpenStreetMap', () => {
       address: 'Av. Corrientes 1000',
       locality: 'San Nicolás, Buenos Aires',
       road: 'Av. Corrientes',
+      houseNumber: '1000',
     });
     const s = parseSurroundings(
       [
@@ -106,6 +107,27 @@ describe('OpenStreetMap', () => {
     expect(s.roads).toEqual(['RN 40']);
     expect(s.nearbyStreets).toEqual(['Los Coihues']);
     expect(s.milestone?.km).toBe('1990');
+  });
+});
+
+describe('altura de la calle o kilómetro de la ruta en la dirección', () => {
+  const none = { nearestNumber: null, roads: [] as string[], milestone: null };
+  it('con número de puerta exacto no cambia nada', () => {
+    expect(completeAddress({ address: 'Mitre 250', houseNumber: '250', road: 'Mitre' }, none, 'es')).toBe('Mitre 250');
+  });
+  it('sin número exacto, usa el de la puerta más cercana de la misma calle y lo marca aproximado', () => {
+    const around = { ...none, nearestNumber: { street: 'mitre', number: '248', distance: 30 } };
+    expect(completeAddress({ address: 'Mitre', houseNumber: '', road: 'Mitre' }, around, 'es')).toBe('Mitre 248 (aprox.)');
+    expect(completeAddress({ address: 'Mitre', houseNumber: '', road: 'Mitre' }, around, 'en')).toBe('Mitre 248 (approx.)');
+    // Un número de otra calle no sirve.
+    expect(completeAddress({ address: 'Moreno', houseNumber: '', road: 'Moreno' }, around, 'es')).toBe('Moreno');
+  });
+  it('en una ruta, da el kilómetro del mojón más cercano', () => {
+    const around = { ...none, roads: ['RN 40'], milestone: { km: '1990', road: 'RN 40', distance: 800 } };
+    expect(completeAddress({ address: 'Ruta Nacional 40', houseNumber: '', road: 'Ruta Nacional 40' }, around, 'es')).toBe('Ruta Nacional 40 km 1990 (aprox.)');
+    expect(completeAddress({ address: '', houseNumber: '', road: '' }, around, 'es')).toBe('RN 40 km 1990 (aprox.)');
+    // Un mojón a más de 3 km no cuenta.
+    expect(completeAddress({ address: 'Ruta Nacional 40', houseNumber: '', road: 'Ruta Nacional 40' }, { ...around, milestone: { km: '1990', road: '', distance: 4000 } }, 'es')).toBe('Ruta Nacional 40');
   });
 });
 

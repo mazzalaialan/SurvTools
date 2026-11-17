@@ -53,7 +53,8 @@ export function MyLocationPage() {
     lastLookup.current = { lat, lon };
     setState('loading');
     try {
-      setInfo(await describeLocation(lat, lon, i18n.language));
+      // La dirección aparece apenas responde; las calles y rutas se suman después.
+      setInfo(await describeLocation(lat, lon, i18n.language, (partial) => lastLookup.current?.lat === lat && setInfo(partial)));
       setState('idle');
     } catch {
       setState('error');
@@ -88,15 +89,14 @@ export function MyLocationPage() {
 
   const message = useMemo(() => {
     if (!fix) return '';
-    const lines = [
-      t('location.msg.intro'),
-      t('location.msg.coords', { decimal, dms: formatDms(fix, west), accuracy: Math.round(fix.accuracy) }),
-    ];
-    // Cuándo se tomó la posición: quien recibe el mensaje sabe cuánto puede haberse movido.
-    lines.push(t('location.msg.takenAt', { time: new Date(fix.timestamp).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) }));
+    // La dirección es lo más importante para el socorrista: va primero, antes de las coordenadas (si se conoce).
+    const lines = [t('location.msg.intro')];
     if (info?.address || info?.locality) lines.push(t('location.msg.address', { address: [info.address, info.locality].filter(Boolean).join(', ') }));
     if (info?.nearbyStreets.length) lines.push(t('location.msg.streets', { streets: info.nearbyStreets.join(t('location.and')) }));
     if (info?.roads.length) lines.push(t('location.msg.road', { road: info.roads.join(' / ') }) + (info.milestone ? ` ${t('location.msg.km', { km: info.milestone.km })}` : ''));
+    lines.push(t('location.msg.coords', { decimal, dms: formatDms(fix, west), accuracy: Math.round(fix.accuracy) }));
+    // Cuándo se tomó la posición: quien recibe el mensaje sabe cuánto puede haberse movido.
+    lines.push(t('location.msg.takenAt', { time: new Date(fix.timestamp).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) }));
     // Los lugares guardados por quien pide ayuda ("a 300 m de Casa") no le dicen nada al socorrista: no van en el mensaje.
     // Solo calles, rutas, kilómetro y localidad reales, más las coordenadas y el mapa.
     if (fix.alt !== null) lines.push(t('location.msg.altitude', { alt: Math.round(fix.alt) }));
@@ -111,8 +111,10 @@ export function MyLocationPage() {
       const [int, dec] = Math.abs(x).toFixed(5).split('.');
       return `${int} ${t('location.spoken.point')} ${dec!.split('').join(' ')}`;
     };
+    const coordsLine = t('location.msg.coords', { decimal, dms: formatDms(fix, west), accuracy: Math.round(fix.accuracy) });
     const lines = message.split('\n').filter((l) => !l.includes(mapUrl));
-    lines[1] = t('location.spoken.coords', {
+    const at = lines.indexOf(coordsLine);
+    lines[at >= 0 ? at : 1] = t('location.spoken.coords', {
       lat: digits(fix.lat),
       // No se puede llamar `ns`: i18next lo toma como el espacio de nombres.
       latDir: t(fix.lat < 0 ? 'location.spoken.south' : 'location.spoken.north'),
@@ -121,7 +123,7 @@ export function MyLocationPage() {
       accuracy: Math.round(fix.accuracy),
     });
     return lines;
-  }, [message, fix, mapUrl, t]);
+  }, [message, fix, mapUrl, west, decimal, t]);
 
   function toggleRead() {
     if (reading || !voice) {

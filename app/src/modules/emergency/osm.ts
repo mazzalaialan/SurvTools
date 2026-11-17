@@ -28,18 +28,25 @@ interface OsmElement {
   tags?: Record<string, string>;
 }
 
-async function overpass(query: string): Promise<OsmElement[]> {
-  let lastError: unknown = null;
-  for (const url of OVERPASS) {
+/** Los dos servidores a la vez: gana el primero que responde (antes se probaba uno y, si fallaba, el otro: hasta 60 s). */
+async function overpass(query: string, timeoutMs = TIMEOUT_MS): Promise<OsmElement[]> {
+  const controllers = OVERPASS.map(() => new AbortController());
+  const attempts = OVERPASS.map(async (url, i) => {
+    const timer = setTimeout(() => controllers[i]!.abort(), timeoutMs);
     try {
-      const res = await fetch(url, { method: 'POST', body: new URLSearchParams({ data: query }), signal: AbortSignal.timeout(TIMEOUT_MS) });
+      const res = await fetch(url, { method: 'POST', body: new URLSearchParams({ data: query }), signal: controllers[i]!.signal });
       if (!res.ok) throw new Error(`overpass ${res.status}`);
       return ((await res.json()) as { elements: OsmElement[] }).elements;
-    } catch (e) {
-      lastError = e;
+    } finally {
+      clearTimeout(timer);
     }
+  });
+  try {
+    return await Promise.any(attempts);
+  } finally {
+    // Ya hay respuesta (o fallaron las dos): se corta lo que quede abierto.
+    for (const c of controllers) c.abort();
   }
-  throw lastError;
 }
 
 const pos = (e: OsmElement) => (e.lat !== undefined ? { lat: e.lat, lon: e.lon! } : e.center ?? null);
@@ -233,6 +240,8 @@ export interface LocationInfo {
   nearbyStreets: string[];
   /** Rutas cercanas (p. ej. "RN 40"). */
   roads: string[];
+  /** El número de puerta más cercano (a menos de 80 m), para dar la altura aproximada cuando no hay uno exacto. */
+  nearestNumber: { street: string; number: string; distance: number } | null;
   /** Mojón kilométrico más cercano, si hay alguno cargado. */
   milestone: { km: string; road: string; distance: number } | null;
 }
@@ -243,16 +252,17 @@ interface NominatimReverse {
   address?: Record<string, string>;
 }
 
-export function describeAddress(r: NominatimReverse): { address: string; locality: string; road: string } {
+export function describeAddress(r: NominatimReverse): { address: string; locality: string; road: string; houseNumber: string } {
   const a = r.address ?? {};
   const road = a.road ?? a.pedestrian ?? a.footway ?? a.path ?? '';
   const address = [road, a.house_number].filter(Boolean).join(' ') || r.name || '';
   const locality = [a.suburb ?? a.neighbourhood ?? a.hamlet, a.city ?? a.town ?? a.village ?? a.municipality, a.state].filter(Boolean).join(', ');
-  return { address, locality, road };
+  return { address, locality, road, houseNumber: a.house_number ?? '' };
 }
 
 export function parseSurroundings(elements: OsmElement[], lat: number, lon: number, ownRoad: string): Omit<LocationInfo, 'address' | 'locality'> {
   const here = { lat, lon };
+  let nearestNumber: LocationInfo['nearestNumber'] = null;
   const streets = new Map<string, number>();
   const roads = new Map<string, number>();
   let milestone: LocationInfo['milestone'] = null;
@@ -261,6 +271,10 @@ export function parseSurroundings(elements: OsmElement[], lat: number, lon: numb
     const p = pos(e);
     if (!p) continue;
     const d = distanceMeters(here, p);
+    if (tags['addr:housenumber'] && tags['addr:street'] && d <= 80) {
+      if (!nearestNumber || d < nearestNumber.distance) nearestNumber = { street: tags['addr:street'], number: tags['addr:housenumber'], distance: d };
+      continue;
+    }
     if (tags.highway === 'milestone') {
       const km = tags.distance ?? tags.pk ?? tags.name ?? '';
       if (km && (!milestone || d < milestone.distance)) milestone = { km, road: tags.ref ?? tags['highway:ref'] ?? '', distance: d };
@@ -274,19 +288,49 @@ export function parseSurroundings(elements: OsmElement[], lat: number, lon: numb
     }
   }
   const byDistance = (m: Map<string, number>) => [...m.entries()].sort((a, b) => a[1] - b[1]).map(([k]) => k);
-  return { nearbyStreets: byDistance(streets).slice(0, 2), roads: byDistance(roads).slice(0, 2), milestone };
+  return { nearbyStreets: byDistance(streets).slice(0, 2), roads: byDistance(roads).slice(0, 2), nearestNumber, milestone };
 }
 
-export async function describeLocation(lat: number, lon: number, lang: string): Promise<LocationInfo> {
+const sameStreet = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+
+/**
+ * La dirección con su altura: la exacta si Nominatim encontró el número de puerta; si no, la de la puerta más cercana de la misma calle
+ * (a menos de 80 m, «aprox.»); y en una ruta, el kilómetro del mojón más cercano (a menos de 3 km, «aprox.»).
+ */
+export function completeAddress(own: { address: string; houseNumber: string; road: string }, around: Pick<LocationInfo, 'nearestNumber' | 'roads' | 'milestone'>, lang: string): string {
+  if (own.houseNumber) return own.address;
+  const approx = lang.startsWith('en') ? 'approx.' : 'aprox.';
+  const n = around.nearestNumber;
+  if (n && (!own.road || sameStreet(own.road, n.street))) return `${own.road || n.street} ${n.number} (${approx})`;
+  const m = around.milestone;
+  if (m && m.distance <= 3000 && around.roads.length > 0) return `${own.road || around.roads[0]} km ${m.km} (${approx})`;
+  return own.address;
+}
+
+/** Plazo para las calles y rutas de alrededor: la dirección no espera por ellas. */
+const AROUND_TIMEOUT_MS = 12_000;
+
+/**
+ * La dirección (Nominatim, rápido) se entrega apenas llega por `onPartial`; las calles, rutas y el kilómetro (Overpass, más lento) se
+ * suman después. El resultado final tiene todo.
+ */
+export async function describeLocation(lat: number, lon: number, lang: string, onPartial?: (info: LocationInfo) => void): Promise<LocationInfo> {
   const params = new URLSearchParams({ format: 'jsonv2', lat: lat.toFixed(6), lon: lon.toFixed(6), zoom: '18', addressdetails: '1', 'accept-language': lang });
-  const [reverse, around] = await Promise.all([
-    fetch(`${NOMINATIM}?${params}`, { signal: AbortSignal.timeout(TIMEOUT_MS) }).then((r) => (r.ok ? (r.json() as Promise<NominatimReverse>) : {})),
-    overpass(`[out:json][timeout:25];(
+  const reversing = fetch(`${NOMINATIM}?${params}`, { signal: AbortSignal.timeout(15_000) })
+    .then((r) => (r.ok ? (r.json() as Promise<NominatimReverse>) : {}))
+    .catch(() => ({}) as NominatimReverse);
+  const arounding = overpass(
+    `[out:json][timeout:25];(
       way(around:120,${lat.toFixed(6)},${lon.toFixed(6)})["highway"]["name"];
       way(around:400,${lat.toFixed(6)},${lon.toFixed(6)})["highway"]["ref"];
+      nwr(around:80,${lat.toFixed(6)},${lon.toFixed(6)})["addr:housenumber"]["addr:street"];
       node(around:3000,${lat.toFixed(6)},${lon.toFixed(6)})["highway"="milestone"];
-    );out center tags;`).catch(() => [] as OsmElement[]),
-  ]);
-  const { address, locality, road } = describeAddress(reverse);
-  return { address, locality, ...parseSurroundings(around, lat, lon, road) };
+    );out center tags;`,
+    AROUND_TIMEOUT_MS,
+  ).catch(() => [] as OsmElement[]);
+  const reverse = await reversing;
+  const { address, locality, road, houseNumber } = describeAddress(reverse);
+  onPartial?.({ address, locality, nearbyStreets: [], roads: [], nearestNumber: null, milestone: null });
+  const around = parseSurroundings(await arounding, lat, lon, road);
+  return { ...around, address: completeAddress({ address, houseNumber, road }, around, lang), locality };
 }

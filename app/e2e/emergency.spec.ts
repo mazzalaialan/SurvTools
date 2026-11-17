@@ -40,6 +40,8 @@ async function mockOsm(page: Page) {
       });
     }
   });
+  // El segundo servidor de Overpass se consulta a la vez: sin red en la prueba, falla y gana el primero.
+  await ctx.route('https://maps.mail.ru/**', (route) => route.abort());
   await ctx.route('https://nominatim.openstreetmap.org/**', (route) =>
     route.fulfill({ json: { address: { road: 'Mitre', house_number: '250', city: 'San Carlos de Bariloche', state: 'Río Negro' } } }),
   );
@@ -149,6 +151,10 @@ test('mi ubicación para socorristas y radio', async ({ page }, testInfo) => {
   const msg = page.getByTestId('location-message');
   await expect(msg).toContainText('Necesito ayuda. Mi ubicación:');
   await expect(msg).toContainText('Coordenadas: -41.13350, -71.31030');
+  // La dirección va antes que las coordenadas: es lo que más le sirve al socorrista.
+  const text = (await msg.textContent()) ?? '';
+  expect(text.indexOf('Mitre 250')).toBeGreaterThan(-1);
+  expect(text.indexOf('Mitre 250')).toBeLessThan(text.indexOf('Coordenadas:'));
   await expect(msg).toContainText('Ruta RN 40 cerca del km 1990');
   await expect(msg).toContainText('https://www.google.com/maps/search/?api=1&query=-41.133500,-71.310300');
   await expect(page.getByRole('link', { name: 'Llamar al 911' })).toHaveAttribute('href', 'tel:911');
