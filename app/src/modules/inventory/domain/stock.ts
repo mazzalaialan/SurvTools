@@ -1,3 +1,4 @@
+import { KIT_SEPARATOR } from '@/core/notifications/format';
 import type { Id, Item, Location, Lot, StockMin } from '@/core/model/types';
 import { subtreeIds } from './locations';
 
@@ -38,15 +39,23 @@ export function minStockAlertRows(
   today: (date?: Date) => string,
 ): { lotId: string; itemName: string; notifyFrom: string }[] {
   const todayStr = today();
+  const byId = new Map(locations.map((l) => [l.id, l]));
+  /** El botiquín al que pertenece una ubicación (ella misma o la de más arriba que sea un botiquín). */
+  const kitOf = (id: Id): Location | null => {
+    for (let l = byId.get(id), i = 0; l && i < 8; l = l.parentId ? byId.get(l.parentId) : undefined, i++) if (l.kitType !== null) return l;
+    return null;
+  };
   return shortages.map(({ stockMin }) => {
     const scope = subtreeIds(stockMin.locationId, locations);
+    const kit = kitOf(stockMin.locationId);
     const changedAt = active(lots)
       .filter((l) => l.itemId === stockMin.itemId && scope.has(l.locationId))
       .reduce((latest, l) => (l.updatedAt > latest ? l.updatedAt : latest), stockMin.updatedAt);
     const changedOn = today(new Date(changedAt));
     return {
       lotId: `min:${stockMin.id}`,
-      itemName: (items.get(stockMin.itemId)?.name ?? '').slice(0, 200),
+      // En un botiquín, el nombre lleva también el del botiquín (el aviso los agrupa); el servidor lo guarda tal cual (máx. 200).
+      itemName: kit ? `${(items.get(stockMin.itemId)?.name ?? '').slice(0, 100)}${KIT_SEPARATOR}${kit.name.slice(0, 90)}` : (items.get(stockMin.itemId)?.name ?? '').slice(0, 200),
       notifyFrom: changedOn < todayStr ? changedOn : todayStr,
     };
   });

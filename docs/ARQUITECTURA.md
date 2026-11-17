@@ -214,6 +214,8 @@ No se guarda historial de movimientos: solo el estado actual.
 
 Tabla mínima `AlertIndex` (`lotId`, `itemName`, `dueDate`, `kind`), **guardada sin cifrar**. Permite que el aviso en segundo plano funcione con la app bloqueada y es lo único que se envía al servidor de push. Contiene solo nombre del artículo y fecha; cantidades, ubicaciones, fotos y waypoints permanecen cifrados.
 
+**Faltantes de un botiquín (2026-11-17):** para agrupar el aviso («Faltan 12 artículos en Botiquín del auto» en vez de una línea por artículo), el nombre de los artículos debajo del stock mínimo de un botiquín lleva también **el nombre del botiquín**, separado por U+001F (`KIT_SEPARATOR`, `core/notifications/format.ts`). Es una decisión consciente: el nombre de un botiquín («Auto», «Mochila de escape») es de la misma sensibilidad que el del artículo y queda en el índice en claro y en el servidor de push; no se agregó ninguna columna ni se cambió lo que acepta el servidor (guarda `itemName` tal cual, máx. 200). Quien no quiera que el nombre salga del dispositivo puede llamar al botiquín de forma genérica.
+
 ### 5.4 Versionado y migraciones
 
 - Esquema versionado con Dexie; cada versión tiene su migración.

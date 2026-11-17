@@ -11,6 +11,12 @@ export interface AlertSummary {
 
 type Lang = 'es' | 'en';
 
+/**
+ * Los faltantes de un botiquín viajan como `artículo␟botiquín` en el nombre del artículo (separador U+001F): así el aviso se agrupa
+ * («Faltan 12 artículos en Botiquín del auto») sin cambiar el formato del índice ni lo que acepta el servidor, que guarda el nombre tal cual.
+ */
+export const KIT_SEPARATOR = '\u001f';
+
 const TEXT = {
   es: {
     title: (n: number) => (n === 1 ? '1 alerta pendiente' : `${n} alertas pendientes`),
@@ -20,6 +26,7 @@ const TEXT = {
     capacity: 'por agotarse',
     shortage: 'falta stock según tus recomendaciones',
     minStock: 'debajo del stock mínimo',
+    kitMissing: (n: number, kit: string) => (n === 1 ? `Falta 1 artículo en ${kit}` : `Faltan ${n} artículos en ${kit}`),
     more: (n: number) => `y ${n} más`,
     testTitle: 'Herramientas de Supervivencia por VikArg',
     testBody: 'Las notificaciones funcionan correctamente.',
@@ -79,6 +86,7 @@ const TEXT = {
     capacity: 'running low',
     shortage: 'short of your recommended stock',
     minStock: 'below minimum stock',
+    kitMissing: (n: number, kit: string) => (n === 1 ? `1 item missing in ${kit}` : `${n} items missing in ${kit}`),
     more: (n: number) => `and ${n} more`,
     testTitle: 'Survival Tools By VikArg',
     testBody: 'Notifications are working.',
@@ -149,11 +157,23 @@ export function alertsNotification(alerts: AlertSummary[], lang: Lang, today: st
     if (a.dueDate === today) return `${a.itemName}: ${tx.today}`;
     return `${a.itemName}: ${tx.on(shortDate(a.dueDate, lang))}`;
   };
-  // Lo más urgente primero: vencidos y los que vencen antes.
-  const sorted = [...alerts].sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''));
-  const lines = sorted.slice(0, MAX_LISTED).map(describe);
-  if (sorted.length > MAX_LISTED) lines.push(tx.more(sorted.length - MAX_LISTED));
-  return { title: tx.title(alerts.length), body: lines.join('\n') };
+  // Los faltantes de un mismo botiquín se juntan en un solo aviso: una línea por botiquín, no una por artículo.
+  const perKit = new Map<string, number>();
+  const single: AlertSummary[] = [];
+  for (const a of alerts) {
+    const at = a.kind === 'minStock' ? a.itemName.indexOf(KIT_SEPARATOR) : -1;
+    if (at < 0) single.push(a);
+    else {
+      const kit = a.itemName.slice(at + 1);
+      perKit.set(kit, (perKit.get(kit) ?? 0) + 1);
+    }
+  }
+  // Lo más urgente primero: vencidos y los que vencen antes; los botiquines, después.
+  const sorted = [...single].sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''));
+  const all = [...sorted.map(describe), ...[...perKit.entries()].map(([kit, n]) => tx.kitMissing(n, kit))];
+  const lines = all.slice(0, MAX_LISTED);
+  if (all.length > MAX_LISTED) lines.push(tx.more(all.length - MAX_LISTED));
+  return { title: tx.title(all.length), body: lines.join('\n') };
 }
 
 export function testNotification(lang: Lang): { title: string; body: string } {

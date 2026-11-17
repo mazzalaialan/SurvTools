@@ -5,6 +5,7 @@ import { computeAlerts, effectiveConfig, lotDueDate, upcomingNotifications } fro
 import { buildSystemCategories, missingSystemCategories, systemCategoryId } from './categories';
 import { addDays, addMonths, daysBetween, today } from './dates';
 import { buildTree, canMoveTo, pathLabel } from './locations';
+import { KIT_SEPARATOR } from '@/core/notifications/format';
 import { itemWeightGrams, lotWeightGrams, minStockAlertRows, normalizeLot, packagedQuantity, quantityOf, stockShortages, weightAt } from './stock';
 
 const cats = buildSystemCategories();
@@ -190,5 +191,17 @@ describe('ubicaciones', () => {
     );
     // El lote del auto no cuenta para el mínimo de la casa: la fecha es la del lote de la caja.
     expect(rows).toEqual([{ lotId: `min:${min.id}`, itemName: 'Atún', notifyFrom: '2026-10-20' }]);
+  });
+
+  it('faltantes de un botiquín: el nombre del botiquín viaja con el del artículo para agrupar el aviso', () => {
+    const gasa = item({ name: 'Gasa' });
+    const kit = { ...newEntity<Location>({ name: 'Botiquín del auto', parentId: null, depth: 1, notes: '', waypointId: null, kitType: 'trauma' }) };
+    const pocket = { ...newEntity<Location>({ name: 'Bolsillo', parentId: kit.id, depth: 2, notes: '', waypointId: null, kitType: null }) };
+    const locs = [kit, pocket, casa];
+    const minInKit = newEntity<StockMin>({ itemId: gasa.id, locationId: kit.id, minQuantity: 5 });
+    const minAtHome = newEntity<StockMin>({ itemId: gasa.id, locationId: casa.id, minQuantity: 5 });
+    const rows = minStockAlertRows(stockShortages([minInKit, minAtHome], [], locs), [], locs, new Map([[gasa.id, gasa]]), (d) => (d ? d.toISOString().slice(0, 10) : '2026-10-30'));
+    expect(rows.find((r) => r.lotId === `min:${minInKit.id}`)!.itemName).toBe(`Gasa${KIT_SEPARATOR}Botiquín del auto`);
+    expect(rows.find((r) => r.lotId === `min:${minAtHome.id}`)!.itemName).toBe('Gasa');
   });
 });

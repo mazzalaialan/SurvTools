@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { alertsNotification, lightningNotification, officialNotification, rainNotification, volcanoNotification } from './format';
+import { KIT_SEPARATOR, alertsNotification, lightningNotification, officialNotification, rainNotification, volcanoNotification } from './format';
 
 describe('texto de notificaciones', () => {
   it('lista lo más urgente primero y resume el resto', () => {
@@ -26,6 +26,34 @@ describe('texto de notificaciones', () => {
   it('debajo del stock mínimo', () => {
     const { body } = alertsNotification([{ itemName: 'Torniquete CAT', kind: 'minStock', dueDate: null }], 'es', '2026-11-02');
     expect(body).toBe('Torniquete CAT: debajo del stock mínimo');
+  });
+
+  it('los faltantes de un botiquín se juntan en un solo aviso por botiquín', () => {
+    const kit = (item: string, name: string) => ({ itemName: `${item}${KIT_SEPARATOR}${name}`, kind: 'minStock' as const, dueDate: null });
+    const { title, body } = alertsNotification([kit('Gasa', 'Botiquín del auto'), kit('Guantes', 'Botiquín del auto'), kit('Torniquete', 'Botiquín del auto'), kit('Venda', 'Mochila')], 'es', '2026-11-02');
+    expect(title).toBe('2 alertas pendientes');
+    expect(body).toBe('Faltan 3 artículos en Botiquín del auto\nFalta 1 artículo en Mochila');
+  });
+
+  it('un botiquín se cuenta como una alerta junto a las demás, y no se escapa el separador al texto', () => {
+    const { title, body } = alertsNotification(
+      [{ itemName: 'Atún', kind: 'expiry', dueDate: '2026-11-05' }, { itemName: `Gasa${KIT_SEPARATOR}Auto`, kind: 'minStock', dueDate: null }, { itemName: `Venda${KIT_SEPARATOR}Auto`, kind: 'minStock', dueDate: null }],
+      'es',
+      '2026-11-02',
+    );
+    expect(title).toBe('2 alertas pendientes');
+    expect(body).toBe('Atún: vence el 5 nov\nFaltan 2 artículos en Auto');
+    expect(body).not.toContain(KIT_SEPARATOR);
+  });
+
+  it('en inglés los botiquines también se agrupan', () => {
+    const { body } = alertsNotification([{ itemName: `Gauze${KIT_SEPARATOR}Car kit`, kind: 'minStock', dueDate: null }, { itemName: `Gloves${KIT_SEPARATOR}Car kit`, kind: 'minStock', dueDate: null }], 'en', '2026-11-02');
+    expect(body).toBe('2 items missing in Car kit');
+  });
+
+  it('un faltante común (fuera de botiquines) sigue yendo artículo por artículo', () => {
+    const { title } = alertsNotification([{ itemName: 'Agua', kind: 'minStock', dueDate: null }, { itemName: 'Atún', kind: 'minStock', dueDate: null }], 'es', '2026-11-02');
+    expect(title).toBe('2 alertas pendientes');
   });
 
   it('en inglés', () => {
