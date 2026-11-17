@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, rmSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -45,15 +45,15 @@ function makeDb(): string {
 describe('base propia: lugares de «Buscar cercanos»', () => {
   it('trae lo de emergencias a menos del radio, ordenado por cercanía, con el tipo de OpenStreetMap', () => {
     const idx = openAroundIndex(makeDb())!;
-    const r = idx.nearby(-41.1335, -71.3103, 10_000, null);
+    const r = idx.nearby(-41.1335, -71.3103, 10_000, null)!;
     assert.deepEqual(r.elements.map((e) => e.tags.name), ['Comisaría 28', 'Hospital Zonal']);
     assert.equal(r.elements[1]!.type, 'way');
     assert.equal(r.elements[1]!.id, 12);
     // Sin pedir la categoría, el combustible no viene; con ella, sí.
     assert.equal(r.elements.some((e) => e.tags.amenity === 'fuel'), false);
-    assert.equal(idx.nearby(-41.1335, -71.3103, 10_000, 'fuel').elements.some((e) => e.tags.amenity === 'fuel'), true);
+    assert.equal(idx.nearby(-41.1335, -71.3103, 10_000, 'fuel')!.elements.some((e) => e.tags.amenity === 'fuel'), true);
     // El radio manda: a 50 km aparece lo lejano.
-    assert.equal(idx.nearby(-41.1335, -71.3103, 50_000, null).elements.length, 3);
+    assert.equal(idx.nearby(-41.1335, -71.3103, 50_000, null)!.elements.length, 3);
     idx.close();
   });
   it('la ruta valida los datos y responde 503 sin base', async () => {
@@ -72,7 +72,7 @@ describe('base propia: lugares de «Buscar cercanos»', () => {
 describe('base propia de calles y números', () => {
   it('da lo que hay a cada distancia, con el mismo formato que usa la app', () => {
     const idx = openAroundIndex(makeDb())!;
-    const r = idx.around(-41.1335, -71.3103);
+    const r = idx.around(-41.1335, -71.3103)!;
     assert.equal(r.builtAt, '2026-11-17T00:00:00.000Z');
     const names = r.elements.filter((e) => e.tags.name).map((e) => e.tags.name);
     assert.deepEqual(names, ['Moreno']);
@@ -86,10 +86,27 @@ describe('base propia de calles y números', () => {
   });
   it('lejos de todo no devuelve nada, y sin base no hay índice', () => {
     const idx = openAroundIndex(makeDb())!;
-    assert.deepEqual(idx.around(-34.6, -58.38).elements, []);
+    assert.deepEqual(idx.around(-34.6, -58.38)!.elements, []);
     idx.close();
     assert.equal(openAroundIndex(null), null);
-    assert.equal(openAroundIndex('/no/existe.sqlite'), null);
+    // Con ruta y sin archivo, el índice existe pero no da nada (503).
+    assert.equal(openAroundIndex('/no/existe.sqlite')!.around(0, 0), null);
+  });
+  it('abre la base cuando aparece y la vuelve a abrir cuando cambia el archivo, sin reiniciar', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'osm-'));
+    dirs.push(dir);
+    const target = join(dir, 'around.sqlite');
+    const idx = openAroundIndex(target)!;
+    assert.equal(idx.around(-41.1335, -71.3103), null);
+    copyFileSync(makeDb(), target);
+    assert.ok(idx.around(-41.1335, -71.3103)!.elements.length > 0);
+    // Un archivo nuevo (el armado mensual) reemplaza al anterior: se ve lo nuevo.
+    const db = new DatabaseSync(target);
+    db.exec("DELETE FROM road; DELETE FROM num; DELETE FROM mile;");
+    db.close();
+    utimesSync(target, new Date(), new Date(Date.now() + 5000));
+    assert.equal(idx.around(-41.1335, -71.3103)!.elements.length, 0);
+    idx.close();
   });
   it('la ruta responde 200 con la base, 400 con coordenadas inválidas y 503 sin base', async () => {
     const withDb = Fastify();

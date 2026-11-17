@@ -53,4 +53,11 @@ before=$(stat -c %s "$MAPS/vector.pmtiles" 2>/dev/null || echo 0)
 MEMORY=${MEMORY:-7g} WATER_URL=$water_url sh "$HERE/build-vector.sh" "$MAPS"
 after=$(stat -c %s "$MAPS/vector.pmtiles")
 echo "listo: $((before / 1048576)) MB -> $((after / 1048576)) MB"
+# La base de calles y números (para «Mi ubicación» y «Buscar cercanos») se arma con este mismo extracto antes de borrarlo. Si falla, el mapa
+# ya quedó listo y el servidor sigue con la base anterior (o con los servicios públicos si no había).
+OSM_BUILD="$HERE/../../../tools/osm-index/build.sh"
+if [ -f "$OSM_BUILD" ]; then
+  echo "armando la base de calles y números"
+  sh "$OSM_BUILD" "$SRC/south_america.osm.pbf" "$MAPS/../osm" || echo "no se pudo armar la base de calles y números"
+fi
 clean /s/south_america.osm.pbf

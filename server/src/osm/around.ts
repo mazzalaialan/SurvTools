@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { statSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 
 /**
@@ -56,9 +56,10 @@ export interface NearbyElement {
 }
 
 export interface AroundIndex {
-  around(lat: number, lon: number): Around;
+  /** `null` si la base todavía no existe (el servidor la abre apenas aparece o cambia). */
+  around(lat: number, lon: number): Around | null;
   /** Lugares de «Buscar cercanos» (policía, bomberos, salud, Defensa Civil y, si se pide, una categoría de servicios) a menos de `radiusM`. */
-  nearby(lat: number, lon: number, radiusM: number, service: string | null): { elements: NearbyElement[]; builtAt: string | null };
+  nearby(lat: number, lon: number, radiusM: number, service: string | null): { elements: NearbyElement[]; builtAt: string | null } | null;
   close(): void;
 }
 
@@ -82,8 +83,7 @@ interface RoadRow { lat: number; lon: number; name: string | null; ref: string |
 interface NumRow { lat: number; lon: number; street: string; number: string }
 interface MileRow { lat: number; lon: number; km: string; ref: string | null }
 
-export function openAroundIndex(path: string | null): AroundIndex | null {
-  if (!path || !existsSync(path)) return null;
+function openFile(path: string): AroundIndex {
   const db = new DatabaseSync(path, { readOnly: true });
   const builtAt = (db.prepare("SELECT value FROM meta WHERE key = 'builtAt'").get() as { value: string } | undefined)?.value ?? null;
   const hasPlaces = !!db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'place'").get();
@@ -127,5 +127,37 @@ export function openAroundIndex(path: string | null): AroundIndex | null {
       return { elements, builtAt };
     },
     close: () => db.close(),
+  };
+}
+
+/**
+ * La base se abre cuando aparece y se vuelve a abrir cuando cambia el archivo (el armado mensual lo reemplaza por uno nuevo): no hace falta
+ * reiniciar el servidor. Sin ruta, no hay índice; con ruta y sin archivo, `around` y `nearby` dan `null` (la ruta responde 503).
+ */
+export function openAroundIndex(path: string | null): AroundIndex | null {
+  if (!path) return null;
+  let current: { index: AroundIndex; mtime: number } | null = null;
+  const get = (): AroundIndex | null => {
+    let mtime: number;
+    try {
+      mtime = statSync(path).mtimeMs;
+    } catch {
+      current?.index.close();
+      current = null;
+      return null;
+    }
+    if (!current || current.mtime !== mtime) {
+      current?.index.close();
+      current = { index: openFile(path), mtime };
+    }
+    return current.index;
+  };
+  return {
+    around: (lat, lon) => get()?.around(lat, lon) ?? null,
+    nearby: (lat, lon, radiusM, service) => get()?.nearby(lat, lon, radiusM, service) ?? null,
+    close: () => {
+      current?.index.close();
+      current = null;
+    },
   };
 }

@@ -18,6 +18,8 @@ SRC_NAME=$(basename "$PBF")
 docker build -q -t vikarg-osmium "$HERE" >/dev/null
 # Los archivos de trabajo los crea Docker (root): se borran con Docker.
 osm() { docker run --rm -v "$SRC_DIR:/in:ro" -v "$WORK:/w" -w /w vikarg-osmium "$@"; }
+# Node también en Docker: desde cron no hay `node` en el PATH (está en nvm).
+jsnode() { docker run --rm -i -v "$HERE:/t:ro" -v "$OUT:/o" node:26-alpine node "$@"; }
 clean() { docker run --rm -v "$WORK:/w" alpine:3.20 sh -c 'rm -rf /w/*'; }
 
 echo "recortando a $BBOX"
@@ -32,9 +34,9 @@ TMP="$OUT/around.sqlite.new"
 rm -f "$TMP"
 for kind in roads numbers milestones places; do
   echo "cargando $kind"
-  osm export "$kind.pbf" -f geojsonseq --add-unique-id=type_id --geometry-types="$( [ "$kind" = roads ] && echo linestring || echo point,polygon )" -o - | node "$HERE/import.mjs" "$TMP" "$kind"
+  osm export "$kind.pbf" -f geojsonseq --add-unique-id=type_id --geometry-types="$( [ "$kind" = roads ] && echo linestring || echo point,polygon )" -o - | jsnode /t/import.mjs /o/around.sqlite.new "$kind"
 done
-node -e "
+jsnode -e "
 const { DatabaseSync } = require('node:sqlite');
 const db = new DatabaseSync(process.argv[1]);
 db.exec('CREATE INDEX road_cell ON road(cell); CREATE INDEX num_cell ON num(cell); CREATE INDEX mile_cell ON mile(cell); CREATE INDEX place_cell ON place(cell);');
@@ -42,7 +44,7 @@ db.exec('CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)');
 db.prepare('INSERT INTO meta VALUES (?, ?)').run('builtAt', new Date().toISOString());
 db.prepare('INSERT INTO meta VALUES (?, ?)').run('source', process.argv[2]);
 db.close();
-" "$TMP" "$SRC_NAME"
+" /o/around.sqlite.new "$SRC_NAME"
 mv "$TMP" "$OUT/around.sqlite"
 clean
 echo "listo: $OUT/around.sqlite ($(du -h "$OUT/around.sqlite" | cut -f1))"
