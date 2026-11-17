@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import sample from './fixtures/compare.sample.json';
-import { agreementOf, cellColor, compareDays, compareUrl, consensus, dayValue, daySummaries, gridSteps, gridValue, median, MODELS, parseCompare, widestDay } from './compare';
+import { agreementOf, cellColor, compareDays, compareKey, compareUrl, consensus, dayValue, daySummaries, gridSteps, gridValue, median, MODELS, parseCompare, widestDay } from './compare';
 
 describe('comparación de pronósticos', () => {
   it('pide todos los modelos en una sola consulta, con los 7 días y la altura real', () => {
@@ -159,5 +159,11 @@ describe('comparación de pronósticos', () => {
     expect(last.models).toBeLessThan(last.total);
     expect(last.models).toBeGreaterThanOrEqual(1);
     expect(today.total).toBe(6);
+  });
+});
+
+describe('clave de lo guardado', () => {
+  it('cambia con la cantidad de días, así una comparación vieja de 7 días no se muestra como si fuera la de 16', () => {
+    expect(compareKey('-34.60,-58.64')).toBe('-34.60,-58.64|16d');
   });
 });

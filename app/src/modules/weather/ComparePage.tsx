@@ -4,7 +4,7 @@ import { RefreshCw } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
 import { cachedCompare, placeKey, storeCompare } from './cache';
-import { agreementOf, cellColor, sourceOf, WET_MM, compareDays, consensus, daySummaries, fetchCompare, gridSteps, gridValue, MODELS, VARS, widestDay, type Compare, type CompareVar } from './compare';
+import { agreementOf, cellColor, compareKey, sourceOf, WET_MM, compareDays, consensus, daySummaries, fetchCompare, gridSteps, gridValue, MODELS, VARS, widestDay, type Compare, type CompareVar } from './compare';
 import { WeatherError } from './forecast';
 import { toFahrenheit, kmhToMph, mmToInch } from './forecast';
 import { useUnits, WindArrow, type Units } from './parts';
@@ -234,7 +234,7 @@ export function ComparePage() {
   const lat = place?.lat ?? null;
   const lon = place?.lon ?? null;
   const alt = place?.alt ?? null;
-  const key = lat === null || lon === null ? null : placeKey(lat, lon);
+  const key = lat === null || lon === null ? null : compareKey(placeKey(lat, lon));
   const where = useRef({ lat, lon, alt });
   where.current = { lat, lon, alt };
 

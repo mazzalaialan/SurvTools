@@ -38,6 +38,9 @@ export const sourceOf = (v: CompareVar | SeriesVar): SeriesVar => (v === 'temper
 /** Días que se piden: hasta donde llega el modelo más largo (GFS, 16). Cada modelo que no llega a un día queda sin dato ese día y no cuenta. */
 export const COMPARE_DAYS = 16;
 
+/** Clave de lo guardado: por lugar y por cantidad de días pedidos (lo que se guardó con otra cantidad no sirve y se vuelve a pedir). */
+export const compareKey = (placeKey: string): string => `${placeKey}|${COMPARE_DAYS}d`;
+
 export interface Compare {
   fetchedAt: string;
   timezone: string;
