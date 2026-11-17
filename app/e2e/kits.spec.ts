@@ -154,6 +154,15 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await expect(page.getByRole('heading', { name: 'Contenido' })).toBeVisible();
   await expect(page.getByText('Guantes de nitrilo').first()).toBeVisible();
 
+  // «No lo necesito»: se saca de los faltantes (con confirmación) sin tocar el artículo.
+  const marker = missingBox.locator('li', { hasText: 'Marcador indeleble' });
+  await expect(marker).toBeVisible();
+  await marker.getByRole('button', { name: 'No lo necesito' }).click();
+  await expect(page.getByTestId('confirm-message')).toContainText('Marcador indeleble');
+  await page.getByTestId('confirm-ok').click();
+  await expect(page.getByTestId('km-message')).toContainText('ya no figura como faltante');
+  await expect(missingBox.locator('li', { hasText: 'Marcador indeleble' })).toHaveCount(0);
+
   // «¿Qué le falta?»: se compara con la plantilla y se puede dejar como mínimo.
   await page.getByTestId('kc-toggle').click();
   await expect(page.getByTestId('kc-scenario')).toHaveValue('bleeding');

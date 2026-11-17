@@ -9,6 +9,7 @@ import type { StockShortage } from '@/modules/inventory/domain/stock';
 import { unitText } from '@/modules/inventory/domain/unitText';
 import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
+import { confirmAction } from '@/ui/confirm';
 import { Dialog } from '@/ui/Dialog';
 import { exportShoppingPdf, shareShoppingText, type ShopEntry } from './shoppingExport';
 import { CATALOG, GROUP_NAMES, GROUPS, matchesCatalog, unitFor } from './kitTemplates';
@@ -20,7 +21,7 @@ import { CATALOG, GROUP_NAMES, GROUPS, matchesCatalog, unitFor } from './kitTemp
 export function KitMissing({ kit, shortages }: { kit: Location; shortages: StockShortage[] }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith('en') ? 'en' : 'es';
-  const { items, categories } = useInventory(useShallow((s) => ({ items: s.items, categories: s.categories })));
+  const { items, categories, setStockMin } = useInventory(useShallow((s) => ({ items: s.items, categories: s.categories, setStockMin: s.setStockMin })));
   const [buying, setBuying] = useState<StockShortage | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
@@ -34,6 +35,14 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
     return [{ name: item.name, unit: unitText(item.unit, t('items.units')), need: stockMin.minQuantity, have: current, groupName: group ? GROUP_NAMES[group][lang] : t('kitMissing.other'), groupOrder: group ? GROUPS.indexOf(group) : 99 }];
   });
   const ctx = () => ({ t, language: i18n.language, kitName: kit.name, detail: t('kitMissing.detail') });
+
+  /** No lo quiero en este botiquín: se saca el stock mínimo (deja de ser faltante). El artículo y lo que haya cargado quedan como están. */
+  async function dismiss(s: StockShortage) {
+    const item = items.get(s.stockMin.itemId);
+    if (!item || !(await confirmAction(t('kitMissing.dismissConfirm', { name: item.name })))) return;
+    await setStockMin(item.id, kit.id, null);
+    setMessage(t('kitMissing.dismissed', { name: item.name }));
+  }
 
   return (
     <section className="card stack" aria-labelledby="km-title" data-testid="kit-missing">
@@ -52,6 +61,7 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
               <div className="kb-row-sub">
                 <span className="hint">{t('kitMissing.toBuy', { qty: fmt.format(s.missing), unit: unitFor(s.missing, unit) })}</span>
                 <button className="btn" type="button" onClick={() => setBuying(s)} data-testid={`km-bought-${item.id}`}>{t('kitMissing.bought')}</button>
+                <button className="btn" type="button" onClick={() => void dismiss(s)} data-testid={`km-dismiss-${item.id}`}>{t('kitMissing.dismiss')}</button>
               </div>
             </li>
           );
