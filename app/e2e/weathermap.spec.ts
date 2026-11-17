@@ -578,6 +578,7 @@ test('clima histórico: elegir una fecha trae el día del historial, con sus hor
   await page.getByTestId('history-date').fill('2026-06-15');
   await expect(page.getByTestId('history-temps')).toContainText('Mínima 4° · máxima 14°');
   await expect(page.getByTestId('history-hour')).toHaveCount(24);
+  await expect(page.getByRole('heading', { name: /Hora por hora · .*15 de junio/ })).toBeVisible();
   // Sin tocar nada no se vuelve a pedir (antes se actualizaba solo cada segundo).
   const callsAfterLoad = archiveCalls;
   await page.waitForTimeout(3500);

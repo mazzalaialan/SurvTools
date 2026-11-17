@@ -186,8 +186,8 @@ export function HistoryPage() {
 
           {shown.hours.length > 0 && (
             <section className="card stack" aria-labelledby="hist-hours-title">
-              <h2 id="hist-hours-title" className="section-title" style={{ margin: 0 }}>{t('history.hours')}</h2>
-              <div className="hist-hours" role="table" aria-label={t('history.hours')} data-testid="history-hours">
+              <h2 id="hist-hours-title" className="section-title" style={{ margin: 0 }}>{t('history.hoursOf', { day: longFmt.format(dayAt(shown.date)) })}</h2>
+              <div className="hist-hours" role="table" aria-label={t('history.hoursOf', { day: longFmt.format(dayAt(shown.date)) })} data-testid="history-hours">
                 <div className="hist-hours-head" role="row">
                   <span role="columnheader">{t('history.hour')}</span>
                   <span role="columnheader">{t('history.temp')}</span>
