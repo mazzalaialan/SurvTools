@@ -31,7 +31,7 @@ function makeDb(): string {
   road.run(cellOf(-41.1400, -71.3104), -41.14, -71.3104, 'Lejos', null, 'residential'); // a ~700 m: fuera de los 120 m
   road.run(cellOf(-41.1355, -71.311), -41.1355, -71.311, null, 'RN 40', 'trunk'); // ruta a ~230 m: dentro de los 400 m
   num.run(cellOf(-41.13355, -71.3103), -41.13355, -71.3103, 'Moreno', '248'); // a ~6 m
-  num.run(cellOf(-41.1345, -71.3103), -41.1345, -71.3103, 'Moreno', '300'); // a ~105 m: fuera de los 80 m
+  num.run(cellOf(-41.1355, -71.3103), -41.1355, -71.3103, 'Moreno', '300'); // a ~225 m: fuera de los 150 m
   mile.run(cellOf(-41.14, -71.31), -41.14, -71.31, '1990', 'RN 40'); // a ~740 m
   const place = db.prepare('INSERT INTO place VALUES (?, ?, ?, ?, ?, ?)');
   place.run(cellOf(-41.1340, -71.3100), -41.134, -71.31, 'core', 'n11', JSON.stringify({ amenity: 'police', name: 'Comisaría 28' })); // ~120 m

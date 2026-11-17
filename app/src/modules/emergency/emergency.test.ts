@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import data from './emergency-data.json';
 import { mergeNearby, nearestPerKind, nearestRadio, officialNearby, type EmergencyData, type NearbyPlace } from './data';
 import { dialable, mapsUrl } from './national';
-import { completeAddress, describeAddress, osmKind, parseNearby, parseSurroundings } from './osm';
+import { completeAddress, describeAddress, sameStreet, streetKey, osmKind, parseNearby, parseSurroundings } from './osm';
 
 const D = data as EmergencyData;
 
@@ -107,6 +107,34 @@ describe('OpenStreetMap', () => {
     expect(s.roads).toEqual(['RN 40']);
     expect(s.nearbyStreets).toEqual(['Los Coihues']);
     expect(s.milestone?.km).toBe('1990');
+  });
+});
+
+describe('calle: mismo nombre aunque se escriba distinto', () => {
+  it('ignora tildes, mayúsculas y el tipo de calle', () => {
+    expect(streetKey('Avenida Hipólito Yrigoyen')).toBe('hipolito yrigoyen');
+    expect(sameStreet('Av. Hipólito Yrigoyen', 'Hipolito Yrigoyen')).toBe(true);
+    expect(sameStreet('Bartolomé Mitre', 'Mitre')).toBe(true);
+    expect(sameStreet('Calle 25 de Mayo', '25 de Mayo')).toBe(true);
+    expect(sameStreet('Moreno', 'Rolando')).toBe(false);
+    expect(sameStreet('', 'Moreno')).toBe(false);
+  });
+  it('de varias puertas cercanas elige la más cercana de la calle donde estás, no la de una que cruza', () => {
+    const els = [
+      { type: 'node' as const, id: 1, lat: -41.13351, lon: -71.3103, tags: { 'addr:street': 'Rolando', 'addr:housenumber': '10' } }, // ~11 m, pero es otra calle
+      { type: 'node' as const, id: 2, lat: -41.1337, lon: -71.3103, tags: { 'addr:street': 'Moreno', 'addr:housenumber': '248' } }, // ~22 m
+      { type: 'node' as const, id: 3, lat: -41.134, lon: -71.3103, tags: { 'addr:street': 'Moreno', 'addr:housenumber': '260' } },
+    ];
+    expect(parseSurroundings(els, -41.1335, -71.3103, 'Calle Moreno').nearestNumber).toMatchObject({ number: '248', street: 'Moreno' });
+    // Una puerta a 140 m también cuenta (una cuadra y media), a 200 m no.
+    const far = [{ type: 'node' as const, id: 4, lat: -41.1348, lon: -71.3103, tags: { 'addr:street': 'Moreno', 'addr:housenumber': '300' } }];
+    expect(parseSurroundings(far, -41.1335, -71.3103, 'Moreno').nearestNumber?.number).toBe('300');
+    const tooFar = [{ type: 'node' as const, id: 5, lat: -41.1355, lon: -71.3103, tags: { 'addr:street': 'Moreno', 'addr:housenumber': '300' } }];
+    expect(parseSurroundings(tooFar, -41.1335, -71.3103, 'Moreno').nearestNumber).toBeNull();
+  });
+  it('con otro nombre para la misma calle igual da la altura', () => {
+    const around = { roads: [] as string[], milestone: null, nearestNumber: { street: 'Hipólito Yrigoyen', number: '120', distance: 40 } };
+    expect(completeAddress({ address: 'Avenida Hipólito Yrigoyen', houseNumber: '', road: 'Avenida Hipólito Yrigoyen' }, around, 'es')).toBe('Avenida Hipólito Yrigoyen 120 (aprox.)');
   });
 });
 

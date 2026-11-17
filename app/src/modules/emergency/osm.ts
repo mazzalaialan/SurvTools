@@ -18,6 +18,8 @@ import { CATEGORY_KIND, type ServiceCategory } from './services';
 const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
 const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse';
 const TIMEOUT_MS = 30_000;
+/** Hasta dónde se busca el número de puerta más cercano (una cuadra y media): igual que la base del servidor. */
+export const NUMBER_M = 150;
 
 interface OsmElement {
   type: 'node' | 'way' | 'relation';
@@ -259,7 +261,7 @@ export interface LocationInfo {
   nearbyStreets: string[];
   /** Rutas cercanas (p. ej. "RN 40"). */
   roads: string[];
-  /** El número de puerta más cercano (a menos de 80 m), para dar la altura aproximada cuando no hay uno exacto. */
+  /** El número de puerta más cercano (a menos de 150 m), para dar la altura aproximada cuando no hay uno exacto. */
   nearestNumber: { street: string; number: string; distance: number } | null;
   /** Mojón kilométrico más cercano, si hay alguno cargado. */
   milestone: { km: string; road: string; distance: number } | null;
@@ -290,8 +292,10 @@ export function parseSurroundings(elements: OsmElement[], lat: number, lon: numb
     const p = pos(e);
     if (!p) continue;
     const d = distanceMeters(here, p);
-    if (tags['addr:housenumber'] && tags['addr:street'] && d <= 80) {
-      if (!nearestNumber || d < nearestNumber.distance) nearestNumber = { street: tags['addr:street'], number: tags['addr:housenumber'], distance: d };
+    if (tags['addr:housenumber'] && tags['addr:street'] && d <= NUMBER_M) {
+      // La puerta más cercana de la calle donde estás (la de una calle que cruza no sirve); sin calle conocida, la más cercana.
+      const onOwnRoad = !ownRoad || sameStreet(ownRoad, tags['addr:street']);
+      if (onOwnRoad && (!nearestNumber || d < nearestNumber.distance)) nearestNumber = { street: tags['addr:street'], number: tags['addr:housenumber'], distance: d };
       continue;
     }
     if (tags.highway === 'milestone') {
@@ -310,11 +314,28 @@ export function parseSurroundings(elements: OsmElement[], lat: number, lon: numb
   return { nearbyStreets: byDistance(streets).slice(0, 2), roads: byDistance(roads).slice(0, 2), nearestNumber, milestone };
 }
 
-const sameStreet = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+/** Nombre de calle sin tildes, sin «Avenida/Calle/Diagonal…» ni puntuación: «Av. Hipólito Yrigoyen» y «Hipólito Yrigoyen» son la misma. */
+export function streetKey(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[.,]/g, ' ')
+    .replace(/\b(avenida|av|calle|boulevard|bulevar|blvd|diagonal|pasaje|pje|peatonal|camino|ruta)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function sameStreet(a: string, b: string): boolean {
+  const x = streetKey(a);
+  const y = streetKey(b);
+  if (!x || !y) return false;
+  return x === y || (Math.min(x.length, y.length) >= 5 && (x.includes(y) || y.includes(x)));
+}
 
 /**
  * La dirección con su altura: la exacta si Nominatim encontró el número de puerta; si no, la de la puerta más cercana de la misma calle
- * (a menos de 80 m, «aprox.»); y en una ruta, el kilómetro del mojón más cercano (a menos de 3 km, «aprox.»).
+ * (a menos de 150 m, «aprox.»); y en una ruta, el kilómetro del mojón más cercano (a menos de 3 km, «aprox.»).
  */
 export function completeAddress(own: { address: string; houseNumber: string; road: string }, around: Pick<LocationInfo, 'nearestNumber' | 'roads' | 'milestone'>, lang: string): string {
   if (own.houseNumber) return own.address;
@@ -355,7 +376,7 @@ export async function describeLocation(lat: number, lon: number, lang: string, o
     .catch(() => ({}) as NominatimReverse);
   const at = `${lat.toFixed(6)},${lon.toFixed(6)}`;
   const queries = [
-    `[out:json][timeout:25];(way(around:120,${at})["highway"]["name"];nwr(around:80,${at})["addr:housenumber"]["addr:street"];);out center tags;`,
+    `[out:json][timeout:25];(way(around:120,${at})["highway"]["name"];nwr(around:${NUMBER_M},${at})["addr:housenumber"]["addr:street"];);out center tags;`,
     `[out:json][timeout:25];way(around:400,${at})["highway"]["ref"];out center tags;`,
     `[out:json][timeout:25];node(around:3000,${at})["highway"="milestone"];out center tags;`,
   ];

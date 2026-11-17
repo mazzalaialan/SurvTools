@@ -22,7 +22,7 @@ export interface Around {
 /** Radios iguales a las consultas de la app. */
 export const NAME_M = 120;
 export const REF_M = 400;
-export const NUMBER_M = 80;
+export const NUMBER_M = 150;
 export const MILESTONE_M = 3000;
 
 /** Las celdas son las de tools/osm-index/import.mjs: `floor((lat+90)*50)*20000 + floor((lon+180)*50)` (0,02° ≈ 2,2 km). */
