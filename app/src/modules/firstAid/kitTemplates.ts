@@ -394,10 +394,4 @@ export const matchesCatalog = (id: string, normalizedItemName: string): boolean 
   return keys.some((k) => target.includes(strip(k.toLowerCase()))) || names.some((n) => strip(n) === target);
 };
 
-const SINGULAR: Record<string, string> = {
-  pares: 'par', rollos: 'rollo', sobres: 'sobre', unidades: 'unidad', 'tiras o blísteres': 'tira o blíster',
-  pairs: 'pair', rolls: 'roll', sachets: 'sachet', units: 'unit', 'strips or blister packs': 'strip or blister pack',
-};
-
-/** La unidad en singular cuando la cantidad es 1 («1 par», no «1 pares»). */
-export const unitFor = (qty: number, unit: string): string => (qty === 1 ? (SINGULAR[unit] ?? unit) : unit);
+export { unitFor } from '@/modules/inventory/domain/unitText';

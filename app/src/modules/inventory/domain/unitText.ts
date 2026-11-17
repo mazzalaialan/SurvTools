@@ -12,3 +12,10 @@ export function unitText(unit: string, fallback: string): string {
 
 /** La unidad para guardar: un número suelto no se guarda (queda vacía y se muestra «unidades»). */
 export const cleanUnit = (unit: string): string => (isNumericUnit(unit) ? '' : unit.trim());
+const SINGULAR: Record<string, string> = {
+  pares: 'par', rollos: 'rollo', sobres: 'sobre', unidades: 'unidad', latas: 'lata', botellas: 'botella', paquetes: 'paquete', raciones: 'ración', frascos: 'frasco', cajas: 'caja', bolsas: 'bolsa', 'tiras o blísteres': 'tira o blíster',
+  pairs: 'pair', rolls: 'roll', sachets: 'sachet', units: 'unit', cans: 'can', bottles: 'bottle', packs: 'pack', rations: 'ration', jars: 'jar', boxes: 'box', bags: 'bag', 'strips or blister packs': 'strip or blister pack',
+};
+
+/** La unidad en singular cuando la cantidad es 1 («1 par», no «1 pares»). */
+export const unitFor = (qty: number, unit: string): string => (qty === 1 ? (SINGULAR[unit] ?? unit) : unit);

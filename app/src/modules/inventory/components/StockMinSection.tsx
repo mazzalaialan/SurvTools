@@ -1,4 +1,4 @@
-import { unitText } from '../domain/unitText';
+import { unitFor, unitText } from '../domain/unitText';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
@@ -52,7 +52,7 @@ export function StockMinSection({ item }: { item: Item }) {
                 <span className="list-main">
                   <span className="list-title">{labels.get(stockMin.locationId) ?? '—'}</span>
                   <span className="list-sub" style={{ color: short ? 'var(--warn)' : undefined }}>
-                    {t('stockMin.status', { current: fmt.format(current), min: fmt.format(stockMin.minQuantity), unit: unitText(item.unit, t('items.units')) })}
+                    {t('stockMin.status', { current: fmt.format(current), min: fmt.format(stockMin.minQuantity), unit: unitFor(stockMin.minQuantity, unitText(item.unit, t('items.units'))) })}
                   </span>
                 </span>
                 <button className="icon-btn" type="button" aria-label={t('common.delete')} onClick={() => void setStockMin(item.id, stockMin.locationId, null)}>

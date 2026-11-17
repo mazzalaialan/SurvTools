@@ -1,9 +1,10 @@
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { BellRing, CircleCheck, Circle, Hospital, Navigation, Siren } from 'lucide-react';
 import { AlertList, ShortageList } from '@/modules/inventory/components/AlertList';
 import { DocumentExpiryList, useExpiringDocuments } from '@/modules/documents/DocumentExpiryList';
+import { groupShortages } from '@/modules/inventory/domain/stock';
 import { useAlerts, useShortages } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
 import { RecommendationShortageList, useRecommendationShortages } from '@/modules/recommendations/RecommendationShortageList';
@@ -22,12 +23,15 @@ function AlertSummary() {
   const hasItems = useInventory((s) => s.items.size > 0);
   const alerts = useAlerts();
   const shortages = useShortages();
+  const locations = useInventory((s) => s.locations);
+  // Los faltantes de un botiquín cuentan como una sola alerta (ver ShortageList).
+  const shortageRows = useMemo(() => groupShortages(shortages, [...locations.values()]).length, [shortages, locations]);
   const recShortages = useRecommendationShortages();
   const docs = useExpiringDocuments();
   const garden = useGardenStatus();
   const navigate = useNavigate();
   const gardenCount = gardenAlertCount(garden);
-  const total = alerts.length + shortages.length + recShortages.length + docs.length + gardenCount;
+  const total = alerts.length + shortageRows + recShortages.length + docs.length + gardenCount;
   // Los documentos van primero: renovarlos lleva turnos y semanas de trámite.
   const left = HOME_ALERT_LIMIT - docs.length;
 
@@ -55,9 +59,9 @@ function AlertSummary() {
       {garden.tasks.length > 0 && <GardenTaskList tasks={garden.tasks.slice(0, 3)} onOpen={() => navigate('/garden/beds')} />}
       {docs.length > 0 && <DocumentExpiryList rows={docs} limit={HOME_ALERT_LIMIT} />}
       {left > 0 && alerts.length > 0 && <AlertList alerts={alerts} limit={left} />}
-      {alerts.length < left && shortages.length > 0 && <ShortageList shortages={shortages.slice(0, left - alerts.length)} />}
-      {alerts.length + shortages.length < left && recShortages.length > 0 && (
-        <RecommendationShortageList shortages={recShortages} limit={left - alerts.length - shortages.length} />
+      {alerts.length < left && shortageRows > 0 && <ShortageList shortages={shortages} limit={left - alerts.length} />}
+      {alerts.length + shortageRows < left && recShortages.length > 0 && (
+        <RecommendationShortageList shortages={recShortages} limit={left - alerts.length - shortageRows} />
       )}
     </section>
   );

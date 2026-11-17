@@ -74,12 +74,12 @@ test('botiquín de trauma: contenido, vencimientos y faltantes', async ({ page }
           }),
       ),
     )
-    .toContainEqual(expect.objectContaining({ itemName: 'Torniquete CAT', kind: 'minStock', lotId: expect.stringMatching(/^min:/) }));
+    .toContainEqual(expect.objectContaining({ itemName: 'Torniquete CAT\u001fTrauma del auto', kind: 'minStock', lotId: expect.stringMatching(/^min:/) }));
 
   await page.goto('/#/first-aid/kits');
   await expect(page.getByText('2 a revisar')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Para revisar' })).toBeVisible();
-  await page.locator('a[href^="#/first-aid/kits/"]:not([href$="/build"])').click();
+  await page.locator('a[href^="#/first-aid/kits/"]:not([href$="/build"])').first().click();
   await expect(page.getByRole('heading', { name: 'Falta', exact: true })).toBeVisible();
   await expect(page.getByText('1 de 2 unidades')).toBeVisible();
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-11-kit.png`, fullPage: true });
@@ -171,6 +171,16 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await expect(page.getByTestId('kc-missing')).toContainText('Tijera de trauma');
   await page.getByTestId('kc-mins').click();
   await expect(page.getByTestId('kc-message')).toContainText('stock mínimo');
+
+  // «Para revisar» (en Botiquines) y la pantalla de inicio juntan todos los faltantes de un botiquín en una sola fila.
+  await page.goto('/#/first-aid/kits');
+  const group = page.locator('[data-testid^="shortage-kit-"]');
+  await expect(group).toHaveCount(1);
+  await expect(group).toContainText('IFAK de la mochila');
+  await expect(group).toContainText(/Faltan \d+ artículos/);
+  await page.goto('/#/');
+  await expect(page.locator('[data-testid^="shortage-kit-"]')).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: /1 alerta/ })).toBeVisible();
 });
 
 test('el asistente pasa al botiquín nuevo lo que ya tenés fuera de los botiquines, sin tocar los otros botiquines', async ({ page }) => {

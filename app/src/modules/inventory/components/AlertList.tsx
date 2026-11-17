@@ -1,11 +1,12 @@
-import { unitText } from '../domain/unitText';
+import { unitFor, unitText } from '../domain/unitText';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { BriefcaseMedical } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { CategoryIcon } from '@/ui/CategoryIcon';
 import type { LotAlert } from '../domain/alerts';
 import { pathLabel } from '../domain/locations';
-import type { StockShortage } from '../domain/stock';
+import { groupShortages, type StockShortage } from '../domain/stock';
 import { useInventory } from '../store';
 import { AlertBadge } from './AlertBadge';
 
@@ -36,15 +37,33 @@ export function AlertList({ alerts, limit }: { alerts: LotAlert[]; limit?: numbe
   );
 }
 
-export function ShortageList({ shortages }: { shortages: StockShortage[] }) {
+export function ShortageList({ shortages, limit }: { shortages: StockShortage[]; limit?: number }) {
   const { t, i18n } = useTranslation();
   const { items, locations, categories } = useInventory(
     useShallow((s) => ({ items: s.items, locations: s.locations, categories: s.categories })),
   );
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
+  // Los faltantes de un mismo botiquín van juntos en una sola fila: «Botiquín del auto · Faltan 11 artículos».
+  const entries = groupShortages(shortages, [...locations.values()]).slice(0, limit);
   return (
     <ul className="list">
-      {shortages.map(({ stockMin, current }) => {
+      {entries.map((entry) => {
+        if (entry.kind === 'kit') {
+          const count = entry.shortages.length;
+          return (
+            <li key={entry.kit.id}>
+              <Link className="list-row" to={`/first-aid/kits/${entry.kit.id}`} data-testid={`shortage-kit-${entry.kit.id}`}>
+                <BriefcaseMedical size={24} aria-hidden style={{ color: 'var(--danger)', flex: 'none' }} />
+                <span className="list-main">
+                  <span className="list-title">{entry.kit.name}</span>
+                  <span className="list-sub">{t('kits.missingCount', { count })}</span>
+                </span>
+                <span className="pill pill-warn">{count}</span>
+              </Link>
+            </li>
+          );
+        }
+        const { stockMin, current } = entry.shortage;
         const item = items.get(stockMin.itemId);
         if (!item) return null;
         return (
@@ -56,7 +75,7 @@ export function ShortageList({ shortages }: { shortages: StockShortage[] }) {
                 <span className="list-sub">{pathLabel(stockMin.locationId, locations)}</span>
               </span>
               <span className="pill pill-warn">
-                {t('stockMin.status', { current: fmt.format(current), min: fmt.format(stockMin.minQuantity), unit: unitText(item.unit, t('items.units')) })}
+                {t('stockMin.status', { current: fmt.format(current), min: fmt.format(stockMin.minQuantity), unit: unitFor(stockMin.minQuantity, unitText(item.unit, t('items.units'))) })}
               </span>
             </Link>
           </li>

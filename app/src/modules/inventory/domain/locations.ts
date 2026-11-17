@@ -77,3 +77,9 @@ export function normalizeLocation(location: Location): Location {
 export function depthFor(parentId: Id | null, byId: Map<Id, Location>): number {
   return parentId ? (byId.get(parentId)?.depth ?? 0) + 1 : 1;
 }
+
+/** El botiquín al que pertenece una ubicación: ella misma o la de más arriba que sea un botiquín (sus compartimentos cuentan como parte). */
+export function kitOfLocation(id: Id, byId: Map<Id, Location>): Location | null {
+  for (let l = byId.get(id), i = 0; l && i < 8; l = l.parentId ? byId.get(l.parentId) : undefined, i++) if (l.kitType !== null) return l;
+  return null;
+}

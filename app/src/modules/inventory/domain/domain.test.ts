@@ -6,7 +6,7 @@ import { buildSystemCategories, missingSystemCategories, systemCategoryId } from
 import { addDays, addMonths, daysBetween, today } from './dates';
 import { buildTree, canMoveTo, pathLabel } from './locations';
 import { KIT_SEPARATOR } from '@/core/notifications/format';
-import { itemWeightGrams, lotWeightGrams, minStockAlertRows, normalizeLot, packagedQuantity, quantityOf, stockShortages, weightAt } from './stock';
+import { itemWeightGrams, lotWeightGrams, groupShortages, minStockAlertRows, normalizeLot, packagedQuantity, quantityOf, stockShortages, weightAt } from './stock';
 
 const cats = buildSystemCategories();
 const catMap = new Map(cats.map((c) => [c.id, c]));
@@ -191,6 +191,22 @@ describe('ubicaciones', () => {
     );
     // El lote del auto no cuenta para el mínimo de la casa: la fecha es la del lote de la caja.
     expect(rows).toEqual([{ lotId: `min:${min.id}`, itemName: 'Atún', notifyFrom: '2026-10-20' }]);
+  });
+
+  it('los faltantes de un botiquín se agrupan en una fila por botiquín; los de lugares comunes siguen sueltos', () => {
+    const [gasa, venda] = [item({ name: 'Gasa' }), item({ name: 'Venda' })];
+    const auto2 = newEntity<Location>({ name: 'Botiquín del auto', parentId: null, depth: 1, notes: '', waypointId: null, kitType: 'trauma' });
+    const mochila = newEntity<Location>({ name: 'Mochila', parentId: null, depth: 1, notes: '', waypointId: null, kitType: 'general' });
+    const bolsillo = newEntity<Location>({ name: 'Bolsillo', parentId: auto2.id, depth: 2, notes: '', waypointId: null, kitType: null });
+    const locs = [auto2, mochila, bolsillo, casa];
+    const mins = [
+      newEntity<StockMin>({ itemId: gasa.id, locationId: auto2.id, minQuantity: 5 }),
+      newEntity<StockMin>({ itemId: venda.id, locationId: bolsillo.id, minQuantity: 2 }),
+      newEntity<StockMin>({ itemId: gasa.id, locationId: mochila.id, minQuantity: 1 }),
+      newEntity<StockMin>({ itemId: gasa.id, locationId: casa.id, minQuantity: 9 }),
+    ];
+    const entries = groupShortages(stockShortages(mins, [], locs), locs);
+    expect(entries.map((e) => (e.kind === 'kit' ? `${e.kit.name}:${e.shortages.length}` : 'suelto'))).toEqual(['Botiquín del auto:2', 'Mochila:1', 'suelto']);
   });
 
   it('faltantes de un botiquín: el nombre del botiquín viaja con el del artículo para agrupar el aviso', () => {

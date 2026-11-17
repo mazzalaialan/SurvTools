@@ -240,6 +240,8 @@
     },
     "empty": "Todavía no armaste botiquines. Cada botiquín es una caja o mochila con su tipo (trauma, sangrado, anafilaxia…) y puede estar en cualquier lugar: la casa, el auto, la mochila de escape.",
     "toReview": "Para revisar",
+    "missingCount_one": "Falta {{count}} artículo",
+    "missingCount_other": "Faltan {{count}} artículos",
     "problems_one": "{{count}} a revisar",
     "problems_other": "{{count}} a revisar",
     "notFound": "El botiquín no existe.",

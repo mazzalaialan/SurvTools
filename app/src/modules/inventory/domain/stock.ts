@@ -1,4 +1,5 @@
 import { KIT_SEPARATOR } from '@/core/notifications/format';
+import { kitOfLocation } from './locations';
 import type { Id, Item, Location, Lot, StockMin } from '@/core/model/types';
 import { subtreeIds } from './locations';
 
@@ -40,11 +41,7 @@ export function minStockAlertRows(
 ): { lotId: string; itemName: string; notifyFrom: string }[] {
   const todayStr = today();
   const byId = new Map(locations.map((l) => [l.id, l]));
-  /** El botiquín al que pertenece una ubicación (ella misma o la de más arriba que sea un botiquín). */
-  const kitOf = (id: Id): Location | null => {
-    for (let l = byId.get(id), i = 0; l && i < 8; l = l.parentId ? byId.get(l.parentId) : undefined, i++) if (l.kitType !== null) return l;
-    return null;
-  };
+  const kitOf = (id: Id): Location | null => kitOfLocation(id, byId);
   return shortages.map(({ stockMin }) => {
     const scope = subtreeIds(stockMin.locationId, locations);
     const kit = kitOf(stockMin.locationId);
@@ -98,4 +95,32 @@ export function itemWeightGrams(item: Item, lots: Lot[]): number {
   return active(lots)
     .filter((l) => l.itemId === item.id)
     .reduce((sum, l) => sum + lotWeightGrams(l, item), 0);
+}
+
+/** Una fila de faltantes: un artículo suelto o, en un botiquín, todos los de ese botiquín juntos. */
+export type ShortageEntry = { kind: 'item'; shortage: StockShortage } | { kind: 'kit'; kit: Location; shortages: StockShortage[] };
+
+/**
+ * Los faltantes de un mismo botiquín se muestran como una sola fila («Botiquín del auto: faltan 11 artículos») en vez de una por artículo;
+ * los de lugares comunes siguen uno por uno. El orden es el de la primera aparición.
+ */
+export function groupShortages(shortages: StockShortage[], locations: Location[]): ShortageEntry[] {
+  const byId = new Map(locations.map((l) => [l.id, l]));
+  const entries: ShortageEntry[] = [];
+  const kits = new Map<Id, Extract<ShortageEntry, { kind: 'kit' }>>();
+  for (const shortage of shortages) {
+    const kit = kitOfLocation(shortage.stockMin.locationId, byId);
+    if (!kit) {
+      entries.push({ kind: 'item', shortage });
+      continue;
+    }
+    const existing = kits.get(kit.id);
+    if (existing) existing.shortages.push(shortage);
+    else {
+      const entry = { kind: 'kit' as const, kit, shortages: [shortage] };
+      kits.set(kit.id, entry);
+      entries.push(entry);
+    }
+  }
+  return entries;
 }

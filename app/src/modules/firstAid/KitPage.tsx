@@ -1,6 +1,6 @@
 import { KitCompare } from './KitCompare';
 import { KitMissing } from './KitMissing';
-import { cleanUnit, isNumericUnit, unitText } from '@/modules/inventory/domain/unitText';
+import { cleanUnit, isNumericUnit, unitFor, unitText } from '@/modules/inventory/domain/unitText';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -100,7 +100,7 @@ function KitDetail({ kit }: { kit: Location }) {
                     <span className="list-main">
                       <span className="list-title">{item.name}</span>
                       <span className="list-sub">
-                        {`${fmt.format(lot.quantity)} ${unitText(item.unit, t('items.units'))}`}
+                        {`${fmt.format(lot.quantity)} ${unitFor(lot.quantity, unitText(item.unit, t('items.units')))}`}
                         {where && ` · ${where}`}
                         {due && ` · ${t('lots.expiresOn', { date: formatDay(due, i18n.language) })}`}
                       </span>

@@ -240,6 +240,8 @@
     },
     "empty": "No kits yet. Each kit is a box or bag with a type (trauma, bleeding, anaphylaxis…) and can live anywhere: home, car, bug-out bag.",
     "toReview": "To review",
+    "missingCount_one": "{{count}} item missing",
+    "missingCount_other": "{{count}} items missing",
     "problems_one": "{{count}} to review",
     "problems_other": "{{count}} to review",
     "notFound": "This kit doesn't exist.",

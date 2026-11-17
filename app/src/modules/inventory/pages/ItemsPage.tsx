@@ -9,7 +9,7 @@ import { CategoryIcon } from '@/ui/CategoryIcon';
 import { AlertBadge } from '../components/AlertBadge';
 import { pathLabel } from '../domain/locations';
 import { quantityOf } from '../domain/stock';
-import { unitText } from '../domain/unitText';
+import { unitFor, unitText } from '../domain/unitText';
 import { normalize, useCategoryOptions, useWorstAlertByItem } from '../selectors';
 import { useInventory } from '../store';
 
@@ -114,7 +114,7 @@ export function ItemsPage() {
                       {lotCount === 0
                         ? t('items.noStock')
                         : [
-                            t('items.stockLine', { qty: fmt.format(total), unit: unitText(item.unit, t('items.units')) }),
+                            t('items.stockLine', { qty: fmt.format(total), unit: unitFor(total, unitText(item.unit, t('items.units'))) }),
                             t('items.lotCount', { count: lotCount }),
                             place ?? (placeCount > 1 ? t('items.places', { count: placeCount }) : null),
                           ]
