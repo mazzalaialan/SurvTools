@@ -6,7 +6,7 @@
  *
  * - Localidades: GeoNames (CC BY 4.0), con población, para la detección de
  *   ciudad o zona agreste y para ubicar lugares por nombre.
- * - Bomberos, policía y centros de salud: OpenStreetMap (ODbL), vía Overpass.
+ * - Bomberos, policía y centros de salud: OpenStreetMap (ODbL), del extracto de Geofabrik por país (tools/osm-index/countries.sh) o, sin él, de Overpass.
  *   Uruguay: la base son los listados oficiales del catálogo de datos abiertos
  *   (Licencia de Datos Abiertos de Uruguay): comisarías y destacamentos de
  *   bomberos del Ministerio del Interior y unidades asistenciales de ASSE, con
@@ -25,7 +25,7 @@
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { inflateRawSync } from 'node:zlib';
-import { overpass as overpassQuery } from '../lib/overpass.mjs';
+import { osmByCountry } from '../lib/osm-local.mjs';
 import { fileURLToPath } from 'node:url';
 
 // Salida: los paquetes de la app (por defecto) o, con VIKARG_DATA_OUT, la carpeta que sirve el servidor
@@ -275,17 +275,14 @@ async function admin1Names() {
   );
 }
 
+/** Bomberos, policía y salud de un país: del archivo local de Geofabrik (tools/osm-index/countries.sh) o, sin él, de Overpass. */
 async function overpass(cc) {
-  const query = `[out:json][timeout:300];
-area["ISO3166-1"="${cc}"][admin_level=2]->.a;
-(
-  nwr["amenity"="fire_station"](area.a);
-  nwr["amenity"="police"](area.a);
-  nwr["amenity"~"^(hospital|clinic)$"](area.a);
-  nwr["healthcare"~"^(hospital|clinic|centre)$"](area.a);
-);
-out center tags;`;
-  return overpassQuery(query);
+  return osmByCountry(cc, [
+    'nwr["amenity"="fire_station"]',
+    'nwr["amenity"="police"]',
+    'nwr["amenity"~"^(hospital|clinic)$"]',
+    'nwr["healthcare"~"^(hospital|clinic|centre)$"]',
+  ]);
 }
 
 function toPlace(e, fallbackName) {

@@ -60,4 +60,10 @@ if [ -f "$OSM_BUILD" ]; then
   echo "armando la base de calles y números"
   sh "$OSM_BUILD" "$SRC/south_america.osm.pbf" "$MAPS/../osm" || echo "no se pudo armar la base de calles y números"
 fi
+# Un archivo de OpenStreetMap por país para las herramientas de datos (países, emergencias y servicios), sin Overpass (tools/lib/osm-local.mjs).
+OSM_COUNTRIES="$HERE/../../../tools/osm-index/countries.sh"
+if [ -f "$OSM_COUNTRIES" ]; then
+  echo "armando los archivos por país para las herramientas de datos"
+  sh "$OSM_COUNTRIES" "$SRC/south_america.osm.pbf" "$MAPS/../osm" || echo "no se pudieron armar los archivos por país (las herramientas usan Overpass)"
+fi
 clean /s/south_america.osm.pbf

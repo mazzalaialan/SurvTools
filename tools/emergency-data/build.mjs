@@ -26,7 +26,7 @@
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
-import { overpass } from '../lib/overpass.mjs';
+import { osmByCountry } from '../lib/osm-local.mjs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -202,11 +202,13 @@ const policeAll = addNational(police, securityIgn);
 const healthAll = addNational(health, healthIgn);
 
 // ---------- Teléfonos de OpenStreetMap ----------
-const OSM_QUERY = `[out:json][timeout:300];area["ISO3166-1"="AR"][admin_level=2]->.ar;(
-nwr["amenity"~"^(police|hospital|clinic|ranger_station|doctors)$"]["phone"](area.ar);
-nwr["amenity"~"^(police|hospital|clinic|ranger_station|doctors)$"]["contact:phone"](area.ar);
-nwr["healthcare"~"^(centre|hospital|clinic)$"]["phone"](area.ar);
-nwr["healthcare"~"^(centre|hospital|clinic)$"]["contact:phone"](area.ar););out center tags;`;
+/** Lugares de OpenStreetMap con teléfono (archivo local de Geofabrik o, sin él, Overpass). */
+const OSM_SELECTORS = [
+  'nwr["amenity"~"^(police|hospital|clinic|ranger_station|doctors)$"]["phone"]',
+  'nwr["amenity"~"^(police|hospital|clinic|ranger_station|doctors)$"]["contact:phone"]',
+  'nwr["healthcare"~"^(centre|hospital|clinic)$"]["phone"]',
+  'nwr["healthcare"~"^(centre|hospital|clinic)$"]["contact:phone"]',
+];
 
 const fold = (s) => (s ?? '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 /** Palabras que no distinguen un lugar de otro. */
@@ -232,7 +234,7 @@ const OSM_KIND = {
   health: (t) => ['hospital', 'clinic', 'doctors'].includes(t.amenity) || ['centre', 'hospital', 'clinic'].includes(t.healthcare),
 };
 
-const osmAll = (await overpass(OSM_QUERY))
+const osmAll = (await osmByCountry('AR', OSM_SELECTORS))
   .map((e) => ({ tags: e.tags ?? {}, lat: r5(e.lat ?? e.center?.lat), lon: r5(e.lon ?? e.center?.lon) }))
   .filter((e) => valid(e.lat, e.lon) && osmPhone(e.tags));
 

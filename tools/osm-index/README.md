@@ -12,3 +12,13 @@ sh tools/osm-index/build.sh <extracto.osm.pbf> <carpeta-de-salida> [W,S,E,N]
 - Las celdas de 0,02° (~2,2 km) indexan todo; las consultas usan los mismos radios que usaba la app con Overpass (120 m calles, 400 m rutas, 80 m números, 3 km mojones).
 - Medido el 2026-11-16 con Uruguay: 14 s y 66 MB; consultas de 2 a 20 ms.
 - Datos © colaboradores de OpenStreetMap, ODbL (hay que citarlo; ya figura en los créditos de la app).
+
+## Un archivo por país para las herramientas de datos (sin Overpass)
+
+```sh
+sh tools/osm-index/countries.sh <extracto.osm.pbf> <carpeta-de-salida> [AR CL UY BO PE PY]
+```
+
+Deja `<salida>/countries/places-<PAÍS>.jsonl` (una línea por lugar: `{id, lat, lon, tags}`), recortado con el contorno oficial del país que publica Geofabrik (`.poly`). Lo leen `tools/lib/osm-local.mjs` y, a través de él, `tools/country-data`, `tools/emergency-data` (lugares con teléfono) y `tools/services-data`: si el archivo del país existe lo usan; si no, consultan a Overpass como antes (`OSM_LOCAL=0` fuerza Overpass; `OSM_LOCAL_DIR` cambia la carpeta). Los filtros se escriben una sola vez, con la sintaxis de Overpass. `server/src/maps/update-maps.sh` lo arma cada mes con el mismo extracto, antes de borrarlo. Quedan con Overpass los parques (`emergency-data/parks-*.mjs`) y `geo-data`.
+
+Comparado con Overpass en Uruguay (2026-11-17): mismas cantidades con pequeñas diferencias por la fecha de los datos (p. ej. farmacias 590 contra 588, combustible 498 contra 484); policía, bomberos y salud: ningún elemento que Overpass tuviera faltó en el archivo local.

@@ -28,7 +28,7 @@
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { overpass } from '../lib/overpass.mjs';
+import { osmByCountry } from '../lib/osm-local.mjs';
 
 // Salida: la app (por defecto) o, con VIKARG_DATA_OUT, la carpeta que sirve el servidor
 // (actualización mensual, server/src/data/update-data.sh).
@@ -218,14 +218,8 @@ function fuelsOf(t) {
 
 async function osmPlaces(cc, category) {
   const cat = CATEGORIES[category];
-  const query = `[out:json][timeout:300];
-area["ISO3166-1"="${cc}"][admin_level=2]->.a;
-(
-${cat.selectors.map((s) => `  ${s}(area.a);`).join('\n')}
-);
-out center tags;`;
   const seen = new Set();
-  return (await overpass(query))
+  return (await osmByCountry(cc, cat.selectors))
     .map((e) => {
       const t = e.tags ?? {};
       const lat = e.lat ?? e.center?.lat;
