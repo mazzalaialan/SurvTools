@@ -112,6 +112,8 @@ export const TOPICS: Topic[] = [
           { label: l('Mucho calor (golpe de calor)', 'Very hot (heat stroke)'), next: 'topic:heat' },
           { label: l('Diabético confundido o sudoroso', 'Confused or sweaty diabetic'), next: 'topic:hypoglycemia' },
           { label: l('Casi se ahoga en el agua', 'Near drowning'), next: 'topic:drowning' },
+          { label: l('Herida grave o accidente con varios daños (método MARCH)', 'Serious injury or crash with several injuries (MARCH method)'), next: 'topic:march' },
+          { label: l('Síntomas por la altura (soroche)', 'Altitude symptoms (mountain sickness)'), next: 'topic:altitude' },
           { label: l('Otra cosa o no sé', 'Something else or not sure'), next: 'other' },
         ],
       },
@@ -242,6 +244,7 @@ export const TOPICS: Topic[] = [
           s('Anotá la hora en la piel o en el torniquete.', 'Write the time on the skin or the tourniquet.'),
           s('Si con uno no para, poné otro justo arriba del primero.', 'If one is not enough, put a second one just above the first.'),
           no('No lo aflojes ni lo saques: eso lo hace el médico.', 'Do not loosen or remove it: the doctor does that.'),
+          s('Ojo, las fuentes difieren: el Manual de Primeros Auxilios del Ministerio de Salud de la Nación (2016) desaconseja el torniquete en heridas comunes; las guías TCCC 2026 y TECC 2024 lo recomiendan cuando un sangrado grave de brazo o pierna no cede con presión directa. Por eso acá va después de la presión y solo si sigue saliendo en chorro.', 'Note, sources differ: the Argentine Ministry of Health first-aid manual (2016) advises against tourniquets for ordinary wounds; TCCC 2026 and TECC 2024 recommend them when severe arm or leg bleeding does not respond to direct pressure. That is why here it comes after pressure and only if it keeps spurting.'),
           sw('Es una evacuación urgente: con torniquete tiene que llegar a un hospital en pocas horas. Pedí rescate ya.', 'This is an urgent evacuation: with a tourniquet they must reach a hospital within a few hours. Ask for rescue now.'),
         ],
         calls: ['same', 'emergency'],
@@ -285,6 +288,141 @@ export const TOPICS: Topic[] = [
           s('Acostada, abrigada y aislada del suelo. Hablale y tranquilizala.', 'Lying down, warm and insulated from the ground. Talk to them and reassure them.'),
           no('No le des de beber ni de comer.', 'Do not give food or drink.'),
           WATCH,
+        ],
+        calls: ['same', 'emergency'],
+        options: [{ label: l('Deja de responder', 'Stops responding'), next: 'topic:assess' }],
+      },
+    },
+  },
+
+  {
+    id: 'march',
+    title: l('Trauma grave: método MARCH', 'Serious trauma: the MARCH method'),
+    keywords: l('march tccc trauma hemorragia vía aérea respiración circulación hipotermia herida grave ifak', 'march tccc trauma hemorrhage airway breathing circulation hypothermia serious injury ifak'),
+    start: 'intro',
+    nodes: {
+      intro: {
+        title: l('Qué es MARCH', 'What MARCH is'),
+        steps: [
+          s('MARCH es un orden para atender a alguien muy lastimado: primero lo que mata más rápido. M: hemorragia masiva. A: vía aérea. R: respiración. C: circulación. H: hipotermia y cabeza.', 'MARCH is an order for treating a seriously injured person: first what kills fastest. M: massive bleeding. A: airway. R: breathing. C: circulation. H: hypothermia and head.'),
+          s('Antes de nada, mirá que el lugar sea seguro y protegete (guantes o una bolsa en las manos). Si hay un peligro que seguís, no te acerques: pedí ayuda.', 'First check the scene is safe and protect yourself (gloves or a bag on your hands). If a danger remains, do not approach: call for help.'),
+          sc('Llamá al {medical} apenas puedas (o que otra persona llame mientras vos atendés).', 'Call {medical} as soon as you can (or have someone call while you treat).'),
+          WILD_RESCUE,
+          s('Sale de las guías de trauma de combate civiles y militares (TCCC 2026 del Committee on TCCC y TECC 2024 de C-TECC), adaptadas para quien no es médico: no reemplaza un curso.', 'It comes from civilian and military trauma-care guidelines (TCCC 2026 by the Committee on TCCC and TECC 2024 by C-TECC), adapted for non-medical people: it does not replace a course.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [{ label: l('Empezar por M: sangrado', 'Start with M: bleeding'), next: 'm' }],
+      },
+      m: {
+        title: l('M · Hemorragia masiva', 'M · Massive bleeding'),
+        steps: [
+          s('Buscá sangrado fuerte en todo el cuerpo (también bajo la ropa o la espalda). Es lo primero: se muere por desangrado en minutos.', 'Look for heavy bleeding all over the body (also under clothing and on the back). It comes first: people bleed to death in minutes.'),
+          s('Presión directa fuerte con gasa o tela. Si no para en un brazo o pierna y sigue saliendo en chorro: torniquete 5 a 7 cm por encima de la herida, sobre la piel, y anotá la hora.', 'Strong direct pressure with gauze or cloth. If it does not stop on an arm or leg and keeps spurting: tourniquet 5 to 7 cm above the wound, on the skin, and write down the time.'),
+          s('Donde no va torniquete (ingle, axila, cuello) o si la presión no alcanza: rellená la herida con gasa hemostática y apretá al menos 3 minutos sin soltar.', 'Where a tourniquet does not fit (groin, armpit, neck) or pressure is not enough: pack the wound with hemostatic gauze and press at least 3 minutes without letting go.'),
+          s('Después, un vendaje de presión encima, firme, sin sacar lo anterior.', 'Then a firm pressure bandage on top, without removing what is underneath.'),
+          s('Las fuentes difieren sobre el torniquete en heridas comunes (Manual del Ministerio de Salud 2016: no usar; TCCC 2026 y TECC 2024: usar si el sangrado grave de un miembro no cede). La guía de sangrado de la app lo explica.', 'Sources differ on tourniquets for ordinary wounds (Ministry of Health manual 2016: do not use; TCCC 2026 and TECC 2024: use if severe limb bleeding does not stop). The app’s bleeding guide explains it.'),
+          no('No aflojes un torniquete puesto: eso lo decide el médico.', 'Do not loosen a tourniquet once applied: a doctor decides that.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [
+          { label: l('Ver el paso a paso de sangrado', 'See the step-by-step bleeding guide'), next: 'topic:bleeding' },
+          { label: l('Seguir con A: vía aérea', 'Continue with A: airway'), next: 'a' },
+        ],
+      },
+      a: {
+        title: l('A · Vía aérea', 'A · Airway'),
+        steps: [
+          s('Si habla o llora, la vía aérea está abierta. Dejala en la posición en que respire mejor (sentada o inclinada hacia adelante si hay sangre en la boca).', 'If they speak or cry, the airway is open. Let them stay in the position where they breathe best (sitting or leaning forward if there is blood in the mouth).'),
+          s('Si está inconsciente pero respira: posición de recuperación (de costado, cabeza apenas hacia atrás, boca hacia abajo para que drene).', 'If unconscious but breathing: recovery position (on their side, head slightly back, mouth down so it drains).'),
+          s('Sacá lo que se vea y moleste en la boca (sangre, vómito, un diente) sin meter los dedos a ciegas.', 'Remove what you can see blocking the mouth (blood, vomit, a tooth) without poking blindly with your fingers.'),
+          s('Dispositivos como la cánula nasofaríngea o abrir la vía aérea con un corte son solo para personal entrenado.', 'Devices such as a nasopharyngeal airway or a surgical airway are for trained personnel only.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [
+          { label: l('No respira', 'Not breathing'), next: 'topic:cpr' },
+          { label: l('Seguir con R: respiración', 'Continue with R: breathing'), next: 'r' },
+        ],
+      },
+      r: {
+        title: l('R · Respiración', 'R · Breathing'),
+        steps: [
+          s('Descubrí el pecho y mirá si hay heridas, si respira con dificultad o si un lado sube menos que el otro.', 'Expose the chest and look for wounds, labored breathing or one side rising less than the other.'),
+          s('Herida en el pecho que «sopla» aire: tapala con un sello torácico ventilado, apretando al exhalar. Si no tenés, taparla con la mano y una gasa sin sellarla del todo.', 'A chest wound that «sucks» air: cover it with a vented chest seal, pressing as they breathe out. If you have none, cover it with your hand and gauze without fully sealing it.'),
+          s('Si le cuesta cada vez más respirar y se pone azul o muy agitada, puede ser un neumotórax a tensión: es una urgencia que resuelve solo personal entrenado (descompresión con aguja). Pedí ayuda ya.', 'If breathing gets harder, and they turn blue or very agitated, it may be a tension pneumothorax: an emergency that only trained personnel can resolve (needle decompression). Call for help now.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [
+          { label: l('Más sobre heridas en el pecho', 'More about chest wounds'), next: 'topic:chest' },
+          { label: l('Seguir con C: circulación', 'Continue with C: circulation'), next: 'c' },
+        ],
+      },
+      c: {
+        title: l('C · Circulación', 'C · Circulation'),
+        steps: [
+          s('Volvé a mirar los sangrados: ¿se empapó algo? ¿el torniquete sigue firme? Anotá la hora del torniquete en la piel o en su ropa.', 'Check the bleeding again: has anything soaked through? Is the tourniquet still tight? Write the tourniquet time on the skin or clothing.'),
+          s('Señales de shock: pálida, fría, sudorosa, pulso rápido y débil, confundida. Acostala, abrigala y hablale.', 'Signs of shock: pale, cold, sweaty, fast weak pulse, confused. Lay them down, keep them warm and talk to them.'),
+          s('Si sospechás una fractura de pelvis (golpe fuerte en la cadera, dolor al presionar): no la muevas más de lo necesario.', 'If you suspect a broken pelvis (hard hit to the hip, pain on pressing): do not move them more than necessary.'),
+          no('No le des de comer ni de beber.', 'Do not give food or drink.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [{ label: l('Seguir con H: frío y cabeza', 'Continue with H: cold and head'), next: 'h' }],
+      },
+      h: {
+        title: l('H · Hipotermia y cabeza', 'H · Hypothermia and head'),
+        steps: [
+          s('Una persona herida pierde calor muy rápido y el frío empeora el sangrado: aislala del suelo, sacale la ropa mojada y envolvela con una manta de emergencia o ropa seca, cabeza incluida.', 'An injured person loses heat very fast and cold worsens bleeding: insulate from the ground, remove wet clothes and wrap with an emergency blanket or dry clothing, head included.'),
+          s('Golpe en la cabeza: controlá cada pocos minutos si está despierta y responde; si se pone cada vez más dormida, confundida o vomita, es grave. Cabeza apenas elevada si está acostada y respira bien.', 'Head injury: check every few minutes that they are awake and responding; if they get drowsier, confused or vomit, it is serious. Head slightly raised if lying down and breathing well.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [
+          { label: l('Hipotermia', 'Hypothermia'), next: 'topic:hypothermia' },
+          { label: l('Después de MARCH', 'After MARCH'), next: 'after' },
+        ],
+      },
+      after: {
+        title: l('Después: dolor, heridas y huesos', 'Afterwards: pain, wounds and bones'),
+        steps: [
+          s('Con la persona estable: cubrí las demás heridas con apósitos limpios; un objeto clavado no se saca, se fija; ojo lastimado: un escudo rígido sin apretarlo; órganos del abdomen a la vista: cubrir con tela limpia y húmeda, sin empujarlos.', 'With the person stable: cover other wounds with clean dressings; an impaled object is not removed, it is secured; injured eye: a rigid shield without pressing; organs showing from the belly: cover with a clean damp cloth without pushing them back.'),
+          s('Inmovilizá las fracturas con férulas o lo que haya, sin forzar el hueso.', 'Immobilize fractures with splints or whatever you have, without forcing the bone.'),
+          s('Para el dolor, consultá a un profesional: en un trauma con sangrado se evitan algunos analgésicos comunes (como la aspirina y el ibuprofeno).', 'For pain, ask a professional: with trauma and bleeding some common pain relievers (such as aspirin and ibuprofen) are avoided.'),
+          s('Anotá la hora de cada cosa que hiciste y los cambios que viste, y dáselo a quien llegue.', 'Write down the time of everything you did and the changes you saw, and hand it to whoever arrives.'),
+          s('Repetí MARCH cada pocos minutos: lo que estaba bien puede empeorar.', 'Repeat MARCH every few minutes: what was fine can get worse.'),
+        ],
+        calls: ['same', 'emergency'],
+        options: [{ label: l('Fracturas', 'Fractures'), next: 'topic:fracture' }],
+      },
+    },
+  },
+
+  {
+    id: 'altitude',
+    title: l('Mal de altura (soroche)', 'Altitude sickness'),
+    keywords: l('soroche altura mal de montaña apunamiento edema cerebral pulmonar puna', 'altitude sickness mountain sickness acute hace hape'),
+    start: 'start',
+    nodes: {
+      start: {
+        title: l('Mal agudo de montaña', 'Acute mountain sickness'),
+        steps: [
+          s('Aparece desde unos 2.500 m, sobre todo si se subió rápido: dolor de cabeza, náuseas, mareo, cansancio, mal sueño.', 'It appears from about 2,500 m, especially after a fast ascent: headache, nausea, dizziness, fatigue, poor sleep.'),
+          s('Parar y no subir más: reposo, líquidos y comidas livianas. Si los síntomas son leves, suelen ceder en uno o dos días a la misma altura.', 'Stop and do not climb higher: rest, fluids and light meals. If symptoms are mild they usually ease in a day or two at the same altitude.'),
+          s('Si empeora o no mejora, lo más efectivo es bajar: aunque sean unos cientos de metros.', 'If it worsens or does not improve, the most effective thing is to go down: even a few hundred meters.'),
+          no('No sigas subiendo con síntomas, ni te automediques: consultá a un médico antes de tomar medicación para la altura.', 'Do not keep climbing with symptoms and do not self-medicate: ask a doctor before taking altitude medication.'),
+          s('Llevá siempre quien te acompañe: los síntomas graves confunden a quien los tiene.', 'Always have someone with you: severe symptoms confuse the person who has them.'),
+        ],
+        question: l('¿Hay alguna de estas señales graves?', 'Is there any of these severe signs?'),
+        options: [
+          { label: l('Sí: confusión, tambalea al caminar, falta de aire en reposo o tos con espuma', 'Yes: confusion, stumbling, breathless at rest or frothy cough'), next: 'severe' },
+          { label: l('No, solo síntomas leves', 'No, only mild symptoms'), next: 'start' },
+        ],
+      },
+      severe: {
+        title: l('Señales graves: bajar ya', 'Severe signs: go down now'),
+        steps: [
+          s('Confusión, no poder caminar en línea recta, mucha falta de aire estando quieto o tos con espuma pueden ser edema cerebral o pulmonar: son urgencias que matan.', 'Confusion, not being able to walk in a straight line, strong breathlessness at rest or a frothy cough may be cerebral or pulmonary edema: life-threatening emergencies.'),
+          s('Bajar de inmediato, acompañado, y lo más posible: es el tratamiento que sirve. No esperes a ver si pasa.', 'Descend immediately, accompanied, as far as you can: it is the treatment that works. Do not wait to see if it passes.'),
+          sw('Pedí rescate al {emergency} y pasá las coordenadas de «Mi ubicación». Si hay oxígeno o una cámara portátil de altura, que la use quien sepa.', 'Ask for rescue on {emergency} and give the coordinates from “My location”. If oxygen or a portable altitude chamber is available, someone who knows how should use it.'),
+          sc('Llamá al {medical}.', 'Call {medical}.'),
+          KEEP_WARM,
         ],
         calls: ['same', 'emergency'],
         options: [{ label: l('Deja de responder', 'Stops responding'), next: 'topic:assess' }],

@@ -222,3 +222,39 @@ test('guía en voz alta: lee cada paso, se corta al llamar y se repite', async (
   await page.waitForTimeout(300);
   expect((await spoken()).length).toBe(total);
 });
+
+test('guías MARCH (trauma grave) y mal de altura: se recorren paso a paso y llevan a las otras guías', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  const node = page.getByTestId('guide-node');
+  await page.goto('/#/first-aid/guides/march');
+  await expect(node).toContainText('MARCH es un orden para atender');
+  await expect(node).toContainText('TCCC 2026');
+  await page.getByRole('button', { name: /Empezar por M/ }).click();
+  await expect(node).toContainText('Hemorragia masiva');
+  await expect(node).toContainText('5 a 7 cm');
+  await expect(node).toContainText('al menos 3 minutos');
+  // Las dos posturas sobre el torniquete, con sus fuentes y fechas.
+  await expect(node).toContainText('Manual del Ministerio de Salud 2016');
+  await page.getByRole('button', { name: /Seguir con A/ }).click();
+  await expect(node).toContainText('posición de recuperación');
+  await expect(node).toContainText('solo para personal entrenado');
+  await page.getByRole('button', { name: /Seguir con R/ }).click();
+  await expect(node).toContainText('sello torácico ventilado');
+  await page.getByRole('button', { name: /Seguir con C/ }).click();
+  await page.getByRole('button', { name: /Seguir con H/ }).click();
+  await page.getByRole('button', { name: 'Después de MARCH' }).click();
+  await expect(node).toContainText('Repetí MARCH');
+
+  // Mal de altura: lo leve se queda; con señales graves, bajar ya.
+  await page.goto('/#/first-aid/guides/altitude');
+  await expect(node).toContainText('No sigas subiendo con síntomas');
+  await page.getByRole('button', { name: /Sí: confusión/ }).click();
+  await expect(node).toContainText('Bajar de inmediato');
+});
