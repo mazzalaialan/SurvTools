@@ -7,14 +7,16 @@ import { useCapabilities } from '@/core/capabilities/capabilities';
 import { BarcodeScanner } from '@/ui/BarcodeScanner';
 import { CategoryIcon } from '@/ui/CategoryIcon';
 import { AlertBadge } from '../components/AlertBadge';
+import { pathLabel } from '../domain/locations';
 import { quantityOf } from '../domain/stock';
+import { unitText } from '../domain/unitText';
 import { normalize, useCategoryOptions, useWorstAlertByItem } from '../selectors';
 import { useInventory } from '../store';
 
 export function ItemsPage() {
   const { t, i18n } = useTranslation();
-  const { items, lots, categories } = useInventory(
-    useShallow((s) => ({ items: s.items, lots: s.lots, categories: s.categories })),
+  const { items, lots, categories, locations } = useInventory(
+    useShallow((s) => ({ items: s.items, lots: s.lots, categories: s.categories, locations: s.locations })),
   );
   const worst = useWorstAlertByItem();
   const categoryOptions = useCategoryOptions();
@@ -39,8 +41,12 @@ export function ItemsPage() {
       .filter((i) => !favoritesOnly || i.favorite)
       .filter((i) => !q || normalize(i.name).includes(q) || i.barcode?.includes(q))
       .sort((a, b) => Number(b.favorite) - Number(a.favorite) || a.name.localeCompare(b.name, i18n.language))
-      .map((item) => ({ item, total: quantityOf(item.id, lotList) }));
-  }, [items, lots, query, categoryId, favoritesOnly, i18n.language]);
+      .map((item) => {
+        const own = lotList.filter((l) => l.itemId === item.id && !l.deletedAt);
+        const places = [...new Set(own.map((l) => l.locationId))];
+        return { item, total: quantityOf(item.id, lotList), lotCount: own.length, place: places.length === 1 ? pathLabel(places[0]!, locations) : null, placeCount: places.length };
+      });
+  }, [items, lots, locations, query, categoryId, favoritesOnly, i18n.language]);
 
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
 
@@ -93,7 +99,7 @@ export function ItemsPage() {
         <p className="empty">{items.size === 0 ? t('items.empty') : t('items.noResults')}</p>
       ) : (
         <ul className="list">
-          {rows.map(({ item, total }) => {
+          {rows.map(({ item, total, lotCount, place, placeCount }) => {
             const alert = worst.get(item.id);
             return (
               <li key={item.id}>
@@ -104,8 +110,16 @@ export function ItemsPage() {
                       {item.favorite && <Star size={14} fill="currentColor" className="fav" aria-label={t('items.favorite')} />}
                       {item.name}
                     </span>
-                    <span className="list-sub">
-                      {fmt.format(total)} {item.unit}
+                    <span className="list-sub" data-testid="item-stock">
+                      {lotCount === 0
+                        ? t('items.noStock')
+                        : [
+                            t('items.stockLine', { qty: fmt.format(total), unit: unitText(item.unit, t('items.units')) }),
+                            t('items.lotCount', { count: lotCount }),
+                            place ?? (placeCount > 1 ? t('items.places', { count: placeCount }) : null),
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
                     </span>
                   </span>
                   {alert && <AlertBadge alert={alert} />}

@@ -132,8 +132,19 @@ test('configuración inicial, ubicaciones, artículo con lote y alerta', async (
   // Regresión: crear "Agua" desde la ficha de otro artículo no debe pisar al "Atún".
   await page.goto('/#/inventory/items');
   await expect(page.getByText('Atún')).toBeVisible();
-  await expect(page.getByText('6 latas')).toBeVisible();
-  await expect(page.getByText('44 L')).toBeVisible();
+  // Cada fila dice qué es el número: «Stock: 6 latas · 1 lote · Sótano».
+  await expect(page.getByText(/Stock: 6 latas · 1 lote/)).toBeVisible();
+  await expect(page.getByText(/Stock: 44 L · /)).toBeVisible();
+
+  // Una unidad escrita como número («1») no se muestra como «1 1»: se avisa al escribirla y se guarda como «unidades».
+  await page.goto('/#/inventory/items/new');
+  await page.getByLabel('Nombre').fill('Gasa hemostática');
+  await page.getByLabel('Unidad', { exact: true }).fill('1');
+  await expect(page.getByTestId('unit-hint')).toContainText('parece una cantidad, no una unidad');
+  await page.getByRole('button', { name: 'Guardar' }).click();
+  await expect(page).toHaveURL(/items\/[0-9a-f-]{36}$/);
+  await page.goto('/#/inventory/items');
+  await expect(page.getByText('Sin stock cargado')).toBeVisible();
 
   // Inicio muestra la alerta
   await page.getByRole('link', { name: 'Inicio' }).click();

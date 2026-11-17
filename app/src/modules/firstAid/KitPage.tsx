@@ -1,3 +1,4 @@
+import { cleanUnit, isNumericUnit, unitText } from '@/modules/inventory/domain/unitText';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -105,7 +106,7 @@ function KitDetail({ kit }: { kit: Location }) {
                     <span className="list-main">
                       <span className="list-title">{item.name}</span>
                       <span className="list-sub">
-                        {`${fmt.format(lot.quantity)} ${item.unit}`.trim()}
+                        {`${fmt.format(lot.quantity)} ${unitText(item.unit, t('items.units'))}`}
                         {where && ` · ${where}`}
                         {due && ` · ${t('lots.expiresOn', { date: formatDay(due, i18n.language) })}`}
                       </span>
@@ -180,7 +181,7 @@ function AddToKitDialog({ onClose, onPicked }: { onClose: () => void; onPicked: 
       categoryId: firstAid,
       notes: '',
       barcode: null,
-      unit: unit.trim(),
+      unit: cleanUnit(unit),
       weightGrams: null,
       favorite: false,
       controlType: null,
@@ -214,7 +215,10 @@ function AddToKitDialog({ onClose, onPicked }: { onClose: () => void; onPicked: 
             </div>
             <div className="field">
               <label htmlFor="kit-item-unit">{t('items.unit')}</label>
-              <input id="kit-item-unit" className="input" value={unit} onChange={(e) => setUnit(e.target.value)} placeholder={t('kits.unitPlaceholder')} />
+              <input id="kit-item-unit" className="input" value={unit} onChange={(e) => setUnit(e.target.value)} placeholder={t('kits.unitPlaceholder')} aria-describedby="kit-unit-hint" />
+              <p id="kit-unit-hint" className={isNumericUnit(unit) ? 'error' : 'hint'} style={{ margin: 0 }}>
+                {isNumericUnit(unit) ? t('items.unitNumber') : t('items.unitHint')}
+              </p>
             </div>
           </div>
         )}

@@ -1,3 +1,4 @@
+import { unitText } from '../domain/unitText';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trash2 } from 'lucide-react';
@@ -82,7 +83,7 @@ export function LotDialog({ item, controlType, lot, defaultLocationId, onClose }
   };
   const computedDue = controlType === 'shelfLife' ? lotDueDate(fields, 'shelfLife') : null;
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 3 });
-  const unit = item.unit || t('items.units');
+  const unit = unitText(item.unit, t('items.units'));
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

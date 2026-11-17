@@ -1,3 +1,4 @@
+import { cleanUnit, isNumericUnit, unitText } from '../domain/unitText';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -107,7 +108,7 @@ function ItemForm({ stored, presetBarcode }: { stored: Item | undefined; presetB
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const grams = parseNum(weight);
-    await saveItem({ ...draft, name: draft.name.trim(), unit: draft.unit.trim(), weightGrams: grams === null ? null : toGrams(grams, weightUnit) });
+    await saveItem({ ...draft, name: draft.name.trim(), unit: cleanUnit(draft.unit), weightGrams: grams === null ? null : toGrams(grams, weightUnit) });
     if (isNew) navigate(`/inventory/items/${draft.id}`, { replace: true });
     else setSaved(true);
   }
@@ -152,7 +153,10 @@ function ItemForm({ stored, presetBarcode }: { stored: Item | undefined; presetB
           </div>
           <div className="field">
             <label htmlFor="unit">{t('items.unit')}</label>
-            <input id="unit" className="input" placeholder={t('items.unitPlaceholder')} value={draft.unit} onChange={(e) => set({ unit: e.target.value })} />
+            <input id="unit" className="input" placeholder={t('items.unitPlaceholder')} value={draft.unit} onChange={(e) => set({ unit: e.target.value })} aria-describedby="unit-hint" />
+            <p id="unit-hint" className={isNumericUnit(draft.unit) ? 'error' : 'hint'} style={{ margin: 0 }} data-testid="unit-hint">
+              {isNumericUnit(draft.unit) ? t('items.unitNumber') : t('items.unitHint')}
+            </p>
           </div>
         </div>
         <div className="field">
@@ -295,9 +299,9 @@ function LotsSection({ item, lang }: { item: Item; lang: string }) {
 
   /** "4 × botella de 6 L" o solo la cantidad. */
   function amount(lot: Lot): string {
-    const qty = `${fmt.format(lot.quantity)} ${item.unit}`.trim();
+    const qty = `${fmt.format(lot.quantity)} ${unitText(item.unit, t('items.units'))}`;
     if (!isPackaged(lot)) return qty;
-    const size = `${fmt.format(lot.packageSize!)} ${item.unit}`.trim();
+    const size = `${fmt.format(lot.packageSize!)} ${unitText(item.unit, t('items.units'))}`;
     const pkg = lot.packageName ? t('lots.packageOf', { name: lot.packageName, size }) : size;
     return `${fmt.format(lot.packageCount!)} × ${pkg} = ${qty}`;
   }
@@ -348,7 +352,7 @@ function LotsSection({ item, lang }: { item: Item; lang: string }) {
       )}
       {lots.length > 0 && (
         <p className="lot-total">
-          {t('lots.itemTotal', { total: `${fmt.format(totalQty)} ${item.unit}`.trim() })}
+          {t('lots.itemTotal', { total: `${fmt.format(totalQty)} ${unitText(item.unit, t('items.units'))}` })}
           {totalGrams > 0 && ` · ${formatWeight(totalGrams, units, lang)}`}
         </p>
       )}

@@ -1,3 +1,4 @@
+import { unitText } from '../domain/unitText';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
@@ -55,7 +56,7 @@ export function ShortageList({ shortages }: { shortages: StockShortage[] }) {
                 <span className="list-sub">{pathLabel(stockMin.locationId, locations)}</span>
               </span>
               <span className="pill pill-warn">
-                {t('stockMin.status', { current: fmt.format(current), min: fmt.format(stockMin.minQuantity), unit: item.unit })}
+                {t('stockMin.status', { current: fmt.format(current), min: fmt.format(stockMin.minQuantity), unit: unitText(item.unit, t('items.units')) })}
               </span>
             </Link>
           </li>
