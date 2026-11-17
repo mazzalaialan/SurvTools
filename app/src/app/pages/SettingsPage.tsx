@@ -137,11 +137,12 @@ export function SettingsPage() {
       )}
 
       <BackupSection />
-      {connections.visible && <ConnectionsSection settings={settings} onSave={update} />}
       <NotificationsSection />
       <AccountSection />
       <DeviceSection />
       <StorageSection />
+
+      {connections.visible && <ConnectionsSection settings={settings} onSave={update} />}
 
       <section className="card">
         <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.about')}</h2>
