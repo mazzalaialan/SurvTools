@@ -314,7 +314,7 @@ export function MapsPage() {
     [layers.ecoregions, eco, fine, i18n.language, areaBox],
   );
   const ecoGeo = useBlobUrl(ecoText);
-  const ecoPoint = picked && layers.ecoregions ? picked : view;
+  const ecoPoint = picked && (layers.ecoregions || layers.geology) ? picked : view;
   const ecoHere = layers.ecoregions && eco ? finerLookup(eco, fine).lookup(ecoPoint.lat, ecoPoint.lon) : null;
   const ecoFine = !!(ecoHere && fine?.ecoregions.some((e) => e.id === ecoHere.id));
   // Geología: lo guardado (base nacional y detalle de las zonas) y, si no hay detalle y hay conexión y servidor propio, una consulta en línea.

@@ -637,6 +637,11 @@ test('mapas offline: geología (excluyente con ecorregiones) y zona descargada c
   await expect(chip('Ecorregiones')).toHaveAttribute('aria-pressed', 'false');
   await expect(page.getByTestId('map-ecoregion')).toHaveCount(0);
   await expect(page.getByTestId('map-geology')).toContainText('Geología en el centro del mapa', { timeout: 15_000 });
+  // Tocar el mapa: la geología pasa a ser la del punto tocado (como en ecorregiones), y la cruz vuelve al centro.
+  await page.getByTestId('offline-map').locator('canvas').click({ position: { x: 480, y: 300 } });
+  await expect(page.getByTestId('map-geology')).toContainText('punto tocado', { timeout: 10_000 });
+  await page.getByTestId('geo-pick-clear').click();
+  await expect(page.getByTestId('map-geology')).toContainText('centro del mapa');
   await chip('Riesgo de avalancha').click();
   await expect(chip('Geología')).toHaveAttribute('aria-pressed', 'false');
   await chip('Geología').click();
