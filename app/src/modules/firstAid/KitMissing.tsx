@@ -11,6 +11,7 @@ import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
 import { confirmAction } from '@/ui/confirm';
 import { Dialog } from '@/ui/Dialog';
+import { lotsOutsideKits, moveToKit, quantityOf as lotsQuantity, sourcePlaces } from './kitStock';
 import { exportShoppingPdf, shareShoppingText, type ShopEntry } from './shoppingExport';
 import { CATALOG, GROUP_NAMES, GROUPS, matchesCatalog, unitFor } from './kitTemplates';
 
@@ -21,7 +22,9 @@ import { CATALOG, GROUP_NAMES, GROUPS, matchesCatalog, unitFor } from './kitTemp
 export function KitMissing({ kit, shortages }: { kit: Location; shortages: StockShortage[] }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith('en') ? 'en' : 'es';
-  const { items, categories, setStockMin } = useInventory(useShallow((s) => ({ items: s.items, categories: s.categories, setStockMin: s.setStockMin })));
+  const { items, categories, lots, locations, setStockMin, saveLot } = useInventory(
+    useShallow((s) => ({ items: s.items, categories: s.categories, lots: s.lots, locations: s.locations, setStockMin: s.setStockMin, saveLot: s.saveLot })),
+  );
   const [buying, setBuying] = useState<StockShortage | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
@@ -35,6 +38,14 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
     return [{ name: item.name, unit: unitText(item.unit, t('items.units')), need: stockMin.minQuantity, have: current, groupName: group ? GROUP_NAMES[group][lang] : t('kitMissing.other'), groupOrder: group ? GROUPS.indexOf(group) : 99 }];
   });
   const ctx = () => ({ t, language: i18n.language, kitName: kit.name, detail: t('kitMissing.detail') });
+
+  /** Lo que ya tenés guardado fuera de los botiquines (placard, estante, auto) se pasa a este botiquín, con su vencimiento. */
+  async function bringHere(s: StockShortage, qty: number) {
+    const item = items.get(s.stockMin.itemId);
+    if (!item) return;
+    const moved = await moveToKit(kit.id, item.id, qty, [...useInventory.getState().lots.values()], [...useInventory.getState().locations.values()], saveLot);
+    setMessage(t('kitMissing.moved', { qty: moved, name: item.name }));
+  }
 
   /** No lo quiero en este botiquín: se saca el stock mínimo (deja de ser faltante). El artículo y lo que haya cargado quedan como están. */
   async function dismiss(s: StockShortage) {
@@ -52,6 +63,9 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
           const item = items.get(s.stockMin.itemId);
           if (!item) return null;
           const unit = unitText(item.unit, t('items.units'));
+          const out = lotsOutsideKits(item.id, [...lots.values()], [...locations.values()]);
+          const outside = lotsQuantity(out);
+          const bring = Math.min(s.missing, outside);
           return (
             <li key={s.stockMin.id} className="kb-row" data-testid={`km-row-${item.id}`}>
               <div className="kb-row-main">
@@ -60,6 +74,12 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
               </div>
               <div className="kb-row-sub">
                 <span className="hint">{t('kitMissing.toBuy', { qty: fmt.format(s.missing), unit: unitFor(s.missing, unit) })}</span>
+                {outside > 0 && (
+                  <>
+                    <span className="hint" data-testid={`km-outside-${item.id}`}>{t('kitMissing.outside', { qty: fmt.format(outside), places: sourcePlaces(out, locations) })}</span>
+                    <button className="btn" type="button" onClick={() => void bringHere(s, bring)} data-testid={`km-bring-${item.id}`}>{t('kitMissing.bring', { qty: fmt.format(bring) })}</button>
+                  </>
+                )}
                 <button className="btn" type="button" onClick={() => setBuying(s)} data-testid={`km-bought-${item.id}`}>{t('kitMissing.bought')}</button>
                 <button className="btn" type="button" onClick={() => void dismiss(s)} data-testid={`km-dismiss-${item.id}`}>{t('kitMissing.dismiss')}</button>
               </div>

@@ -172,3 +172,73 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await page.getByTestId('kc-mins').click();
   await expect(page.getByTestId('kc-message')).toContainText('stock mínimo');
 });
+
+test('el asistente pasa al botiquín nuevo lo que ya tenés fuera de los botiquines, sin tocar los otros botiquines', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // Un lugar común (el placard) y dos torniquetes guardados ahí, con vencimiento.
+  await page.goto('/#/inventory/locations');
+  await page.getByRole('button', { name: 'Nueva ubicación' }).click();
+  await page.getByRole('dialog').getByLabel('Nombre').fill('Placard');
+  await page.getByRole('dialog').getByRole('button', { name: 'Guardar' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.goto('/#/inventory/items/new');
+  await page.getByLabel('Nombre').fill('Torniquete CAT');
+  await page.getByLabel('Categoría', { exact: true }).selectOption({ label: 'Botiquín' });
+  await page.getByLabel('Unidad', { exact: true }).fill('unidades');
+  await page.getByRole('button', { name: 'Guardar' }).click();
+  await expect(page).toHaveURL(/#\/inventory\/items\/[0-9a-f-]{36}$/);
+  await page.getByRole('button', { name: 'Agregar lote' }).click();
+  const lot = page.getByRole('dialog');
+  await lot.getByLabel('Ubicación').selectOption({ label: 'Placard' });
+  await lot.getByLabel('Cantidad').fill('2');
+  await lot.getByLabel('Fecha de vencimiento').fill(isoInDays(400));
+  await lot.getByRole('button', { name: 'Guardar' }).click();
+  await expect(page.getByText('Placard').first()).toBeVisible();
+
+  // Primer botiquín (hemorragia, nivel Avanzado: pide 2 torniquetes): se llevan los dos del placard.
+  await page.goto('/#/first-aid/kits/build');
+  await page.getByTestId('kb-scenario-bleeding').click();
+  await page.getByTestId('kb-level-advanced').click();
+  await expect(page.getByTestId('kb-outside-tourniquet')).toContainText('2 en Placard');
+  await expect(page.getByTestId('kb-have-tourniquet')).toHaveValue('2');
+  await expect(page.getByTestId('kb-gap-tourniquet')).toContainText('completo');
+  await page.getByTestId('kb-name').fill('Primer botiquín');
+  await page.getByTestId('kb-create').click();
+  await expect(page.getByRole('heading', { name: 'Primer botiquín' })).toBeVisible();
+  await expect(page.getByText('Torniquete CAT').first()).toBeVisible();
+
+  // Segundo botiquín: lo que está en el primer botiquín no se cuenta ni se mueve; el placard ya quedó sin torniquetes.
+  await page.goto('/#/first-aid/kits/build');
+  await page.getByTestId('kb-scenario-bleeding').click();
+  await expect(page.getByTestId('kb-outside-tourniquet')).toHaveCount(0);
+  await expect(page.getByTestId('kb-row-tourniquet')).toContainText('En otros botiquines hay 2');
+  await expect(page.getByTestId('kb-have-tourniquet')).toHaveValue('0');
+  await page.getByTestId('kb-name').fill('Segundo botiquín');
+  await page.getByTestId('kb-create').click();
+  await expect(page.getByRole('heading', { name: 'Segundo botiquín' })).toBeVisible();
+  // El segundo botiquín no recibió nada del primero: el torniquete figura como faltante.
+  await expect(page.getByTestId('kit-missing')).toContainText('Torniquete CAT');
+  await page.goto('/#/inventory/items');
+  await expect(page.getByText(/Stock: 2 unidades · 1 lote · Primer botiquín/)).toBeVisible();
+
+  // Se compra otro y se guarda en el placard: en «Falta» del segundo botiquín aparece para pasarlo, y al pasarlo deja de faltar.
+  await page.getByRole('link', { name: /Torniquete CAT/ }).click();
+  await page.getByRole('button', { name: 'Agregar lote' }).click();
+  const more = page.getByRole('dialog');
+  await more.getByLabel('Ubicación').selectOption({ label: 'Placard' });
+  await more.getByLabel('Cantidad').fill('1');
+  await more.getByLabel('Fecha de vencimiento').fill(isoInDays(500));
+  await more.getByRole('button', { name: 'Guardar' }).click();
+  await page.goto('/#/first-aid/kits');
+  await page.locator('a[href^="#/first-aid/kits/"]:not([href$="/build"])', { hasText: 'Segundo botiquín' }).first().click();
+  await expect(page.getByTestId('kit-missing')).toContainText('Tenés 1 guardado en Placard');
+  await page.getByTestId('kit-missing').getByRole('button', { name: 'Pasar 1 al botiquín' }).click();
+  await expect(page.getByTestId('kit-missing').locator('li', { hasText: 'Torniquete CAT' })).toHaveCount(0);
+});

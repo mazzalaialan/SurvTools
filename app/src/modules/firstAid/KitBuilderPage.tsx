@@ -5,9 +5,9 @@ import { useShallow } from 'zustand/react/shallow';
 import { newEntity } from '@/core/model/entity';
 import type { Item, Location, Lot } from '@/core/model/types';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
-import { quantityOf } from '@/modules/inventory/domain/stock';
 import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
+import { lotsOutsideKits, moveToKit, quantityInKits, quantityOf as lotsQuantity, sourcePlaces } from './kitStock';
 import { buildList, GROUP_NAMES, GROUPS, LEVELS, matchesCatalog, scenarioById, SCENARIOS, SOURCES, type Level } from './kitTemplates';
 
 /**
@@ -19,8 +19,8 @@ export function KitBuilderPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const lang = i18n.language.startsWith('en') ? 'en' : 'es';
-  const { items, lots, saveLocation, saveItem, saveLot, setStockMin } = useInventory(
-    useShallow((s) => ({ items: s.items, lots: s.lots, saveLocation: s.saveLocation, saveItem: s.saveItem, saveLot: s.saveLot, setStockMin: s.setStockMin })),
+  const { items, lots, locations, saveLocation, saveItem, saveLot, setStockMin } = useInventory(
+    useShallow((s) => ({ items: s.items, lots: s.lots, locations: s.locations, saveLocation: s.saveLocation, saveItem: s.saveItem, saveLot: s.saveLot, setStockMin: s.setStockMin })),
   );
   const [scenarioId, setScenarioId] = useState('home');
   const scenario = scenarioById(scenarioId)!;
@@ -47,6 +47,7 @@ export function KitBuilderPage() {
   const lines = useMemo(() => buildList(scenarioId, level, people, days), [scenarioId, level, people, days]);
   const itemList = useMemo(() => [...items.values()].filter((i) => !i.deletedAt), [items]);
   const lotList = useMemo(() => [...lots.values()], [lots]);
+  const locList = useMemo(() => [...locations.values()], [locations]);
   /** Lo que ya está cargado en el inventario con otro nombre parecido. */
   const existing = useMemo(() => {
     const out = new Map<string, Item>();
@@ -58,6 +59,15 @@ export function KitBuilderPage() {
   }, [lines, itemList]);
 
   const qtyOf = (id: string, fallback: number) => qtys[id] ?? fallback;
+  /** Lo que ya tiene en lugares que no son botiquines (se pasa al botiquín nuevo) y lo que hay en otros botiquines (no se toca). */
+  const stockOf = (id: string) => {
+    const ex = existing.get(id);
+    if (!ex) return { outside: 0, places: '', inKits: 0 };
+    const out = lotsOutsideKits(ex.id, lotList, locList);
+    return { outside: lotsQuantity(out), places: sourcePlaces(out, locations), inKits: quantityInKits(ex.id, lotList, locList) };
+  };
+  /** Cuántos pone en este botiquín: lo que escribió o, de entrada, lo que ya tiene fuera de botiquines (hasta la cantidad pedida). */
+  const haveOf = (id: string, qty: number) => have[id] ?? Math.min(qty, stockOf(id).outside);
   const chosen = lines.filter((l) => !skip.has(l.id));
   const defaultName = `${t('kitBuilder.kitOf')} ${scenario.name[lang]}`;
 
@@ -93,11 +103,14 @@ export function KitBuilderPage() {
           await saveItem(item);
         }
         await setStockMin(item.id, kit.id, qty);
-        const owned = Math.max(0, have[line.id] ?? 0);
-        if (owned > 0) {
+        const owned = Math.max(0, haveOf(line.id, qty));
+        // Lo que ya está cargado en lugares que no son botiquines se pasa al nuevo (con su vencimiento); si falta, se carga lo demás.
+        const moved = existing.has(line.id) ? await moveToKit(kit.id, item.id, owned, [...useInventory.getState().lots.values()], [...useInventory.getState().locations.values()], saveLot) : 0;
+        const rest = owned - moved;
+        if (rest > 0) {
           await saveLot(
             newEntity<Lot>({
-              itemId: item.id, locationId: kit.id, quantity: owned, packageCount: null, packageSize: null, packageName: null, packageTareGrams: null, expiryDate: null,
+              itemId: item.id, locationId: kit.id, quantity: rest, packageCount: null, packageSize: null, packageName: null, packageTareGrams: null, expiryDate: null,
               manufactureDate: null, shelfLifeMonths: null, capacityTotal: null, capacityRemaining: null, capacityUnit: null, notes: '',
             }),
           );
@@ -167,7 +180,6 @@ export function KitBuilderPage() {
               <ul className="list">
                 {rows.map((line) => {
                   const ex = existing.get(line.id);
-                  const stock = ex ? quantityOf(ex.id, lotList) : 0;
                   const isOpen = open === line.id;
                   return (
                     <li key={line.id} className="kb-row" data-testid={`kb-row-${line.id}`}>
@@ -181,7 +193,8 @@ export function KitBuilderPage() {
                         <span className="hint kb-unit">{(line.item.unit ?? { es: 'unidades', en: 'units' })[lang]}</span>
                       </div>
                       <div className="kb-row-sub">
-                        {ex && <span className="hint">{t('kitBuilder.already', { name: ex.name, qty: fmt.format(stock) })}</span>}
+                        {ex && stockOf(line.id).outside > 0 && <span className="hint" data-testid={`kb-outside-${line.id}`}>{t('kitBuilder.outside', { name: ex.name, qty: fmt.format(stockOf(line.id).outside), places: stockOf(line.id).places })}</span>}
+                        {ex && stockOf(line.id).inKits > 0 && <span className="hint">{t('kitBuilder.inKits', { qty: fmt.format(stockOf(line.id).inKits) })}</span>}
                         {!skip.has(line.id) && (
                           <label className="kb-have">
                             {t('kitBuilder.have')}
@@ -189,13 +202,13 @@ export function KitBuilderPage() {
                               className="input kb-qty"
                               type="number"
                               min={0}
-                              value={have[line.id] ?? 0}
+                              value={haveOf(line.id, qtyOf(line.id, line.qty))}
                               onChange={(e) => setHave((h) => ({ ...h, [line.id]: Math.max(0, Number(e.target.value) || 0) }))}
                               aria-label={t('kitBuilder.haveLabel', { name: line.item.name[lang] })}
                               data-testid={`kb-have-${line.id}`}
                             />
-                            <span className={(have[line.id] ?? 0) >= qtyOf(line.id, line.qty) ? 'hint' : 'error'} data-testid={`kb-gap-${line.id}`}>
-                              {(have[line.id] ?? 0) >= qtyOf(line.id, line.qty) ? t('kitBuilder.complete') : t('kitBuilder.missing', { count: qtyOf(line.id, line.qty) - (have[line.id] ?? 0) })}
+                            <span className={haveOf(line.id, qtyOf(line.id, line.qty)) >= qtyOf(line.id, line.qty) ? 'hint' : 'error'} data-testid={`kb-gap-${line.id}`}>
+                              {haveOf(line.id, qtyOf(line.id, line.qty)) >= qtyOf(line.id, line.qty) ? t('kitBuilder.complete') : t('kitBuilder.missing', { count: qtyOf(line.id, line.qty) - haveOf(line.id, qtyOf(line.id, line.qty)) })}
                             </span>
                           </label>
                         )}
