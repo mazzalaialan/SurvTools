@@ -92,6 +92,7 @@ describe('OpenStreetMap', () => {
       locality: 'San Nicolás, Buenos Aires',
       road: 'Av. Corrientes',
       houseNumber: '1000',
+      country: '',
     });
     const s = parseSurroundings(
       [
@@ -135,6 +136,21 @@ describe('calle: mismo nombre aunque se escriba distinto', () => {
   it('con otro nombre para la misma calle igual da la altura', () => {
     const around = { roads: [] as string[], milestone: null, nearestNumber: { street: 'Hipólito Yrigoyen', number: '120', distance: 40 } };
     expect(completeAddress({ address: 'Avenida Hipólito Yrigoyen', houseNumber: '', road: 'Avenida Hipólito Yrigoyen' }, around, 'es')).toBe('Avenida Hipólito Yrigoyen 120 (aprox.)');
+  });
+});
+
+describe('altura oficial (Georef) en la dirección', () => {
+  const none = { nearestNumber: null, roads: [] as string[], milestone: null };
+  it('sin número exacto ni puertas de OpenStreetMap, usa la altura de Georef', () => {
+    expect(completeAddress({ address: 'Pueyrredon', houseNumber: '', road: 'Pueyrredon' }, none, 'es', 1745)).toBe('Pueyrredon 1745 (aprox.)');
+  });
+  it('una puerta de OpenStreetMap a menos de 40 m gana; a más distancia gana Georef', () => {
+    const cerca = { ...none, nearestNumber: { street: 'Pueyrredon', number: '1741', distance: 20 } };
+    const lejos = { ...none, nearestNumber: { street: 'Pueyrredon', number: '1700', distance: 120 } };
+    expect(completeAddress({ address: 'Pueyrredon', houseNumber: '', road: 'Pueyrredon' }, cerca, 'es', 1745)).toBe('Pueyrredon 1741 (aprox.)');
+    expect(completeAddress({ address: 'Pueyrredon', houseNumber: '', road: 'Pueyrredon' }, lejos, 'es', 1745)).toBe('Pueyrredon 1745 (aprox.)');
+    // Sin Georef, la puerta lejana sigue sirviendo.
+    expect(completeAddress({ address: 'Pueyrredon', houseNumber: '', road: 'Pueyrredon' }, lejos, 'es', null)).toBe('Pueyrredon 1700 (aprox.)');
   });
 });
 

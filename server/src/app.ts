@@ -18,6 +18,7 @@ import { libraryRoutes } from './routes/library.ts';
 import { dataRoutes } from './routes/data.ts';
 import { layersRoutes } from './routes/layers.ts';
 import { osmRoutes } from './routes/osm.ts';
+import { addressRoutes } from './routes/address.ts';
 import { openAroundIndex, type AroundIndex } from './osm/around.ts';
 import { riversRoutes } from './routes/rivers.ts';
 import { tidesRoutes } from './routes/tides.ts';
@@ -68,6 +69,7 @@ export async function buildApp(
   riversRoutes(app, config);
   layersRoutes(app);
   osmRoutes(app, osmIndex);
+  addressRoutes(app);
   tidesRoutes(app);
   iocRoutes(app, config);
   firesRoutes(app);

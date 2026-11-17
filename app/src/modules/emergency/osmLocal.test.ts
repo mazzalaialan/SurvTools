@@ -81,4 +81,24 @@ describe('Mi ubicación: base propia del servidor primero, servicios públicos d
     expect(fallback.map((p) => p.name)).toEqual(['Comisaría 3.ª']);
     expect(calls.some((u) => u.includes('overpass') || u.includes('maps.mail.ru'))).toBe(true);
   });
+
+  it('en Argentina, sin número exacto, pide la altura de Georef al servidor y la suma a la dirección', async () => {
+    const calls = stub((url) => {
+      if (url.includes('/api/address/ar')) return new Response(JSON.stringify({ found: true, address: { number: 1745, street: 'PUEYRREDON' } }));
+      if (url.includes('/api/osm/around')) return new Response(JSON.stringify({ elements: [] }));
+      if (url.includes('nominatim')) return new Response(JSON.stringify({ address: { road: 'Pueyrredon', town: 'Hurlingham', state: 'Buenos Aires', country_code: 'ar' } }));
+      return new Response('{"elements":[]}');
+    });
+    const partials: string[] = [];
+    const info = await describeLocation(-34.5775, -58.6316, 'es', (p) => partials.push(p.address), 'https://mi.servidor');
+    expect(info.address).toBe('Pueyrredon 1745 (aprox.)');
+    expect(calls.some((u) => u.includes('/api/address/ar?') && u.includes('street=Pueyrredon'))).toBe(true);
+    expect(partials.at(-1)).toBe('Pueyrredon 1745 (aprox.)');
+  });
+
+  it('fuera de Argentina no consulta a Georef', async () => {
+    const calls = stub((url) => (url.includes('nominatim') ? new Response(JSON.stringify({ address: { road: 'Mitre', country_code: 'uy' } })) : new Response('{"elements":[]}')));
+    await describeLocation(-34.9, -56.19, 'es', undefined, 'https://mi.servidor');
+    expect(calls.some((u) => u.includes('/api/address/ar'))).toBe(false);
+  });
 });

@@ -273,12 +273,12 @@ interface NominatimReverse {
   address?: Record<string, string>;
 }
 
-export function describeAddress(r: NominatimReverse): { address: string; locality: string; road: string; houseNumber: string } {
+export function describeAddress(r: NominatimReverse): { address: string; locality: string; road: string; houseNumber: string; country: string } {
   const a = r.address ?? {};
   const road = a.road ?? a.pedestrian ?? a.footway ?? a.path ?? '';
   const address = [road, a.house_number].filter(Boolean).join(' ') || r.name || '';
   const locality = [a.suburb ?? a.neighbourhood ?? a.hamlet, a.city ?? a.town ?? a.village ?? a.municipality, a.state].filter(Boolean).join(', ');
-  return { address, locality, road, houseNumber: a.house_number ?? '' };
+  return { address, locality, road, houseNumber: a.house_number ?? '', country: a.country_code ?? '' };
 }
 
 export function parseSurroundings(elements: OsmElement[], lat: number, lon: number, ownRoad: string): Omit<LocationInfo, 'address' | 'locality'> {
@@ -337,14 +337,39 @@ export function sameStreet(a: string, b: string): boolean {
  * La dirección con su altura: la exacta si Nominatim encontró el número de puerta; si no, la de la puerta más cercana de la misma calle
  * (a menos de 150 m, «aprox.»); y en una ruta, el kilómetro del mojón más cercano (a menos de 3 km, «aprox.»).
  */
-export function completeAddress(own: { address: string; houseNumber: string; road: string }, around: Pick<LocationInfo, 'nearestNumber' | 'roads' | 'milestone'>, lang: string): string {
+export function completeAddress(
+  own: { address: string; houseNumber: string; road: string },
+  around: Pick<LocationInfo, 'nearestNumber' | 'roads' | 'milestone'>,
+  lang: string,
+  /** Altura de Georef (Argentina), si el servidor la dio. */
+  georef: number | null = null,
+): string {
   if (own.houseNumber) return own.address;
   const approx = lang.startsWith('en') ? 'approx.' : 'aprox.';
   const n = around.nearestNumber;
-  if (n && (!own.road || sameStreet(own.road, n.street))) return `${own.road || n.street} ${n.number} (${approx})`;
+  const osm = n && (!own.road || sameStreet(own.road, n.street)) ? n : null;
+  // Una puerta de OpenStreetMap a menos de 40 m es lo más preciso; si no, la altura oficial de Georef; si no, la puerta más cercana.
+  if (osm && osm.distance <= 40) return `${own.road || osm.street} ${osm.number} (${approx})`;
+  if (georef !== null && own.road) return `${own.road} ${georef} (${approx})`;
+  if (osm) return `${own.road || osm.street} ${osm.number} (${approx})`;
   const m = around.milestone;
   if (m && m.distance <= 3000 && around.roads.length > 0) return `${own.road || around.roads[0]} km ${m.km} (${approx})`;
   return own.address;
+}
+
+/** Altura aproximada de la calle según Georef, vía el servidor propio (solo Argentina); `null` si no se pudo. */
+export async function fetchGeorefNumber(serverUrl: string | undefined, lat: number, lon: number, street: string, timeoutMs = 10_000): Promise<number | null> {
+  const base = serverUrl?.trim().replace(/\/+$/, '');
+  if (!base || !street) return null;
+  try {
+    const params = new URLSearchParams({ lat: lat.toFixed(6), lon: lon.toFixed(6), street });
+    const res = await fetch(`${base}/api/address/ar?${params}`, { signal: AbortSignal.timeout(timeoutMs) });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { found?: boolean; address?: { number?: number } };
+    return json.found && typeof json.address?.number === 'number' ? json.address.number : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Plazo para cada consulta de los alrededores: la dirección no espera por ellas y cada una se suma apenas llega. */
@@ -380,12 +405,13 @@ export async function describeLocation(lat: number, lon: number, lang: string, o
     `[out:json][timeout:25];way(around:400,${at})["highway"]["ref"];out center tags;`,
     `[out:json][timeout:25];node(around:3000,${at})["highway"="milestone"];out center tags;`,
   ];
-  let own: { address: string; locality: string; road: string; houseNumber: string } | null = null;
+  let own: { address: string; locality: string; road: string; houseNumber: string; country: string } | null = null;
+  let georef: number | null = null;
   const found: OsmElement[] = [];
   const build = (): LocationInfo => {
     const o = own!;
     const around = parseSurroundings(found, lat, lon, o.road);
-    return { ...around, address: completeAddress(o, around, lang), locality: o.locality };
+    return { ...around, address: completeAddress(o, around, lang, georef), locality: o.locality };
   };
   // Primero la base de tu servidor; solo si no está o no responde se consulta a los servicios públicos de OpenStreetMap.
   const arounding = fetchLocalAround(serverUrl, lat, lon).then(async (local) => {
@@ -408,6 +434,14 @@ export async function describeLocation(lat: number, lon: number, lang: string, o
   });
   own = describeAddress(await reversing);
   onPartial?.(build());
-  await arounding;
+  // En Argentina, sin número exacto, la altura oficial de la calle (Georef) en paralelo con las calles de alrededor.
+  const georeffing =
+    own.country === 'ar' && !own.houseNumber && own.road
+      ? fetchGeorefNumber(serverUrl, lat, lon, own.road).then((n) => {
+          georef = n;
+          if (n !== null) onPartial?.(build());
+        })
+      : Promise.resolve();
+  await Promise.all([arounding, georeffing]);
   return build();
 }
