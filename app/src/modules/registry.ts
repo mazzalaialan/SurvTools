@@ -31,7 +31,7 @@ import {
   Sprout,
   Tags,
   Triangle,
-  Warehouse, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
+  Warehouse, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows, Wand2 } from 'lucide-react';
 import type { Capability, CapabilityMap } from '@/core/capabilities/capabilities';
 
 /** En el orden en que se muestran en Inicio. */
@@ -65,6 +65,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'medical', section: 'firstAid', icon: HeartPulse, implemented: true, path: '/first-aid/medical' },
   { id: 'firstAidGuides', section: 'firstAid', icon: BookHeart, implemented: true, path: '/first-aid/guides' },
   { id: 'kits', section: 'firstAid', icon: BriefcaseMedical, implemented: true, path: '/first-aid/kits' },
+  { id: 'kitBuilder', section: 'firstAid', icon: Wand2, implemented: true, path: '/first-aid/kits/build' },
   { id: 'radio', section: 'firstAid', icon: Radio, implemented: true, path: '/first-aid/radio' },
   { id: 'documents', section: 'documents', icon: FileText, implemented: true, path: '/documents' },
   { id: 'compass', section: 'orientation', icon: Compass, implemented: true, path: '/orientation/compass', requires: ['orientation'] },

@@ -1,3 +1,4 @@
+import { KitCompare } from './KitCompare';
 import { cleanUnit, isNumericUnit, unitText } from '@/modules/inventory/domain/unitText';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -120,6 +121,8 @@ function KitDetail({ kit }: { kit: Location }) {
         )}
         <p className="hint">{t('kits.minHint')}</p>
       </section>
+
+      <KitCompare kit={kit} />
 
       {adding && (
         <AddToKitDialog

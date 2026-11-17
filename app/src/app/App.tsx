@@ -41,6 +41,7 @@ const DocumentEditPage = page(() => import('@/modules/documents/DocumentEditPage
 const DocumentsPage = page(() => import('@/modules/documents/DocumentsPage').then((m) => ({ default: m.DocumentsPage })));
 const KitPage = page(() => import('@/modules/firstAid/KitPage').then((m) => ({ default: m.KitPage })));
 const KitsPage = page(() => import('@/modules/firstAid/KitsPage').then((m) => ({ default: m.KitsPage })));
+const KitBuilderPage = page(() => import('@/modules/firstAid/KitBuilderPage').then((m) => ({ default: m.KitBuilderPage })));
 const MedicalEditPage = page(() => import('@/modules/firstAid/MedicalEditPage').then((m) => ({ default: m.MedicalEditPage })));
 const MedicalPage = page(() => import('@/modules/firstAid/MedicalPage').then((m) => ({ default: m.MedicalPage })));
 const ContactEditPage = page(() => import('@/modules/emergency/ContactEditPage').then((m) => ({ default: m.ContactEditPage })));
@@ -126,6 +127,7 @@ const router = createHashRouter([
       { path: '/inventory/recommendations', element: <RecommendationsPage /> },
       { path: '/first-aid', element: <SectionPage section="firstAid" /> },
       { path: '/first-aid/kits', element: <KitsPage /> },
+      { path: '/first-aid/kits/build', element: <KitBuilderPage /> },
       { path: '/first-aid/kits/:id', element: <KitPage /> },
       { path: '/first-aid/medical', element: <MedicalPage /> },
       { path: '/first-aid/medical/:id', element: <MedicalEditPage /> },

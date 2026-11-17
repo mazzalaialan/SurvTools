@@ -4890,3 +4890,47 @@ button.country-pack-icon {
   color: var(--accent);
   font-weight: 600;
 }
+
+/* Asistente de botiquines */
+.kb-row {
+  display: grid;
+  gap: 4px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.kb-row-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kb-name {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+}
+.kb-qty {
+  width: 4.5rem;
+  flex: none;
+}
+.kb-unit {
+  flex: none;
+  min-width: 3.5rem;
+}
+.kb-row-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-left: 28px;
+}
+.kb-have {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}

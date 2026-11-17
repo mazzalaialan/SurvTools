@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { BriefcaseMedical, Plus } from 'lucide-react';
+import { BriefcaseMedical, Plus, Wand2 } from 'lucide-react';
 import { newEntity } from '@/core/model/entity';
 import type { Location } from '@/core/model/types';
 import { AlertList, ShortageList } from '@/modules/inventory/components/AlertList';
@@ -40,9 +40,14 @@ export function KitsPage() {
     <>
       <div className="page-head">
         <h1 className="page-title">{t('modules.kits.title')}</h1>
-        <button className="btn btn-primary" type="button" onClick={startNew}>
-          <Plus size={20} /> {t('kits.new')}
-        </button>
+        <div className="row-end" style={{ gap: 8, flexWrap: 'wrap' }}>
+          <Link className="btn btn-primary" to="/first-aid/kits/build" data-testid="kits-build">
+            <Wand2 size={20} /> {t('kitBuilder.open')}
+          </Link>
+          <button className="btn" type="button" onClick={startNew}>
+            <Plus size={20} /> {t('kits.new')}
+          </button>
+        </div>
       </div>
 
       {(firstAidAlerts.length > 0 || kitMissing.length > 0) && (

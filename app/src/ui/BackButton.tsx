@@ -8,7 +8,7 @@ import { ArrowLeft } from 'lucide-react';
  */
 export const ROUTE_PATHS = [
   '/', '/inventory', '/inventory/items', '/inventory/items/:id', '/inventory/locations', '/inventory/categories', '/inventory/alerts',
-  '/settings/backup', '/settings/share', '/inventory/backup', '/inventory/recommendations', '/first-aid', '/first-aid/kits',
+  '/settings/backup', '/settings/share', '/inventory/backup', '/inventory/recommendations', '/first-aid', '/first-aid/kits', '/first-aid/kits/build',
   '/first-aid/kits/:id', '/first-aid/medical', '/first-aid/medical/:id', '/first-aid/contacts', '/first-aid/contacts/nearby',
   '/first-aid/contacts/:id', '/first-aid/location', '/first-aid/guides', '/first-aid/guides/:topicId', '/first-aid/radio',
   '/first-aid/radio/:id', '/documents', '/documents/:id', '/transfer', '/orientation', '/orientation/waypoints',
