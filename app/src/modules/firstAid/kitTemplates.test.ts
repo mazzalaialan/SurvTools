@@ -72,3 +72,14 @@ describe('plantillas de botiquín', () => {
 
   it('los niveles son tres', () => expect(LEVELS).toHaveLength(3));
 });
+
+import { unitFor } from './kitTemplates';
+describe('unidad en singular', () => {
+  it('con 1 se dice «par», «rollo», «unidad»; con más, el plural; lo que no se conoce queda igual', () => {
+    expect(unitFor(1, 'pares')).toBe('par');
+    expect(unitFor(1, 'unidades')).toBe('unidad');
+    expect(unitFor(1, 'units')).toBe('unit');
+    expect(unitFor(2, 'pares')).toBe('pares');
+    expect(unitFor(1, 'latas')).toBe('latas');
+  });
+});

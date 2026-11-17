@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 const PASSWORD = 'prueba-segura-123';
@@ -132,6 +133,26 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await expect(page.getByRole('heading', { name: 'Falta', exact: true })).toBeVisible();
   await expect(page.getByText('Torniquete de molinete')).toBeVisible();
   await expect(page.getByText('Tijera de trauma')).toHaveCount(0);
+
+  // La lista de faltantes del botiquín se puede imprimir en PDF (A4) y compartir.
+  const missingBox = page.getByTestId('kit-missing');
+  await expect(missingBox).toContainText('Guantes de nitrilo');
+  await expect(missingBox.getByTestId('km-share')).toBeVisible();
+  const [download] = await Promise.all([page.waitForEvent('download'), missingBox.getByTestId('km-pdf').click()]);
+  expect(download.suggestedFilename()).toMatch(/^Lista-de-compras-IFAK-de-la-mochila.*\.pdf$/);
+  const bytes = readFileSync((await download.path())!);
+  expect(bytes.subarray(0, 8).toString('latin1')).toBe('%PDF-1.4');
+  // Una hoja A4 (595 × 842 pt) con una imagen que la cubre.
+  expect(bytes.toString('latin1')).toContain('/MediaBox [0 0 595.28 841.89]');
+  await expect(page.getByTestId('km-message')).toContainText('PDF listo');
+
+  // «Compré»: lo que faltaba (1 par de guantes) pasa al contenido y deja de figurar como faltante.
+  await missingBox.locator('li', { hasText: 'Guantes de nitrilo' }).getByRole('button', { name: 'Compré' }).click();
+  await expect(page.getByTestId('km-qty')).toHaveValue('1');
+  await page.getByTestId('km-confirm').click();
+  await expect(missingBox).not.toContainText('Guantes de nitrilo');
+  await expect(page.getByRole('heading', { name: 'Contenido' })).toBeVisible();
+  await expect(page.getByText('Guantes de nitrilo').first()).toBeVisible();
 
   // «¿Qué le falta?»: se compara con la plantilla y se puede dejar como mínimo.
   await page.getByTestId('kc-toggle').click();

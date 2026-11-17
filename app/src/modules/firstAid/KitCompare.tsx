@@ -7,7 +7,8 @@ import { systemCategoryId } from '@/modules/inventory/domain/categories';
 import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
 import { kitLots } from './kits';
-import { buildList, LEVELS, matchesCatalog, scenarioById, SCENARIOS, type Level } from './kitTemplates';
+import { exportShoppingPdf, shareShoppingText, type ShopEntry } from './shoppingExport';
+import { buildList, GROUP_NAMES, GROUPS, LEVELS, unitFor, matchesCatalog, scenarioById, SCENARIOS, type Level } from './kitTemplates';
 
 /** Escenario con el que se compara de entrada, según el tipo del botiquín. */
 const DEFAULT_SCENARIO: Record<string, string> = { general: 'home', trauma: 'car', bleeding: 'bleeding', anaphylaxis: 'anaphylaxis', burns: 'burns', other: 'home' };
@@ -48,27 +49,27 @@ export function KitCompare({ kit }: { kit: Location }) {
   const ok = rows.filter((r) => r.status === 'ok');
   const unit = (r: { item: { unit?: { es: string; en: string } } }) => (r.item.unit ?? { es: 'unidades', en: 'units' })[lang];
 
-  const shopping = () => {
-    const lines = [...missing, ...partial].map((r) =>
-      r.status === 'missing'
-        ? `- ${r.qty} ${unit(r)} · ${r.item.name[lang]}`
-        : `- ${r.qty - r.have} ${unit(r)} · ${r.item.name[lang]} (${t('kitCompare.haveOf', { have: r.have, need: r.qty })})`,
-    );
-    return `${t('kitCompare.shoppingTitle', { kit: kit.name, scenario: scenario.name[lang] })}\n${lines.join('\n')}\n\n${t('kitCompare.shoppingFooter')}`;
+  const entries: ShopEntry[] = [...missing, ...partial].map((r) => ({
+    name: r.item.name[lang],
+    unit: unit(r),
+    need: r.qty,
+    have: r.have,
+    groupName: GROUP_NAMES[r.item.group][lang],
+    groupOrder: GROUPS.indexOf(r.item.group),
+  }));
+  const shopCtx = () => ({
+    t,
+    language: i18n.language,
+    kitName: kit.name,
+    detail: `${scenario.name[lang]} · ${t(`kitBuilder.levels.${level}`)} · ${t('kitCompare.people', { count: people })}`,
+    completeNames: ok.map((r) => r.item.name[lang]),
+  });
+  const share = async () => setMessage(await shareShoppingText(entries, shopCtx()));
+  /** La lista de lo que falta en una o más hojas A4, con el logo y la frase de la app (shoppingPdf.ts). */
+  const exportPdf = async () => {
+    setMessage(null);
+    setMessage(await exportShoppingPdf(entries, shopCtx()));
   };
-
-  async function share() {
-    const text = shopping();
-    try {
-      if (typeof navigator.share === 'function') await navigator.share({ title: kit.name, text });
-      else {
-        await navigator.clipboard.writeText(text);
-        setMessage(t('kitCompare.copied'));
-      }
-    } catch {
-      // La persona cerró el menú de compartir: no hay nada que avisar.
-    }
-  }
 
   async function setMins() {
     for (const r of [...missing, ...partial]) {
@@ -133,7 +134,7 @@ export function KitCompare({ kit }: { kit: Location }) {
                     <div className="kb-row-main">
                       <span className="kb-name">{r.item.name[lang]}</span>
                       <span className="hint kb-unit">
-                        {r.status === 'missing' ? t('kitCompare.need', { qty: r.qty, unit: unit(r) }) : t('kitCompare.needMore', { more: r.qty - r.have, have: r.have, need: r.qty })}
+                        {r.status === 'missing' ? t('kitCompare.need', { qty: r.qty, unit: unitFor(r.qty, unit(r)) }) : t('kitCompare.needMore', { more: r.qty - r.have, have: r.have, need: r.qty })}
                       </span>
                     </div>
                   </li>
@@ -141,6 +142,7 @@ export function KitCompare({ kit }: { kit: Location }) {
               </ul>
               <div className="row-end" style={{ gap: 8, flexWrap: 'wrap' }}>
                 <button className="btn" type="button" onClick={() => void share()} data-testid="kc-share">{t('kitCompare.share')}</button>
+                <button className="btn" type="button" onClick={() => void exportPdf()} data-testid="kc-pdf">{t('kitCompare.pdf')}</button>
                 <button className="btn btn-primary" type="button" onClick={() => void setMins()} data-testid="kc-mins">{t('kitCompare.setMins')}</button>
               </div>
             </>

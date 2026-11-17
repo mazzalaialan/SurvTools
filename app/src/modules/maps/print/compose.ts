@@ -1,5 +1,6 @@
 import type { LatLon } from '@/core/geo/geo';
 import { formatUtm, fromUtm, toUtm } from '@/core/geo/utm';
+import { LOGO_MM, loadLogo } from '@/core/pdf/brand';
 import { jpegPagePdf } from '@/core/pdf/jpegPdf';
 import { planSheet, type SheetPlan, type TopoLeg, type TopoSheetInput } from './plan';
 import { renderBaseMap, type BaseMap } from './renderBase';
@@ -47,19 +48,6 @@ interface TextOpts {
 
 /** Nombre de la app que se imprime en la hoja (la hoja sale siempre en español). */
 const APP_NAME = 'Herramientas de Supervivencia por VikArg';
-
-/** Lado (mm) del logo en el encabezado de la hoja. */
-const LOGO_MM = 12;
-
-/** El logo de la app (viaja en la app, sirve sin conexión); si no se puede cargar, la hoja sale sin él. */
-function loadLogo(): Promise<HTMLImageElement | null> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => resolve(null);
-    img.src = `${import.meta.env.BASE_URL}brand/logo-256.webp`;
-  });
-}
 
 function text(ctx: Ctx, s: string, x: number, y: number, o: TextOpts) {
   ctx.font = `${o.bold ? '700 ' : ''}${mm(o.size)}px ${FONT}`;

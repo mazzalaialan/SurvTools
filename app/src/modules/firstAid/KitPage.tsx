@@ -1,4 +1,5 @@
 import { KitCompare } from './KitCompare';
+import { KitMissing } from './KitMissing';
 import { cleanUnit, isNumericUnit, unitText } from '@/modules/inventory/domain/unitText';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import { Pencil, Plus } from 'lucide-react';
 import { newEntity } from '@/core/model/entity';
 import type { Item, Location, Lot } from '@/core/model/types';
 import { AlertBadge } from '@/modules/inventory/components/AlertBadge';
-import { ShortageList } from '@/modules/inventory/components/AlertList';
 import { LotDialog } from '@/modules/inventory/components/LotDialog';
 import { effectiveConfig, lotAlert, lotDueDate } from '@/modules/inventory/domain/alerts';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
@@ -78,12 +78,7 @@ function KitDetail({ kit }: { kit: Location }) {
         </button>
       </div>
 
-      {missing.length > 0 && (
-        <section className="card stack">
-          <h2 className="section-title" style={{ margin: 0 }}>{t('kits.missing')}</h2>
-          <ShortageList shortages={missing} />
-        </section>
-      )}
+      {missing.length > 0 && <KitMissing kit={kit} shortages={missing} />}
 
       <section className="card stack">
         <div className="page-head" style={{ marginBottom: 0 }}>
