@@ -1,17 +1,17 @@
 import { archiveBase } from '@/modules/maps/wind';
-import { omFetch } from '@/modules/weather/omFetch';
+import { omFetch, ARCHIVE_FROM_YEAR } from '@/modules/weather/omFetch';
 
 /**
- * Fechas de helada del lugar de la huerta, calculadas con los últimos 5 años
- * de mínimas diarias (histórico de Open-Meteo, el mismo servidor que usa el
+ * Fechas de helada del lugar de la huerta, calculadas con las mínimas diarias
+ * desde 2020 (histórico de Open-Meteo, el mismo servidor que usa el
  * mapa de viento): en vez de depender solo de la zona del calendario, la
  * última helada de primavera y la primera de otoño de ese punto.
  *
  * Helada = mínima a 2 m de 2 °C o menos (la "helada en el pasto", el mismo
  * umbral que el aviso para los cultivos sensibles). Hemisferio sur: la última
  * de primavera es la última entre julio y diciembre; la primera de otoño, la
- * primera entre enero y junio. Como fecha segura se toma la más tardía de los
- * 5 años (conservador: el histórico es de una grilla y suaviza los bajos fríos).
+ * primera entre enero y junio. Como fecha segura se toma la más tardía de
+ * los años (conservador: el histórico es de una grilla y suaviza los bajos fríos).
  */
 
 export const FROST_MIN_C = 2;
@@ -61,13 +61,13 @@ export function frostDates(times: string[], mins: (number | null)[], threshold =
   };
 }
 
-/** Los últimos 5 años completos de mínimas diarias del punto. */
+/** Las mínimas diarias del punto desde 2020 hasta el último año completo (los años que guarda el servidor propio). */
 export async function fetchFrostDates(base: string, lat: number, lon: number, now = new Date()): Promise<FrostDates> {
   const lastYear = now.getUTCFullYear() - 1;
   const params = new URLSearchParams({
     latitude: lat.toFixed(3),
     longitude: lon.toFixed(3),
-    start_date: `${lastYear - 4}-01-01`,
+    start_date: `${ARCHIVE_FROM_YEAR}-01-01`,
     end_date: `${lastYear}-12-31`,
     daily: 'temperature_2m_min',
     timezone: 'auto',

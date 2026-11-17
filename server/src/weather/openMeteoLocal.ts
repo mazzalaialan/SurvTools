@@ -7,13 +7,13 @@
 export interface LocalWeatherConfig {
   /** Dirección interna de la copia propia (por ejemplo http://openmeteo:8080); null = apagada. */
   localUrl: string | null;
-  /** Cuántos años de historial (ERA5) se mantienen: el actual y los anteriores hasta completar esta cantidad. */
-  archiveYears: number;
+  /** Primer año del historial (ERA5) que tiene la copia propia: de ahí hasta hoy. */
+  archiveFromYear: number;
 }
 
 /** Primer día del historial que tiene la copia propia. */
-export function archiveFrom(now: Date, years: number): string {
-  return `${now.getUTCFullYear() - (years - 1)}-01-01`;
+export function archiveFrom(fromYear: number): string {
+  return `${fromYear}-01-01`;
 }
 
 type Json = Record<string, unknown>;

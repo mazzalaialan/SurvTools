@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import Fastify from 'fastify';
-import { archiveFrom, checkLocalAnswer, localWeatherFetch } from '../src/weather/openMeteoLocal.ts';
+import { archiveFrom, checkLocalAnswer, localWeatherFetch, type LocalWeatherConfig } from '../src/weather/openMeteoLocal.ts';
 import { omRoutes } from '../src/routes/om.ts';
 
 const forecast = (temp: (number | null)[]) => ({ hourly: { time: temp.map((_, i) => `t${i}`), temperature_2m: temp } });
@@ -17,15 +17,14 @@ describe('checkLocalAnswer', () => {
 });
 
 describe('archiveFrom', () => {
-  it('con 5 años en 2026 empieza en 2022', () => assert.equal(archiveFrom(new Date('2026-11-17T00:00:00Z'), 5), '2022-01-01'));
+  it('el historial propio empieza el 1 de enero del año configurado', () => assert.equal(archiveFrom(2020), '2020-01-01'));
 });
 
 describe('GET /api/om/v1/:kind', () => {
-  const cfg = { localUrl: 'http://openmeteo:8080', archiveYears: 5 };
-  const now = () => new Date('2026-11-17T00:00:00Z');
+  const cfg: LocalWeatherConfig = { localUrl: 'http://openmeteo:8080', archiveFromYear: 2020 };
   async function app(fetchImpl: typeof fetch, c = cfg) {
     const a = Fastify();
-    omRoutes(a, c, fetchImpl, now);
+    omRoutes(a, c, fetchImpl);
     return a;
   }
 
@@ -37,7 +36,7 @@ describe('GET /api/om/v1/:kind', () => {
     assert.equal(urls[0], 'http://openmeteo:8080/v1/forecast?latitude=-34&longitude=-58&hourly=temperature_2m');
   });
   it('sin copia propia responde 503', async () => {
-    const a = await app(async () => json({}), { localUrl: null, archiveYears: 5 });
+    const a = await app(async () => json({}), { localUrl: null, archiveFromYear: 2020 });
     assert.equal((await a.inject('/api/om/v1/forecast?latitude=1&longitude=1')).statusCode, 503);
   });
   it('si la copia propia no contesta, 503', async () => {
@@ -49,7 +48,7 @@ describe('GET /api/om/v1/:kind', () => {
   it('historial anterior a lo que se baja: 404 sin consultar la copia', async () => {
     let called = false;
     const a = await app(async () => ((called = true), json(forecast([1]))));
-    const r = await a.inject('/api/om/v1/archive?latitude=1&longitude=1&start_date=2021-12-31&end_date=2022-01-02');
+    const r = await a.inject('/api/om/v1/archive?latitude=1&longitude=1&start_date=2019-12-31&end_date=2020-01-02');
     assert.equal(r.statusCode, 404);
     assert.equal(called, false);
   });
@@ -64,7 +63,7 @@ describe('GET /api/om/v1/:kind', () => {
 });
 
 describe('localWeatherFetch', () => {
-  const cfg = { localUrl: 'http://openmeteo:8080', archiveYears: 5 };
+  const cfg: LocalWeatherConfig = { localUrl: 'http://openmeteo:8080', archiveFromYear: 2020 };
   it('prueba primero la copia propia', async () => {
     const urls: string[] = [];
     const f = localWeatherFetch('https://api.open-meteo.com', cfg, async (u) => (urls.push(String(u)), json(forecast([20]))));
@@ -85,7 +84,7 @@ describe('localWeatherFetch', () => {
   });
   it('sin copia propia configurada va directo al público', async () => {
     const urls: string[] = [];
-    const f = localWeatherFetch('https://api.open-meteo.com', { localUrl: null, archiveYears: 5 }, async (u) => (urls.push(String(u)), json(forecast([1]))));
+    const f = localWeatherFetch('https://api.open-meteo.com', { localUrl: null, archiveFromYear: 2020 }, async (u) => (urls.push(String(u)), json(forecast([1]))));
     await f('https://api.open-meteo.com/v1/forecast?a=1');
     assert.deepEqual(urls, ['https://api.open-meteo.com/v1/forecast?a=1']);
   });

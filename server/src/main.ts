@@ -69,7 +69,7 @@ async function tick() {
   }
 }
 
-const weatherFetch = localWeatherFetch(config.weatherUrl, { localUrl: config.openMeteoLocalUrl, archiveYears: config.openMeteoArchiveYears });
+const weatherFetch = localWeatherFetch(config.weatherUrl, { localUrl: config.openMeteoLocalUrl, archiveFromYear: config.openMeteoArchiveFromYear });
 const forecastSource = openMeteoSource(config.weatherUrl, weatherFetch);
 const observer = irObserver();
 const rainSource = config.rainObserved ? withObservedRain(forecastSource, observer) : forecastSource;

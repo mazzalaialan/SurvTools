@@ -30,7 +30,7 @@ services:
       IOC_API_KEY: ${IOC_API_KEY:-}
       # Copia propia de Open-Meteo (servicios `openmeteo` y `openmeteo-sync`): primera opción para el clima; si no responde, el servicio público.
       OPEN_METEO_LOCAL_URL: ${OPEN_METEO_LOCAL_URL:-http://openmeteo:8080}
-      OPEN_METEO_ARCHIVE_YEARS: ${OPEN_METEO_ARCHIVE_YEARS:-5}
+      OPEN_METEO_ARCHIVE_FROM: ${OPEN_METEO_ARCHIVE_FROM:-2020}
     volumes:
       - vikarg-data:/data
       # Mapas offline (vector.pmtiles y elevation.pmtiles); vacía, la app usa las fuentes públicas. Ver docs/SERVIDOR.md.
@@ -59,7 +59,7 @@ services:
     user: "0:0"
     entrypoint: ["/bin/bash", "/sync.sh"]
     environment:
-      OPEN_METEO_ARCHIVE_YEARS: ${OPEN_METEO_ARCHIVE_YEARS:-5}
+      OPEN_METEO_ARCHIVE_FROM: ${OPEN_METEO_ARCHIVE_FROM:-2020}
     volumes:
       - ${OPEN_METEO_PATH:-./openmeteo-data}:/app/data
       - ./openmeteo/sync.sh:/sync.sh:ro

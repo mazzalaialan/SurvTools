@@ -2,12 +2,12 @@
 # Mantiene al día la copia propia de Open-Meteo (contenedor `openmeteo-sync`, ver docker-compose.yml y docs/SERVIDOR.md).
 # Baja del bucket público de Open-Meteo solo la región (region.json: Sudamérica sur y Perú) y se queda con:
 #   - pronóstico: ECMWF IFS, GFS, ICON, probabilidad de lluvia y olas, 92 días hacia atrás (cada hora);
-#   - historial ERA5: el año actual y los anteriores hasta completar OPEN_METEO_ARCHIVE_YEARS (una vez por día);
+#   - historial ERA5: desde el año OPEN_METEO_ARCHIVE_FROM (2020) hasta hoy (una vez por día);
 #   - relieve (Copernicus DEM 90 m), una sola vez: la altura corrige la temperatura.
 # Si una etapa falla se anota y se sigue: el servidor VikArg y la app pasan solos al servicio público mientras tanto.
 BIN=/app/openmeteo-api
 REGION=/region.json
-YEARS=${OPEN_METEO_ARCHIVE_YEARS:-5}
+FROM=${OPEN_METEO_ARCHIVE_FROM:-2020}
 PAST=92
 DATA=/app/data
 log() { echo "$(date -u +%FT%TZ) $*"; }
@@ -29,9 +29,9 @@ forecast() {
 }
 
 archive() {
-  local year first
-  year=$(date -u +%Y); first=$((year - YEARS + 1))
-  sync_models copernicus_era5 temperature_2m,dew_point_2m,precipitation,snowfall_water_equivalent,cloud_cover,pressure_msl,wind_u_component_10m,wind_v_component_10m,wind_gusts_10m,shortwave_radiation,direct_radiation --year "$first-$year"
+  local year
+  year=$(date -u +%Y)
+  sync_models copernicus_era5 temperature_2m,dew_point_2m,precipitation,snowfall_water_equivalent,cloud_cover,pressure_msl,wind_u_component_10m,wind_v_component_10m,wind_gusts_10m,shortwave_radiation,direct_radiation --year "$FROM-$year"
 }
 
 dem() {

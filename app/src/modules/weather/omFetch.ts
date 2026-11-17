@@ -54,3 +54,6 @@ export function ownUrl(url: string, serverUrl: string | undefined): string | nul
   if (!PUBLIC_HOST.test(u.hostname) || !u.pathname.startsWith('/v1/')) return null;
   return `${base}/api/om${u.pathname}${u.search}`;
 }
+
+/** Primer año del historial que guarda el servidor propio (`OPEN_METEO_ARCHIVE_FROM`): las heladas y el viento predominante se calculan desde acá. */
+export const ARCHIVE_FROM_YEAR = 2020;

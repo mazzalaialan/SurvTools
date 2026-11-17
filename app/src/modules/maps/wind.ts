@@ -1,4 +1,4 @@
-import { omFetch } from '@/modules/weather/omFetch';
+import { omFetch, ARCHIVE_FROM_YEAR } from '@/modules/weather/omFetch';
 /**
  * Carga de nieve por viento para la capa de avalanchas: el viento levanta la
  * nieve de las laderas expuestas (barlovento) y la deposita del otro lado del
@@ -7,7 +7,7 @@ import { omFetch } from '@/modules/weather/omFetch';
  *
  * - Reciente: viento a 700 hPa (unos 3000 m, representa mejor los filos que
  *   el de 10 m) y nevada hora por hora de Open-Meteo, en los últimos 3 días.
- * - Habitual: de dónde sopla en los días con nieve, con 5 años del histórico
+ * - Habitual: de dónde sopla en los días con nieve, con el histórico desde 2020
  *   (reanálisis ERA5 de Open-Meteo), calculado una vez al bajar cada zona.
  * - Sin nada: viento del oeste, el más común con nieve en los Andes.
  *
@@ -102,13 +102,13 @@ export function archiveBase(base: string): string {
   return b.replace('://api.open-meteo.com', '://archive-api.open-meteo.com');
 }
 
-/** Cinco años de datos diarios (~50 KB), hasta el año pasado. */
+/** Datos diarios desde 2020 (~60 KB), hasta el año pasado. */
 export async function fetchPrevailing(base: string, lat: number, lon: number, now = new Date()): Promise<PrevailingWind> {
   const last = now.getUTCFullYear() - 1;
   const params = new URLSearchParams({
     latitude: lat.toFixed(3),
     longitude: lon.toFixed(3),
-    start_date: `${last - 4}-01-01`,
+    start_date: `${ARCHIVE_FROM_YEAR}-01-01`,
     end_date: `${last}-12-31`,
     daily: 'wind_direction_10m_dominant,wind_speed_10m_max,snowfall_sum',
     wind_speed_unit: 'ms',

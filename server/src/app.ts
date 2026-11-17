@@ -70,7 +70,7 @@ export async function buildApp(
   riversRoutes(app, config);
   layersRoutes(app);
   osmRoutes(app, osmIndex);
-  omRoutes(app, { localUrl: config.openMeteoLocalUrl, archiveYears: config.openMeteoArchiveYears });
+  omRoutes(app, { localUrl: config.openMeteoLocalUrl, archiveFromYear: config.openMeteoArchiveFromYear });
   addressRoutes(app);
   tidesRoutes(app);
   iocRoutes(app, config);
