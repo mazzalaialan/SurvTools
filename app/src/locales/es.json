@@ -2763,7 +2763,7 @@
     "dlZone": "Zona de mapa",
     "dlMissing": "No está en este teléfono.",
     "dlPartial": "Está incompleto (se encontraron {{present}} de {{total}} archivos revisados).",
-    "dlRedownload": "Volver a bajar",
+    "dlRedownload": "Volver a bajar", "dlRedoing": "Bajando…", "dlRedoingPct": "Bajando {{pct}} %", "dlOpenLibrary": "Abrir la Biblioteca", "dlRedoFailed": {"offline": "Sin conexión: probá de nuevo cuando tengas internet.", "key-required": "Este libro necesita la clave de la biblioteca.", "bad-key": "La clave de la biblioteca no es correcta.", "too-many-tries": "Demasiados intentos: probá más tarde.", "tooBig": "La zona es muy grande para bajarla de las fuentes públicas: hace falta tu servidor.", "tooBigServer": "La zona es más grande de lo que tu servidor deja bajar.", "outsideServer": "Tu servidor no cubre esta zona.", "noServer": "Falta configurar tu servidor de mapas.", "failed": "No se pudo volver a bajar. Probá de nuevo."},
     "dlRemove": "Quitar de la lista",
     "hideInRecents": "Ocultar la app en «recientes» y evitar capturas de pantalla",
     "hideInRecentsHint": "En la lista de apps recientes de Android no se ve el contenido de la app (fichas médicas, documentos, contactos) y no se pueden sacar capturas mientras está abierta. Apagado por defecto.",

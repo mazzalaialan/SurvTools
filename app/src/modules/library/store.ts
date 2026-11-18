@@ -41,6 +41,8 @@ interface LibraryState {
   unlockPrivate: (passphrase: string, remember: boolean) => Promise<boolean>;
   forgetKey: () => Promise<void>;
   download: (serverUrl: string) => Promise<void>;
+  /** Vuelve a bajar un libro que figura como bajado pero le faltan archivos: trae el catálogo, lo baja y devuelve por qué falló (o `null`). */
+  redownload: (serverUrl: string, id: string) => Promise<LibraryError['code'] | null>;
   /** Corta la descarga en curso: lo ya bajado queda; lo que falta sigue seleccionado para después. */
   cancelDownload: (reason?: 'cancelled' | 'cellular') => void;
   remove: (id: string) => Promise<void>;
@@ -197,6 +199,22 @@ export const useLibrary = create<LibraryState>((set, get) => ({
     conn?.removeEventListener('change', onChange);
     if (current === ctrl) current = null;
     set({ progress: null, failures, stopped: ctrl.signal.aborted ? stopReason : null });
+  },
+
+  async redownload(serverUrl, id) {
+    await get().refresh(serverUrl);
+    if (!catalogBooks(get().catalog).has(id)) return get().offline ? 'offline' : 'download';
+    // Se baja solo este libro; lo que el usuario tenía elegido en la biblioteca se respeta.
+    const before = get().selected;
+    set({ selected: new Set([id]) });
+    try {
+      await get().download(serverUrl);
+    } finally {
+      const after = new Set(before);
+      after.delete(id);
+      set({ selected: after });
+    }
+    return get().failures.get(id) ?? null;
   },
 
   cancelDownload(reason = 'cancelled') {

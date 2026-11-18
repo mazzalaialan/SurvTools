@@ -194,7 +194,18 @@ test('verificar descargas: con el libro en el dispositivo está todo en orden; s
   await expect(page.getByTestId('verify-problems')).toBeVisible();
   const row = page.getByTestId('verify-book-montanismo');
   await expect(row).toContainText('No está en este teléfono');
-  await expect(row.getByRole('link', { name: 'Volver a bajar' })).toHaveAttribute('href', /library\/books/);
+  // «Volver a bajar» trae de nuevo el libro desde ahí mismo y todo queda en orden.
+  await row.getByRole('button', { name: 'Volver a bajar' }).click();
+  await expect(page.getByTestId('verify-ok')).toContainText('1 libros', { timeout: 30_000 });
+  await expect(page.getByTestId('verify-problems')).toHaveCount(0);
+
+  // Si vuelve a desaparecer, se puede quitar de la lista.
+  await page.evaluate(async () => {
+    const cache = await caches.open('vikarg-library-books');
+    for (const req of await cache.keys()) if (req.url.includes('/montanismo/')) await cache.delete(req);
+  });
+  await page.getByTestId('verify-run').click();
+  await expect(row).toContainText('No está en este teléfono');
   await row.getByRole('button', { name: 'Quitar de la lista' }).click();
   await expect(row).toHaveCount(0);
   await page.getByTestId('verify-run').click();

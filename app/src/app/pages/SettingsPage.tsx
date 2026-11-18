@@ -1,12 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Archive, Check, Crosshair, Info, Lock, LockOpen, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { Archive, Check, Crosshair, Info, Loader2, Lock, LockOpen, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { lastBackupAt } from '@/core/backup/backup';
 import { backupReminder } from '@/core/backup/reminder';
 import { autoBackupState, hasAutoBackupPassword, runAutoBackup, setAutoBackupPassword, type AutoBackupResult, type AutoBackupState } from '@/core/backup/autoBackup';
 import { verifyAllDownloads, type VerifyReport } from '@/core/storage/runVerify';
 import { downloadCountryPack } from '@/modules/emergency/country';
+import { redownloadZone } from '@/modules/maps/redownload';
 import { problemsOf, type DownloadCheck } from '@/core/storage/verifyDownloads';
 import { daysBetween, today } from '@/modules/inventory/domain/dates';
 import { newerRelease, usePortableUpdate } from '@/core/portable/update';
@@ -867,6 +868,38 @@ function VerifyDownloads() {
   const [report, setReport] = useState<VerifyReport | null>(null);
   const removeBook = useLibrary((s) => s.remove);
   const removeZone = useMapZones((s) => s.remove);
+  const serverUrl = useSettings((s) => s.settings.serverUrl);
+  const mapSource = useSettings((s) => s.settings.mapSource);
+  /** Qué se está volviendo a bajar (`kind-id`), cuánto va (zonas) y por qué falló lo último. */
+  const [redoing, setRedoing] = useState<string | null>(null);
+  const [redoPct, setRedoPct] = useState<number | null>(null);
+  const [redoFailed, setRedoFailed] = useState<Record<string, string>>({});
+
+  async function redownload(c: DownloadCheck) {
+    const key = `${c.kind}-${c.id}`;
+    setRedoing(key);
+    setRedoPct(null);
+    setRedoFailed((f) => ({ ...f, [key]: '' }));
+    let reason: string | null = null;
+    try {
+      if (c.kind === 'book') {
+        reason = await useLibrary.getState().redownload(serverUrl, c.id);
+      } else {
+        const zone = useMapZones.getState().zones.find((z) => z.id === c.id);
+        if (!zone) reason = 'failed';
+        else {
+          const r = await redownloadZone(zone, { serverUrl, mode: mapSource, onProgress: (p) => setRedoPct(Math.round((100 * p.done) / Math.max(1, p.total))) });
+          reason = r.ok ? null : r.reason;
+        }
+      }
+    } catch {
+      reason = 'failed';
+    }
+    setRedoing(null);
+    setRedoPct(null);
+    if (reason) setRedoFailed((f) => ({ ...f, [key]: reason! }));
+    else void run();
+  }
 
   async function run() {
     setState('running');
@@ -935,10 +968,22 @@ function VerifyDownloads() {
                       <strong>{c.name}</strong> <span className="hint">· {t(c.kind === 'book' ? 'settings.dlBook' : 'settings.dlZone')}</span>
                     </span>
                     <span className="hint">{c.status === 'missing' ? t('settings.dlMissing') : t('settings.dlPartial', { present: c.present, total: c.total })}</span>
+                    {redoFailed[`${c.kind}-${c.id}`] && (
+                      <p className="error" role="alert" style={{ margin: 0 }} data-testid={`verify-redo-error-${c.kind}-${c.id}`}>
+                        {t(`settings.dlRedoFailed.${['offline', 'key-required', 'bad-key', 'too-many-tries', 'tooBig', 'tooBigServer', 'outsideServer', 'noServer'].includes(redoFailed[`${c.kind}-${c.id}`]!) ? redoFailed[`${c.kind}-${c.id}`] : 'failed'}`)}
+                        {(redoFailed[`${c.kind}-${c.id}`] === 'key-required' || redoFailed[`${c.kind}-${c.id}`] === 'bad-key') && (
+                          <> <Link to="/library/books">{t('settings.dlOpenLibrary')}</Link></>
+                        )}
+                      </p>
+                    )}
                     <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
-                      <Link className="btn" to={c.kind === 'book' ? '/library/books' : '/orientation/maps'}>
-                        {t('settings.dlRedownload')}
-                      </Link>
+                      <button className="btn btn-primary" type="button" disabled={redoing !== null} onClick={() => void redownload(c)} data-testid={`verify-redo-${c.kind}-${c.id}`}>
+                        {redoing === `${c.kind}-${c.id}` ? (
+                          <><Loader2 size={16} className="spin" aria-hidden /> {redoPct !== null ? t('settings.dlRedoingPct', { pct: redoPct }) : t('settings.dlRedoing')}</>
+                        ) : (
+                          t('settings.dlRedownload')
+                        )}
+                      </button>
                       <button className="btn btn-danger-outline" type="button" onClick={() => void dismiss(c)}>
                         {t('settings.dlRemove')}
                       </button>

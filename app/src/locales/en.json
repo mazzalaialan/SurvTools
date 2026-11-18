@@ -2763,7 +2763,7 @@
     "dlZone": "Map area",
     "dlMissing": "It is not on this phone.",
     "dlPartial": "It is incomplete ({{present}} of {{total}} checked files found).",
-    "dlRedownload": "Download again",
+    "dlRedownload": "Download again", "dlRedoing": "Downloading…", "dlRedoingPct": "Downloading {{pct}} %", "dlOpenLibrary": "Open the Library", "dlRedoFailed": {"offline": "No connection: try again when you are online.", "key-required": "This book needs the library key.", "bad-key": "The library key is not correct.", "too-many-tries": "Too many attempts: try later.", "tooBig": "The zone is too big to download from the public sources: your server is needed.", "tooBigServer": "The zone is bigger than your server allows.", "outsideServer": "Your server does not cover this zone.", "noServer": "Your maps server is not set up.", "failed": "Could not download again. Try again."},
     "dlRemove": "Remove from the list",
     "hideInRecents": "Hide the app in recent apps and block screenshots",
     "hideInRecentsHint": "The recent apps list of Android does not show the app content (medical records, documents, contacts) and screenshots are blocked while it is open. Off by default.",
