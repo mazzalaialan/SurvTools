@@ -1,3 +1,4 @@
+import { isNativePlatform } from '@/core/platform';
 import { create } from 'zustand';
 
 /**
@@ -8,6 +9,7 @@ export type Capability =
   | 'geolocation'
   | 'orientation'
   | 'motion'
+  | 'barometer'
   | 'camera'
   | 'barcode'
   | 'notifications'
@@ -22,6 +24,7 @@ export const CAPABILITIES: Capability[] = [
   'geolocation',
   'orientation',
   'motion',
+  'barometer',
   'camera',
   'barcode',
   'notifications',
@@ -75,24 +78,32 @@ function canShareFiles(): boolean {
 }
 
 export async function detectCapabilities(): Promise<CapabilityMap> {
-  const [orientation, motion, camera] = await Promise.all([
+  const native = isNativePlatform();
+  const [orientation, motion, camera, barometerOk, nativeBiometric] = await Promise.all([
     probeEvent('deviceorientationabsolute'),
     probeEvent('devicemotion'),
     hasCamera(),
+    // Los navegadores no exponen el barómetro: solo la app nativa lo lee (se pregunta directo al sensor, sin depender de que ya esté instalado).
+    native ? import('./nativeBarometerProbe').then((m) => m.barometerAvailable()) : Promise.resolve(false),
+    native ? import('@/core/security/nativeBiometric').then((m) => m.nativeAvailable()) : Promise.resolve(false),
   ]);
   return {
     geolocation: 'geolocation' in navigator,
     orientation,
     motion,
+    barometer: barometerOk,
     camera,
     barcode: 'BarcodeDetector' in window,
-    notifications: 'Notification' in window,
+    // App nativa: los avisos van por Firebase y los avisos locales del sistema (core/notifications/nativeBackend.ts), no por el navegador.
+    notifications: native || 'Notification' in window,
     periodicSync: 'serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype,
-    push: 'serviceWorker' in navigator && 'PushManager' in window,
-    webauthn: 'PublicKeyCredential' in window,
+    push: native || ('serviceWorker' in navigator && 'PushManager' in window),
+    // App nativa: la huella va por el Keystore de Android (core/security/nativeBiometric.ts), no por WebAuthn.
+    webauthn: native ? nativeBiometric : 'PublicKeyCredential' in window,
     opfs: typeof navigator.storage?.getDirectory === 'function',
     shareFiles: canShareFiles(),
-    serviceWorker: 'serviceWorker' in navigator,
+    // «Funcionamiento sin conexión»: en la app nativa los archivos de la app van dentro del paquete (no hace falta service worker).
+    serviceWorker: native || 'serviceWorker' in navigator,
   };
 }
 

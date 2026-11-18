@@ -7,6 +7,10 @@ android {
     def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
     def versionParts = appVersion.tokenize('.').collect { it.toInteger() }
     defaultConfig {
+        // Copia de seguridad automática de Android (los datos de la app a la cuenta de Google del teléfono): APAGADA en VikArg (los datos son propios
+        // y locales; el respaldo es el backup cifrado de VikArg). La copia institucional de la escuela la lleva ENCENDIDA: se compila con
+        // `npm run android:debug:escuela` (ALLOW_BACKUP=true). Es una propiedad fija del paquete: no se puede cambiar desde la app.
+        manifestPlaceholders = [allowBackup: System.getenv('ALLOW_BACKUP') == 'true' ? 'true' : 'false']
         applicationId "ar.vikarg.survtools"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion

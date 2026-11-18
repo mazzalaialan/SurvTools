@@ -118,6 +118,7 @@
     "geolocation": "GPS / ubicación",
     "orientation": "Brújula",
     "motion": "Acelerómetro",
+    "barometer": "Barómetro",
     "camera": "Cámara",
     "barcode": "Lector de códigos",
     "notifications": "Notificaciones",

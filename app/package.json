@@ -20,7 +20,8 @@
     "android:debug": "npm run icons:android && npm run build && cap sync android && cd android && ./gradlew --no-daemon assembleDebug",
     "icons:android": "node scripts/generate-android-icons.mjs",
     "icons:android:release": "node scripts/generate-android-icons.mjs --release",
-    "splash:android": "node scripts/generate-android-splash.mjs"
+    "splash:android": "node scripts/generate-android-splash.mjs",
+    "android:debug:escuela": "ALLOW_BACKUP=true VITE_COMMERCIAL=1 npm run android:debug"
   },
   "dependencies": {
     "@capacitor-community/file-opener": "8.0.1",
