@@ -1389,6 +1389,11 @@
     "exit": "Salir de pantalla completa"
   },
   "altimeter": {
+    "sourceTitle": "Fuente de la altura",
+    "sourceGps": "GPS",
+    "sourceBaro": "Barómetro",
+    "baroNote": "Barómetro: mide los cambios de altura con mucha más precisión que el GPS (subir o bajar unos metros se nota enseguida), pero la presión también cambia con el clima (1 hPa por hora son unos 8 m). Calibralo con el mapa o con una altura conocida al empezar y de vez en cuando.",
+    "baroAccuracy": "según el barómetro",
     "disclaimer": "Altímetro por GPS: no es 100% preciso. La altura del GPS suele errar entre 10 y 30 m (bastante más que la posición en el mapa) y empeora entre árboles, en quebradas o con pocos satélites. Calibralo con un punto de altura conocida o con la altura del mapa y usalo como referencia, no como único dato para decisiones de seguridad.",
     "nowTitle": "Altura actual",
     "accuracy": "±{{value}} según el GPS",

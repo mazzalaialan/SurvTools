@@ -4,12 +4,12 @@
  * Hoy la altura viene del GPS. El GPS mide mal la altura (peor que la
  * posición horizontal), así que se suaviza, se calibra con la altura del mapa
  * o con un punto conocido y el desnivel se cuenta con un umbral para no sumar
- * el ruido. Cuando la app corra con Capacitor se puede sumar el barómetro como
- * otra fuente (`source`): mide cambios de altura con mucha más precisión, pero
- * igual necesita una calibración porque la presión cambia con el clima.
+ * el ruido. En la app nativa el barómetro es otra fuente (`source`, ver
+ * `barometer.ts`): mide cambios de altura con mucha más precisión, pero igual
+ * necesita una calibración (la misma) porque la presión cambia con el clima.
  */
 
-export type AltitudeSource = 'gps';
+export type AltitudeSource = 'gps' | 'baro';
 
 export interface AltSample {
   /** Hora (ms). */

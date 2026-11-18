@@ -1389,6 +1389,11 @@
     "exit": "Exit full screen"
   },
   "altimeter": {
+    "sourceTitle": "Altitude source",
+    "sourceGps": "GPS",
+    "sourceBaro": "Barometer",
+    "baroNote": "Barometer: it measures changes in height far more precisely than GPS (climbing or descending a few metres shows right away), but pressure also changes with the weather (1 hPa per hour is about 8 m). Calibrate it with the map or a known altitude at the start and every so often.",
+    "baroAccuracy": "from the barometer",
     "disclaimer": "GPS altimeter: it is not 100% accurate. GPS altitude is usually off by 10 to 30 m (much more than the position on the map) and gets worse under trees, in gullies or with few satellites. Calibrate it with a point of known altitude or with the map altitude and use it as a reference, not as the only input for safety decisions.",
     "nowTitle": "Current altitude",
     "accuracy": "±{{value}} according to the GPS",

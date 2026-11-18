@@ -25,7 +25,11 @@ async function bootstrap() {
   if (isNativePlatform()) void import('./core/notifications/nativeBackend').then((m) => m.startNativeNotifications());
   // App nativa: la grabación de recorridos usa un servicio en primer plano que sigue con la pantalla apagada. Se instala antes de que cargue la
   // bóveda: al reabrir, una grabación que se cortó recupera del registro nativo lo que quedó pendiente.
-  if (isNativePlatform()) (await import('./core/geo/nativeLocation')).startNativeLocation();
+  if (isNativePlatform()) {
+    (await import('./core/geo/nativeLocation')).startNativeLocation();
+    // El altímetro puede usar el barómetro del teléfono (los navegadores no lo exponen).
+    (await import('./core/sensors/nativeBarometer')).startNativeBarometer();
+  }
   // Con servidor configurado, cada cambio de alertas se le envía (agrupado).
   onAlertIndexChange(scheduleAlertSync);
   await useVault.getState().refresh();

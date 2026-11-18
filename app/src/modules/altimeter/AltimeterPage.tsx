@@ -3,13 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { BellOff, BellRing, RotateCcw } from 'lucide-react';
 import { distanceMeters, type LatLon } from '@/core/geo/geo';
 import { useGeolocation } from '@/core/geo/useGeolocation';
+import { useBarometer } from '@/core/sensors/useBarometer';
 import { useWakeLock } from '@/core/power/useWakeLock';
 import { useSettings } from '@/core/settings/settings';
 import { altitudeToMeters, altitudeUnit, formatAltitude } from '@/core/units/units';
 import { elevationAt } from '@/modules/maps/measure';
 import { GpsStatus } from '@/modules/waypoints/components';
 import { Segmented } from '@/ui/Segmented';
-import { alarmReached, MAX_VERTICAL_ACCURACY, mapOffset, reachAlarm, smoothAltitude, type AltSample } from './altimeter';
+import { alarmReached, MAX_VERTICAL_ACCURACY, mapOffset, reachAlarm, smoothAltitude, type AltitudeSource, type AltSample } from './altimeter';
+import { pressureAltitude } from './barometer';
 import { useAltimeter } from './store';
 import { Notice } from '@/ui/Notice';
 import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
@@ -87,15 +89,34 @@ export function AltimeterPage() {
   const demAt = useRef<LatLon | null>(null);
   const [dem, setDem] = useState<number | null | undefined>(undefined);
   const [smoothed, setSmoothed] = useState<number | null>(null);
+  // La altura sin calibrar de la fuente en uso (la del GPS suavizada o la del barómetro): con ella se calibra contra el mapa.
+  const rawNow = useRef<number | null>(null);
+
+  // Barómetro (solo la app nativa): si el dispositivo tiene, es la fuente por defecto; el GPS se puede elegir.
+  const { available: baroAvailable, pressure } = useBarometer();
+  const [chosen, setChosen] = useState<AltitudeSource | null>(null);
+  const source: AltitudeSource = baroAvailable ? (chosen ?? 'baro') : 'gps';
+  function chooseSource(next: AltitudeSource) {
+    if (next === source) return;
+    // Cambia la escala de las alturas: se empieza de nuevo (la calibración y el desnivel eran de la otra fuente).
+    raw.current = [];
+    pairs.current = [];
+    rawNow.current = null;
+    setSmoothed(null);
+    setChosen(next);
+    calibrate(null);
+  }
 
   const usable = fix && fix.alt !== null && (fix.altAccuracy === null || fix.altAccuracy <= MAX_VERTICAL_ACCURACY);
 
   useEffect(() => {
     if (!fix) return;
-    const gps = usable ? fix.alt! : null;
-    if (gps !== null) {
+    // Con el GPS la altura sale de la posición; con el barómetro sale de su presión (efecto de abajo) y la posición solo sirve para el mapa.
+    const gps = source === 'gps' ? (usable ? fix.alt! : null) : rawNow.current;
+    if (source === 'gps' && gps !== null) {
       raw.current = [...raw.current, gps].slice(-10);
       const s = smoothAltitude(raw.current)!;
+      rawNow.current = s;
       setSmoothed(s);
       add({ t: fix.timestamp, alt: s + (calibration?.offset ?? 0), source: 'gps' });
     }
@@ -113,6 +134,17 @@ export function AltimeterPage() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fix?.timestamp]);
+
+  // Barómetro: cada lectura de presión es una altura (de presión), suavizada con la mediana de las últimas.
+  useEffect(() => {
+    if (source !== 'baro' || !pressure) return;
+    raw.current = [...raw.current, pressureAltitude(pressure.hPa)].slice(-15);
+    const s = smoothAltitude(raw.current, 9)!;
+    rawNow.current = s;
+    setSmoothed(s);
+    add({ t: pressure.at, alt: s + (calibration?.offset ?? 0), source: 'baro' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pressure?.at, source]);
 
   const altitude = smoothed === null ? null : smoothed + (calibration?.offset ?? 0);
 
@@ -168,7 +200,8 @@ export function AltimeterPage() {
               {fmt(altitude)}
             </p>
             <p className="hint" style={{ margin: 0, textAlign: 'center' }} data-testid="alt-calibration">
-              {fix?.altAccuracy != null && `${t('altimeter.accuracy', { value: fmt(fix.altAccuracy) })} · `}
+              {source === 'gps' && fix?.altAccuracy != null && `${t('altimeter.accuracy', { value: fmt(fix.altAccuracy) })} · `}
+              {source === 'baro' && `${t('altimeter.baroAccuracy')} · `}
               {calibrationLabel}
             </p>
           </>
@@ -181,6 +214,22 @@ export function AltimeterPage() {
           {dem === undefined ? t('altimeter.mapWaiting') : dem === null ? t('altimeter.mapNone') : t('altimeter.mapHere', { alt: fmt(dem) })}
         </p>
       </section>
+
+      {baroAvailable && (
+        <section className="card stack" aria-labelledby="alt-source">
+          <h2 id="alt-source" className="section-title" style={{ margin: 0 }}>
+            {t('altimeter.sourceTitle')}
+          </h2>
+          <div className="row" role="group" aria-label={t('altimeter.sourceTitle')} data-testid="alt-source">
+            {(['baro', 'gps'] as const).map((s) => (
+              <button key={s} className={`btn${source === s ? ' btn-primary' : ''}`} type="button" aria-pressed={source === s} onClick={() => chooseSource(s)} data-testid={`alt-source-${s}`}>
+                {t(s === 'baro' ? 'altimeter.sourceBaro' : 'altimeter.sourceGps')}
+              </button>
+            ))}
+          </div>
+          {source === 'baro' && <p className="hint" style={{ margin: 0 }}>{t('altimeter.baroNote')}</p>}
+        </section>
+      )}
 
       <section className="card stack" aria-labelledby="alt-cal">
         <h2 id="alt-cal" className="section-title" style={{ margin: 0 }}>
