@@ -101,7 +101,8 @@ export async function detectCapabilities(): Promise<CapabilityMap> {
     // App nativa: la huella va por el Keystore de Android (core/security/nativeBiometric.ts), no por WebAuthn.
     webauthn: native ? nativeBiometric : 'PublicKeyCredential' in window,
     opfs: typeof navigator.storage?.getDirectory === 'function',
-    shareFiles: canShareFiles(),
+    // App nativa: se comparte con el menú del sistema (ui/nativeFiles.ts), no con `navigator.share`.
+    shareFiles: native || canShareFiles(),
     // «Funcionamiento sin conexión»: en la app nativa los archivos de la app van dentro del paquete (no hace falta service worker).
     serviceWorker: native || 'serviceWorker' in navigator,
   };
