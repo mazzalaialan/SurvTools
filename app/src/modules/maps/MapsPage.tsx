@@ -1,3 +1,4 @@
+import { requestPersistence } from '@/core/storage/persist';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
@@ -438,7 +439,7 @@ export function MapsPage() {
     setProgress({ done: 0, total: 1, bytes: 0, failed: 0 });
     setMessage(null);
     // Que el navegador no borre los mapas si se queda sin espacio.
-    void navigator.storage?.persist?.();
+    void requestPersistence();
     try {
       const result = await downloadZone(plan, setProgress, controller.signal, { vectorPublic: source.vectorPublic });
       // La isoterma de 0 °C de los próximos días, para la capa de avalanchas sin conexión (si falla, la zona igual sirve).

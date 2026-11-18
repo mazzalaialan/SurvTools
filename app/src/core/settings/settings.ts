@@ -22,6 +22,8 @@ export interface Settings {
   systemBarRed: number;
   /** App nativa, solo en «Rojo nocturno»: mostrar la barra de estado de Android (hora, batería, señal). Apagado la oculta (se ve al deslizar desde arriba). */
   showStatusBar: boolean;
+  /** App nativa: copia automática y cifrada de los datos en Documentos/VikArg/copia-automatica (fuera del WebView). */
+  autoBackup: boolean;
   /**
    * App nativa: oculta la app en «recientes» de Android (la miniatura mostraría fichas médicas, documentos o contactos) y evita las capturas de
    * pantalla (`FLAG_SECURE`). Por defecto apagado: quien lo necesita lo activa en Ajustes → Seguridad.
@@ -253,6 +255,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
   systemBarRed: 1,
   showStatusBar: true,
+  autoBackup: true,
   hideInRecents: false,
   firstUseAt: null,
   backupReminderSnoozedUntil: null,

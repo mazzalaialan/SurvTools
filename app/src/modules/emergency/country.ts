@@ -1,3 +1,4 @@
+import { requestPersistence } from '@/core/storage/persist';
 import { useEffect } from 'react';
 import { useSettings, type Country } from '@/core/settings/settings';
 import { loadEmergencyData, loadParksCL, loadParksFile, type EmergencyData } from './data';
@@ -67,6 +68,8 @@ export function useCountryPrefetch(): void {
 
 /** Baja todo lo del país que se usa sin conexión: el paquete, los servicios, las repetidoras oficiales, los parques y las ecorregiones. Falla en silencio. */
 export async function prefetchCountry(country: Country): Promise<void> {
+  // Que el navegador no borre los datos del país si se queda sin espacio.
+  void requestPersistence();
   const quiet = (p: Promise<unknown>) => p.catch(() => undefined);
   await Promise.all([
     country !== 'AR' ? quiet(loadCountryData(country)) : undefined,

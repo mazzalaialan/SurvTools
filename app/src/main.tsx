@@ -35,6 +35,8 @@ async function bootstrap() {
     (await import('./core/backButton')).startBackButton();
     // El fondo y los íconos de las barras del sistema siguen el tema de la app (si no, quedan de un gris que no combina).
     (await import('./core/systemBars')).startSystemBars();
+    // Copia automática y cifrada de los datos en Documentos (fuera del WebView), sin pedir la contraseña.
+    void (await import('./core/backup/autoBackup')).startAutoBackup();
     // Archivos que llegan de afuera («Abrir con VikArg» o «Compartir»): recorridos y backups.
     (await import('./core/incomingFile')).startIncomingFiles();
     // Enlaces de transferencia (https) que abren la app: se llevan a la ruta de transferencia antes de dibujar.

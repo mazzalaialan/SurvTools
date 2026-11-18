@@ -1,3 +1,4 @@
+import { requestPersistence } from '@/core/storage/persist';
 import { strFromU8, unzipSync } from 'fflate';
 
 /**
@@ -129,6 +130,8 @@ export async function installBook(
 ): Promise<InstalledBook> {
   if (!navigator.onLine) throw new LibraryError('offline');
   if (!('caches' in globalThis)) throw new LibraryError('no-storage');
+  // Que el navegador no borre el libro si se queda sin espacio.
+  void requestPersistence();
   const headers: Record<string, string> = {};
   if (book.license !== 'public') {
     if (!opts.key || !opts.passphrase) throw new LibraryError('key-required');

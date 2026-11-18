@@ -53,9 +53,9 @@ export async function shareNative(bytes: Uint8Array, name: string): Promise<'sha
   return 'shared';
 }
 
-/** Guarda el archivo en Documentos/VikArg del teléfono (queda a la vista en la app «Archivos»). Devuelve dónde quedó. */
-export async function saveNative(bytes: Uint8Array, name: string): Promise<string> {
-  const path = `VikArg/${safeName(name)}`;
+/** Guarda el archivo en Documentos/VikArg (o en la subcarpeta `dir`) del teléfono: queda a la vista en la app «Archivos». Devuelve dónde quedó. */
+export async function saveNative(bytes: Uint8Array, name: string, dir = 'VikArg'): Promise<string> {
+  const path = `${dir}/${safeName(name)}`;
   await write(path, bytes, Directory.Documents);
   return `Documentos/${path}`;
 }
@@ -65,4 +65,13 @@ export async function openNative(bytes: Uint8Array, name: string, mime: string):
   await clearExports();
   const uri = await write(`${EXPORTS}/${safeName(name)}`, bytes, Directory.Cache);
   await FileOpener.open({ filePath: uri, contentType: mime });
+}
+
+/** En esa carpeta de Documentos, deja solo los `keep` archivos más nuevos (los nombres llevan la fecha, así que el orden alfabético es el cronológico). */
+export async function pruneNative(dir: string, keep: number, ext: string): Promise<number> {
+  const { files } = await Filesystem.readdir({ path: dir, directory: Directory.Documents }).catch(() => ({ files: [] }));
+  const names = files.map((f) => f.name).filter((n) => n.endsWith(ext)).sort();
+  const old = names.slice(0, Math.max(0, names.length - keep));
+  for (const name of old) await Filesystem.deleteFile({ path: `${dir}/${name}`, directory: Directory.Documents }).catch(() => undefined);
+  return old.length;
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Archive, Check, Crosshair, Info, Lock, LockOpen, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { lastBackupAt } from '@/core/backup/backup';
 import { backupReminder } from '@/core/backup/reminder';
+import { autoBackupState, hasAutoBackupPassword, runAutoBackup, setAutoBackupPassword, type AutoBackupResult, type AutoBackupState } from '@/core/backup/autoBackup';
 import { verifyAllDownloads, type VerifyReport } from '@/core/storage/runVerify';
 import { downloadCountryPack } from '@/modules/emergency/country';
 import { problemsOf, type DownloadCheck } from '@/core/storage/verifyDownloads';
@@ -203,6 +204,83 @@ function SystemBarRedField({ level, onChange }: { level: number; onChange: (n: n
   );
 }
 
+/** App nativa: copia automática y cifrada de los datos en Documentos/VikArg (fuera del WebView), con la última y un botón para hacerla ya. */
+function AutoBackupField() {
+  const { t, i18n } = useTranslation();
+  const enabled = useSettings((s) => s.settings.autoBackup);
+  const update = useSettings((s) => s.update);
+  const [state, setState] = useState<AutoBackupState | null>(null);
+  const [result, setResult] = useState<AutoBackupResult | null>(null);
+  const [busy, setBusy] = useState(false);
+  const open = useVault((s) => s.open);
+  const [hasPassword, setHasPassword] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const refresh = () => {
+    void autoBackupState().then(setState);
+    void hasAutoBackupPassword().then(setHasPassword);
+  };
+  useEffect(refresh, []);
+  const pwOk = pw.length >= MIN_PASSWORD_LENGTH && pw === pw2;
+  async function savePassword() {
+    await setAutoBackupPassword(pw);
+    setPw('');
+    setPw2('');
+    setEditing(false);
+    refresh();
+    await now();
+  }
+
+  async function now() {
+    setBusy(true);
+    setResult(null);
+    try {
+      setResult(await runAutoBackup({ force: true }));
+    } finally {
+      setBusy(false);
+      refresh();
+    }
+  }
+  const when = state ? new Intl.DateTimeFormat(i18n.language, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(state.at)) : null;
+  return (
+    <div className="stack" style={{ gap: 8 }} data-testid="auto-backup">
+      <label className="check">
+        <input type="checkbox" checked={enabled} onChange={(e) => void update({ autoBackup: e.target.checked })} data-testid="auto-backup-toggle" />
+        <span>
+          {t('settings.autoBackup')}
+          <span className="hint" style={{ display: 'block' }}>{t('settings.autoBackupHint')}</span>
+        </span>
+      </label>
+      <p className="hint" style={{ margin: 0 }} data-testid="auto-backup-last">
+        {when && state ? t('settings.autoBackupLast', { when, where: state.where, size: formatBytes(state.bytes, i18n.language) }) : t('settings.autoBackupNever')}
+      </p>
+      {open && (!hasPassword || editing) ? (
+        <div className="stack" style={{ gap: 6 }} data-testid="auto-backup-password">
+          <p className="warning-box" style={{ margin: 0 }}>{t('settings.autoBackupPasswordHint')}</p>
+          <input className="input" type="password" autoComplete="new-password" placeholder={t('settings.autoBackupPassword')} value={pw} onChange={(e) => setPw(e.target.value)} aria-label={t('settings.autoBackupPassword')} data-testid="auto-backup-pw" />
+          <input className="input" type="password" autoComplete="new-password" placeholder={t('setup.confirm')} value={pw2} onChange={(e) => setPw2(e.target.value)} aria-label={t('setup.confirm')} data-testid="auto-backup-pw2" />
+          {pw && !pwOk && <p className="error" role="alert" style={{ margin: 0 }}>{pw.length < MIN_PASSWORD_LENGTH ? t('setup.tooShort', { min: MIN_PASSWORD_LENGTH }) : t('setup.mismatch')}</p>}
+          <div className="row-end">
+            {editing && <button className="btn" type="button" onClick={() => setEditing(false)}>{t('common.cancel')}</button>}
+            <button className="btn btn-primary" type="button" disabled={!pwOk || busy} onClick={() => void savePassword()} data-testid="auto-backup-pw-save">{t('settings.autoBackupPasswordSave')}</button>
+          </div>
+        </div>
+      ) : (
+        open && <div><button className="btn-link" type="button" onClick={() => setEditing(true)}>{t('settings.autoBackupPasswordChange')}</button></div>
+      )}
+      {result && result !== 'done' && (
+        <p className={result === 'error' ? 'error' : 'hint'} role="status" style={{ margin: 0 }}>{t(`settings.autoBackupResult.${result}`)}</p>
+      )}
+      <div>
+        <button className="btn" type="button" onClick={() => void now()} disabled={busy} data-testid="auto-backup-now">
+          <Archive size={18} /> {busy ? t('settings.autoBackupBusy') : t('settings.autoBackupNow')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Acceso al backup y la transferencia, con cuándo fue el último. */
 function BackupSection() {
   const { t } = useTranslation();
@@ -225,6 +303,7 @@ function BackupSection() {
           <Archive size={18} /> {t('settings.backupOpen')}
         </Link>
       </div>
+      {isNativePlatform() && <AutoBackupField />}
     </section>
   );
 }
