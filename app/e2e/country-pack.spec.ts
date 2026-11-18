@@ -111,6 +111,9 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   const map = page.getByTestId('country-map-PY');
   await expect(map).toHaveAttribute('data-state', 'missing');
 
+  // Antes de tocar nada, el panel explica cómo se usa.
+  await expect(page.getByTestId('country-map-next')).toContainText('Tocá un país del mapa para marcarlo');
+
   // 1.er toque: lo marca, no baja nada.
   await map.click();
   await expect(page.getByTestId('country-map-panel')).toContainText('Paraguay');
