@@ -30,7 +30,7 @@ Estos principios ordenan todas las decisiones. Ante una duda de diseño, se resu
 | Tipo de app | Progressive Web App (PWA) instalable |
 | Plataformas objetivo | **Android (Chrome)** y **PC (Chrome / Edge)** |
 | iOS | Fuera de alcance (no se bloquea, pero no se prueba ni se optimiza) |
-| Distribución | Instalación desde el navegador. Opcional: APK (TWA) en GitHub Releases. **Sin Play Store** por ahora (ver §13) |
+| Distribución | Instalación desde el navegador (PWA). **App Android y iPhone con Capacitor** (decisión del 2026-11-18, ver `PENDIENTES.md` §3): hace falta grabar la ubicación con la pantalla apagada, que una TWA no puede; **no se hace APK por TWA**. Mientras tanto, sin tiendas (ver §13) |
 | Idiomas | Español e inglés desde el inicio, arquitectura multi-idioma |
 | Unidades | Sistema métrico por defecto, imperial seleccionable en Ajustes |
 | Usuarios | Un solo usuario por instalación. Puede tener varios dispositivos |
