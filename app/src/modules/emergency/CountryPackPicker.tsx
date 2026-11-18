@@ -1,14 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, Loader2, RefreshCw } from 'lucide-react';
-import { COUNTRIES, useSettings, type Country } from '@/core/settings/settings';
-import { downloadCountryPack } from './country';
-import { countryPackState, formatBytes, type PackState } from './countryDownload';
-
-interface Pack {
-  state: PackState;
-  bytes: number;
-}
+import { ArrowDownToLine, Check, Loader2, Map as MapIcon, RefreshCw } from 'lucide-react';
+import { COUNTRIES, useSettings } from '@/core/settings/settings';
+import { formatBytes } from './countryDownload';
+import { CountryPackMap } from './CountryPackMap';
+import { useCountryPacks } from './useCountryPacks';
 
 /**
  * Selector de país de Ajustes: a cada país le agrega el estado de su paquete de datos sin conexión (tilde verde si está bajado y al
@@ -19,31 +15,8 @@ export function CountryPackPicker() {
   const { t, i18n } = useTranslation();
   const country = useSettings((s) => s.settings.country);
   const update = useSettings((s) => s.update);
-  const [packs, setPacks] = useState<Partial<Record<Country, Pack>>>({});
-  const [busy, setBusy] = useState<Country | null>(null);
-
-  const check = useCallback(async (force = false) => {
-    for (const c of COUNTRIES) {
-      const p = await countryPackState(c, force).catch(() => null);
-      if (p) setPacks((prev) => ({ ...prev, [c]: { state: p.state, bytes: p.bytes } }));
-    }
-  }, []);
-  useEffect(() => {
-    void check();
-    const again = () => void check(true);
-    window.addEventListener('online', again);
-    return () => window.removeEventListener('online', again);
-  }, [check]);
-
-  const download = async (c: Country) => {
-    setBusy(c);
-    try {
-      await downloadCountryPack(c);
-    } finally {
-      setBusy(null);
-      void check(true);
-    }
-  };
+  const { packs, busy, download } = useCountryPacks();
+  const [mapOpen, setMapOpen] = useState(false);
 
   return (
     <div className="field">
@@ -97,6 +70,12 @@ export function CountryPackPicker() {
           );
         })}
       </div>
+      <div>
+        <button className="btn" type="button" onClick={() => setMapOpen(true)} data-testid="country-pack-map-open">
+          <MapIcon size={18} aria-hidden /> {t('country.map.open')}
+        </button>
+      </div>
+      {mapOpen && <CountryPackMap onClose={() => setMapOpen(false)} />}
     </div>
   );
 }

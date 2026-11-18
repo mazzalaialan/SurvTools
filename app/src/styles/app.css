@@ -5115,3 +5115,88 @@ button.country-pack-icon {
   gap: 3px;
   font-size: 0.78rem;
 }
+
+/* Mapa de países para bajar los datos sin conexión (Ajustes → País → «Ver en el mapa»). */
+.country-map {
+  width: 100%;
+  max-height: 52vh;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.country-map-neighbor {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 0.6;
+}
+
+.country-map-country {
+  cursor: pointer;
+  outline: none;
+  --state-color: var(--text-muted);
+}
+
+.country-map-country[data-state='ready'] { --state-color: var(--ok); }
+.country-map-country[data-state='outdated'] { --state-color: var(--warn); }
+.country-map-country[data-state='busy'] { --state-color: var(--accent); }
+
+.country-map-country > path {
+  fill: color-mix(in srgb, var(--state-color) 28%, var(--surface));
+  stroke: var(--state-color);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+.country-map-country.is-selected > path,
+.country-map-country:focus-visible > path {
+  stroke-width: 3;
+  fill: color-mix(in srgb, var(--state-color) 45%, var(--surface));
+}
+
+.country-map-country[data-state='busy'] > path { animation: country-map-pulse 1.2s ease-in-out infinite; }
+
+@keyframes country-map-pulse {
+  50% { opacity: 0.55; }
+}
+
+.country-map-name {
+  fill: var(--text);
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.country-map-badge circle { fill: var(--state-color); }
+.country-map-badge text { fill: var(--surface); font-weight: 700; pointer-events: none; }
+
+.country-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.country-map-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  color: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.country-map-key[data-state='ready'] { background: var(--ok); }
+.country-map-key[data-state='outdated'] { background: var(--warn); }
+
+.country-map-panel { gap: 8px; }

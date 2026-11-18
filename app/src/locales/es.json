@@ -2428,7 +2428,7 @@
     "dontLock": "No bloquees el celular: se dejaría de grabar."
   },
   "country": {
-    "label": "País",
+    "label": "País", "map": {"open": "Ver en el mapa", "title": "Países en el mapa", "hint": "Tocá un país para ver si sus datos sin conexión están bajados y bajarlos o actualizarlos desde acá.", "legend": "Referencias", "state": {"ready": "Bajado y al día", "outdated": "Hay una versión nueva", "missing": "Sin bajar", "busy": "Bajando…", "unknown": "Revisando…"}, "download": "Bajar {{country}}", "update": "Actualizar {{country}}", "use": "Usar {{country}} como mi país"},
     "pack": {
       "ready": "{{country}}: datos sin conexión bajados y al día",
       "download": "Bajar los datos sin conexión de {{country}}",
