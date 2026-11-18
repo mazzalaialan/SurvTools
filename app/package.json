@@ -16,9 +16,12 @@
     "e2e": "playwright test",
     "e2e:full": "sh scripts/e2e-full.sh",
     "e2e:rapido": "playwright test --project=desktop --grep-invert \"mapa|seguir un track\"",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "android:debug": "npm run build && cap sync android && cd android && ./gradlew --no-daemon assembleDebug"
   },
   "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/core": "8.6.2",
     "@neaps/tide-predictor": "0.11.0",
     "astronomy-engine": "2.1.19",
     "dexie": "^4.4.7",
@@ -40,6 +43,7 @@
     "zustand": "^5.0.16"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.6.2",
     "@playwright/test": "^1.64.1",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",

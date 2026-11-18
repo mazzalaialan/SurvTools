@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SurvTools</string>
+    <string name="title_activity_main">SurvTools</string>
+    <string name="package_name">ar.vikarg.survtools</string>
+    <string name="custom_url_scheme">ar.vikarg.survtools</string>
+</resources>
