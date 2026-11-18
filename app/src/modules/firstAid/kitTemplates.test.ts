@@ -54,28 +54,31 @@ describe('plantillas de botiquín', () => {
     expect(buildList('home', 'individual', 2, 1)).toEqual(buildList('home', 'individual', 2, 30));
   });
 
-  it('las cantidades fijas también crecen con la gente: un juego más por cada grupo de las personas de partida', () => {
-    const qty = (sc: string, people: number, id: string) => buildList(sc, 'individual', people, 1).find((x) => x.id === id)?.qty ?? 0;
-    // Kit individual (1 persona de partida): un torniquete por persona.
+  it('el equipo de trauma crece con la gente solo hasta dos juegos: es improbable que haya más de dos heridos graves a la vez', () => {
+    const qty = (sc: string, people: number, id: string, level: 'individual' | 'advanced' = 'individual') => buildList(sc, level, people, 1).find((x) => x.id === id)?.qty ?? 0;
+    // Kit individual (1 persona de partida): 1 torniquete para 1 persona, 2 para 2 o más (no uno por persona).
     expect(qty('bleeding', 1, 'tourniquet')).toBe(1);
-    expect(qty('bleeding', 3, 'tourniquet')).toBe(3);
-    // Auto (4 personas de partida): hasta 4 personas, un juego; con 5 a 8, dos.
-    expect(qty('car', 2, 'tourniquet')).toBe(qty('car', 4, 'tourniquet'));
-    expect(qty('car', 8, 'tourniquet')).toBe(2 * qty('car', 4, 'tourniquet'));
-    // Un grupo grande no lleva un torniquete por persona: más allá de 4 juegos, uno más cada 20 personas.
-    expect(qty('bleeding', 4, 'tourniquet')).toBe(4);
-    expect(qty('bleeding', 20, 'tourniquet')).toBe(5);
-    expect(qty('bleeding', 50, 'tourniquet')).toBe(7);
-    expect(qty('car', 16, 'tourniquet')).toBe(4);
-    expect(qty('car', 20, 'tourniquet')).toBe(5);
+    expect(qty('bleeding', 2, 'tourniquet')).toBe(2);
+    expect(qty('bleeding', 20, 'tourniquet')).toBe(2);
+    expect(qty('bleeding', 50, 'tourniquet')).toBe(2);
+    expect(qty('bleeding', 20, 'tourniquet', 'advanced')).toBe(4);
+    // Auto (4 personas de partida): hasta 4 un juego; con más, dos.
+    expect(qty('car', 4, 'tourniquet')).toBe(1);
+    expect(qty('car', 20, 'tourniquet')).toBe(2);
     expect(setsFor(1, 1)).toBe(1);
-    expect(setsFor(100, 4)).toBe(4 + Math.ceil(84 / 20));
-    // Todos los escenarios cambian algo al duplicar la gente de partida.
-    for (const sc of SCENARIOS) {
-      const base = buildList(sc.id, 'advanced', sc.people, sc.days).reduce((a, l) => a + l.qty, 0);
-      const more = buildList(sc.id, 'advanced', sc.people * 2, sc.days).reduce((a, l) => a + l.qty, 0);
-      expect(more, sc.id).toBeGreaterThan(base);
+    expect(setsFor(100, 4)).toBe(2);
+  });
+
+  it('lo de uso personal tiene tope: 20 personas no necesitan 30 pares de guantes ni 20 mantas (solo los que toquen a un herido)', () => {
+    const qty = (sc: string, people: number, id: string) => buildList(sc, 'advanced', people, 3).find((x) => x.id === id)?.qty ?? 0;
+    for (const sc of ['trek', 'car', 'escape', 'camping']) {
+      expect(qty(sc, 20, 'gloves'), sc).toBeLessThanOrEqual(10);
+      expect(qty(sc, 20, 'space_blanket'), sc).toBeLessThanOrEqual(6);
     }
+    // Con pocas personas, el tope no molesta: 2 personas llevan 4 pares.
+    expect(buildList('trek', 'individual', 2, 3).find((x) => x.id === 'gloves')!.qty).toBe(4);
+    // Y siguen creciendo con la gente hasta el tope.
+    expect(qty('trek', 5, 'gloves')).toBeGreaterThan(qty('trek', 2, 'gloves'));
   });
 
   it('un artículo repetido en varios conjuntos se suma una sola vez', () => {

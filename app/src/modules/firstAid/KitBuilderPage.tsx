@@ -169,6 +169,8 @@ export function KitBuilderPage() {
         </div>
       </section>
 
+      <p className="hint" style={{ margin: 0 }} data-testid="kb-people-hint">{t('kitBuilder.peopleHint')}</p>
+
       <section className="card stack" aria-labelledby="kb-list">
         <h2 id="kb-list" className="section-title" style={{ margin: 0 }}>
           {t('kitBuilder.list', { count: chosen.length })}

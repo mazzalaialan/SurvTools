@@ -143,8 +143,8 @@ export const CATALOG: Record<string, CatalogItem> = {
 const ORDER: Level[] = ['individual', 'advanced', 'group'];
 const rank = (lv: Level) => ORDER.indexOf(lv);
 
-/** [artículo, nivel desde el que aparece, cantidad fija, por persona, por persona y por día] */
-type Line = [item: string, from: Level, base?: number, perPerson?: number, perPersonDay?: number];
+/** [artículo, nivel desde el que aparece, cantidad fija, por persona, por persona y por día, tope] */
+type Line = [item: string, from: Level, base?: number, perPerson?: number, perPersonDay?: number, max?: number];
 
 export interface Scenario {
   id: string;
@@ -166,11 +166,11 @@ const TRAUMA: Line[] = [
   ['hemostatic', 'individual', 1],
   ['pressure_bandage', 'individual', 1],
   ['pressure_bandage', 'advanced', 1],
-  ['gloves', 'individual', 2, 1],
+  ['gloves', 'individual', 2, 1, 0, 10],
   ['shears', 'individual', 1],
   ['marker', 'individual', 1],
   ['note_card', 'individual', 1],
-  ['space_blanket', 'individual', 0, 1],
+  ['space_blanket', 'individual', 0, 1, 0, 6],
   ['triangular', 'individual', 2],
   ['tape', 'individual', 1],
   ['chest_seal', 'advanced', 1],
@@ -181,14 +181,14 @@ const TRAUMA: Line[] = [
   ['npa', 'advanced', 1],
 ];
 const WOUNDS: Line[] = [
-  ['sterile_gauze', 'individual', 10, 2],
-  ['adhesive', 'individual', 10, 5],
+  ['sterile_gauze', 'individual', 10, 2, 0, 40],
+  ['adhesive', 'individual', 10, 5, 0, 50],
   ['elastic', 'individual', 2],
   ['tape', 'individual', 1],
   ['saline', 'individual', 1],
   ['antiseptic', 'individual', 1],
   ['tweezers', 'individual', 1],
-  ['safety_pins', 'individual', 4],
+  ['safety_pins', 'individual', 4, 0, 0, 10],
   ['sterile_dressing', 'advanced', 4, 1],
   ['nonadherent', 'advanced', 3],
   ['closure_strips', 'advanced', 5],
@@ -197,7 +197,7 @@ const WOUNDS: Line[] = [
 const BASIC_MEDS: Line[] = [
   ['analgesic', 'individual', 1],
   ['antihistamine', 'individual', 1],
-  ['ors', 'individual', 2, 0, 1],
+  ['ors', 'individual', 2, 0, 1, 20],
   ['personal_meds', 'individual', 0, 1],
 ];
 
@@ -207,78 +207,78 @@ export const SCENARIOS: Scenario[] = [
     name: l('Casa', 'Home'),
     desc: l('Botiquín del hogar para golpes, cortes, quemaduras, fiebre y primeras horas de una emergencia.', 'Home kit for bumps, cuts, burns, fever and the first hours of an emergency.'),
     kitType: 'general', people: 4, days: 1, usesDays: false,
-    lines: [...WOUNDS, ...BASIC_MEDS, ['thermometer', 'individual', 1], ['gloves', 'individual', 2, 1], ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 2], ['hand_gel', 'individual', 1], ['mask', 'individual', 0, 2],
-      ['tourniquet', 'advanced', 1], ['hemostatic', 'advanced', 1], ['pressure_bandage', 'advanced', 1], ['triangular', 'advanced', 2], ['splint', 'advanced', 1], ['space_blanket', 'advanced', 0, 1], ['cpr_mask', 'advanced', 1], ['eyewash', 'advanced', 1], ['sting_cream', 'advanced', 1], ['antidiarrheal', 'advanced', 1], ['shears', 'individual', 1], ['flashlight', 'advanced', 1], ['med_card', 'individual', 0, 1], ['bags', 'advanced', 5]],
+    lines: [...WOUNDS, ...BASIC_MEDS, ['thermometer', 'individual', 1], ['gloves', 'individual', 2, 1, 0, 10], ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 2], ['hand_gel', 'individual', 1], ['mask', 'individual', 0, 2, 0, 10],
+      ['tourniquet', 'advanced', 1], ['hemostatic', 'advanced', 1], ['pressure_bandage', 'advanced', 1], ['triangular', 'advanced', 2], ['splint', 'advanced', 1], ['space_blanket', 'advanced', 0, 1, 0, 6], ['cpr_mask', 'advanced', 1], ['eyewash', 'advanced', 1], ['sting_cream', 'advanced', 1], ['antidiarrheal', 'advanced', 1], ['shears', 'individual', 1], ['flashlight', 'advanced', 1], ['med_card', 'individual', 0, 1], ['bags', 'advanced', 5, 0, 0, 10]],
   },
   {
     id: 'car',
     name: l('Auto', 'Car'),
     desc: l('Para un choque o un varamiento en ruta: hemorragia, abrigo y espera de la ayuda.', 'For a crash or being stranded on the road: bleeding, warmth and waiting for help.'),
     kitType: 'trauma', people: 4, days: 1, usesDays: false,
-    lines: [...TRAUMA, ['sterile_gauze', 'individual', 10], ['adhesive', 'individual', 10], ['elastic', 'individual', 1], ['saline', 'individual', 1], ['burn_dressing', 'advanced', 1], ['flashlight', 'individual', 1], ['whistle', 'advanced', 0, 1], ['analgesic', 'advanced', 1], ['ors', 'advanced', 4], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA, ['sterile_gauze', 'individual', 10, 0, 0, 40], ['adhesive', 'individual', 10, 0, 0, 50], ['elastic', 'individual', 1], ['saline', 'individual', 1], ['burn_dressing', 'advanced', 1], ['flashlight', 'individual', 1], ['whistle', 'advanced', 0, 1], ['analgesic', 'advanced', 1], ['ors', 'advanced', 4, 0, 0, 20], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'moto',
     name: l('Moto o bicicleta', 'Motorcycle or bicycle'),
     desc: l('Compacto para caídas: raspones extensos, hemorragia y fracturas hasta que llegue la ayuda.', 'Compact for falls: wide scrapes, bleeding and fractures until help arrives.'),
     kitType: 'trauma', people: 1, days: 1, usesDays: false,
-    lines: [...TRAUMA.filter(([i]) => i !== 'npa'), ['nonadherent', 'individual', 3], ['sterile_gauze', 'individual', 6], ['adhesive', 'individual', 6], ['elastic', 'individual', 1], ['saline', 'individual', 1], ['burn_dressing', 'advanced', 1], ['blister', 'advanced', 2], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA.filter(([i]) => i !== 'npa'), ['nonadherent', 'individual', 3], ['sterile_gauze', 'individual', 6, 0, 0, 40], ['adhesive', 'individual', 6, 0, 0, 50], ['elastic', 'individual', 1], ['saline', 'individual', 1], ['burn_dressing', 'advanced', 1], ['blister', 'advanced', 2, 0, 0, 40], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'escape',
     name: l('Mochila de escape', 'Bug-out bag'),
     desc: l('Para salir de casa con lo justo durante 3 días o más: trauma, curaciones y medicación.', 'To leave home with the essentials for 3 days or more: trauma, dressings and medication.'),
     kitType: 'general', people: 1, days: 3, usesDays: true,
-    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['blister', 'individual', 4], ['burn_dressing', 'individual', 2], ['mask', 'individual', 0, 2], ['hand_gel', 'individual', 1], ['flashlight', 'individual', 1], ['whistle', 'individual', 0, 1], ['thermometer', 'advanced', 1], ['heat_pack', 'advanced', 0, 1], ['antidiarrheal', 'advanced', 1], ['sunscreen', 'advanced', 1], ['repellent', 'advanced', 1], ['bags', 'individual', 3], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['blister', 'individual', 4, 0, 0, 40], ['burn_dressing', 'individual', 2], ['mask', 'individual', 0, 2, 0, 10], ['hand_gel', 'individual', 1], ['flashlight', 'individual', 1], ['whistle', 'individual', 0, 1], ['thermometer', 'advanced', 1], ['heat_pack', 'advanced', 0, 1, 0, 6], ['antidiarrheal', 'advanced', 1], ['sunscreen', 'advanced', 1], ['repellent', 'advanced', 1], ['bags', 'individual', 3, 0, 0, 10], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'trek',
     name: l('Trekking y montaña', 'Trekking and mountains'),
     desc: l('Salidas de varios días lejos de la ayuda: ampollas, torceduras, frío, altura y evacuación.', 'Multi-day trips far from help: blisters, sprains, cold, altitude and evacuation.'),
     kitType: 'general', people: 2, days: 3, usesDays: true,
-    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['blister', 'individual', 4, 2], ['splint', 'individual', 1], ['heat_pack', 'advanced', 0, 1], ['antidiarrheal', 'advanced', 1], ['sunscreen', 'individual', 1], ['repellent', 'advanced', 1], ['oximeter', 'advanced', 1], ['flashlight', 'individual', 1], ['whistle', 'individual', 0, 1], ['bags', 'individual', 3], ['burn_dressing', 'advanced', 1], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['blister', 'individual', 4, 2, 0, 40], ['splint', 'individual', 1], ['heat_pack', 'advanced', 0, 1, 0, 6], ['antidiarrheal', 'advanced', 1], ['sunscreen', 'individual', 1], ['repellent', 'advanced', 1], ['oximeter', 'advanced', 1], ['flashlight', 'individual', 1], ['whistle', 'individual', 0, 1], ['bags', 'individual', 3, 0, 0, 10], ['burn_dressing', 'advanced', 1], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'camping',
     name: l('Camping, pesca y caza', 'Camping, fishing and hunting'),
     desc: l('Cortes con cuchillo o anzuelo, quemaduras de fogón, picaduras y garrapatas.', 'Knife or hook cuts, campfire burns, stings and ticks.'),
     kitType: 'general', people: 2, days: 3, usesDays: true,
-    lines: [...TRAUMA.filter(([i]) => i !== 'npa'), ...WOUNDS, ...BASIC_MEDS, ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 1], ['repellent', 'individual', 1], ['sunscreen', 'individual', 1], ['sting_cream', 'advanced', 1], ['flashlight', 'individual', 1], ['whistle', 'advanced', 0, 1], ['eyewash', 'advanced', 1], ['bags', 'individual', 3], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA.filter(([i]) => i !== 'npa'), ...WOUNDS, ...BASIC_MEDS, ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 1], ['repellent', 'individual', 1], ['sunscreen', 'individual', 1], ['sting_cream', 'advanced', 1], ['flashlight', 'individual', 1], ['whistle', 'advanced', 0, 1], ['eyewash', 'advanced', 1], ['bags', 'individual', 3, 0, 0, 10], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'travel',
     name: l('Viaje', 'Travel'),
     desc: l('Para viajes largos o a otro país: estómago, mareo, sol, mosquitos y medicación personal.', 'For long trips or abroad: stomach, motion sickness, sun, mosquitoes and personal medication.'),
     kitType: 'general', people: 2, days: 7, usesDays: true,
-    lines: [['sterile_gauze', 'individual', 6], ['adhesive', 'individual', 10, 3], ['tape', 'individual', 1], ['elastic', 'individual', 1], ['antiseptic', 'individual', 1], ['tweezers', 'individual', 1], ['thermometer', 'individual', 1], ...BASIC_MEDS, ['antidiarrheal', 'individual', 1], ['antiemetic', 'individual', 1], ['sunscreen', 'individual', 1, 0, 0], ['repellent', 'individual', 1], ['sting_cream', 'advanced', 1], ['topical_antibiotic', 'advanced', 1], ['blister', 'advanced', 4], ['hand_gel', 'individual', 1], ['mask', 'advanced', 0, 2], ['gloves', 'individual', 2], ['tourniquet', 'advanced', 1], ['hemostatic', 'advanced', 1], ['pressure_bandage', 'advanced', 1], ['space_blanket', 'advanced', 0, 1], ['med_card', 'individual', 0, 1]],
+    lines: [['sterile_gauze', 'individual', 6, 0, 0, 40], ['adhesive', 'individual', 10, 3, 0, 50], ['tape', 'individual', 1], ['elastic', 'individual', 1], ['antiseptic', 'individual', 1], ['tweezers', 'individual', 1], ['thermometer', 'individual', 1], ...BASIC_MEDS, ['antidiarrheal', 'individual', 1], ['antiemetic', 'individual', 1], ['sunscreen', 'individual', 1, 0, 0], ['repellent', 'individual', 1], ['sting_cream', 'advanced', 1], ['topical_antibiotic', 'advanced', 1], ['blister', 'advanced', 4, 0, 0, 40], ['hand_gel', 'individual', 1], ['mask', 'advanced', 0, 2, 0, 10], ['gloves', 'individual', 2, 0, 0, 10], ['tourniquet', 'advanced', 1], ['hemostatic', 'advanced', 1], ['pressure_bandage', 'advanced', 1], ['space_blanket', 'advanced', 0, 1, 0, 6], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'boat',
     name: l('Embarcación', 'Boat'),
     desc: l('Para navegar o remar: cortes y quemaduras, mareo, sol, frío y mantenerlo todo seco.', 'For sailing or paddling: cuts and burns, seasickness, sun, cold, and keeping it all dry.'),
     kitType: 'general', people: 4, days: 2, usesDays: true,
-    lines: [['waterproof_box', 'individual', 1], ...TRAUMA.filter(([i]) => i !== 'npa'), ...WOUNDS, ...BASIC_MEDS, ['antiemetic', 'individual', 1], ['sunscreen', 'individual', 1], ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 2], ['eyewash', 'advanced', 1], ['heat_pack', 'advanced', 0, 1], ['whistle', 'individual', 0, 1], ['flashlight', 'individual', 1], ['med_card', 'individual', 0, 1]],
+    lines: [['waterproof_box', 'individual', 1], ...TRAUMA.filter(([i]) => i !== 'npa'), ...WOUNDS, ...BASIC_MEDS, ['antiemetic', 'individual', 1], ['sunscreen', 'individual', 1], ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 2], ['eyewash', 'advanced', 1], ['heat_pack', 'advanced', 0, 1, 0, 6], ['whistle', 'individual', 0, 1], ['flashlight', 'individual', 1], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'family',
     name: l('Niños y familia', 'Children and family'),
     desc: l('Para casa y paseos con chicos: fiebre, golpes, quemaduras, deshidratación y alergias.', 'For home and outings with children: fever, bumps, burns, dehydration and allergies.'),
     kitType: 'general', people: 4, days: 1, usesDays: false,
-    lines: [...WOUNDS, ['thermometer', 'individual', 1], ['oral_syringe', 'individual', 2], ['analgesic', 'individual', 1], ['antihistamine', 'individual', 1], ['ors', 'individual', 4, 1], ['sting_cream', 'individual', 1], ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 2], ['gloves', 'individual', 2, 1], ['hand_gel', 'individual', 1], ['personal_meds', 'individual', 0, 1], ['cpr_mask', 'advanced', 1], ['tourniquet', 'advanced', 1], ['hemostatic', 'advanced', 1], ['pressure_bandage', 'advanced', 1], ['splint', 'advanced', 1], ['eyewash', 'advanced', 1], ['med_card', 'individual', 0, 1]],
+    lines: [...WOUNDS, ['thermometer', 'individual', 1], ['oral_syringe', 'individual', 2], ['analgesic', 'individual', 1], ['antihistamine', 'individual', 1], ['ors', 'individual', 4, 1, 0, 20], ['sting_cream', 'individual', 1], ['burn_dressing', 'individual', 2], ['cold_pack', 'individual', 2], ['gloves', 'individual', 2, 1, 0, 10], ['hand_gel', 'individual', 1], ['personal_meds', 'individual', 0, 1], ['cpr_mask', 'advanced', 1], ['tourniquet', 'advanced', 1], ['hemostatic', 'advanced', 1], ['pressure_bandage', 'advanced', 1], ['splint', 'advanced', 1], ['eyewash', 'advanced', 1], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'elderly',
     name: l('Adulto mayor o enfermedades crónicas', 'Older adults or chronic conditions'),
     desc: l('Medicación diaria, controles y curaciones que no se pegan a la piel frágil.', 'Daily medication, monitoring and dressings that do not stick to fragile skin.'),
     kitType: 'general', people: 1, days: 1, usesDays: false,
-    lines: [['personal_meds', 'individual', 0, 2], ['pill_organizer', 'individual', 1], ['thermometer', 'individual', 1], ['nonadherent', 'individual', 6], ['sterile_gauze', 'individual', 10], ['tape', 'individual', 2], ['elastic', 'individual', 2], ['gloves', 'individual', 2], ['analgesic', 'individual', 1], ['ors', 'individual', 4], ['sugar', 'individual', 1], ['bp_monitor', 'advanced', 1], ['glucometer', 'advanced', 1], ['oximeter', 'advanced', 1], ['saline', 'advanced', 1], ['med_card', 'individual', 0, 1], ['flashlight', 'advanced', 1]],
+    lines: [['personal_meds', 'individual', 0, 2], ['pill_organizer', 'individual', 1], ['thermometer', 'individual', 1], ['nonadherent', 'individual', 6], ['sterile_gauze', 'individual', 10, 0, 0, 40], ['tape', 'individual', 2], ['elastic', 'individual', 2], ['gloves', 'individual', 2, 0, 0, 10], ['analgesic', 'individual', 1], ['ors', 'individual', 4, 0, 0, 20], ['sugar', 'individual', 1], ['bp_monitor', 'advanced', 1], ['glucometer', 'advanced', 1], ['oximeter', 'advanced', 1], ['saline', 'advanced', 1], ['med_card', 'individual', 0, 1], ['flashlight', 'advanced', 1]],
   },
   {
     id: 'rural',
     name: l('Zona rural o estancia aislada', 'Remote rural area or ranch'),
     desc: l('Cuando la ayuda tarda horas: trauma, fracturas, mordeduras y picaduras, frío y calor.', 'When help takes hours: trauma, fractures, bites and stings, cold and heat.'),
     kitType: 'trauma', people: 4, days: 1, usesDays: false,
-    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['splint', 'individual', 2], ['elastic', 'individual', 4], ['sting_cream', 'individual', 1], ['burn_dressing', 'individual', 3], ['cold_pack', 'individual', 2], ['heat_pack', 'advanced', 0, 1], ['eyewash', 'individual', 1], ['thermometer', 'individual', 1], ['flashlight', 'individual', 1], ['whistle', 'advanced', 0, 1], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['splint', 'individual', 2], ['elastic', 'individual', 4], ['sting_cream', 'individual', 1], ['burn_dressing', 'individual', 3], ['cold_pack', 'individual', 2], ['heat_pack', 'advanced', 0, 1, 0, 6], ['eyewash', 'individual', 1], ['thermometer', 'individual', 1], ['flashlight', 'individual', 1], ['whistle', 'advanced', 0, 1], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'workshop',
@@ -292,28 +292,28 @@ export const SCENARIOS: Scenario[] = [
     name: l('Terremoto o inundación', 'Earthquake or flood'),
     desc: l('Para los primeros días sin ayuda cerca: heridas, polvo, agua contaminada y comunicación.', 'For the first days with no help nearby: wounds, dust, contaminated water and signalling.'),
     kitType: 'general', people: 4, days: 3, usesDays: true,
-    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['dust_mask', 'individual', 0, 2], ['goggles', 'advanced', 0, 1], ['whistle', 'individual', 0, 1], ['hand_gel', 'individual', 1], ['antidiarrheal', 'advanced', 1], ['eyewash', 'advanced', 1], ['flashlight', 'individual', 1], ['bags', 'individual', 5], ['burn_dressing', 'advanced', 2], ['med_card', 'individual', 0, 1]],
+    lines: [...TRAUMA, ...WOUNDS, ...BASIC_MEDS, ['dust_mask', 'individual', 0, 2], ['goggles', 'advanced', 0, 1], ['whistle', 'individual', 0, 1], ['hand_gel', 'individual', 1], ['antidiarrheal', 'advanced', 1], ['eyewash', 'advanced', 1], ['flashlight', 'individual', 1], ['bags', 'individual', 5, 0, 0, 10], ['burn_dressing', 'advanced', 2], ['med_card', 'individual', 0, 1]],
   },
   {
     id: 'bleeding',
     name: l('Hemorragia grave (kit individual de trauma)', 'Severe bleeding (individual trauma kit)'),
     desc: l('Inspirado en el IFAK/JFAK militar, para civiles: hemorragia, vía aérea y tórax, en un kit chico que se lleva encima.', 'Inspired by the military IFAK/JFAK, for civilians: bleeding, airway and chest, in a small kit you carry.'),
     kitType: 'bleeding', people: 1, days: 1, usesDays: false,
-    lines: [['tourniquet', 'individual', 1], ['tourniquet', 'advanced', 1], ['hemostatic', 'individual', 1], ['pressure_bandage', 'individual', 1], ['gauze_roll', 'individual', 1], ['chest_seal', 'individual', 1], ['gloves', 'individual', 2], ['shears', 'individual', 1], ['marker', 'individual', 1], ['note_card', 'individual', 1], ['space_blanket', 'individual', 1], ['tape', 'individual', 1], ['triangular', 'individual', 1], ['eye_shield', 'advanced', 1], ['splint', 'advanced', 1], ['cpr_mask', 'advanced', 1], ['trauma_dressing', 'advanced', 1], ['npa', 'advanced', 1], ['needle', 'advanced', 1]],
+    lines: [['tourniquet', 'individual', 1], ['tourniquet', 'advanced', 1], ['hemostatic', 'individual', 1], ['pressure_bandage', 'individual', 1], ['gauze_roll', 'individual', 1], ['chest_seal', 'individual', 1], ['gloves', 'individual', 2, 0, 0, 10], ['shears', 'individual', 1], ['marker', 'individual', 1], ['note_card', 'individual', 1], ['space_blanket', 'individual', 1, 0, 0, 6], ['tape', 'individual', 1], ['triangular', 'individual', 1], ['eye_shield', 'advanced', 1], ['splint', 'advanced', 1], ['cpr_mask', 'advanced', 1], ['trauma_dressing', 'advanced', 1], ['npa', 'advanced', 1], ['needle', 'advanced', 1]],
   },
   {
     id: 'anaphylaxis',
     name: l('Alergia grave (anafilaxia)', 'Severe allergy (anaphylaxis)'),
     desc: l('Para quien tiene o convive con alguien con una alergia grave: lo indicado por el médico, siempre a mano.', 'For someone with, or living with, a person with a severe allergy: what the doctor prescribed, always at hand.'),
     kitType: 'anaphylaxis', people: 1, days: 1, usesDays: false,
-    lines: [['epinephrine', 'individual', 2], ['antihistamine', 'individual', 1], ['personal_meds', 'individual', 0, 1], ['med_card', 'individual', 0, 1], ['note_card', 'individual', 1], ['space_blanket', 'advanced', 1], ['cpr_mask', 'advanced', 1], ['gloves', 'advanced', 2]],
+    lines: [['epinephrine', 'individual', 2], ['antihistamine', 'individual', 1], ['personal_meds', 'individual', 0, 1], ['med_card', 'individual', 0, 1], ['note_card', 'individual', 1], ['space_blanket', 'advanced', 1, 0, 0, 6], ['cpr_mask', 'advanced', 1], ['gloves', 'advanced', 2, 0, 0, 10]],
   },
   {
     id: 'burns',
     name: l('Quemaduras', 'Burns'),
     desc: l('Para cocina, fogón o taller: enfriar, cubrir y no pegar nada a la piel.', 'For kitchen, campfire or workshop: cool, cover and never stick anything to the skin.'),
     kitType: 'burns', people: 1, days: 1, usesDays: false,
-    lines: [['burn_dressing', 'individual', 4], ['nonadherent', 'individual', 6], ['saline', 'individual', 2], ['cold_pack', 'individual', 2], ['elastic', 'individual', 2], ['tape', 'individual', 1], ['gloves', 'individual', 2], ['shears', 'individual', 1], ['space_blanket', 'advanced', 1], ['analgesic', 'advanced', 1], ['ors', 'advanced', 2]],
+    lines: [['burn_dressing', 'individual', 4], ['nonadherent', 'individual', 6], ['saline', 'individual', 2], ['cold_pack', 'individual', 2], ['elastic', 'individual', 2], ['tape', 'individual', 1], ['gloves', 'individual', 2, 0, 0, 10], ['shears', 'individual', 1], ['space_blanket', 'advanced', 1, 0, 0, 6], ['analgesic', 'advanced', 1], ['ors', 'advanced', 2, 0, 0, 20]],
   },
 ];
 
@@ -324,14 +324,13 @@ export interface BuiltLine {
 }
 
 /**
- * Cuántos juegos de las cantidades fijas hacen falta (torniquetes, vendajes, gasas…). Están pensadas para las personas de partida del
- * escenario (1 en los kits individuales, 4 en casa o auto). Hasta 4 juegos crece parejo con la gente (4 personas con kit individual: un
- * kit cada una), pero un grupo grande no lleva un torniquete por persona: de ahí en adelante, un juego más cada 20 personas
- * (20 personas con kit individual: 5 torniquetes, no 20).
+ * Cuántos juegos de las cantidades fijas hacen falta (torniquetes, vendajes, gasas hemostáticas…). Están pensadas para las personas de
+ * partida del escenario (1 en los kits individuales, 4 en casa o auto). El equipo de trauma no se necesita «por persona» sino por herido, y es
+ * improbable que haya más de dos heridos graves a la vez: con más gente que las de partida, **dos juegos** y no más (20 personas no llevan 20
+ * torniquetes). Lo de uso personal (guantes, mantas, medicación propia) tiene su propia cuenta por persona y su tope en cada línea.
  */
 export function setsFor(people: number, base: number): number {
-  const full = Math.max(1, Math.ceil(people / base));
-  return full <= 4 ? full : 4 + Math.ceil((people - 4 * base) / 20);
+  return Math.min(2, Math.max(1, Math.ceil(people / base)));
 }
 
 /** Lo que lleva el botiquín para ese escenario, nivel, cantidad de personas y días (los repetidos se suman). */
@@ -342,10 +341,13 @@ export function buildList(scenarioId: string, level: Level, people: number, days
   const d = Math.max(1, Math.floor(days));
   const sets = setsFor(p, sc.people);
   const totals = new Map<string, number>();
-  for (const [id, from, base = 0, perPerson = 0, perDay = 0] of sc.lines) {
+  const caps = new Map<string, number>();
+  for (const [id, from, base = 0, perPerson = 0, perDay = 0, max] of sc.lines) {
     if (rank(from) > rank(level) || !CATALOG[id]) continue;
     totals.set(id, (totals.get(id) ?? 0) + base * sets + perPerson * p + perDay * p * (sc.usesDays ? d : 1));
+    if (max !== undefined) caps.set(id, Math.min(max, caps.get(id) ?? max));
   }
+  for (const [id, cap] of caps) totals.set(id, Math.min(totals.get(id) ?? 0, cap));
   return [...totals.entries()]
     .map(([id, qty]) => ({ id, item: CATALOG[id]!, qty: Math.max(1, Math.ceil(qty)) }))
     .sort((a, b) => GROUPS.indexOf(a.item.group) - GROUPS.indexOf(b.item.group) || a.item.name.es.localeCompare(b.item.name.es, 'es'));

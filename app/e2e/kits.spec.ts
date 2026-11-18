@@ -116,10 +116,16 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await page.getByTestId('kb-people').fill('');
   await page.getByTestId('kb-people').pressSequentially('7');
   await expect(page.getByTestId('kb-people')).toHaveValue('7');
-  // Al cambiar las personas se recalcula lo necesario y lo que falta: hasta 4 personas un torniquete por persona y, de ahí en adelante, un
-  // grupo grande no lleva uno por persona (7 personas: 5).
-  await expect(page.getByTestId('kb-qty-tourniquet')).toHaveValue('5');
-  await expect(page.getByTestId('kb-gap-tourniquet')).toContainText('faltan 5');
+  // Al cambiar las personas se recalcula lo necesario y lo que falta, pero el equipo de trauma no es un torniquete por persona: con más de
+  // una persona alcanzan dos juegos (es improbable que haya más de dos heridos graves a la vez). Lo de uso personal crece con un tope.
+  await expect(page.getByTestId('kb-qty-tourniquet')).toHaveValue('2');
+  await expect(page.getByTestId('kb-gap-tourniquet')).toContainText('faltan 2');
+  await expect(page.getByTestId('kb-qty-gloves')).toHaveValue('4');
+  await expect(page.getByTestId('kb-people-hint')).toContainText('no crece con cada persona');
+  await page.getByTestId('kb-people').fill('30');
+  await expect(page.getByTestId('kb-qty-tourniquet')).toHaveValue('2');
+  await expect(page.getByTestId('kb-qty-gloves')).toHaveValue('4');
+  await page.getByTestId('kb-people').fill('7');
   await page.getByTestId('kb-people').fill('1');
   await expect(page.getByTestId('kb-people')).toHaveValue('1');
   await page.getByTestId('kb-level-advanced').click();
