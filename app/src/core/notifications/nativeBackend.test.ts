@@ -97,6 +97,9 @@ describe('notificaciones en la app nativa', () => {
   });
 
   it('con la app abierta, un aviso de FCM lo muestra la app (Android no lo muestra solo), con el texto genérico y la pantalla que corresponde', async () => {
+    // El idioma por defecto sale del sistema (español en un equipo de acá, inglés en el servidor de pruebas): se fija para que no dependa de eso.
+    const { useSettings } = await import('@/core/settings/settings');
+    useSettings.setState({ settings: { ...useSettings.getState().settings, language: 'es' } });
     await startNativeNotifications();
     local.schedule.mockClear();
     listeners.get('pushNotificationReceived')!({ data: { type: 'rain' } });
@@ -111,5 +114,11 @@ describe('notificaciones en la app nativa', () => {
     listeners.get('pushNotificationReceived')!({ data: { type: 'test' } });
     await Promise.resolve();
     expect((local.schedule.mock.calls[0] as unknown as [{ notifications: { body: string }[] }])[0].notifications[0]!.body).toBe('Las notificaciones funcionan correctamente.');
+    // En inglés, con el idioma de la app.
+    useSettings.setState({ settings: { ...useSettings.getState().settings, language: 'en' } });
+    local.schedule.mockClear();
+    listeners.get('pushNotificationReceived')!({ data: { type: 'alerts' } });
+    await Promise.resolve();
+    expect((local.schedule.mock.calls[0] as unknown as [{ notifications: { body: string }[] }])[0].notifications[0]!.body).toBe('You have new alerts');
   });
 });
