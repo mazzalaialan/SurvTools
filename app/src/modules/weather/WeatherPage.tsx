@@ -118,7 +118,7 @@ export function WeatherPage() {
       )}
 
       {!place ? (
-        <p className="empty">{t('sky.needPlace')}</p>
+        <p className="empty" data-testid="weather-need-place">{t('weather.needPlace')}</p>
       ) : !forecast ? null : (
         <>
           <CurrentConditions current={forecast.current} u={u} />

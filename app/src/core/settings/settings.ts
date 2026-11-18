@@ -25,6 +25,10 @@ export interface Settings {
    * pantalla (`FLAG_SECURE`). Por defecto apagado: quien lo necesita lo activa en Ajustes → Seguridad.
    */
   hideInRecents: boolean;
+  /** Cuándo se empezó a usar la app en este dispositivo (para no recordar el backup el primer día). Se completa sola al cargar los ajustes. */
+  firstUseAt: string | null;
+  /** «Recordámelo en una semana» del aviso de backup: hasta cuándo no se muestra. */
+  backupReminderSnoozedUntil: string | null;
   units: UnitSystem;
   autoLockMinutes: number;
   /**
@@ -247,6 +251,8 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
   systemBarRed: 1,
   hideInRecents: false,
+  firstUseAt: null,
+  backupReminderSnoozedUntil: null,
   units: 'metric',
   autoLockMinutes: 5,
   emergencyOnLock: false,
@@ -335,9 +341,12 @@ export const useSettings = create<SettingsState>((set, get) => ({
         // si después lo vacía a propósito, queda vacío.
         ...(stored && !stored.serverDefaulted && !stored.serverUrl ? { serverUrl: DEFAULT_SERVER_URL } : {}),
         serverDefaulted: true,
+        firstUseAt: stored?.firstUseAt ?? new Date().toISOString(),
       },
       loaded: true,
     });
+    // La fecha del primer uso se guarda enseguida: si no, cada arranque volvería a ser «el primer día» y el aviso de backup nunca llegaría.
+    if (!stored?.firstUseAt) await db.settings.put({ key: SETTINGS_KEY, value: get().settings });
   },
   async update(changes) {
     const settings = { ...get().settings, ...changes };

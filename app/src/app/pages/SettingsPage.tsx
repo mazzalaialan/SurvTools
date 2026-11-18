@@ -1,8 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Archive, Check, Crosshair, Info, Lock, LockOpen, RefreshCw, X } from 'lucide-react';
+import { Archive, Check, Crosshair, Info, Lock, LockOpen, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { lastBackupAt } from '@/core/backup/backup';
+import { backupReminder } from '@/core/backup/reminder';
+import { verifyAllDownloads, type VerifyReport } from '@/core/storage/runVerify';
+import { problemsOf, type DownloadCheck } from '@/core/storage/verifyDownloads';
 import { daysBetween, today } from '@/modules/inventory/domain/dates';
 import { newerRelease, usePortableUpdate } from '@/core/portable/update';
 import { CAPABILITIES, useCapabilities } from '@/core/capabilities/capabilities';
@@ -198,10 +201,13 @@ function BackupSection() {
     void lastBackupAt().then(setLast);
   }, []);
   const daysAgo = last ? daysBetween(today(new Date(last)), today()) : null;
+  const firstUseAt = useSettings((s) => s.settings.firstUseAt);
+  // Vencido: sin snooze (en Ajustes se ve siempre que corresponda; el «recordármelo» es del aviso del Inicio).
+  const overdue = backupReminder({ lastBackupAt: last, firstUseAt, snoozedUntil: null }).due;
   return (
     <section className="card stack">
       <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.backupTitle')}</h2>
-      <p className="hint" style={{ margin: 0 }} data-testid="settings-last-backup">
+      <p className={overdue ? 'warning-box' : 'hint'} style={{ margin: 0 }} data-testid="settings-last-backup">
         {daysAgo === null ? t('backup.never') : daysAgo === 0 ? t('backup.lastToday') : t('backup.lastDaysAgo', { count: daysAgo })}
       </p>
       <div>
@@ -743,12 +749,91 @@ function StorageSection() {
           </li>
         )}
       </ul>
-      {persisted !== null && <p className={persisted ? 'success' : 'hint'}>{t(persisted ? 'settings.storagePersistent' : 'settings.storageNotPersistent')}</p>}
-      {persisted === false && (
-        <button className="btn" type="button" onClick={() => void navigator.storage.persist().then(setPersisted)}>
-          {t('settings.storagePersist')}
-        </button>
+      {isNativePlatform() ? (
+        // El WebView de Android no concede «almacenamiento persistente» (`persist()` siempre dice que no): el botón no serviría. Lo que importa
+        // acá es saber dónde viven los datos y que el backup es la única copia.
+        <p className="hint" data-testid="storage-native">{t('settings.storageNative')}</p>
+      ) : (
+        <>
+          {persisted !== null && <p className={persisted ? 'success' : 'hint'}>{t(persisted ? 'settings.storagePersistent' : 'settings.storageNotPersistent')}</p>}
+          {persisted === false && (
+            <button className="btn" type="button" onClick={() => void navigator.storage.persist().then(setPersisted)}>
+              {t('settings.storagePersist')}
+            </button>
+          )}
+        </>
       )}
+      <VerifyDownloads />
     </section>
+  );
+}
+
+/**
+ * «Verificar descargas»: comprueba que los libros y las zonas de mapas que figuran como bajados estén de verdad en el dispositivo (si el sistema
+ * los borró o la descarga quedó a medias, fallarían en el campo, sin conexión). Para cada problema: quitarlo de la lista o ir a bajarlo de nuevo.
+ */
+function VerifyDownloads() {
+  const { t } = useTranslation();
+  const [state, setState] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
+  const [report, setReport] = useState<VerifyReport | null>(null);
+  const removeBook = useLibrary((s) => s.remove);
+  const removeZone = useMapZones((s) => s.remove);
+
+  async function run() {
+    setState('running');
+    try {
+      setReport(await verifyAllDownloads());
+      setState('done');
+    } catch {
+      setState('error');
+    }
+  }
+  async function dismiss(c: DownloadCheck) {
+    await (c.kind === 'book' ? removeBook(c.id) : removeZone(c.id));
+    setReport((r) => r && { ...r, checks: r.checks.filter((x) => !(x.kind === c.kind && x.id === c.id)), books: r.books - (c.kind === 'book' ? 1 : 0), zones: r.zones - (c.kind === 'zone' ? 1 : 0) });
+  }
+  const problems = report ? problemsOf(report.checks) : [];
+
+  return (
+    <div className="stack" data-testid="verify-downloads" style={{ gap: 8 }}>
+      <p className="hint" style={{ margin: 0 }}>{t('settings.verifyHint')}</p>
+      <div>
+        <button className="btn" type="button" disabled={state === 'running'} onClick={() => void run()} data-testid="verify-run">
+          <ShieldCheck size={18} aria-hidden /> {state === 'running' ? t('settings.verifying') : t('settings.verify')}
+        </button>
+      </div>
+      {state === 'error' && <p className="error" role="alert">{t('settings.verifyFailed')}</p>}
+      {state === 'done' && report && (
+        <>
+          {report.books + report.zones === 0 ? (
+            <p className="hint" style={{ margin: 0 }} data-testid="verify-none">{t('settings.verifyNone')}</p>
+          ) : problems.length === 0 ? (
+            <p className="success" role="status" data-testid="verify-ok">{t('settings.verifyOk', { books: report.books, zones: report.zones })}</p>
+          ) : (
+            <>
+              <p className="warning-box" role="status" style={{ margin: 0 }} data-testid="verify-problems">{t('settings.verifyProblems', { count: problems.length })}</p>
+              <ul className="list" data-testid="verify-list">
+                {problems.map((c) => (
+                  <li key={`${c.kind}-${c.id}`} className="stack" style={{ gap: 6 }} data-testid={`verify-${c.kind}-${c.id}`}>
+                    <span>
+                      <strong>{c.name}</strong> <span className="hint">· {t(c.kind === 'book' ? 'settings.dlBook' : 'settings.dlZone')}</span>
+                    </span>
+                    <span className="hint">{c.status === 'missing' ? t('settings.dlMissing') : t('settings.dlPartial', { present: c.present, total: c.total })}</span>
+                    <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
+                      <Link className="btn" to={c.kind === 'book' ? '/library/books' : '/orientation/maps'}>
+                        {t('settings.dlRedownload')}
+                      </Link>
+                      <button className="btn btn-danger-outline" type="button" onClick={() => void dismiss(c)}>
+                        {t('settings.dlRemove')}
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </>
+      )}
+    </div>
   );
 }

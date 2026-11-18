@@ -80,8 +80,11 @@ function canShareFiles(): boolean {
 export async function detectCapabilities(): Promise<CapabilityMap> {
   const native = isNativePlatform();
   const [orientation, motion, camera, barometerOk, nativeBiometric] = await Promise.all([
-    probeEvent('deviceorientationabsolute'),
-    probeEvent('devicemotion'),
+    // Un celular quieto manda pocos eventos de orientación (Chrome solo avisa cuando cambian) y el primero puede tardar más que el plazo de la
+    // prueba al arrancar: con la prueba, la brújula y el inclinómetro quedaban «no disponibles» toda la sesión aunque el sensor anduviera. En la
+    // app nativa un teléfono siempre los tiene: alcanza con que el WebView los exponga y no se hace la prueba.
+    native ? Promise.resolve('ondeviceorientationabsolute' in window) : probeEvent('deviceorientationabsolute'),
+    native ? Promise.resolve('ondevicemotion' in window) : probeEvent('devicemotion'),
     hasCamera(),
     // Los navegadores no exponen el barómetro: solo la app nativa lo lee (se pregunta directo al sensor, sin depender de que ya esté instalado).
     native ? import('./nativeBarometerProbe').then((m) => m.barometerAvailable()) : Promise.resolve(false),

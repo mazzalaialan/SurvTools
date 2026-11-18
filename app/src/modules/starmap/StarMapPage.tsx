@@ -197,7 +197,7 @@ export function StarMapPage() {
       />
 
       {!scene ? (
-        <p className="empty">{data ? t('sky.needPlace') : t('starmap.loading')}</p>
+        <p className="empty">{data ? t('starmap.needPlace') : t('starmap.loading')}</p>
       ) : (
         <>
           <FullscreenStage

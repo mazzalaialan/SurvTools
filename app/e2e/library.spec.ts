@@ -154,3 +154,50 @@ test('biblioteca: cancelar una descarga en curso no gasta más datos y deja lo q
   await expect(page.getByTestId('book-montanismo').getByLabel('En el dispositivo')).toHaveCount(0);
   expect(requested).toBe(1);
 });
+
+test('verificar descargas: con el libro en el dispositivo está todo en orden; si desaparece de la caché lo marca y se puede quitar', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // Sin nada bajado, no hay qué revisar.
+  await page.goto('/#/settings');
+  await page.getByTestId('verify-run').click();
+  await expect(page.getByTestId('verify-none')).toBeVisible();
+
+  // Se baja el libro libre.
+  await page.goto('/#/settings?conexiones=1');
+  await page.getByRole('button', { name: 'Desbloquear para modificar' }).first().click();
+  await page.getByLabel('Servidor VikArg').fill(SERVER);
+  await page.getByRole('button', { name: 'Guardar' }).last().click();
+  await page.goto('/#/library/books');
+  await page.getByRole('button', { name: 'Libres', exact: true }).click();
+  await page.getByTestId('library-select-visible').click();
+  await page.getByTestId('library-download').click();
+  await expect(page.getByTestId('book-montanismo').getByLabel('En el dispositivo')).toBeVisible();
+
+  // Todo en orden.
+  await page.goto('/#/settings');
+  await page.getByTestId('verify-run').click();
+  await expect(page.getByTestId('verify-ok')).toContainText('1 libros');
+
+  // El sistema borra los archivos del libro: la app lo detecta y deja quitarlo de la lista.
+  await page.evaluate(async () => {
+    const cache = await caches.open('vikarg-library-books');
+    for (const req of await cache.keys()) if (req.url.includes('/montanismo/')) await cache.delete(req);
+  });
+  await page.getByTestId('verify-run').click();
+  await expect(page.getByTestId('verify-problems')).toBeVisible();
+  const row = page.getByTestId('verify-book-montanismo');
+  await expect(row).toContainText('No está en este teléfono');
+  await expect(row.getByRole('link', { name: 'Volver a bajar' })).toHaveAttribute('href', /library\/books/);
+  await row.getByRole('button', { name: 'Quitar de la lista' }).click();
+  await expect(row).toHaveCount(0);
+  await page.getByTestId('verify-run').click();
+  await expect(page.getByTestId('verify-none')).toBeVisible();
+});
+

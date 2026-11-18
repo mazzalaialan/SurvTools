@@ -2,6 +2,7 @@ import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { BellRing, CircleCheck, Circle, Hospital, Navigation, Siren } from 'lucide-react';
+import { BackupReminderCard } from './BackupReminderCard';
 import { AlertList, ShortageList } from '@/modules/inventory/components/AlertList';
 import { DocumentExpiryList, useExpiringDocuments } from '@/modules/documents/DocumentExpiryList';
 import { groupShortages } from '@/modules/inventory/domain/stock';
@@ -128,6 +129,7 @@ export function HomePage() {
     <>
       <QuickActions />
       <FirstSteps />
+      <BackupReminderCard />
       <AlertSummary />
       {SECTIONS.map((section) => (
         <Fragment key={section}>

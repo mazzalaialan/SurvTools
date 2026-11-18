@@ -140,7 +140,7 @@ export function HistoryPage() {
       )}
 
       {!place ? (
-        <p className="empty">{t('sky.needPlace')}</p>
+        <p className="empty">{t('history.needPlace')}</p>
       ) : !history || !shown ? null : (
         <>
           <section className="card stack" aria-labelledby="hist-day-title" data-testid="history-day">
