@@ -12,6 +12,8 @@ const REPO = 'mazzalaialan/SurvTools';
 export const RELEASES_URL = `https://github.com/${REPO}/releases/latest`;
 const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`;
 const CHECK_EVERY_MS = 24 * 60 * 60_000;
+/** La app nativa consulta en cada apertura y al volver al frente, con un freno corto (la API de GitHub sin clave limita los pedidos por hora). */
+const APK_CHECK_EVERY_MS = 15 * 60_000;
 const STATE_KEY = 'vikarg-portable-update';
 
 export interface LatestRelease {
@@ -102,7 +104,11 @@ export const usePortableUpdate = create<PortableUpdateState>((set, get) => ({
   async init() {
     const stored = readStored();
     set({ latest: stored.latest, dismissed: stored.dismissed, checkedAt: stored.checkedAt });
-    if (isNativePlatform()) set({ apk: true });
+    if (isNativePlatform()) {
+      set({ apk: true });
+      // Al volver a la app (desde recientes o desde otra app) se vuelve a mirar.
+      void import('@capacitor/app').then(({ App }) => App.addListener('appStateChange', (s) => s.isActive && void get().check()));
+    }
     else if (await detectPortable()) set({ portable: true });
     else return;
     await get().check();
@@ -110,7 +116,7 @@ export const usePortableUpdate = create<PortableUpdateState>((set, get) => ({
 
   async check(force = false) {
     if (!(get().portable || get().apk) || !navigator.onLine) return;
-    if (!force && Date.now() - get().checkedAt < CHECK_EVERY_MS) return;
+    if (!force && Date.now() - get().checkedAt < (get().apk ? APK_CHECK_EVERY_MS : CHECK_EVERY_MS)) return;
     set({ checking: true, error: false });
     try {
       const res = await fetch(API_URL, { headers: { Accept: 'application/vnd.github+json' } });
