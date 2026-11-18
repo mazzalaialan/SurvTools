@@ -340,3 +340,48 @@ Como `ufw` no filtra los puertos que publica Docker (van por `FORWARD`), la defe
 | `ssh-solo-clave.sh` | SSH sin contraseña (archivo aparte en `sshd_config.d`, validado con `sshd -t`). Probar antes que se entra con clave. |
 
 Aplicado el 2026-11-18: `cerrar-puertos.sh`. Se verificó que 9999 y 11434 dejaron de responder por la IP pública y que nomad y VikArg siguen andando. Pendiente de confirmar desde afuera (datos del celular). fail2ban tiene activa la jaula `sshd` (5 intentos, ban de 1 h, LAN exenta). Regla general: **un servicio nuevo en este equipo se publica en `127.0.0.1` o desde la LAN, nunca abierto, salvo 80/443.**
+
+
+## Mudar el servidor a otro equipo
+
+**Cuánto disco hace falta** (medido el 2026-11-18): unos **65 GB** de datos, y conviene tener **100 GB libres**.
+
+| Qué | Espacio | Se puede regenerar |
+|---|---|---|
+| `deploy/openmeteo-data` (clima propio) | 45 GB | Sí: `openmeteo-sync` lo vuelve a bajar solo; la primera descarga tarda horas. Crece 5–10 GB por año. |
+| `deploy/maps` (mapas offline) | 16 GB | Con `tools/maps` (horas y ~30 GB de disco temporal): mejor copiarlo. |
+| `deploy/osm` (calles y números) | 1,3 GB | Con `tools/osm-index`: mejor copiarlo. |
+| `deploy/data-packs` | 10 MB | Sí, con `server/src/data/update-data.sh`. |
+| Imágenes de Docker (Open-Meteo, Caddy, VikArg) | ~1,5 GB | Se bajan solas. |
+| Código (`git clone`) | 0,7 GB | Sí. |
+
+Lo **único que no se puede regenerar** es el volumen `vikarg-data` (menos de 1 MB: la base SQLite con las cuentas de dispositivos, los avisos y las **claves VAPID**), el `.env` y el `Caddyfile`. Si se pierden las claves VAPID, cada dispositivo tiene que volver a activar las notificaciones. Sin clima propio (no copiarlo ni dejar `openmeteo` corriendo) alcanza con ~20 GB: la app pasa sola al servicio público.
+
+**Pasos** (el equipo nuevo necesita Docker con el plugin `compose`, `git` y los puertos 80 y 443 alcanzables desde internet):
+
+1. **En el equipo nuevo, preparar:** `git clone` del repositorio y entrar en `deploy/`. Copiar el `.env` del equipo viejo (tiene el dominio y las claves; **no lo subas a ningún lado**) y el `Caddyfile` si lo cambiaste.
+2. **Copiar los datos grandes antes del corte** (con el servidor viejo todavía andando, así el corte dura minutos). Desde el equipo viejo:
+   ```bash
+   rsync -aH --info=progress2 ~/vikarg/deploy/{maps,osm,data-packs} usuario@NUEVO:vikarg/deploy/
+   rsync -aH --info=progress2 ~/vikarg/deploy/openmeteo-data usuario@NUEVO:vikarg/deploy/   # opcional, 45 GB
+   ```
+   Se puede repetir: la segunda pasada solo manda lo que cambió.
+3. **Corte (el servidor viejo queda parado unos minutos).** En el viejo, bajar solo VikArg y copiar la base:
+   ```bash
+   cd ~/vikarg/deploy && docker compose stop vikarg
+   docker run --rm -v deploy_vikarg-data:/data -v "$PWD":/out alpine tar czf /out/vikarg-data.tgz -C /data .
+   scp vikarg-data.tgz usuario@NUEVO:vikarg/deploy/
+   ```
+   En el nuevo, crear el volumen y cargarlo **antes** del primer arranque:
+   ```bash
+   cd ~/vikarg/deploy && docker volume create deploy_vikarg-data
+   docker run --rm -v deploy_vikarg-data:/data -v "$PWD":/in alpine tar xzf /in/vikarg-data.tgz -C /data
+   docker compose up -d --build
+   ```
+   El nombre del volumen sale de la carpeta (`deploy_`): si el compose se corre desde otra, cambia (`docker volume ls`).
+4. **Cambiar el DNS** del dominio a la IP del equipo nuevo. Caddy saca el certificado HTTPS solo cuando el dominio ya apunta ahí (si el nuevo equipo está detrás de un módem, abrir 80 y 443 hacia él; ver «Equipo en la zona DMZ» más arriba por los riesgos). Mientras el DNS no cambie, el viejo sigue siendo el que ven los usuarios: si se cortó el paso 3, volver a `docker compose start vikarg` en el viejo.
+5. **Repetir en el nuevo la seguridad** (`deploy/seguridad/`: `cerrar-puertos.sh` y `ssh-solo-clave.sh`) y las **tareas programadas** del equipo viejo (`crontab -l`: el mapa mensual `server/src/maps/update-maps.sh` y los datos `server/src/data/update-data.sh`, que apuntan a `~/vikarg/deploy/...`).
+6. **Verificar:** `curl https://DOMINIO/api/health` (`ok: true`); abrir la app, comprobar que el dispositivo sigue con sus notificaciones (misma clave VAPID: no hace falta reactivar), un pedido a `/api/om/v1/forecast` y que el mapa offline carga. Mirar `docker compose logs --tail 100`.
+7. **Apagar el viejo** solo cuando todo esté probado y pasaron unos días. Si el clima propio no se copió, `openmeteo-sync` arranca a bajarlo en el nuevo (los pedidos mientras tanto caen al servicio público).
+
+**Si cambia el dominio** (no solo la IP): cada dispositivo tiene la dirección del servidor guardada en Ajustes y habría que cambiarla uno por uno. Conviene conservar el dominio.
