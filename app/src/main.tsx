@@ -37,6 +37,8 @@ async function bootstrap() {
     (await import('./core/systemBars')).startSystemBars();
     // Archivos que llegan de afuera («Abrir con VikArg» o «Compartir»): recorridos y backups.
     (await import('./core/incomingFile')).startIncomingFiles();
+    // Enlaces de transferencia (https) que abren la app: se llevan a la ruta de transferencia antes de dibujar.
+    await (await import('./core/incomingLink')).startIncomingLinks();
   }
   // Con servidor configurado, cada cambio de alertas se le envía (agrupado).
   onAlertIndexChange(scheduleAlertSync);

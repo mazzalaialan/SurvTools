@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Enlaces de transferencia de la web pública: abren la app si Android verificó /.well-known/assetlinks.json (ver docs/PENDIENTES.md). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="mazzalaialan.github.io" android:pathPrefix="/SurvTools" />
+            </intent-filter>
+
             <!-- «Abrir con VikArg» un recorrido (GPX, KML, KMZ, TCX) o un backup (.vikarg) desde el administrador de archivos, el correo, etc. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

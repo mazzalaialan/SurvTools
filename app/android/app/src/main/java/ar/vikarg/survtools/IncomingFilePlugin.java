@@ -56,7 +56,8 @@ public class IncomingFilePlugin extends Plugin {
             Parcelable p = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (p instanceof Uri) uri = (Uri) p;
         }
-        if (uri == null) return;
+        // Los enlaces https (App Links de transferencia) los atiende el plugin de la app, no son archivos.
+        if (uri == null || !("content".equals(uri.getScheme()) || "file".equals(uri.getScheme()))) return;
         pending = uri;
         pendingMime = intent.getType();
         // Para que el mismo intent no se vuelva a procesar al girar la pantalla o volver a la app.
