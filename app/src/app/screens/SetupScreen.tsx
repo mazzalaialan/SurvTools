@@ -48,7 +48,7 @@ export function SetupScreen() {
           ) : (
             <>
               <p className="hint">{t('setup.intro')}</p>
-              <NewPasswordForm submitLabel={t('setup.create')} busyLabel={t('setup.creating')} onSubmit={create} />
+              <NewPasswordForm submitLabel={t('setup.create')} busyLabel={t('setup.creating')} autoFocus onSubmit={create} />
               {noPassword ? (
                 <div className="stack" data-testid="setup-no-password">
                   <p className="warning-box" style={{ margin: 0 }}>{t('setup.noPasswordWarning')}</p>

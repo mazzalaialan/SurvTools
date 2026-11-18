@@ -28,6 +28,9 @@ test('sin contraseña: entra sola, no se bloquea, el backup pide su contraseña 
   await page.goto('/#/settings');
   const security = page.getByTestId('security');
   await expect(security.getByTestId('no-password-status')).toBeVisible();
+  // Al entrar a Ajustes el cursor NO salta al campo de la contraseña (abriría el teclado en el celular).
+  await expect(page.locator('#new-password')).not.toBeFocused();
+  expect(await page.evaluate(() => document.activeElement?.tagName)).not.toBe('INPUT');
   await security.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await security.getByLabel('Repetir contraseña').fill(PASSWORD);
   await security.getByRole('button', { name: 'Poner contraseña' }).click();

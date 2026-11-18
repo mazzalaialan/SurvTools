@@ -15,7 +15,7 @@ export function NewPasswordScreen() {
         <div className="card stack">
           <h2>{t('unlock.newPasswordTitle')}</h2>
           <p className="hint">{t('unlock.newPasswordIntro')}</p>
-          <NewPasswordForm submitLabel={t('common.save')} busyLabel={t('setup.creating')} onSubmit={setNewPassword} />
+          <NewPasswordForm submitLabel={t('common.save')} busyLabel={t('setup.creating')} autoFocus onSubmit={setNewPassword} />
         </div>
       </div>
     </main>

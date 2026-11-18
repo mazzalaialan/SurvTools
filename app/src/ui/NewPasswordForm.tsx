@@ -6,10 +6,12 @@ interface Props {
   submitLabel: string;
   busyLabel: string;
   onSubmit: (password: string) => Promise<void>;
+  /** Pone el cursor en el primer campo al mostrarse. Solo en las pantallas dedicadas a crear la contraseña; en Ajustes no (abriría el teclado al entrar). */
+  autoFocus?: boolean;
 }
 
 /** Contraseña + confirmación, con las validaciones de la bóveda. */
-export function NewPasswordForm({ submitLabel, busyLabel, onSubmit }: Props) {
+export function NewPasswordForm({ submitLabel, busyLabel, onSubmit, autoFocus = false }: Props) {
   const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -40,7 +42,7 @@ export function NewPasswordForm({ submitLabel, busyLabel, onSubmit }: Props) {
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          autoFocus
+          autoFocus={autoFocus}
         />
         <p className="hint">{t('setup.hint', { min: MIN_PASSWORD_LENGTH })}</p>
       </div>
