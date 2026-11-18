@@ -40,7 +40,7 @@ describe('ubicación en segundo plano (app nativa)', () => {
     await nativeLocation.start(() => undefined, () => undefined, text);
     expect(plugin.clearLocationLog).toHaveBeenCalled();
     const options = plugin.start.mock.calls[0]![0] as Record<string, unknown>;
-    expect(options).toMatchObject({ backgroundTitle: 'Grabando', backgroundMessage: 'Con la pantalla apagada', locationLog: true, requestPermissions: true, stale: false });
+    expect(options).toMatchObject({ backgroundTitle: 'Grabando', backgroundMessage: 'Con la pantalla apagada', locationLog: true, requestPermissions: true, stale: false, url: 'http://127.0.0.1:9/vikarg-no-envia' });
     await nativeLocation.stop();
   });
 

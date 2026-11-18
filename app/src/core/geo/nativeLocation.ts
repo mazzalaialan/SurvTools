@@ -14,6 +14,14 @@ import { setRecordingLocation, type Fix, type LocationErrorCode, type RecordingL
  */
 
 const PAGE = 500;
+/**
+ * El plugin solo mantiene el servicio vivo al sacar la app de «recientes» (y lo reinicia si el sistema lo mata) en su «modo de entrega nativa»,
+ * que se activa al darle una `url` a la que mandar cada posición. VikArg no manda posiciones a ningún lado: se le da una dirección que no
+ * lleva a ninguna parte (el propio teléfono, y Android bloquea el HTTP sin cifrar), solo para activar ese modo. Cada intento falla al instante
+ * y se descarta; las posiciones siguen yendo únicamente al registro nativo (`locationLog`) y de ahí a la grabación de la app. Medido en un
+ * Motorola con Android 14: sin `url`, sacar la app de recientes detenía el servicio y la grabación.
+ */
+export const NO_DELIVERY_URL = 'http://127.0.0.1:9/vikarg-no-envia';
 /** Cada cuánto se lee el registro mientras la app está a la vista (además de al llegar una posición y al volver a la app). */
 const POLL_MS = 5_000;
 
@@ -97,6 +105,7 @@ export const nativeLocation: RecordingLocationBackend = {
           requestPermissions: true,
           stale: false,
           distanceFilter: 0,
+          url: NO_DELIVERY_URL,
           locationLog: true,
           locationLogMaxEntries: 50_000,
         },

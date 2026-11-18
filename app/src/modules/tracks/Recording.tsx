@@ -1,3 +1,4 @@
+import { recordingLocation } from '@/core/geo/locationBackend';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -292,7 +293,8 @@ export function RecWarning() {
   const { t, i18n } = useTranslation();
   const { status, warned, gapS, gapFrom, gapTo, gapJoined } = useRecorder();
   const hhmm = (ms: number | null) => (ms === null ? '' : new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(ms)));
-  if (status !== 'recording' || (gapS === null && warned)) return null;
+  // Con la grabación en segundo plano de la app nativa el celular bloqueado no corta nada: el aviso solo corresponde en el navegador.
+  if (status !== 'recording' || (gapS === null && (warned || recordingLocation().background))) return null;
   return (
     <p className="rec-warn" role="alert" data-testid="rec-warn">
       {/* El navegador no da la posición con el celular bloqueado: se avisa al empezar y, si pasó, al volver. */}
