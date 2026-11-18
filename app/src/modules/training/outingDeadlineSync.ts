@@ -38,7 +38,8 @@ export async function syncOutingDeadline(outings: ReturnType<typeof useTraining.
   } else {
     // Sin salida en curso: se borra lo que pueda haber quedado en el servidor (una sola vez por arranque).
     if (lastSent === 'none') return;
-    res = await fetch(base, { method: 'DELETE', headers }).catch(() => null);
+    // Sin cuerpo no se manda `content-type: application/json`: el servidor rechaza con 400 un JSON vacío.
+    res = await fetch(base, { method: 'DELETE', headers: { authorization: headers.authorization } }).catch(() => null);
     if (res?.ok) lastSent = 'none';
   }
   // 401: el servidor ya no conoce este dispositivo: hay que volver a activar las notificaciones.

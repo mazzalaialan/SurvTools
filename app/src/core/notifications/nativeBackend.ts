@@ -2,6 +2,8 @@ import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { setNotificationBackend, type LocalNotification, type NotificationBackend, type ShownNotification } from './backend';
+import { useSettings } from '@/core/settings/settings';
+import { genericPushNotification, testNotification } from './format';
 import { syncPushAlerts } from './notifications';
 
 /**
@@ -99,6 +101,13 @@ export async function startNativeNotifications(): Promise<void> {
   started = true;
   setNotificationBackend(nativeBackend);
   await refreshNativePermission().catch(() => undefined);
+  // Con la app abierta en pantalla Android NO muestra los avisos de FCM: se los entrega a la app y la app los muestra, en su idioma.
+  void PushNotifications.addListener('pushNotificationReceived', (n) => {
+    const type = (n.data as { type?: string } | undefined)?.type;
+    const lang = useSettings.getState().settings.language === 'en' ? 'en' : 'es';
+    const { title, body } = type === 'test' ? testNotification(lang) : genericPushNotification(lang);
+    void nativeBackend.showLocal({ title, body, tag: 'vikarg-alerts', url: routeForPush({ type }) });
+  });
   // Tocar un aviso de FCM (la app estaba cerrada o en segundo plano): abre la pantalla que corresponde.
   void PushNotifications.addListener('pushNotificationActionPerformed', (a) => open(routeForPush(a.notification.data as { type?: string })));
   // Tocar un aviso local: abre su pantalla.

@@ -21,7 +21,7 @@ vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => true, g
 vi.mock('@capacitor/push-notifications', () => ({ PushNotifications: push }));
 vi.mock('@capacitor/local-notifications', () => ({ LocalNotifications: local }));
 
-const { nativeBackend, idForTag, routeForPush, refreshNativePermission } = await import('./nativeBackend');
+const { nativeBackend, idForTag, routeForPush, refreshNativePermission, startNativeNotifications } = await import('./nativeBackend');
 
 beforeEach(() => {
   listeners.clear();
@@ -94,5 +94,22 @@ describe('notificaciones en la app nativa', () => {
   it('desregistrar el push no falla aunque el plugin falle', async () => {
     push.unregister.mockRejectedValueOnce(new Error('x'));
     await expect(nativeBackend.unsubscribePush()).resolves.toBeUndefined();
+  });
+
+  it('con la app abierta, un aviso de FCM lo muestra la app (Android no lo muestra solo), con el texto genérico y la pantalla que corresponde', async () => {
+    await startNativeNotifications();
+    local.schedule.mockClear();
+    listeners.get('pushNotificationReceived')!({ data: { type: 'rain' } });
+    await Promise.resolve();
+    expect(local.schedule).toHaveBeenCalledTimes(1);
+    const n = (local.schedule.mock.calls[0] as unknown as [{ notifications: { id: number; title: string; body: string; extra: { url: string } }[] }])[0].notifications[0]!;
+    expect(n.title).toBe('VikArg');
+    expect(n.body).toBe('Tenés avisos nuevos');
+    expect(n.extra.url).toBe('#/weather/forecast');
+    expect(n.id).toBe(idForTag('vikarg-alerts'));
+    local.schedule.mockClear();
+    listeners.get('pushNotificationReceived')!({ data: { type: 'test' } });
+    await Promise.resolve();
+    expect((local.schedule.mock.calls[0] as unknown as [{ notifications: { body: string }[] }])[0].notifications[0]!.body).toBe('Las notificaciones funcionan correctamente.');
   });
 });

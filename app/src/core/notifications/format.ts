@@ -30,6 +30,7 @@ const TEXT = {
     minStock: 'debajo del stock mínimo',
     kitMissing: (n: number, kit: string) => (n === 1 ? `Falta 1 artículo en ${kit}` : `Faltan ${n} artículos en ${kit}`),
     more: (n: number) => `y ${n} más`,
+    pushGenericBody: 'Tenés avisos nuevos',
     testTitle: 'Herramientas de Supervivencia por VikArg',
     testBody: 'Las notificaciones funcionan correctamente.',
     here: 'Donde estás',
@@ -90,6 +91,7 @@ const TEXT = {
     minStock: 'below minimum stock',
     kitMissing: (n: number, kit: string) => (n === 1 ? `1 item missing in ${kit}` : `${n} items missing in ${kit}`),
     more: (n: number) => `and ${n} more`,
+    pushGenericBody: 'You have new alerts',
     testTitle: 'Survival Tools By VikArg',
     testBody: 'Notifications are working.',
     here: 'Where you are',
@@ -179,6 +181,11 @@ export function alertsNotification(alerts: AlertSummary[], lang: Lang, today: st
   const lines = all.slice(0, MAX_LISTED);
   if (all.length > MAX_LISTED) lines.push(tx.more(all.length - MAX_LISTED));
   return { title: tx.title(all.length), body: lines.join('\n') };
+}
+
+/** Aviso genérico de Firebase (la app nativa lo muestra ella cuando está abierta: el sistema no lo hace con la app en pantalla). */
+export function genericPushNotification(lang: Lang): { title: string; body: string } {
+  return { title: 'VikArg', body: TEXT[lang].pushGenericBody };
 }
 
 export function testNotification(lang: Lang): { title: string; body: string } {
