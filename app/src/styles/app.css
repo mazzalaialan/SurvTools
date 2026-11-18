@@ -5239,7 +5239,7 @@ button.country-pack-icon {
 }
 
 /* Mapa de países: el país principal lleva un halo del color de acento y una ★. */
-.country-map-country.is-current > path.country-map-halo {
+.country-map-halo {
   fill: none;
   stroke: var(--accent);
   stroke-width: 9;

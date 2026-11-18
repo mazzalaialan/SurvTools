@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clampView, FULL_VIEW, MAX_ZOOM, panView, tapAction, viewRect, zoomAround, type Box } from './countryMapView';
+import { clampView, FULL_VIEW, MAX_ZOOM, panView, tapAction, viewForPinch, viewRect, zoomAround, type Box } from './countryMapView';
 
 const box: Box = { x: 0, y: 0, w: 1000, h: 2000 };
 
@@ -49,5 +49,41 @@ describe('qué hace tocar un país', () => {
   it('mientras baja, o sin saber todavía el estado, los toques no hacen nada', () => {
     expect(tapAction({ ...base, marked: 'PY', busy: true })).toBe('none');
     expect(tapAction({ ...base, marked: 'PY', state: undefined })).toBe('none');
+  });
+});
+
+describe('pellizco', () => {
+  const rect = { left: 10, top: 20, width: 500, height: 1000 };
+  /** Punto del mapa que queda bajo un píxel de pantalla con esa vista. */
+  const under = (v: ReturnType<typeof viewForPinch>, px: { x: number; y: number }) => {
+    const r = viewRect(box, v);
+    const scale = Math.min(rect.width / r.w, rect.height / r.h);
+    const offX = (rect.width - r.w * scale) / 2;
+    const offY = (rect.height - r.h * scale) / 2;
+    return { x: r.x + (px.x - rect.left - offX) / scale, y: r.y + (px.y - rect.top - offY) / scale };
+  };
+  it('el punto bajo el medio de los dedos no se corre al acercar', () => {
+    const anchor = { x: 300, y: 700 };
+    const mid = { x: 200, y: 400 };
+    const v = viewForPinch(box, rect, anchor, mid, 3);
+    expect(v.zoom).toBe(3);
+    const p = under(v, mid);
+    expect(p.x).toBeCloseTo(anchor.x, 3);
+    expect(p.y).toBeCloseTo(anchor.y, 3);
+  });
+  it('si los dedos se mueven mientras pellizcan, el mapa los acompaña', () => {
+    const anchor = { x: 500, y: 1000 };
+    const a = viewForPinch(box, rect, anchor, { x: 260, y: 520 }, 2);
+    const b = viewForPinch(box, rect, anchor, { x: 300, y: 560 }, 2);
+    expect(b.cx).not.toBeCloseTo(a.cx, 3);
+    const p = under(b, { x: 300, y: 560 });
+    expect(p.x).toBeCloseTo(anchor.x, 3);
+  });
+  it('no pasa el acercamiento máximo ni se sale del mapa', () => {
+    const v = viewForPinch(box, rect, { x: 0, y: 0 }, { x: 260, y: 520 }, 999);
+    expect(v.zoom).toBe(MAX_ZOOM);
+    const r = viewRect(box, v);
+    expect(r.x).toBeGreaterThanOrEqual(0);
+    expect(r.y).toBeGreaterThanOrEqual(0);
   });
 });

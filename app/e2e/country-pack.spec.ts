@@ -116,7 +116,7 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
 
   // El país principal (Argentina) se distingue en el mapa con un halo y una ★.
   await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'true');
-  await expect(page.getByTestId('country-map-AR').locator('.country-map-halo')).toHaveCount(1);
+  await expect(page.getByTestId('country-map-halo')).toHaveAttribute('data-country', 'AR');
   await expect(page.getByTestId('country-map-AR')).toContainText('★');
   await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'false');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-102-country-map-main.png` });
@@ -144,6 +144,7 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'true');
   await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'false');
   await expect(page.getByTestId('country-map-AR')).not.toContainText('★');
+  await expect(page.getByTestId('country-map-halo')).toHaveAttribute('data-country', 'PY');
 });
 
 test('Mapa de países: se puede acercar, alejar y arrastrar sin marcar nada por error', async ({ page }) => {
@@ -189,4 +190,51 @@ test('Mapa de países: se puede acercar, alejar y arrastrar sin marcar nada por 
   // «Ver todo» vuelve al mapa entero.
   await page.getByTestId('country-map-zoom-all').click();
   expect(await zoom()).toBe(1);
+});
+
+test.describe('Mapa de países: pellizco con dos dedos', () => {
+  test.use({ viewport: { width: 393, height: 851 }, hasTouch: true });
+
+  test('acerca y aleja alrededor de los dedos sin correrse', async ({ page }) => {
+    await start(page);
+    await page.goto('/#/settings');
+    await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+    await page.getByTestId('country-pack-map-open').click();
+    const svg = page.getByTestId('country-map');
+    await svg.scrollIntoViewIfNeeded();
+    const box = (await svg.boundingBox())!;
+    const cdp = await page.context().newCDPSession(page);
+    const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', pts: { x: number; y: number }[]) =>
+      cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map((p, i) => ({ x: p.x, y: p.y, id: i + 1 })) });
+    const zoom = async () => Number(await svg.getAttribute('data-zoom'));
+    /** El país que hay bajo ese punto de la pantalla. */
+    const under = (x: number, y: number) =>
+      page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.closest('[data-testid^=country-map-]')?.getAttribute('data-testid') ?? null, [x, y]);
+
+    // Dedos sobre Argentina (el centro del dibujo, un poco abajo).
+    const cx = box.x + box.width * 0.52;
+    const cy = box.y + box.height * 0.5;
+    const antes = await under(cx, cy);
+    expect(antes).toBe('country-map-AR');
+
+    // Pellizco hacia afuera: de 40 px entre dedos a 160 px, en 8 pasos.
+    const spread = (d: number) => [{ x: cx - d / 2, y: cy }, { x: cx + d / 2, y: cy }];
+    await touch('touchStart', spread(40));
+    for (let i = 1; i <= 8; i++) await touch('touchMove', spread(40 + (120 * i) / 8));
+    await touch('touchEnd', []);
+    const acercado = await zoom();
+    expect(acercado).toBeGreaterThan(2.5);
+    expect(acercado).toBeLessThan(5.5); // ≈ 4×: 160 / 40
+    // Lo que estaba bajo el medio de los dedos sigue ahí.
+    expect(await under(cx, cy)).toBe(antes);
+    // Y no marcó ningún país por el pellizco.
+    await expect(page.getByTestId('country-map-next')).toContainText('Tocá un país del mapa para marcarlo');
+
+    // Pellizco hacia adentro: vuelve a alejarse.
+    const spread2 = (d: number) => [{ x: cx - d / 2, y: cy }, { x: cx + d / 2, y: cy }];
+    await touch('touchStart', spread2(160));
+    for (let i = 1; i <= 8; i++) await touch('touchMove', spread2(160 - (120 * i) / 8));
+    await touch('touchEnd', []);
+    expect(await zoom()).toBeLessThan(acercado / 2);
+  });
 });

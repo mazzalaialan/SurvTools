@@ -6,7 +6,7 @@ import { Dialog } from '@/ui/Dialog';
 import { toMercator } from '@/modules/weathermap/projection';
 import { loadGeoData, type GeoData } from '@/modules/weathermap/geo';
 import { formatBytes, type PackState } from './countryDownload';
-import { FULL_VIEW, MAX_ZOOM, MIN_ZOOM, panView, tapAction, viewRect, zoomAround, type View } from './countryMapView';
+import { FULL_VIEW, MAX_ZOOM, MIN_ZOOM, panView, tapAction, viewForPinch, viewRect, zoomAround, type View } from './countryMapView';
 import { useCountryPacks } from './useCountryPacks';
 
 /** Lo que se ve del mapa: de la costa del Pacífico al Atlántico y de Perú a Tierra del Fuego. */
@@ -56,7 +56,11 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   const selected = marked ?? current;
   const [view, setView] = useState<View>(() => FULL_VIEW(box));
   const viewRef = useRef(view);
-  viewRef.current = view;
+  /** Cambia la vista y la deja anotada AL INSTANTE: los dos dedos mandan eventos seguidos, antes de que la pantalla se vuelva a dibujar. */
+  const applyView = useCallback((v: View) => {
+    viewRef.current = v;
+    setView(v);
+  }, []);
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
     void loadGeoData().then(setGeo);
@@ -107,9 +111,9 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
       if (!svg) return;
       const rect = svg.getBoundingClientRect();
       const p = toMap(clientX ?? rect.left + rect.width / 2, clientY ?? rect.top + rect.height / 2);
-      setView((v) => zoomAround(box, v, factor, p.x, p.y));
+      applyView(zoomAround(box, viewRef.current, factor, p.x, p.y));
     },
-    [toMap],
+    [toMap, applyView],
   );
   // La rueda del mouse acerca el mapa (no puede ser un `onWheel` de React: ese es pasivo y no deja frenar el desplazamiento de la página).
   useEffect(() => {
@@ -124,17 +128,27 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   }, [zoomBy, paths]);
 
   const pointers = useRef(new Map<number, { x: number; y: number }>());
-  const gesture = useRef({ startX: 0, startY: 0, moved: false, pinch: 0 });
+  const gesture = useRef({ startX: 0, startY: 0, moved: false, pinch: null as null | { dist: number; zoom: number; anchor: { x: number; y: number } } });
   /** Lo que sigue a un arrastre o a un pellizco no es un toque: el clic que Android manda al soltar se descarta. */
   const swallowClick = useRef(false);
+  const middle = () => {
+    const [a, b] = [...pointers.current.values()];
+    return { dist: Math.hypot(a!.x - b!.x, a!.y - b!.y), mid: { x: (a!.x + b!.x) / 2, y: (a!.y + b!.y) / 2 } };
+  };
 
   function down(e: ReactPointerEvent<SVGSVGElement>) {
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pointers.current.size === 1) gesture.current = { startX: e.clientX, startY: e.clientY, moved: false, pinch: 0 };
-    else {
-      const [a, b] = [...pointers.current.values()];
-      gesture.current.pinch = Math.hypot(a!.x - b!.x, a!.y - b!.y);
+    if (pointers.current.size === 1) {
+      gesture.current = { startX: e.clientX, startY: e.clientY, moved: false, pinch: null };
+    } else if (pointers.current.size === 2) {
+      // Empieza un pellizco: se anota qué punto del mapa está bajo el medio de los dedos, que tiene que quedarse ahí. Se toman los dos dedos para
+      // que sigan llegando los eventos aunque salgan del dibujo.
+      for (const id of pointers.current.keys()) e.currentTarget.setPointerCapture(id);
+      const { dist, mid } = middle();
+      const p = toMap(mid.x, mid.y);
+      gesture.current.pinch = { dist: Math.max(dist, 1), zoom: viewRef.current.zoom, anchor: { x: p.x, y: p.y } };
       gesture.current.moved = true;
+      swallowClick.current = true;
     }
   }
   function move(e: ReactPointerEvent<SVGSVGElement>) {
@@ -144,15 +158,10 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
     pointers.current.set(e.pointerId, now);
     const g = gesture.current;
     if (pointers.current.size >= 2) {
-      // Pellizco: acerca o aleja alrededor del punto medio y lo acompaña si se mueve.
-      const [a, b] = [...pointers.current.values()];
-      const dist = Math.hypot(a!.x - b!.x, a!.y - b!.y);
-      const mid = { x: (a!.x + b!.x) / 2, y: (a!.y + b!.y) / 2 };
-      if (g.pinch > 0 && dist > 0) {
-        const p = toMap(mid.x, mid.y);
-        setView((v) => zoomAround(box, v, dist / g.pinch, p.x, p.y));
-      }
-      g.pinch = dist;
+      if (!g.pinch) return;
+      const { dist, mid } = middle();
+      const rect = svgRef.current!.getBoundingClientRect();
+      applyView(viewForPinch(box, rect, g.pinch.anchor, mid, g.pinch.zoom * (dist / g.pinch.dist)));
       swallowClick.current = true;
       return;
     }
@@ -163,12 +172,12 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
     }
     swallowClick.current = true;
     const { scale } = toMap(now.x, now.y);
-    setView((v) => panView(box, v, -(now.x - prev.x) / scale, -(now.y - prev.y) / scale));
+    applyView(panView(box, viewRef.current, -(now.x - prev.x) / scale, -(now.y - prev.y) / scale));
   }
   function up(e: ReactPointerEvent<SVGSVGElement>) {
     pointers.current.delete(e.pointerId);
+    gesture.current.pinch = null;
     if (pointers.current.size === 0) window.setTimeout(() => (swallowClick.current = false), 60);
-    else gesture.current.pinch = 0;
   }
 
   /** Qué hace el próximo toque sobre el país marcado (para avisarlo en el panel). */
@@ -229,8 +238,6 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
                   onClick={() => tap(c)}
                   onKeyDown={onKey(c)}
                 >
-                  {/* Tu país: un halo del color de acento alrededor del contorno (el color de adentro dice si los datos están al día). */}
-                  {current === c && <path d={paths.own[c] ?? ''} className="country-map-halo" vectorEffect="non-scaling-stroke" />}
                   <path d={paths.own[c] ?? ''} vectorEffect="non-scaling-stroke" />
                   {at && (
                     <g transform={`translate(${at.x} ${-at.y}) scale(${labelScale})`}>
@@ -248,6 +255,11 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
                 </g>
               );
             })}
+          {/* Tu país: un halo del color de acento alrededor del contorno, en una capa por ENCIMA de todos los países (si no, los vecinos lo tapan);
+              el color de adentro dice si los datos están al día. */}
+          {paths?.own[current] && (
+            <path d={paths.own[current]} className="country-map-halo" data-testid="country-map-halo" data-country={current} vectorEffect="non-scaling-stroke" />
+          )}
         </svg>
         <div className="country-map-zoom" role="group" aria-label={t('country.map.zoom')}>
           <button className="icon-btn" type="button" onClick={() => zoomBy(1.6)} aria-label={t('country.map.zoomIn')} data-testid="country-map-zoom-in" disabled={view.zoom >= MAX_ZOOM}>
@@ -256,7 +268,7 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
           <button className="icon-btn" type="button" onClick={() => zoomBy(1 / 1.6)} aria-label={t('country.map.zoomOut')} data-testid="country-map-zoom-out" disabled={view.zoom <= MIN_ZOOM}>
             <Minus size={20} aria-hidden />
           </button>
-          <button className="icon-btn" type="button" onClick={() => setView(FULL_VIEW(box))} aria-label={t('country.map.zoomAll')} data-testid="country-map-zoom-all" disabled={view.zoom === 1}>
+          <button className="icon-btn" type="button" onClick={() => applyView(FULL_VIEW(box))} aria-label={t('country.map.zoomAll')} data-testid="country-map-zoom-all" disabled={view.zoom === 1}>
             <Scan size={20} aria-hidden />
           </button>
         </div>

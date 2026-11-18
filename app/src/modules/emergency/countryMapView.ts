@@ -62,3 +62,26 @@ export function tapAction(o: { marked: string | null; tapped: string; state: Pac
   if (o.state === 'ready' && !o.isCurrent) return 'use';
   return 'none';
 }
+
+/**
+ * Vista de un pellizco: el punto del mapa que estaba bajo el medio de los dos dedos al empezar (`anchor`) queda bajo el medio de los dedos
+ * ahora (`mid`, en píxeles de pantalla), con el acercamiento `zoom`. Se calcula siempre desde el punto de partida (sin acumular cambios), así
+ * no se corre ni "baila" aunque lleguen varios eventos seguidos. `rect` es el tamaño del dibujo en pantalla (el mapa se centra si sobra lugar).
+ */
+export function viewForPinch(
+  box: Box,
+  rect: { left: number; top: number; width: number; height: number },
+  anchor: { x: number; y: number },
+  mid: { x: number; y: number },
+  zoom: number,
+): View {
+  const z = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
+  const w = box.w / z;
+  const h = box.h / z;
+  const scale = Math.min(rect.width / w, rect.height / h);
+  const offX = (rect.width - w * scale) / 2;
+  const offY = (rect.height - h * scale) / 2;
+  const x0 = anchor.x - (mid.x - rect.left - offX) / scale;
+  const y0 = anchor.y - (mid.y - rect.top - offY) / scale;
+  return clampView(box, { zoom: z, cx: x0 + w / 2, cy: y0 + h / 2 });
+}
