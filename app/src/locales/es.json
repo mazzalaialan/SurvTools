@@ -2675,8 +2675,7 @@
       "recommendationRules": "Recomendaciones",
       "medicalProfiles": "Fichas médicas",
       "routes": "Rutas",
-      "contacts": "Contactos de emergencia"
-    },
+      "contacts": "Contactos de emergencia", "tracks": "Recorridos", "gardenBeds": "Canteros de la huerta", "plantings": "Siembras", "gear": "Equipo", "weights": "Pesajes", "workouts": "Entrenamientos", "outings": "Salidas"},
     "passwordAtExport": "Contraseña que tenías al exportarlo",
     "wrongPassword": "La contraseña no corresponde a este backup.",
     "replaceWarning": "Se van a borrar todos los datos actuales de este dispositivo y reemplazar por los del backup. Tu contraseña pasa a ser la del backup.",

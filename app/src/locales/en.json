@@ -2675,8 +2675,7 @@
       "recommendationRules": "Recommendations",
       "medicalProfiles": "Medical records",
       "routes": "Routes",
-      "contacts": "Emergency contacts"
-    },
+      "contacts": "Emergency contacts", "tracks": "Tracks", "gardenBeds": "Garden beds", "plantings": "Plantings", "gear": "Gear", "weights": "Weigh-ins", "workouts": "Workouts", "outings": "Outings"},
     "passwordAtExport": "Password you had when you exported it",
     "wrongPassword": "The password doesn't match this backup.",
     "replaceWarning": "All current data on this device will be deleted and replaced with the backup. Your password becomes the backup's password.",
