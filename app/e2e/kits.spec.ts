@@ -116,9 +116,10 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await page.getByTestId('kb-people').fill('');
   await page.getByTestId('kb-people').pressSequentially('7');
   await expect(page.getByTestId('kb-people')).toHaveValue('7');
-  // Al cambiar las personas se recalcula lo necesario y lo que falta (un torniquete por persona en el kit individual).
-  await expect(page.getByTestId('kb-qty-tourniquet')).toHaveValue('7');
-  await expect(page.getByTestId('kb-gap-tourniquet')).toContainText('faltan 7');
+  // Al cambiar las personas se recalcula lo necesario y lo que falta: hasta 4 personas un torniquete por persona y, de ahí en adelante, un
+  // grupo grande no lleva uno por persona (7 personas: 5).
+  await expect(page.getByTestId('kb-qty-tourniquet')).toHaveValue('5');
+  await expect(page.getByTestId('kb-gap-tourniquet')).toContainText('faltan 5');
   await page.getByTestId('kb-people').fill('1');
   await expect(page.getByTestId('kb-people')).toHaveValue('1');
   await page.getByTestId('kb-level-advanced').click();
