@@ -120,7 +120,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     rateOmPerMin: Number(env.RATE_OM_PER_MIN ?? 300),
     rateAddressPerMin: Number(env.RATE_ADDRESS_PER_MIN ?? 60),
     rateOsmPerMin: Number(env.RATE_OSM_PER_MIN ?? 300),
-    rateTransferUploadsPerHour: Number(env.RATE_TRANSFER_UPLOADS_PER_HOUR ?? 20),
+    rateTransferUploadsPerHour: Number(env.RATE_TRANSFER_UPLOADS_PER_HOUR ?? 4),
     transferStoreMaxBytes: Number(env.TRANSFER_STORE_MAX_MB ?? 1024) * 1024 * 1024,
     deviceFailuresPer10Min: Number(env.DEVICE_FAILURES_PER_10MIN ?? 30),
     mapsMaxZoneTiles: Number(env.MAPS_MAX_ZONE_TILES ?? 60_000),

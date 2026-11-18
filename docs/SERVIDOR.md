@@ -315,10 +315,10 @@ Baja las listas públicas de NASA FIRMS (VIIRS NOAA-20 y NOAA-21, últimos 7 dí
 | `RATE_OM_PER_MIN` | 300 | Clima propio, `/api/om/*` (cada pantalla de clima pide unas pocas consultas) |
 | `RATE_ADDRESS_PER_MIN` | 60 | Altura de calle, `/api/address/*` (cada consulta va a Georef en nombre del servidor) |
 | `RATE_OSM_PER_MIN` | 300 | Base de calles, `/api/osm/*` |
-| `RATE_TRANSFER_UPLOADS_PER_HOUR` | 20 | Subidas de backups de transferencia (`POST /api/transfers`, hasta 50 MB cada una) |
+| `RATE_TRANSFER_UPLOADS_PER_HOUR` | 4 | Subidas de backups de transferencia por hora (`POST /api/transfers`, hasta 50 MB cada una): más de 4 desde la misma IP se considera abuso. Una persona que migra sus datos usa 1; si varias personas comparten IP (una escuela), subirlo |
 | `TRANSFER_STORE_MAX_MB` | 1024 | Tope de lo que se guarda de transferencias a la vez; al llegar, `503 storage-full` (se vacían solas a las 24 h o al entregarse) |
 
-Con una escuela entera detrás de una sola IP los valores por defecto sobran; si hiciera falta, se suben. Detrás de Caddy se usa la IP real del visitante (`trustProxy`).
+Con una escuela entera detrás de una sola IP los valores de clima, calles y alturas sobran; el de transferencias es estricto a propósito (4 por hora): en una copia institucional donde muchas personas migren a la vez, subirlo. Detrás de Caddy se usa la IP real del visitante (`trustProxy`).
 
 **Lista de verificación del equipo que aloja el servidor** (esto NO lo cubre el código):
 1. **Qué se ve desde internet.** En el router, solo deben estar reenviados el **80 y el 443**. Revisar las reglas de reenvío de puertos, la zona **DMZ** (apagada) y **UPnP** (apagado). Probar desde el celular con datos móviles (sin wifi) que otros servicios del equipo no respondan por la IP pública (por ejemplo Dozzle 9999, Qdrant 6333, Ollama 11434, el escritorio remoto 3389). El 2026-11-18 se vio que, conectándose a la IP pública desde el propio equipo, todos esos puertos respondían: puede ser solo el espejo del router, pero hay que confirmarlo desde afuera.
