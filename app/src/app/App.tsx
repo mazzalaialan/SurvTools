@@ -207,6 +207,8 @@ const router = createHashRouter([
       { path: '/settings', element: <SettingsPage /> },
       { path: '/about', element: <AboutPage /> },
       { path: '/about/licenses', element: <LicensesPage /> },
+      // Una dirección que no existe (un enlace viejo o mal escrito) vuelve al Inicio: sin esto aparece la pantalla de error por defecto del router, en inglés.
+      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ]);

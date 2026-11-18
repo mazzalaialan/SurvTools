@@ -77,6 +77,12 @@ test('licencias y créditos: licencia de la app, fuentes de datos y componentes 
   await expect(mpl).toContainText('@capgo/background-geolocation');
   await expect(mpl).toContainText('@capgo/capacitor-barometer');
   await expect(mpl.getByRole('link', { name: 'Código fuente' }).first()).toHaveAttribute('href', /github\.com\/Cap-go\//);
+  // Una dirección que no existe vuelve al Inicio (no la pantalla de error por defecto del router).
+  await page.goto('/#/esta-ruta-no-existe');
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  await expect(page.getByText('Hey developer')).toHaveCount(0);
+  await expect(page).toHaveURL(/#\/$/);
+  await page.goBack();
   // Componentes de terceros, cargados aparte, con el texto de cada licencia.
   const deps = page.getByTestId('lic-deps');
   await expect(deps.locator('li').first()).toBeVisible();

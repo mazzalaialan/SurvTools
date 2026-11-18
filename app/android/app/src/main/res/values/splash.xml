@@ -2,4 +2,6 @@
 <!-- Pantalla de inicio (Android 12 o más): fondo de la marca y su emblema. Las imágenes y el ícono salen de scripts/generate-android-splash.mjs. -->
 <resources>
     <color name="splash_background">#121a24</color>
+    <!-- Barras del sistema y fondo de la ventana mientras la app todavía no cargó (la app las pinta del color del tema apenas arranca): negro neutro, para no mostrar el gris ni el azul índigo de la plantilla. -->
+    <color name="startup_bars">#000000</color>
 </resources>
