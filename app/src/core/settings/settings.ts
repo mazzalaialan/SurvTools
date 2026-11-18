@@ -17,7 +17,7 @@ export interface Settings {
   theme: Theme;
   /**
    * App nativa, tema «Rojo nocturno»: color de las barras del sistema. 0 = casi negro con íconos blancos; de 1 a 10 = rojo de más oscuro a más claro
-   * con íconos negros (ver core/systemBars.ts). Android solo deja íconos blancos o negros, no rojos.
+   * con íconos negros (ver core/systemBars.ts). Por defecto 1 (el rojo más oscuro). Android solo deja íconos blancos o negros, no rojos.
    */
   systemBarRed: number;
   units: UnitSystem;
@@ -240,7 +240,7 @@ export const DEFAULT_SERVER_URL = 'https://valhallarust2.ddns.net';
 export const DEFAULT_SETTINGS: Settings = {
   language: detectLanguage(),
   theme: 'dark',
-  systemBarRed: 0,
+  systemBarRed: 1,
   units: 'metric',
   autoLockMinutes: 5,
   emergencyOnLock: false,
