@@ -1,4 +1,8 @@
 {
+  "recorder": {
+    "bgTitle": "Grabando tu recorrido",
+    "bgMessage": "VikArg sigue grabando con la pantalla apagada."
+  },
   "app": {
     "name": "Herramientas de Supervivencia por VikArg",
     "motto": "Hay que estar listo para que no te agarre un imprevisto"

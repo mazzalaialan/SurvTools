@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+import { recordingLocation, type Fix } from '@/core/geo/locationBackend';
 import type { GeoError } from '@/core/geo/useGeolocation';
+import { i18n } from '@/core/i18n/i18n';
 import { newEntity } from '@/core/model/entity';
 import type { Id, Track, VehicleKind, WorkoutKind } from '@/core/model/types';
 import { isUnlocked } from '@/core/security/session';
@@ -77,8 +79,6 @@ const IDLE = { status: 'idle', track: null, elapsedMs: 0, since: null, error: nu
 const GAP_NOTICE_MS = 20_000;
 let hiddenAt: number | null = null;
 
-let watchId: number | null = null;
-
 // Batería baja (20 % o menos y sin cargar): se toman menos puntos. Con el tema de ahorro, siempre.
 let batteryLow = false;
 let batteryWatched = false;
@@ -111,21 +111,20 @@ async function persist() {
   await useTracks.getState().saveTrack({ ...s.track, durationS: elapsedS(s) });
 }
 
-function onPosition(p: GeolocationPosition) {
+function onPosition(p: Fix) {
   const s = useRecorder.getState();
   if (s.status !== 'recording' || !s.track) return;
-  const fix = { lat: p.coords.latitude, lon: p.coords.longitude, accuracy: p.coords.accuracy };
+  const fix = { lat: p.lat, lon: p.lon, accuracy: p.accuracy };
   if (s.error || s.accuracy !== fix.accuracy) useRecorder.setState({ error: null, accuracy: fix.accuracy });
   // Conduciendo: la velocidad y el rumbo salen del GPS en cada posición (aunque no se guarde el punto), para mostrarlos de ahora.
   if (s.track.vehicle && fix.accuracy <= MAX_ACCURACY_M) {
-    const speedMs = p.coords.speed !== null && Number.isFinite(p.coords.speed) ? Math.max(0, p.coords.speed) : null;
-    const heading = p.coords.heading !== null && Number.isFinite(p.coords.heading) ? p.coords.heading : null;
-    useRecorder.setState({ fix: { speedMs, heading, altitude: p.coords.altitude ?? null, at: p.timestamp } });
+    const speedMs = p.speed !== null ? Math.max(0, p.speed) : null;
+    useRecorder.setState({ fix: { speedMs, heading: p.heading, altitude: p.altitude, at: p.timestamp } });
   }
   const segments = s.track.segments;
   if (!shouldAdd(segments[segments.length - 1]?.at(-1), fix, lowPower() ? SAVER_STEP_M : undefined)) return;
   // Con la hora (segundos): de ahí salen el tiempo en movimiento, el ritmo y los parciales del Entrenamiento.
-  const point: TrackPoint = [fix.lat, fix.lon, p.coords.altitude ?? null, Math.round(p.timestamp / 1000)];
+  const point: TrackPoint = [fix.lat, fix.lon, p.altitude, Math.round(p.timestamp / 1000)];
   // Si venía un corte (pantalla apagada), este primer punto cierra su recta: queda en el mismo tramo y suma su distancia.
   let gaps = closeGap(s.track.gaps, point);
   const last = segments[segments.length - 1]?.at(-1);
@@ -158,21 +157,16 @@ function loadedLines(): CandidateLine[] {
 function startWatch() {
   stopWatch();
   watchBattery();
-  if (!('geolocation' in navigator)) {
-    useRecorder.setState({ error: 'unsupported' });
-    return;
-  }
-  watchId = navigator.geolocation.watchPosition(
-    onPosition,
-    (e) => useRecorder.setState({ error: e.code === e.PERMISSION_DENIED ? 'denied' : e.code === e.TIMEOUT ? 'timeout' : 'unavailable' }),
-    // Sin posiciones guardadas: al seguir tras una pausa, la última sería la de donde se pausó.
-    { enableHighAccuracy: true, maximumAge: 0, timeout: 30_000 },
-  );
+  // La implementación es la del navegador (se corta con la pantalla apagada) o, en la app nativa, el servicio en primer plano.
+  void recordingLocation().start(onPosition, (code) => useRecorder.setState({ error: code }), {
+    title: i18n.t('recorder.bgTitle'),
+    message: i18n.t('recorder.bgMessage'),
+  });
 }
 
-function stopWatch() {
-  if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-  watchId = null;
+/** Deja de grabar y espera a que lo último pendiente (el registro nativo) llegue a la grabación. */
+function stopWatch(): Promise<void> {
+  return recordingLocation().stop();
 }
 
 export const useRecorder = create<RecorderState>((set, get) => ({
@@ -208,9 +202,10 @@ export const useRecorder = create<RecorderState>((set, get) => ({
   },
 
   async pause() {
+    if (get().status !== 'recording') return;
+    await stopWatch();
     const s = get();
     if (s.status !== 'recording') return;
-    stopWatch();
     // Un corte que todavía no tiene el punto de después no se une con lo que se camine en pausa.
     const gaps = s.track ? dropOpenGap(s.track.gaps) : undefined;
     set({ status: 'paused', elapsedMs: s.elapsedMs + (s.since !== null ? Date.now() - s.since : 0), since: null, error: null, ...(s.track && gaps ? { track: { ...s.track, gaps } } : {}) });
@@ -243,9 +238,10 @@ export const useRecorder = create<RecorderState>((set, get) => ({
   },
 
   async finish(name, opts) {
+    if (!get().track) return null;
+    await stopWatch();
     const s = get();
     if (!s.track) return null;
-    stopWatch();
     const finalName = name?.trim() || s.track.name;
     // Las estadísticas de la actividad, con todos los puntos y sus horas (antes de simplificar el recorrido).
     const raw = s.track.segments.map((seg) => (seg.length > 1 ? seg : []));
@@ -292,7 +288,7 @@ document.addEventListener('visibilitychange', () => {
     if (recording) void persist();
     return;
   }
-  if (recording && hiddenAt !== null && Date.now() - hiddenAt >= GAP_NOTICE_MS) {
+  if (recording && !recordingLocation().background && hiddenAt !== null && Date.now() - hiddenAt >= GAP_NOTICE_MS) {
     const s = useRecorder.getState();
     const gapS = Math.round((Date.now() - hiddenAt) / 1000);
     // Un corte siempre se une con una recta, en el mismo tramo: suma su distancia (menos de lo que se caminó, pero no se descarta) y se
@@ -328,6 +324,13 @@ async function restore(open: Track) {
   const locked = await readLocked(open.id, open.recKey);
   let segments = open.segments.length ? open.segments : [[]];
   for (const p of locked) segments = addPoint(segments, p);
+  // App nativa: lo que se grabó con el servicio en primer plano y no llegó a la grabación (la app se cerró) queda en el registro nativo.
+  const recovered: Fix[] = [];
+  await recordingLocation().recover?.((f) => recovered.push(f));
+  for (const f of recovered) {
+    const point: TrackPoint = [f.lat, f.lon, f.altitude, Math.round(f.timestamp / 1000)];
+    if (shouldAdd(segments.at(-1)?.at(-1), { lat: f.lat, lon: f.lon, accuracy: f.accuracy })) segments = addPoint(segments, point);
+  }
   const recKey = open.recKey ?? (await newRecKey());
   prepareLocked(recKey);
   if (useRecorder.getState().status !== 'idle') return;

@@ -1,4 +1,8 @@
 {
+  "recorder": {
+    "bgTitle": "Recording your route",
+    "bgMessage": "VikArg keeps recording with the screen off."
+  },
   "app": {
     "name": "Survival Tools By VikArg",
     "motto": "Be ready so the unexpected never catches you off guard"
