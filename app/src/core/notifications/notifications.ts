@@ -1,6 +1,7 @@
 import { db } from '@/core/db/db';
 import { useSettings } from '@/core/settings/settings';
 import { testNotification } from './format';
+import { notificationBackend } from './backend';
 import { readNotificationState, updateNotificationState, type PushRegistration } from './state';
 
 /**
@@ -9,9 +10,6 @@ import { readNotificationState, updateNotificationState, type PushRegistration }
  * 2. Aviso diario sin servidor: Periodic Background Sync del service worker.
  * 3. Push desde el servidor propio, si hay uno configurado.
  */
-
-const PERIODIC_SYNC_TAG = 'vikarg-alerts';
-const PERIODIC_MIN_INTERVAL_MS = 12 * 3_600_000;
 
 export class ServerError extends Error {
   constructor(public readonly code: 'unreachable' | 'invalid-response' | 'push-unsupported' | 'permission-denied' | 'insecure') {
@@ -66,35 +64,20 @@ export async function checkServer(serverUrl: string): Promise<ServerInfo> {
   return { version: body.version ?? '?', vapidPublicKey: body.vapidPublicKey };
 }
 
-interface PeriodicSyncManager {
-  register(tag: string, options: { minInterval: number }): Promise<void>;
-  unregister(tag: string): Promise<void>;
-}
-
-const periodicSync = (reg: ServiceWorkerRegistration) =>
-  (reg as ServiceWorkerRegistration & { periodicSync?: PeriodicSyncManager }).periodicSync;
-
-function base64UrlToBytes(s: string): Uint8Array<ArrayBuffer> {
-  const b64 = s.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(s.length / 4) * 4, '=');
-  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-}
-
 function prefs() {
   const { language, notifyHour, updateNotices, hazardNotices } = useSettings.getState().settings;
   return { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, notifyHour, language, updates: updateNotices, hazards: hazardNotices };
 }
 
 async function registerPush(serverUrl: string): Promise<PushRegistration> {
-  const reg = await navigator.serviceWorker.ready;
-  if (!reg.pushManager) throw new ServerError('push-unsupported');
   const { vapidPublicKey } = await checkServer(serverUrl);
-  // Si había una suscripción de otro servidor, sus claves no sirven: se renueva.
-  await (await reg.pushManager.getSubscription())?.unsubscribe();
-  const subscription = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64UrlToBytes(vapidPublicKey) });
+  // En la web es la suscripción de Web Push; en la app nativa, lo que necesite el servidor para ese dispositivo (ver backend.ts).
+  const subscription = await notificationBackend().subscribePush(vapidPublicKey);
+  if (!subscription) throw new ServerError('push-unsupported');
   const res = await fetch(`${normalizeServerUrl(serverUrl)}/api/devices`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ subscription: subscription.toJSON(), ...prefs() }),
+    body: JSON.stringify({ subscription, ...prefs() }),
   });
   if (!res.ok) throw new ServerError('invalid-response');
   const { deviceId, token } = (await res.json()) as { deviceId: string; token: string };
@@ -124,8 +107,7 @@ async function unregisterPush(push: PushRegistration): Promise<void> {
     const { pendingDeletes } = await readNotificationState();
     if (!pendingDeletes.some((p) => p.deviceId === push.deviceId)) await updateNotificationState({ pendingDeletes: [...pendingDeletes, push] });
   }
-  const reg = await navigator.serviceWorker.ready;
-  await (await reg.pushManager?.getSubscription())?.unsubscribe();
+  await notificationBackend().unsubscribePush();
 }
 
 let retrying: Promise<number> | null = null;
@@ -156,20 +138,10 @@ export interface EnableResult {
 
 /** Pide permiso y activa los niveles disponibles en este dispositivo. */
 export async function enableNotifications(): Promise<EnableResult> {
-  if (!('Notification' in window)) throw new ServerError('push-unsupported');
-  if ((await Notification.requestPermission()) !== 'granted') throw new ServerError('permission-denied');
-  const reg = await navigator.serviceWorker.ready;
-
-  let localDaily = false;
-  const sync = periodicSync(reg);
-  if (sync) {
-    try {
-      await sync.register(PERIODIC_SYNC_TAG, { minInterval: PERIODIC_MIN_INTERVAL_MS });
-      localDaily = true;
-    } catch {
-      // Chrome solo lo concede a apps instaladas y con uso frecuente.
-    }
-  }
+  const backend = notificationBackend();
+  if (!backend.supported()) throw new ServerError('push-unsupported');
+  if (!(await backend.requestPermission())) throw new ServerError('permission-denied');
+  const localDaily = await backend.registerDaily();
 
   let push = false;
   let pushError: ServerError | null = null;
@@ -196,8 +168,7 @@ export async function enableNotifications(): Promise<EnableResult> {
 
 /** Devuelve `true` si el borrado de la cuenta en el servidor quedó pendiente (sin conexión). */
 export async function disableNotifications(): Promise<boolean> {
-  const reg = await navigator.serviceWorker.ready;
-  await periodicSync(reg)?.unregister(PERIODIC_SYNC_TAG).catch(() => undefined);
+  await notificationBackend().unregisterDaily();
   const state = await readNotificationState();
   if (state.push) await unregisterPush(state.push);
   await updateNotificationState({ push: null });
@@ -227,9 +198,8 @@ export async function deleteServerAccount(): Promise<boolean> {
   if (!res) throw new ServerError('unreachable');
   // 401: el servidor ya no conoce este dispositivo (se borró antes o se le cayó la suscripción).
   if (!res.ok && res.status !== 401) throw new ServerError('invalid-response');
-  const reg = await navigator.serviceWorker.ready;
-  await (await reg.pushManager?.getSubscription())?.unsubscribe();
-  await periodicSync(reg)?.unregister(PERIODIC_SYNC_TAG).catch(() => undefined);
+  await notificationBackend().unsubscribePush();
+  await notificationBackend().unregisterDaily();
   await updateNotificationState({ push: null });
   await useSettings.getState().update({ notificationsEnabled: false });
   return true;
@@ -274,8 +244,7 @@ export async function sendTestNotification(): Promise<'server' | 'local'> {
     if (res?.ok) return 'server';
   }
   const { title, body } = testNotification(useSettings.getState().settings.language);
-  const reg = await navigator.serviceWorker.ready;
-  await reg.showNotification(title, { body, icon: 'brand/icon-192.png' });
+  await notificationBackend().showLocal(title, body);
   return 'local';
 }
 

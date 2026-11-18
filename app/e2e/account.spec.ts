@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { SLOW, waitForServiceWorker } from './serviceWorker';
 
 const PASSWORD = 'prueba-segura-123';
 const SERVER = 'http://127.0.0.1:8099';
@@ -48,6 +49,7 @@ test('eliminar mi cuenta: pide la contraseña y borra el dispositivo del servido
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
   await page.goto('/#/settings?conexiones=1');
+  await waitForServiceWorker(page);
 
   const account = page.getByTestId('account');
   await expect(page.getByTestId('account-device')).toContainText(deviceId);
@@ -65,7 +67,7 @@ test('eliminar mi cuenta: pide la contraseña y borra el dispositivo del servido
   // Con la correcta: el servidor ya no conoce el dispositivo.
   await dialog.getByLabel('Contraseña de la app').fill(PASSWORD);
   await dialog.getByRole('button', { name: 'Eliminar definitivamente' }).click();
-  await expect(page.getByTestId('account-done')).toContainText('el servidor borró tu cuenta');
+  await expect(page.getByTestId('account-done')).toContainText('el servidor borró tu cuenta', SLOW);
   await expect(dialog).toHaveCount(0);
   await expect(page.getByTestId('account-device')).toHaveCount(0);
   expect((await request.put(`${SERVER}/api/devices/${deviceId}/stock`, { headers: auth, data: { places: [] } })).status()).toBe(401);
@@ -107,19 +109,20 @@ test('desactivar las notificaciones sin conexión deja el borrado de la cuenta p
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
   await page.goto('/#/settings?conexiones=1');
+  await waitForServiceWorker(page);
   await expect(page.getByTestId('disable-deletes')).toContainText('se elimina tu cuenta del servidor');
 
   // Servidor inalcanzable: se apagan igual, pero el borrado queda pendiente (no se olvida la cuenta).
   await page.route(`${SERVER}/api/devices/**`, (route) => (route.request().method() === 'DELETE' ? route.abort() : route.continue()));
   await page.getByRole('button', { name: 'Desactivar' }).click();
-  await expect(page.getByTestId('delete-pending')).toContainText('se borra sola cuando vuelva la conexión');
+  await expect(page.getByTestId('delete-pending')).toContainText('se borra sola cuando vuelva la conexión', SLOW);
   await expect(page.getByTestId('account-pending')).toBeVisible();
   expect((await request.put(`${SERVER}/api/devices/${deviceId}/stock`, { headers: auth, data: { places: [] } })).status()).toBe(204);
 
   // Vuelve el servidor: reintentar completa el borrado.
   await page.unroute(`${SERVER}/api/devices/**`);
   await page.getByRole('button', { name: 'Reintentar el borrado ahora' }).click();
-  await expect(page.getByTestId('account-done')).toBeVisible();
+  await expect(page.getByTestId('account-done')).toBeVisible(SLOW);
   await expect(page.getByTestId('account-pending')).toHaveCount(0);
   expect((await request.put(`${SERVER}/api/devices/${deviceId}/stock`, { headers: auth, data: { places: [] } })).status()).toBe(401);
 });

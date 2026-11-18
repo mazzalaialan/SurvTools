@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { SLOW, waitForServiceWorker } from './serviceWorker';
 
 const PASSWORD = 'prueba-segura-123';
 const SERVER = 'http://127.0.0.1:8099';
@@ -76,11 +77,12 @@ test('notificaciones sin servidor', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Desbloquear para modificar' }).first().click();
   await server.fill('');
   await server.locator('xpath=ancestor::form').getByRole('button', { name: 'Guardar' }).click();
+  await waitForServiceWorker(page);
   await page.getByRole('button', { name: 'Activar notificaciones' }).click();
-  await expect(page.getByText(/Sin servidor: aviso diario aproximado/)).toBeVisible();
+  await expect(page.getByText(/Sin servidor: aviso diario aproximado/)).toBeVisible(SLOW);
   await page.getByRole('button', { name: 'Probar', exact: true }).click();
-  await expect(page.getByTestId('test-sent')).toHaveText('Mostrada por la app, sin pasar por el servidor.');
+  await expect(page.getByTestId('test-sent')).toHaveText('Mostrada por la app, sin pasar por el servidor.', SLOW);
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.getByRole('button', { name: 'Desactivar' }).click();
-  await expect(page.getByRole('button', { name: 'Activar notificaciones' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Activar notificaciones' })).toBeVisible(SLOW);
 });
