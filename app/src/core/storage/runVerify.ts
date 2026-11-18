@@ -1,3 +1,5 @@
+import { useSettings, type Country } from '@/core/settings/settings';
+import { countryPackState, type PackState } from '@/modules/emergency/countryDownload';
 import { bookUrl, BOOKS_CACHE } from '@/modules/library/books';
 import { useLibrary } from '@/modules/library/store';
 import { zoneKeys, useMapZones } from '@/modules/maps/store';
@@ -8,6 +10,11 @@ export interface VerifyReport {
   checks: DownloadCheck[];
   books: number;
   zones: number;
+  /**
+   * El paquete del país elegido (el que se usa sin conexión). Los demás países no se revisan acá: el selector de país de Ajustes ya muestra el
+   * estado de cada uno (✓ al día, ↻ hay una versión nueva, ⬇ falta) mirando todos sus archivos.
+   */
+  country: { code: Country; state: PackState; files: number; bytes: number };
 }
 
 /** La pregunta real al dispositivo: ¿está ese archivo en la Cache API? */
@@ -31,5 +38,7 @@ export async function verifyAllDownloads(has: Has = cacheHas): Promise<VerifyRep
   const checks: DownloadCheck[] = [];
   for (const b of books) checks.push(await checkBook(b, BOOKS_CACHE, (f) => bookUrl(b.id, f), has));
   for (const z of zones) checks.push(await checkZone(z, zoneKeys(z), MAP_CACHE, has));
-  return { checks, books: books.length, zones: zones.length };
+  const code = useSettings.getState().settings.country;
+  const pack = await countryPackState(code, true).catch(() => ({ state: 'ready' as PackState, files: [] as string[], bytes: 0 }));
+  return { checks, books: books.length, zones: zones.length, country: { code, state: pack.state, files: pack.files.length, bytes: pack.bytes } };
 }

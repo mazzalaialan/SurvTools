@@ -5,6 +5,7 @@ import { Archive, Check, Crosshair, Info, Lock, LockOpen, RefreshCw, ShieldCheck
 import { lastBackupAt } from '@/core/backup/backup';
 import { backupReminder } from '@/core/backup/reminder';
 import { verifyAllDownloads, type VerifyReport } from '@/core/storage/runVerify';
+import { downloadCountryPack } from '@/modules/emergency/country';
 import { problemsOf, type DownloadCheck } from '@/core/storage/verifyDownloads';
 import { daysBetween, today } from '@/modules/inventory/domain/dates';
 import { newerRelease, usePortableUpdate } from '@/core/portable/update';
@@ -21,7 +22,7 @@ import {
   unlockWithPassword,
 } from '@/core/security/vault';
 import { currentPosition, GeoPositionError } from '@/core/geo/useGeolocation';
-import { AUTO_LOCK_OPTIONS, LANGUAGES, THEMES, useSettings, type RedSchedule, type Settings } from '@/core/settings/settings';
+import { AUTO_LOCK_OPTIONS, LANGUAGES, THEMES, useSettings, type RedSchedule, type Settings, type Country } from '@/core/settings/settings';
 import { roundForDusk } from '@/core/settings/theme';
 import { serverIsDown, serverMaps, type MapSourceMode, type ServerMaps } from '@/modules/maps/sources';
 import { CountryPackPicker } from '@/modules/emergency/CountryPackPicker';
@@ -773,7 +774,7 @@ function StorageSection() {
  * los borró o la descarga quedó a medias, fallarían en el campo, sin conexión). Para cada problema: quitarlo de la lista o ir a bajarlo de nuevo.
  */
 function VerifyDownloads() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [state, setState] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
   const [report, setReport] = useState<VerifyReport | null>(null);
   const removeBook = useLibrary((s) => s.remove);
@@ -786,6 +787,17 @@ function VerifyDownloads() {
       setState('done');
     } catch {
       setState('error');
+    }
+  }
+  const [fixing, setFixing] = useState(false);
+  /** Baja (o actualiza) lo que falta del país elegido y vuelve a revisar. */
+  async function fixCountry(code: Country) {
+    setFixing(true);
+    try {
+      await downloadCountryPack(code);
+    } finally {
+      setFixing(false);
+      void run();
     }
   }
   async function dismiss(c: DownloadCheck) {
@@ -803,6 +815,22 @@ function VerifyDownloads() {
         </button>
       </div>
       {state === 'error' && <p className="error" role="alert">{t('settings.verifyFailed')}</p>}
+      {state === 'done' && report && report.country.state !== 'ready' && (
+        <div className="stack" data-testid="verify-country" style={{ gap: 6 }}>
+          <p className="warning-box" role="status" style={{ margin: 0 }}>
+            {t(report.country.state === 'missing' ? 'settings.verifyCountryMissing' : 'settings.verifyCountryStale', {
+              country: t(`country.${report.country.code}`),
+              count: report.country.files,
+              size: formatBytes(report.country.bytes, i18n.language),
+            })}
+          </p>
+          <div>
+            <button className="btn btn-primary" type="button" disabled={fixing} onClick={() => void fixCountry(report.country.code)} data-testid="verify-country-fix">
+              {fixing ? t('settings.verifying') : t(report.country.state === 'missing' ? 'settings.verifyCountryDo' : 'settings.verifyCountryUpdate')}
+            </button>
+          </div>
+        </div>
+      )}
       {state === 'done' && report && (
         <>
           {report.books + report.zones === 0 ? (

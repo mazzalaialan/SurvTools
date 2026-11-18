@@ -2744,6 +2744,10 @@
     "restoreHint": "Los avisos que ocultaste con «Entendido» (seguridad, radio, nudos, etc.) vuelven a aparecer."
   },
   "settings": {
+    "verifyCountryMissing": "El país elegido ({{country}}) no está completo en este teléfono: faltan {{count}} archivos ({{size}}).",
+    "verifyCountryStale": "El país elegido ({{country}}) tiene datos más nuevos para actualizar ({{count}} archivos, {{size}}).",
+    "verifyCountryDo": "Bajar lo que falta",
+    "verifyCountryUpdate": "Actualizar",
     "storageNative": "Los datos de VikArg están en el almacenamiento privado de la app, en este teléfono. Se pierden si desinstalás la app o borrás sus datos desde Android: el backup es la única copia, hacelo seguido (Backup y transferencia).",
     "verify": "Verificar descargas",
     "verifying": "Revisando…",

@@ -2744,6 +2744,10 @@
     "restoreHint": "Notices you hid with \"Got it\" (safety, radio, knots, etc.) show up again."
   },
   "settings": {
+    "verifyCountryMissing": "The chosen country ({{country}}) is not complete on this phone: {{count}} files are missing ({{size}}).",
+    "verifyCountryStale": "The chosen country ({{country}}) has newer data to update ({{count}} files, {{size}}).",
+    "verifyCountryDo": "Download what is missing",
+    "verifyCountryUpdate": "Update",
     "storageNative": "VikArg's data is in the app's private storage on this phone. It is lost if you uninstall the app or clear its data from Android: the backup is the only copy, make one often (Backup and transfer).",
     "verify": "Verify downloads",
     "verifying": "Checking…",
