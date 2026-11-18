@@ -21,6 +21,11 @@ export function CountryPackPicker() {
   return (
     <div className="field">
       <label id="country-pack-label">{t('country.label')}</label>
+      <div>
+        <button className="btn" type="button" onClick={() => setMapOpen(true)} data-testid="country-pack-map-open">
+          <MapIcon size={18} aria-hidden /> {t('country.map.open')}
+        </button>
+      </div>
       <div className="country-pack" role="group" aria-labelledby="country-pack-label">
         {COUNTRIES.map((c) => {
           const pack = packs[c];
@@ -69,11 +74,6 @@ export function CountryPackPicker() {
             </div>
           );
         })}
-      </div>
-      <div>
-        <button className="btn" type="button" onClick={() => setMapOpen(true)} data-testid="country-pack-map-open">
-          <MapIcon size={18} aria-hidden /> {t('country.map.open')}
-        </button>
       </div>
       {mapOpen && <CountryPackMap onClose={() => setMapOpen(false)} />}
     </div>
