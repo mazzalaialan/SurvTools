@@ -35,7 +35,16 @@ import { createMailNotifier, createSourceMonitor } from './monitor/sources.ts';
 const config = loadConfig();
 const db = openDb(config.dataDir);
 // Avisos a la app nativa por Firebase (FCM): solo si hay una cuenta de servicio configurada; los dispositivos web siguen por Web Push.
-const fcm = config.fcmServiceAccountFile ? createFcmSender(readServiceAccount(config.fcmServiceAccountFile)) : null;
+let fcm: ReturnType<typeof createFcmSender> | null = null;
+if (config.fcmServiceAccountFile) {
+  try {
+    fcm = createFcmSender(readServiceAccount(config.fcmServiceAccountFile));
+    console.log(`FCM activado para el proyecto ${fcm.projectId}`);
+  } catch (err) {
+    // Un archivo que falta o está mal no tiene que tirar abajo el servidor: sigue sin FCM (se ve en `fcm: false` de /api/health).
+    console.error(`FCM apagado: no se pudo leer la cuenta de servicio (${(err as Error).message})`);
+  }
+}
 const push = createPushSender(db, config.vapidSubject, fcm);
 // Fuentes externas caídas: un mail al correo de contacto por caída (y otro cuando vuelve).
 const monitor = createSourceMonitor(
