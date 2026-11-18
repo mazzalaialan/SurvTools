@@ -75,6 +75,15 @@ describe('plantillas de botiquín', () => {
       expect(qty(sc, 20, 'gloves'), sc).toBeLessThanOrEqual(10);
       expect(qty(sc, 20, 'space_blanket'), sc).toBeLessThanOrEqual(6);
     }
+    // Curitas y gasas: del orden de lo que recomiendan la Cruz Roja Americana (familia de 4: 25 curitas y 10 gasas) y ANSI Z308.1 (16 curitas), no decenas.
+    for (const sc of SCENARIOS) {
+      const l = buildList(sc.id, 'advanced', 20, sc.days);
+      expect(l.find((x) => x.id === 'adhesive')?.qty ?? 0, sc.id).toBeLessThanOrEqual(25);
+      expect(l.find((x) => x.id === 'sterile_gauze')?.qty ?? 0, sc.id).toBeLessThanOrEqual(15);
+    }
+    const family = buildList('family', 'individual', 4, 1);
+    expect(family.find((x) => x.id === 'adhesive')!.qty).toBeLessThanOrEqual(25);
+    expect(family.find((x) => x.id === 'sterile_gauze')!.qty).toBeLessThanOrEqual(10);
     // Con pocas personas, el tope no molesta: 2 personas llevan 4 pares.
     expect(buildList('trek', 'individual', 2, 3).find((x) => x.id === 'gloves')!.qty).toBe(4);
     // Y siguen creciendo con la gente hasta el tope.
