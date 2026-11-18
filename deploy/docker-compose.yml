@@ -31,6 +31,8 @@ services:
       # Copia propia de Open-Meteo (servicios `openmeteo` y `openmeteo-sync`): primera opción para el clima; si no responde, el servicio público.
       OPEN_METEO_LOCAL_URL: ${OPEN_METEO_LOCAL_URL:-http://openmeteo:8080}
       OPEN_METEO_ARCHIVE_FROM: ${OPEN_METEO_ARCHIVE_FROM:-2020}
+      # Avisos a la app nativa por Firebase (FCM): ruta, dentro del contenedor, de la cuenta de servicio (secreto, fuera del repositorio). Vacío = apagado.
+      FCM_SERVICE_ACCOUNT_FILE: ${FCM_SERVICE_ACCOUNT_FILE:-}
     volumes:
       - vikarg-data:/data
       # Mapas offline (vector.pmtiles y elevation.pmtiles); vacía, la app usa las fuentes públicas. Ver docs/SERVIDOR.md.

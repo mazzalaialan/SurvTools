@@ -385,3 +385,14 @@ Lo **único que no se puede regenerar** es el volumen `vikarg-data` (menos de 1 
 7. **Apagar el viejo** solo cuando todo esté probado y pasaron unos días. Si el clima propio no se copió, `openmeteo-sync` arranca a bajarlo en el nuevo (los pedidos mientras tanto caen al servicio público).
 
 **Si cambia el dominio** (no solo la IP): cada dispositivo tiene la dirección del servidor guardada en Ajustes y habría que cambiarla uno por uno. Conviene conservar el dominio.
+
+
+## Avisos a la app nativa (FCM) — preparado, sin activar
+
+El servidor ya sabe mandar avisos a dispositivos nativos por **Firebase Cloud Messaging** (`server/src/fcm.ts`); los dispositivos web siguen por Web Push como siempre. Está **apagado** hasta que haya una cuenta de Firebase y una app nativa.
+
+- **Cómo se activa:** crear el proyecto de Firebase con la cuenta del proyecto (`contacto.vikarg@gmail.com`), generar una **clave de cuenta de servicio** (archivo JSON) y ponerla en el servidor **fuera del repositorio**: por ejemplo `deploy/secrets/fcm-service-account.json`, montada en el contenedor de `vikarg` (un `docker-compose.override.yml` con `volumes: ["./secrets/fcm-service-account.json:/run/secrets/fcm.json:ro"]`) y `FCM_SERVICE_ACCOUNT_FILE=/run/secrets/fcm.json` en el `.env`. Sin esa variable, el servidor rechaza el registro de dispositivos nativos con `fcm-not-configured`. `GET /api/health` informa `fcm: true|false`.
+- **Cómo se registra un dispositivo nativo:** `POST /api/devices` con `subscription: { fcm: "<token>", platform: "android" | "ios" }` en lugar de la suscripción web. Se guarda en la misma columna `devices.subscription` (**sin migración**); todo lo demás (avisos, lugares, borrado de cuenta) funciona igual.
+- **Qué viaja:** hoy el aviso completo (`data.payload`), **sin el cifrado de punta a punta del Web Push: Google lo ve**. Está pendiente decidir si mandar solo un aviso mínimo (docs/PENDIENTES.md, «notificaciones sin contenido»): se cambia reemplazando `fcmData` en `fcm.ts`. **No activar FCM con usuarios reales antes de decidirlo.**
+- **Sin probar con Google de verdad:** el envío está probado con un `fetch` simulado y con el formato documentado de la API HTTP v1 (OAuth2 con JWT RS256, `messages:send`). Con la primera cuenta real hay que mandar un aviso de prueba a un teléfono y comprobar la respuesta (en especial el mapeo de errores: un token vencido es `UNREGISTERED`/404 y borra el dispositivo; el resto se lanza).
+- **iPhone:** un mensaje de datos solo despierta la app; mostrar el texto sin que viaje en el mensaje necesita una extensión nativa de iOS. Pendiente para la versión de iPhone.

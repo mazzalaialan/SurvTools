@@ -1,5 +1,6 @@
 import webpush from 'web-push';
 import { getSetting, setSetting, type Db } from './db.ts';
+import type { FcmSender, FcmTarget } from './fcm.ts';
 
 export interface PushSubscriptionJson {
   endpoint: string;
@@ -96,10 +97,19 @@ export interface PushPayload {
   update?: { version: string; title: { es: string; en: string }; body: { es: string; en: string } };
 }
 
+/**
+ * A dónde se manda el aviso de un dispositivo (se guarda como JSON en `devices.subscription`, sin cambiar el esquema): la suscripción de
+ * Web Push de un navegador o, en la app nativa, el token de FCM. El envío elige el camino por la forma del dato.
+ */
+export type PushTarget = PushSubscriptionJson | FcmTarget;
+export const isFcmTarget = (t: PushTarget): t is FcmTarget => typeof (t as FcmTarget).fcm === 'string';
+
 export interface PushSender {
   publicKey: string;
+  /** ¿Hay una cuenta de FCM configurada? Sin ella, los dispositivos nativos no se registran. */
+  fcmEnabled?: boolean;
   /** Devuelve `false` si la suscripción ya no existe (el dispositivo desinstaló o revocó el permiso). */
-  send(subscription: PushSubscriptionJson, payload: PushPayload): Promise<boolean>;
+  send(subscription: PushTarget, payload: PushPayload): Promise<boolean>;
 }
 
 /** Prioridad del push (RFC 8030): alta para lo que no puede esperar. */
@@ -108,7 +118,7 @@ export function urgencyOf(payload: PushPayload): 'high' | 'normal' {
 }
 
 /** Claves VAPID: se generan en el primer arranque y se guardan en la base. */
-export function createPushSender(db: Db, subject: string): PushSender {
+export function createPushSender(db: Db, subject: string, fcm: FcmSender | null = null): PushSender {
   let publicKey = getSetting(db, 'vapid_public');
   let privateKey = getSetting(db, 'vapid_private');
   if (!publicKey || !privateKey) {
@@ -120,7 +130,13 @@ export function createPushSender(db: Db, subject: string): PushSender {
 
   return {
     publicKey,
+    fcmEnabled: fcm !== null,
     async send(subscription, payload) {
+      if (isFcmTarget(subscription)) {
+        // Un dispositivo nativo sin FCM configurado (se quitó la cuenta): es un error de configuración, no un token vencido; no se borra el dispositivo.
+        if (!fcm) throw new Error('fcm-not-configured');
+        return fcm.send(subscription, payload, urgencyOf(payload));
+      }
       try {
         // El contenido viaja cifrado de punta a punta (RFC 8291): el servicio push no lo puede leer.
         // Lo urgente con prioridad alta: si no, Android puede demorarlo mientras el celular está en reposo.

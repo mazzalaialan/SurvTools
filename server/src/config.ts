@@ -68,6 +68,8 @@ export interface Config {
   dataPacksDir: string | null;
   /** Topes por IP de /api/devices (ver routes/devices.ts); las pruebas e2e los suben porque un equipo rápido corre toda la batería en pocos minutos desde una sola IP. */
   deviceRequestsPerMin: number;
+  /** Archivo JSON de la cuenta de servicio de Firebase (avisos a la app nativa por FCM); null = apagado. Es un secreto: fuera del repositorio. */
+  fcmServiceAccountFile: string | null;
   /** Pedidos por minuto y por IP al clima propio (`/api/om`), a la consulta de alturas de calle (`/api/address`) y a la base de calles (`/api/osm`); 0 = sin límite. */
   rateOmPerMin: number;
   rateAddressPerMin: number;
@@ -117,6 +119,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     publicUrl: env.PUBLIC_URL?.trim() || null,
     dataPacksDir: env.DATA_PACKS_DIR === '' ? null : (env.DATA_PACKS_DIR ?? `${env.DATA_DIR ?? './data'}/packs`),
     deviceRequestsPerMin: Number(env.DEVICE_REQUESTS_PER_MIN ?? 300),
+    fcmServiceAccountFile: env.FCM_SERVICE_ACCOUNT_FILE?.trim() || null,
     rateOmPerMin: Number(env.RATE_OM_PER_MIN ?? 300),
     rateAddressPerMin: Number(env.RATE_ADDRESS_PER_MIN ?? 60),
     rateOsmPerMin: Number(env.RATE_OSM_PER_MIN ?? 300),

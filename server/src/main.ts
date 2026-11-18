@@ -2,6 +2,7 @@ import { localWeatherFetch } from './weather/openMeteoLocal.ts';
 import { buildApp } from './app.ts';
 import { loadConfig } from './config.ts';
 import { openDb } from './db.ts';
+import { createFcmSender, readServiceAccount } from './fcm.ts';
 import { createPushSender } from './push.ts';
 import { glmFeed } from './lightning/glm.ts';
 import { readGlmPartial } from './satellite/partial.ts';
@@ -33,7 +34,9 @@ import { createMailNotifier, createSourceMonitor } from './monitor/sources.ts';
 
 const config = loadConfig();
 const db = openDb(config.dataDir);
-const push = createPushSender(db, config.vapidSubject);
+// Avisos a la app nativa por Firebase (FCM): solo si hay una cuenta de servicio configurada; los dispositivos web siguen por Web Push.
+const fcm = config.fcmServiceAccountFile ? createFcmSender(readServiceAccount(config.fcmServiceAccountFile)) : null;
+const push = createPushSender(db, config.vapidSubject, fcm);
 // Fuentes externas caídas: un mail al correo de contacto por caída (y otro cuando vuelve).
 const monitor = createSourceMonitor(
   db,

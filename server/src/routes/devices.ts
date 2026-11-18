@@ -2,7 +2,7 @@ import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypt
 import { deleteDevice } from '../deleteDevice.ts';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Db } from '../db.ts';
-import type { PushSender, PushSubscriptionJson } from '../push.ts';
+import { isFcmTarget, type PushSender, type PushTarget } from '../push.ts';
 import { HERE_ID } from '../places.ts';
 import { isValidTimeZone } from '../time.ts';
 
@@ -34,7 +34,7 @@ interface RainPlaceInput {
 /** ~1 km: alcanza para el pronóstico y el servidor no guarda la ubicación exacta. */
 const coarse = (x: number) => Math.round(x * 100) / 100;
 
-const subscriptionSchema = {
+const webSubscriptionSchema = {
   type: 'object',
   required: ['endpoint', 'keys'],
   properties: {
@@ -46,6 +46,20 @@ const subscriptionSchema = {
     },
   },
 } as const;
+
+/** App nativa: el token de FCM de ese dispositivo y su plataforma (ver fcm.ts). */
+const fcmSubscriptionSchema = {
+  type: 'object',
+  required: ['fcm', 'platform'],
+  properties: { fcm: { type: 'string', minLength: 20, maxLength: 512 }, platform: { enum: ['android', 'ios'] } },
+} as const;
+
+const subscriptionSchema = { anyOf: [webSubscriptionSchema, fcmSubscriptionSchema] } as const;
+
+/** Lo que se guarda de la suscripción: solo los campos conocidos (nada más del cuerpo del pedido). */
+function storedTarget(target: PushTarget): PushTarget {
+  return isFcmTarget(target) ? { fcm: target.fcm, platform: target.platform } : { endpoint: target.endpoint, keys: { p256dh: target.keys.p256dh, auth: target.keys.auth } };
+}
 
 const prefsProperties = {
   timezone: { type: 'string', maxLength: 64 },
@@ -189,7 +203,7 @@ export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender, lim
     return timingSafeEqual(Buffer.from(row.token_hash, 'hex'), hashToken(token));
   }
 
-  app.post<{ Body: { subscription: PushSubscriptionJson } & Prefs }>(
+  app.post<{ Body: { subscription: PushTarget } & Prefs }>(
     '/api/devices',
     {
       schema: {
@@ -203,19 +217,20 @@ export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender, lim
     async (req, reply) => {
       const { subscription, timezone, notifyHour, language, updates, hazards } = req.body;
       if (!isValidTimeZone(timezone)) return reply.code(400).send({ error: 'invalid-timezone' });
+      if (isFcmTarget(subscription) && !push.fcmEnabled) return reply.code(400).send({ error: 'fcm-not-configured' });
       const id = randomUUID();
       const token = randomBytes(32).toString('base64url');
       const now = new Date().toISOString();
       db.prepare(
         `INSERT INTO devices (id, token_hash, subscription, timezone, notify_hour, language, updates, hazards, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).run(id, hashToken(token).toString('hex'), JSON.stringify(subscription), timezone, notifyHour, language, updates === false ? 0 : 1, hazards === false ? 0 : 1, now, now);
+      ).run(id, hashToken(token).toString('hex'), JSON.stringify(storedTarget(subscription)), timezone, notifyHour, language, updates === false ? 0 : 1, hazards === false ? 0 : 1, now, now);
       // El token se devuelve una sola vez; el servidor solo guarda su hash.
       return reply.code(201).send({ deviceId: id, token });
     },
   );
 
-  app.put<{ Params: { id: string }; Body: Partial<Prefs> & { subscription?: PushSubscriptionJson; alerts: AlertInput[] } }>(
+  app.put<{ Params: { id: string }; Body: Partial<Prefs> & { subscription?: PushTarget; alerts: AlertInput[] } }>(
     '/api/devices/:id',
     {
       bodyLimit: 2 * 1024 * 1024,
@@ -236,6 +251,7 @@ export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender, lim
       const { id } = req.params;
       const { subscription, timezone, notifyHour, language, updates, hazards, alerts } = req.body;
       if (timezone && !isValidTimeZone(timezone)) return reply.code(400).send({ error: 'invalid-timezone' });
+      if (subscription && isFcmTarget(subscription) && !push.fcmEnabled) return reply.code(400).send({ error: 'fcm-not-configured' });
 
       db.exec('BEGIN');
       try {
@@ -250,7 +266,7 @@ export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender, lim
              updated_at = ?
            WHERE id = ?`,
         ).run(
-          subscription ? JSON.stringify(subscription) : null,
+          subscription ? JSON.stringify(storedTarget(subscription)) : null,
           timezone ?? null,
           notifyHour ?? null,
           language ?? null,
@@ -515,7 +531,7 @@ export function deviceRoutes(app: FastifyInstance, db: Db, push: PushSender, lim
   app.post<{ Params: { id: string } }>('/api/devices/:id/test', async (req, reply) => {
     if (!authorize(req)) return reply.code(401).send({ error: 'unauthorized' });
     const row = db.prepare('SELECT subscription FROM devices WHERE id = ?').get(req.params.id) as { subscription: string };
-    const delivered = await push.send(JSON.parse(row.subscription) as PushSubscriptionJson, { type: 'test' });
+    const delivered = await push.send(JSON.parse(row.subscription) as PushTarget, { type: 'test' });
     if (!delivered) {
       db.prepare('DELETE FROM devices WHERE id = ?').run(req.params.id);
       return reply.code(410).send({ error: 'subscription-gone' });

@@ -20,3 +20,8 @@ deploy/osm/
 !app/e2e/fixtures/*.pmtiles
 *.pmtiles.parts.sqlite
 deploy/openmeteo-data/
+
+# Claves de cuentas de servicio de Firebase (secretos)
+*firebase-adminsdk*.json
+fcm-service-account.json
+google-services.json

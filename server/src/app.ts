@@ -58,6 +58,7 @@ export async function buildApp(
     ok: true,
     version: VERSION,
     vapidPublicKey: push.publicKey,
+    fcm: push.fcmEnabled === true,
     observedRain,
     sourcesDown: (sourcesDown.all() as unknown as { source: string; since: number; failures: number }[]).map((r) => ({ ...r, since: new Date(r.since).toISOString() })),
   }));
