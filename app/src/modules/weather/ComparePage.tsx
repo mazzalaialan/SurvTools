@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw } from 'lucide-react';
+import { Cloud, CloudRain, CloudSnow, CloudSun, CloudSunRain, Droplet, Droplets, RefreshCw, Sun, Thermometer, Wind, type LucideIcon } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
 import { cachedCompare, placeKey, storeCompare } from './cache';
-import { agreementOf, cellColor, compareKey, sourceOf, WET_MM, compareDays, consensus, daySummaries, fetchCompare, gridSteps, gridValue, MODELS, VARS, widestDay, type Compare, type CompareVar } from './compare';
+import { agreementOf, cellColor, daySky, type DaySky, compareKey, sourceOf, WET_MM, compareDays, consensus, daySummaries, fetchCompare, gridSteps, gridValue, MODELS, VARS, widestDay, type Compare, type CompareVar } from './compare';
 import { WeatherError } from './forecast';
 import { toFahrenheit, kmhToMph, mmToInch } from './forecast';
 import { useUnits, WindArrow, type Units } from './parts';
@@ -106,6 +106,19 @@ function Chart({ c, v, enabled, u, locale, label }: { c: Compare; v: CompareVar;
 
 const BLOCKS: CompareVar[] = ['temperature_2m', 'precipitation', 'wind_speed_10m', 'cloud_cover'];
 
+/** Un ícono por variable (termómetro, gotas de lluvia, viento, nube, gota de humedad) y por tipo de día. */
+const VAR_ICON: Record<CompareVar, LucideIcon> = {
+  temperature_2m: Thermometer,
+  temperature_min: Thermometer,
+  precipitation: Droplets,
+  wind_speed_10m: Wind,
+  cloud_cover: Cloud,
+  relative_humidity_2m: Droplet,
+};
+const SKY_ICON: Record<DaySky, LucideIcon> = { clear: Sun, partly: CloudSun, cloudy: Cloud, maybe: CloudSunRain, likely: CloudRain, rain: CloudRain, snow: CloudSnow };
+/** Cuántos días se ven de entrada (el resto, con «Ver los N días»). */
+const DAYS_SHOWN = 7;
+
 /** El número que va en la celda, en la unidad elegida (la unidad se dice en el título del bloque). */
 function cellText(v: CompareVar, x: number, imperial: boolean): string {
   if (v === 'temperature_2m' || v === 'temperature_min') return String(Math.round(imperial ? toFahrenheit(x) : x));
@@ -145,7 +158,11 @@ function Grid({ c, v, imperial, u, locale }: { c: Compare; v: CompareVar; imperi
   };
   return (
     <section className="card stack" aria-labelledby={`cmp-grid-${v}`}>
-      <h2 id={`cmp-grid-${v}`} className="section-title" style={{ margin: 0 }}>
+      <h2 id={`cmp-grid-${v}`} className="section-title cmp-grid-title" style={{ margin: 0 }}>
+        {(() => {
+          const Icon = VAR_ICON[v];
+          return <Icon size={18} aria-hidden />;
+        })()}
         {t(v === 'temperature_2m' ? 'compare.vars.temperature' : `compare.vars.${v}`)} <span className="hint">({unitOf(v, u, imperial)})</span>
       </h2>
       <div className="cmp-scroll">
@@ -181,32 +198,50 @@ function Grid({ c, v, imperial, u, locale }: { c: Compare; v: CompareVar; imperi
 function SummaryTab({ c, u, imperial, locale }: { c: Compare; u: Units; imperial: boolean; locale: string }) {
   const { t } = useTranslation();
   const days = useMemo(() => daySummaries(c), [c]);
+  const [showAll, setShowAll] = useState(false);
   const dayFmt = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
   return (
     <>
       <section className="card stack" aria-labelledby="cmp-read-title">
         <h2 id="cmp-read-title" className="section-title" style={{ margin: 0 }}>{t('compare.readTitle')}</h2>
         <ul className="cmp-read" data-testid="compare-read">
-          {days.map((d) => {
+          {(showAll ? days : days.slice(0, DAYS_SHOWN)).map((d) => {
             const wet = d.models > 0 ? (d.rainModels === 0 ? 'dry' : d.rainModels === d.models ? 'wet' : d.rainModels * 2 >= d.models ? 'likely' : 'maybe') : null;
+            const sky = daySky(d);
+            const SkyIcon = SKY_ICON[sky];
             return (
-              <li key={d.date} data-testid={`compare-read-${d.date}`}>
-                <strong>{dayFmt.format(new Date(`${d.date}T12:00:00Z`))}</strong>
-                <span>
-                  {d.tempMax !== null && d.tempMin !== null ? t('compare.readTemp', { min: u.temp(d.tempMin), max: u.temp(d.tempMax) }) : null}
-                  {d.windMax !== null && ` · ${t('compare.readWind', { wind: u.wind(d.windMax) })}`}
-                </span>
-                {d.models < d.total && <span className="hint">{t('compare.fewModels', { n: d.models, total: d.total })}</span>}
-                {wet && (
-                  <span className={`cmp-rain cmp-rain-${wet}`}>
-                    {t(`compare.rain.${wet}`, { n: d.rainModels, total: d.models })}
-                    {wet !== 'dry' && d.rain !== null && d.rain >= WET_MM && ` · ${t('compare.readRain', { rain: u.rain(d.rain) })}`}
-                  </span>
+              <li key={d.date} className="cmp-day-card" data-testid={`compare-read-${d.date}`}>
+                <div className="cmp-day-head">
+                  <strong>{dayFmt.format(new Date(`${d.date}T12:00:00Z`))}</strong>
+                  <SkyIcon size={36} className="cmp-sky" role="img" aria-label={t(`compare.sky.${sky}`)} data-testid={`compare-sky-${d.date}`} />
+                </div>
+                <p className="cmp-day-sky">{t(`compare.sky.${sky}`)}</p>
+                {d.tempMax !== null && d.tempMin !== null && (
+                  <p className="cmp-day-line">
+                    <Thermometer size={16} aria-hidden /> {t('compare.readTemp', { min: u.temp(d.tempMin), max: u.temp(d.tempMax) })}
+                  </p>
                 )}
+                {d.windMax !== null && (
+                  <p className="cmp-day-line">
+                    <Wind size={16} aria-hidden /> {t('compare.readWind', { wind: u.wind(d.windMax) })}
+                  </p>
+                )}
+                {wet && (
+                  <p className={`cmp-day-line cmp-rain cmp-rain-${wet}`}>
+                    <Droplets size={16} aria-hidden /> {t(`compare.rain.${wet}`, { n: d.rainModels, total: d.models })}
+                    {wet !== 'dry' && d.rain !== null && d.rain >= WET_MM && ` · ${t('compare.readRain', { rain: u.rain(d.rain) })}`}
+                  </p>
+                )}
+                {d.models < d.total && <p className="hint" style={{ margin: 0 }}>{t('compare.fewModels', { n: d.models, total: d.total })}</p>}
               </li>
             );
           })}
         </ul>
+        {days.length > DAYS_SHOWN && (
+          <button className="btn" type="button" onClick={() => setShowAll(!showAll)} data-testid="compare-show-all">
+            {showAll ? t('compare.showLess') : t('compare.showAll', { count: days.length })}
+          </button>
+        )}
         <p className="hint" style={{ margin: 0 }}>{t('compare.readHint')}</p>
       </section>
       {BLOCKS.map((v) => (
@@ -323,6 +358,10 @@ export function ComparePage() {
           <div className="chips" role="group" aria-label={t('compare.variable')}>
             {VARS.map((x) => (
               <button key={x} type="button" className="chip" aria-pressed={v === x} onClick={() => setV(x)} data-testid={`compare-var-${x}`}>
+                {(() => {
+                  const Icon = VAR_ICON[x];
+                  return <Icon size={16} aria-hidden />;
+                })()}{' '}
                 {t(`compare.vars.${x}`)}
               </button>
             ))}

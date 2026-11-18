@@ -263,6 +263,8 @@ export interface DaySummary {
   /** Cuántos modelos esperan lluvia (1 mm o más) de los que traen el día completo. */
   rainModels: number;
   windMax: number | null;
+  /** Mediana de la nubosidad media del día entre los modelos (%). */
+  cloud: number | null;
 }
 
 export const WET_MM = 1;
@@ -271,6 +273,7 @@ export function daySummaries(c: Compare): DaySummary[] {
   const temp = compareDays(c, 'temperature_2m');
   const rain = compareDays(c, 'precipitation');
   const wind = compareDays(c, 'wind_speed_10m');
+  const cloud = compareDays(c, 'cloud_cover');
   return temp.map((t, i) => {
     const r = Object.values(rain[i]!.byModel).filter((x): x is number => x !== null);
     const idx = c.time.flatMap((time, k) => (time.startsWith(t.date) ? [k] : []));
@@ -288,6 +291,24 @@ export function daySummaries(c: Compare): DaySummary[] {
       models: r.length,
       total: MODELS.filter((m) => c.series[m.id]?.precipitation).length,
       windMax: median(Object.values(wind[i]!.byModel).filter((x): x is number => x !== null)),
+      cloud: median(Object.values(cloud[i]!.byModel).filter((x): x is number => x !== null)),
     };
   });
+}
+
+export type DaySky = 'clear' | 'partly' | 'cloudy' | 'maybe' | 'likely' | 'rain' | 'snow';
+
+/**
+ * El ícono del día según lo que dicen los modelos, con el mismo criterio que el texto de lluvia: lluvia si todos esperan 1 mm o más,
+ * «probable lluvia» si la mitad o más, «posibles lluvias» si solo algunos, y nieve si llueve con una máxima de 2 °C o menos; si no llueve, por
+ * la nubosidad media (soleado, parcialmente nublado o nublado).
+ */
+export function daySky(d: DaySummary): DaySky {
+  const share = d.models > 0 ? d.rainModels / d.models : 0;
+  if (share >= 0.5 && d.tempMax !== null && d.tempMax <= 2) return 'snow';
+  if (share === 1) return 'rain';
+  if (share >= 0.5) return 'likely';
+  if (d.rainModels > 0) return 'maybe';
+  if (d.cloud === null) return 'cloudy';
+  return d.cloud < 25 ? 'clear' : d.cloud < 60 ? 'partly' : 'cloudy';
 }

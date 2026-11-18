@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import sample from './fixtures/compare.sample.json';
-import { agreementOf, cellColor, compareDays, compareKey, compareUrl, consensus, dayValue, daySummaries, gridSteps, gridValue, median, MODELS, parseCompare, widestDay } from './compare';
+import { daySky, type DaySummary, agreementOf, cellColor, compareDays, compareKey, compareUrl, consensus, dayValue, daySummaries, gridSteps, gridValue, median, MODELS, parseCompare, widestDay } from './compare';
 
 describe('comparación de pronósticos', () => {
   it('pide todos los modelos en una sola consulta, con los 7 días y la altura real', () => {
@@ -159,6 +159,32 @@ describe('comparación de pronósticos', () => {
     expect(last.models).toBeLessThan(last.total);
     expect(last.models).toBeGreaterThanOrEqual(1);
     expect(today.total).toBe(6);
+  });
+});
+
+describe('ícono del día', () => {
+  const day = (over: Partial<DaySummary>): DaySummary => ({ date: '2026-11-17', models: 6, total: 6, tempMax: 22, tempMin: 12, rain: 0, rainModels: 0, windMax: 20, cloud: 10, ...over });
+  it('por nubosidad si no llueve: soleado, parcialmente nublado o nublado', () => {
+    expect(daySky(day({ cloud: 10 }))).toBe('clear');
+    expect(daySky(day({ cloud: 40 }))).toBe('partly');
+    expect(daySky(day({ cloud: 85 }))).toBe('cloudy');
+    expect(daySky(day({ cloud: null }))).toBe('cloudy');
+  });
+  it('lluvia si la mitad o más de los modelos la esperan; posibles lluvias si solo algunos; nieve si hace mucho frío', () => {
+    expect(daySky(day({ rainModels: 6, rain: 12 }))).toBe('rain');
+    expect(daySky(day({ rainModels: 3, rain: 0.5 }))).toBe('likely');
+    expect(daySky(day({ rainModels: 5, rain: 3 }))).toBe('likely');
+    expect(daySky(day({ rainModels: 1, rain: 0.4 }))).toBe('maybe');
+    expect(daySky(day({ rainModels: 6, rain: 5, tempMax: 1 }))).toBe('snow');
+    expect(daySky(day({ rainModels: 1, rain: 5, tempMax: 1 }))).toBe('maybe');
+    // Mucha lluvia pero cálida: no es nieve.
+    expect(daySky(day({ rainModels: 6, rain: 5, tempMax: 15 }))).toBe('rain');
+  });
+  it('con la respuesta real: el primer día llueve para todos los modelos y el tercero es seco', () => {
+    const days = daySummaries(parseCompare(sample as never));
+    expect(daySky(days[0]!)).toBe('rain');
+    expect(['clear', 'partly', 'cloudy']).toContain(daySky(days[2]!));
+    expect(days[0]!.cloud).not.toBeNull();
   });
 });
 

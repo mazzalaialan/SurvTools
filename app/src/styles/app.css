@@ -5009,3 +5009,47 @@ button.country-pack-icon {
 .kb-why {
   color: var(--accent);
 }
+
+/* Comparación de pronósticos: cada día en su tarjeta, con su ícono del tiempo */
+.cmp-read {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+.cmp-day-card {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.cmp-day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cmp-sky {
+  flex: none;
+  color: var(--accent);
+}
+.cmp-day-sky {
+  margin: 0;
+  font-weight: 600;
+}
+.cmp-day-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+.cmp-day-line svg {
+  flex: none;
+}
+.cmp-grid-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chip svg {
+  vertical-align: -3px;
+}

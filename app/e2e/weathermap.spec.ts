@@ -610,6 +610,11 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
   // Resumen: lectura día por día y una grilla por variable (consenso + un renglón por modelo).
   await expect(page.getByTestId('compare-read')).toBeVisible({ timeout: 20_000 });
   expect(urls[0]).toContain('models=ecmwf_ifs025');
+  // Cada día en su tarjeta, con el ícono del tiempo y un ícono por dato; de entrada 7 días y el resto con «Ver los 16 días».
+  await expect(page.getByTestId('compare-read').locator('li')).toHaveCount(7);
+  await expect(page.getByTestId('compare-sky-2026-11-17')).toHaveAttribute('aria-label', 'Lluvia');
+  await expect(page.getByTestId('compare-read-2026-11-17').locator('svg')).not.toHaveCount(0);
+  await page.getByTestId('compare-show-all').click();
   await expect(page.getByTestId('compare-read').locator('li')).toHaveCount(16);
   // Los días lejanos los traen pocos modelos: se dice cuántos.
   await expect(page.getByTestId('compare-read').locator('li').last()).toContainText('modelos (los demás no llegan a ese día)');
