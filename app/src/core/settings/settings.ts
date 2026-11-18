@@ -20,6 +20,11 @@ export interface Settings {
    * con íconos negros (ver core/systemBars.ts). Por defecto 1 (el rojo más oscuro). Android solo deja íconos blancos o negros, no rojos.
    */
   systemBarRed: number;
+  /**
+   * App nativa: oculta la app en «recientes» de Android (la miniatura mostraría fichas médicas, documentos o contactos) y evita las capturas de
+   * pantalla (`FLAG_SECURE`). Por defecto apagado: quien lo necesita lo activa en Ajustes → Seguridad.
+   */
+  hideInRecents: boolean;
   units: UnitSystem;
   autoLockMinutes: number;
   /**
@@ -241,6 +246,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: detectLanguage(),
   theme: 'dark',
   systemBarRed: 1,
+  hideInRecents: false,
   units: 'metric',
   autoLockMinutes: 5,
   emergencyOnLock: false,

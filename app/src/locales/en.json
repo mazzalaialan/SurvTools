@@ -2734,6 +2734,8 @@
     "restoreHint": "Notices you hid with \"Got it\" (safety, radio, knots, etc.) show up again."
   },
   "settings": {
+    "hideInRecents": "Hide the app in recent apps and block screenshots",
+    "hideInRecentsHint": "The recent apps list of Android does not show the app content (medical records, documents, contacts) and screenshots are blocked while it is open. Off by default.",
     "systemBarRed": "System bars color (night red)",
     "systemBarRedOff": "Almost black, with white icons",
     "systemBarRedLevel": "Red {{level}} of 10 ({{hex}}), with black icons",

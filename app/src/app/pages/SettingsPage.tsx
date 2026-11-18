@@ -123,6 +123,16 @@ export function SettingsPage() {
             <RemovePasswordForm />
           </>
         )}
+        {/* App nativa: ocultar la app en «recientes» y evitar capturas (ver core/systemBars.ts). */}
+        {isNativePlatform() && (
+          <>
+            <label className="check">
+              <input type="checkbox" checked={settings.hideInRecents} onChange={(e) => void update({ hideInRecents: e.target.checked })} data-testid="hide-in-recents" />
+              {t('settings.hideInRecents')}
+            </label>
+            <p className="hint" style={{ margin: 0 }}>{t('settings.hideInRecentsHint')}</p>
+          </>
+        )}
         {/* Bóvedas anteriores guardadas aparte (si las hay): se recuperan con su contraseña o clave. */}
         <ArchivedVaults hasCurrent />
         {/* Prueba (sin cambiar nada) de si este dispositivo puede desbloquear con huella, cara o PIN. */}

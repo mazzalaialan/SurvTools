@@ -2734,6 +2734,8 @@
     "restoreHint": "Los avisos que ocultaste con «Entendido» (seguridad, radio, nudos, etc.) vuelven a aparecer."
   },
   "settings": {
+    "hideInRecents": "Ocultar la app en «recientes» y evitar capturas de pantalla",
+    "hideInRecentsHint": "En la lista de apps recientes de Android no se ve el contenido de la app (fichas médicas, documentos, contactos) y no se pueden sacar capturas mientras está abierta. Apagado por defecto.",
     "systemBarRed": "Color de las barras del sistema (rojo nocturno)",
     "systemBarRedOff": "Casi negras, con íconos blancos",
     "systemBarRedLevel": "Rojo {{level}} de 10 ({{hex}}), con íconos negros",

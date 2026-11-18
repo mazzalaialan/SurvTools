@@ -6,7 +6,7 @@ import { useSettings } from '@/core/settings/settings';
  * acomoda la web entre las dos barras y esas franjas muestran el fondo de la ventana, que por defecto es un gris que no combina (y en «Rojo
  * nocturno» deslumbra). El color sale de lo que la app dibuja en el borde de arriba, así sigue a cualquier tema sin listar colores acá.
  */
-const SystemColor = registerPlugin<{ setBackground(o: { color: string }): Promise<void> }>('SystemColor');
+const SystemColor = registerPlugin<{ setBackground(o: { color: string }): Promise<void>; setSecure(o: { enabled: boolean }): Promise<void> }>('SystemColor');
 
 export interface Rgb {
   r: number;
@@ -86,6 +86,15 @@ export async function syncSystemBars(): Promise<void> {
   }
 }
 
+/** Oculta la app en «recientes» y evita las capturas de pantalla (o lo deja como antes), según el ajuste. */
+export async function syncSecureWindow(): Promise<void> {
+  try {
+    await SystemColor.setSecure({ enabled: useSettings.getState().settings.hideInRecents });
+  } catch {
+    /* sin el plugin (la web): no hay nada que ocultar */
+  }
+}
+
 let started = false;
 
 /** Se llama una vez al arrancar la app nativa. Se vuelve a sincronizar al cambiar el tema, de pantalla o al volver a la app. */
@@ -97,7 +106,11 @@ export function startSystemBars(): void {
     clearTimeout(timer);
     timer = setTimeout(() => void syncSystemBars(), 120);
   };
-  useSettings.subscribe((s, prev) => (s.settings.theme !== prev.settings.theme || s.settings.systemBarRed !== prev.settings.systemBarRed) && soon());
+  useSettings.subscribe((s, prev) => {
+    if (s.settings.theme !== prev.settings.theme || s.settings.systemBarRed !== prev.settings.systemBarRed) soon();
+    if (s.settings.hideInRecents !== prev.settings.hideInRecents) void syncSecureWindow();
+  });
+  void syncSecureWindow();
   new MutationObserver(soon).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
   window.addEventListener('hashchange', soon);
   document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && soon());
