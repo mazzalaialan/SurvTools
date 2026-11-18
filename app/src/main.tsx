@@ -4,6 +4,7 @@ import { App } from './app/App';
 import { useCapabilities } from './core/capabilities/capabilities';
 import { initI18n } from './core/i18n/i18n';
 import { scheduleAlertSync } from './core/notifications/notifications';
+import { isNativePlatform } from './core/platform';
 import { usePortableUpdate } from './core/portable/update';
 import { onAlertIndexChange } from './modules/inventory/store';
 import { useVault } from './core/security/useVault';
@@ -19,6 +20,9 @@ async function bootstrap() {
   void useCapabilities.getState().detect();
   // Solo el paquete portable busca versiones nuevas (la versión de internet se actualiza sola).
   void usePortableUpdate.getState().init();
+  // App nativa (Capacitor): las notificaciones van por Firebase y los avisos locales del sistema, no por el service worker. Se carga solo ahí:
+  // en la web no entran los plugins nativos.
+  if (isNativePlatform()) void import('./core/notifications/nativeBackend').then((m) => m.startNativeNotifications());
   // Con servidor configurado, cada cambio de alertas se le envía (agrupado).
   onAlertIndexChange(scheduleAlertSync);
   await useVault.getState().refresh();

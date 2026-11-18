@@ -49,6 +49,8 @@ export function isAcceptableServerUrl(url: string): boolean {
 export interface ServerInfo {
   version: string;
   vapidPublicKey: string;
+  /** El servidor tiene Firebase (FCM) configurado: puede mandar avisos a la app nativa. */
+  fcm: boolean;
 }
 
 export async function checkServer(serverUrl: string): Promise<ServerInfo> {
@@ -59,9 +61,9 @@ export async function checkServer(serverUrl: string): Promise<ServerInfo> {
   } catch {
     throw new ServerError('unreachable');
   }
-  const body = (await res.json().catch(() => null)) as { ok?: boolean } & Partial<ServerInfo> | null;
+  const body = (await res.json().catch(() => null)) as ({ ok?: boolean } & Partial<ServerInfo>) | null;
   if (!res.ok || !body?.ok || !body.vapidPublicKey) throw new ServerError('invalid-response');
-  return { version: body.version ?? '?', vapidPublicKey: body.vapidPublicKey };
+  return { version: body.version ?? '?', vapidPublicKey: body.vapidPublicKey, fcm: body.fcm === true };
 }
 
 function prefs() {
@@ -70,9 +72,9 @@ function prefs() {
 }
 
 async function registerPush(serverUrl: string): Promise<PushRegistration> {
-  const { vapidPublicKey } = await checkServer(serverUrl);
+  const info = await checkServer(serverUrl);
   // En la web es la suscripción de Web Push; en la app nativa, lo que necesite el servidor para ese dispositivo (ver backend.ts).
-  const subscription = await notificationBackend().subscribePush(vapidPublicKey);
+  const subscription = await notificationBackend().subscribePush(info);
   if (!subscription) throw new ServerError('push-unsupported');
   const res = await fetch(`${normalizeServerUrl(serverUrl)}/api/devices`, {
     method: 'POST',
@@ -205,8 +207,11 @@ export async function deleteServerAccount(): Promise<boolean> {
   return true;
 }
 
-/** Manda al servidor el índice de alertas actual (solo nombre, tipo y fechas). */
-export async function syncPushAlerts(): Promise<void> {
+/**
+ * Manda al servidor el índice de alertas actual (solo nombre, tipo y fechas). Con `subscription`, también la suscripción nueva del
+ * dispositivo: el token de FCM de la app nativa cambia de vez en cuando (Firebase lo renueva) y hay que avisarle al servidor.
+ */
+export async function syncPushAlerts(subscription?: unknown): Promise<void> {
   const { push } = await readNotificationState();
   if (!push || !navigator.onLine) return;
   const alerts = (await db.alertIndex.toArray()).map(({ lotId, itemName, kind, dueDate, notifyFrom }) => ({
@@ -219,7 +224,7 @@ export async function syncPushAlerts(): Promise<void> {
   const res = await fetch(`${push.serverUrl}/api/devices/${push.deviceId}`, {
     method: 'PUT',
     headers: { 'content-type': 'application/json', authorization: `Bearer ${push.token}` },
-    body: JSON.stringify({ ...prefs(), alerts }),
+    body: JSON.stringify({ ...prefs(), alerts, ...(subscription ? { subscription } : {}) }),
   }).catch(() => null);
   // 401: el servidor ya no conoce este dispositivo (p. ej. se reinstaló): hay que volver a activar.
   if (res?.status === 401) await updateNotificationState({ push: null });

@@ -4,7 +4,7 @@ import { describe, it } from 'node:test';
 import { buildApp } from '../src/app.ts';
 import { loadConfig } from '../src/config.ts';
 import { openDb } from '../src/db.ts';
-import { createFcmSender, fcmData, signServiceJwt, type FcmSender, type ServiceAccount } from '../src/fcm.ts';
+import { createFcmSender, fcmMessage, signServiceJwt, type FcmSender, type ServiceAccount } from '../src/fcm.ts';
 import { createPushSender, type PushSender } from '../src/push.ts';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs8', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
@@ -46,7 +46,8 @@ describe('FCM (API HTTP v1)', () => {
     assert.equal((send[0]!.init.headers as Record<string, string>).authorization, 'Bearer acceso-1');
     const body = JSON.parse(send[0]!.init.body as string).message;
     assert.equal(body.token, TOKEN);
-    assert.deepEqual(JSON.parse(body.data.payload), { type: 'test' });
+    assert.deepEqual(body.data, { type: 'test' });
+    assert.equal(body.android.notification.body_loc_key, 'notif_body_test');
     assert.equal(body.android.priority, 'HIGH');
     assert.equal(JSON.parse(send[1]!.init.body as string).message.android.priority, 'NORMAL');
     assert.equal(body.apns, undefined);
@@ -62,12 +63,12 @@ describe('FCM (API HTTP v1)', () => {
     assert.equal(f.calls.filter((c) => c.url.includes('oauth2')).length, 2);
   });
 
-  it('iPhone: el mensaje de datos lleva la configuración de APNs para despertar la app', async () => {
+  it('iPhone: el mensaje lleva la configuración de APNs', async () => {
     const f = fakeFetch((url) => (url.includes('oauth2') ? tokenOk() : new Response('{}', { status: 200 })));
     await createFcmSender(account, f.fn).send({ fcm: TOKEN, platform: 'ios' }, { type: 'test' }, 'high');
     const msg = JSON.parse(f.calls.find((c) => c.url.includes('messages:send'))!.init.body as string).message;
-    assert.equal(msg.apns.payload.aps['content-available'], 1);
     assert.equal(msg.apns.headers['apns-priority'], '10');
+    assert.equal(msg.apns.payload.aps.sound, 'default');
   });
 
   it('un token que ya no existe (404 / UNREGISTERED) devuelve false para que se borre el dispositivo', async () => {
@@ -83,8 +84,17 @@ describe('FCM (API HTTP v1)', () => {
     await assert.rejects(createFcmSender(account, denied.fn).send({ fcm: TOKEN, platform: 'android' }, { type: 'test' }, 'normal'), /token de acceso/);
   });
 
-  it('lo que viaja en el mensaje es el aviso completo (decisión pendiente: ver PENDIENTES)', () => {
-    assert.deepEqual(Object.keys(fcmData({ type: 'test' })), ['payload']);
+  it('privacidad: del aviso solo viaja el tipo, con un texto genérico; nada de nombres, lugares ni artículos', () => {
+    const secret = { type: 'alerts', alerts: [{ lotId: 'x', itemName: 'Insulina␟Botiquín de casa', kind: 'expiry', dueDate: '2026-12-01', notifyFrom: '2026-11-01' }] } as never;
+    const msg = fcmMessage({ fcm: TOKEN, platform: 'android' }, secret, 'normal');
+    const text = JSON.stringify(msg);
+    assert.ok(!/Insulina|Botiqu[ií]n|expiry|2026-12-01/.test(text), 'no debe viajar el contenido del aviso');
+    assert.deepEqual(msg.data, { type: 'alerts' });
+    assert.deepEqual(msg.notification, { title: 'VikArg', body: 'Tenés avisos nuevos' });
+    const android = msg.android as { notification: { title_loc_key: string; body_loc_key: string; tag: string } };
+    assert.equal(android.notification.title_loc_key, 'notif_title');
+    assert.equal(android.notification.body_loc_key, 'notif_body_new');
+    assert.equal(android.notification.tag, 'vikarg-alerts');
   });
 });
 

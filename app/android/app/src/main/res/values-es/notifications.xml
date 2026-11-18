@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textos de los avisos de Firebase (FCM): el servidor manda solo estas CLAVES y el teléfono las traduce. Ver server/src/fcm.ts. -->
+<resources>
+    <string name="notif_title">VikArg</string>
+    <string name="notif_body_new">Tenés avisos nuevos</string>
+    <string name="notif_body_test">Notificación de prueba</string>
+</resources>

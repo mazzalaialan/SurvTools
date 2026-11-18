@@ -35,9 +35,10 @@ export interface NotificationBackend {
   unregisterDaily(): Promise<void>;
   /**
    * Lo que el servidor necesita para mandar un push a este dispositivo (en la web, la suscripción de Web Push; en la nativa, el token de
-   * FCM). `null` si el dispositivo no tiene push. La clave pública VAPID solo la usa la implementación web.
+   * FCM). `null` si el dispositivo no tiene push. La clave pública VAPID solo la usa la implementación web; `fcm` dice si el servidor
+   * tiene Firebase configurado (la implementación nativa lo necesita).
    */
-  subscribePush(vapidPublicKey: string): Promise<unknown | null>;
+  subscribePush(server: { vapidPublicKey: string; fcm: boolean }): Promise<unknown | null>;
   unsubscribePush(): Promise<void>;
   /** Muestra una notificación desde la propia app (prueba y avisos locales). */
   showLocal(n: LocalNotification): Promise<void>;
@@ -84,7 +85,7 @@ export const webBackend: NotificationBackend = {
   async unregisterDaily() {
     await periodicSync(await navigator.serviceWorker.ready)?.unregister(PERIODIC_SYNC_TAG).catch(() => undefined);
   },
-  async subscribePush(vapidPublicKey) {
+  async subscribePush({ vapidPublicKey }) {
     const reg = await navigator.serviceWorker.ready;
     if (!reg.pushManager) return null;
     // Si había una suscripción de otro servidor, sus claves no sirven: se renueva.

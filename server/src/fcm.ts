@@ -7,9 +7,11 @@ import type { PushPayload } from './push.ts';
  * Sin dependencias: la autenticación (OAuth2 con el JWT firmado de la cuenta de servicio) se arma con `node:crypto`.
  * La clave de la cuenta de servicio es un SECRETO: va en un archivo fuera del repositorio (FCM_SERVICE_ACCOUNT_FILE), nunca en un commit.
  *
- * Qué viaja en el mensaje lo decide `fcmData` (hoy el aviso completo, como en Web Push pero SIN el cifrado de punta a punta: Google lo ve).
- * Está pendiente decidir si mandar solo un aviso mínimo y que la app consulte el detalle (docs/PENDIENTES.md, «notificaciones sin contenido»):
- * cambiarlo es reemplazar esa función.
+ * Qué viaja en el mensaje (decisión provisional del 2026-11-18, para el APK de prueba; ver docs/PENDIENTES.md, «notificaciones sin contenido»):
+ * solo el TIPO de aviso y un texto genérico que el propio teléfono traduce con claves de idioma (`title_loc_key` y `body_loc_key`, definidas en
+ * `strings.xml` de la app). Nada de nombres de botiquines, lugares ni artículos: FCM no tiene el cifrado de punta a punta del Web Push, Google
+ * lo vería. Un mensaje de datos puro no se muestra en Android con la app cerrada, por eso lleva el bloque `notification`; el detalle lo
+ * consulta la app al abrirla. Cambiarlo es reemplazar `fcmMessage`.
  */
 export interface ServiceAccount {
   project_id: string;
@@ -48,9 +50,31 @@ export function signServiceJwt(account: ServiceAccount, nowSeconds: number): str
   return `${header}.${claims}.${b64url(signature)}`;
 }
 
-/** Los datos del mensaje. FCM limita todo el mensaje a 4 KB, igual que Web Push: los avisos ya se compactan para entrar (alertPayload.ts). */
-export function fcmData(payload: PushPayload): Record<string, string> {
-  return { payload: JSON.stringify(payload) };
+/** Clave de idioma del cuerpo según el tipo de aviso (están en `strings.xml` de la app, en español y en inglés). */
+export function bodyKey(payload: PushPayload): string {
+  return payload.type === 'test' ? 'notif_body_test' : 'notif_body_new';
+}
+
+/**
+ * El mensaje que se le manda a un dispositivo nativo. El bloque `notification` lleva un texto de respaldo en español; en Android las claves
+ * `*_loc_key` lo reemplazan por el idioma del teléfono. `data.type` es lo único del aviso que viaja: la app lo usa para abrir la pantalla.
+ */
+export function fcmMessage(target: FcmTarget, payload: PushPayload, urgency: 'high' | 'normal'): Record<string, unknown> {
+  const test = payload.type === 'test';
+  const message: Record<string, unknown> = {
+    token: target.fcm,
+    notification: { title: 'VikArg', body: test ? 'Notificación de prueba' : 'Tenés avisos nuevos' },
+    data: { type: String(payload.type ?? 'alerts') },
+    android: {
+      priority: urgency === 'high' ? 'HIGH' : 'NORMAL',
+      ttl: '86400s',
+      // Un aviso con la misma etiqueta reemplaza al anterior en vez de apilarse.
+      notification: { tag: 'vikarg-alerts', title_loc_key: 'notif_title', body_loc_key: bodyKey(payload) },
+    },
+  };
+  // iPhone: pendiente para su versión (sonido, `apns-push-type: alert` y la clave de APNs de Apple).
+  if (target.platform === 'ios') message.apns = { headers: { 'apns-priority': urgency === 'high' ? '10' : '5' }, payload: { aps: { sound: 'default' } } };
+  return message;
 }
 
 export function createFcmSender(account: ServiceAccount, fetchFn: typeof fetch = fetch, now: () => number = Date.now): FcmSender {
@@ -74,14 +98,7 @@ export function createFcmSender(account: ServiceAccount, fetchFn: typeof fetch =
   return {
     projectId: account.project_id,
     async send(target, payload, urgency) {
-      const message: Record<string, unknown> = {
-        token: target.fcm,
-        data: fcmData(payload),
-        android: { priority: urgency === 'high' ? 'HIGH' : 'NORMAL', ttl: '86400s' },
-      };
-      // iPhone: un mensaje de datos solo despierta la app (aviso en segundo plano). Mostrar el texto sin que viaje en el mensaje necesita una
-      // extensión nativa de iOS: queda para cuando se haga la versión de iPhone (docs/PENDIENTES.md).
-      if (target.platform === 'ios') message.apns = { headers: { 'apns-priority': urgency === 'high' ? '10' : '5', 'apns-push-type': 'background' }, payload: { aps: { 'content-available': 1 } } };
+      const message = fcmMessage(target, payload, urgency);
       const res = await fetchFn(`https://fcm.googleapis.com/v1/projects/${encodeURIComponent(account.project_id)}/messages:send`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${await accessToken()}` },
