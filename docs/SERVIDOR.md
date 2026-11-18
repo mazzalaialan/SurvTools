@@ -302,3 +302,27 @@ Baja las listas públicas de NASA FIRMS (VIIRS NOAA-20 y NOAA-21, últimos 7 dí
 **Medido (2026-11-17, piloto en esta máquina):** pronóstico completo con 92 días ≈ 14 GB; historial ERA5 ≈ 2,1 GB por año (11 variables; 2020–2026 ≈ 15 GB y crece ~2 GB por año); relieve 10 GB (se bajó el mundo entero); total del piloto 34 GB. Con un mismo modelo (ECMWF, GFS, ERA5) la copia propia da exactamente lo mismo que la API pública; sin elegir modelo, la API pública mezcla más modelos y la diferencia típica es de ~1,5 °C en temperatura. ICON necesita además la grilla nativa de tres dominios (`dwd_icon_global_native`, `dwd_icon_global_eps_native`, `dwd_icon_eu_native`: ~85 MB cada uno); `sync.sh` los baja con `curl` (función `icon_static`) porque `sync` no lo hace y, sin ellos, el servidor responde «Missing native ICON grid artifact».
 
 **Para cambiar el área o el año de inicio:** `deploy/openmeteo/region.json` y `OPEN_METEO_ARCHIVE_FROM` (si se cambia, también `ARCHIVE_FROM_YEAR` en `app/src/modules/weather/omFetch.ts`: las heladas de la huerta y el viento predominante se calculan desde ese año). Sin la carpeta de datos (o sin los contenedores), todo sigue funcionando con el servicio público.
+
+
+## Seguridad: límites de pedidos y lista de verificación (2026-11-18)
+
+**Qué se revisó.** El código del servidor no tiene vías de inyección: no usa `eval` ni `child_process`, el SQL va con parámetros (solo las migraciones arman texto y no dependen de lo que mande quien llama), los archivos que sirve salen de listas fijas (paquetes de datos) o de un identificador de letras minúsculas, números y guiones (biblioteca), los pedidos tienen tope de tamaño y los tokens de los dispositivos se guardan con hash. Lo débil era el **abuso** de los endpoints públicos que cuestan algo.
+
+**Límites de pedidos por IP** (`server/src/rateLimit.ts`, enganchados en `app.ts`). Al pasarse responde `429` con `Retry-After`; la app pasa sola al servicio público (ver `omFetch.ts`). Se cambian con variables de entorno del servicio `vikarg` (0 = sin límite):
+
+| Variable | Por defecto | Qué limita |
+|---|---|---|
+| `RATE_OM_PER_MIN` | 300 | Clima propio, `/api/om/*` (cada pantalla de clima pide unas pocas consultas) |
+| `RATE_ADDRESS_PER_MIN` | 60 | Altura de calle, `/api/address/*` (cada consulta va a Georef en nombre del servidor) |
+| `RATE_OSM_PER_MIN` | 300 | Base de calles, `/api/osm/*` |
+| `RATE_TRANSFER_UPLOADS_PER_HOUR` | 20 | Subidas de backups de transferencia (`POST /api/transfers`, hasta 50 MB cada una) |
+| `TRANSFER_STORE_MAX_MB` | 1024 | Tope de lo que se guarda de transferencias a la vez; al llegar, `503 storage-full` (se vacían solas a las 24 h o al entregarse) |
+
+Con una escuela entera detrás de una sola IP los valores por defecto sobran; si hiciera falta, se suben. Detrás de Caddy se usa la IP real del visitante (`trustProxy`).
+
+**Lista de verificación del equipo que aloja el servidor** (esto NO lo cubre el código):
+1. **Qué se ve desde internet.** En el router, solo deben estar reenviados el **80 y el 443**. Revisar las reglas de reenvío de puertos, la zona **DMZ** (apagada) y **UPnP** (apagado). Probar desde el celular con datos móviles (sin wifi) que otros servicios del equipo no respondan por la IP pública (por ejemplo Dozzle 9999, Qdrant 6333, Ollama 11434, el escritorio remoto 3389). El 2026-11-18 se vio que, conectándose a la IP pública desde el propio equipo, todos esos puertos respondían: puede ser solo el espejo del router, pero hay que confirmarlo desde afuera.
+2. **Servicios que escuchan en todas las interfaces.** Los contenedores ajenos a VikArg publican puertos en `0.0.0.0`: si no necesitan verse desde otro equipo, publicarlos solo en `127.0.0.1` (`127.0.0.1:PUERTO:PUERTO` en su `docker-compose`). Docker saltea `ufw` y `fail2ban` para los puertos que publica.
+3. **SSH.** Solo con clave (`PasswordAuthentication no` en `/etc/ssh/sshd_config`, probando antes con la clave desde otra terminal) y, si no hace falta desde afuera, sin reenviar el puerto 22.
+4. **fail2ban para SSH.** `sudo apt install -y fail2ban`, un archivo `/etc/fail2ban/jail.d/sshd-local.conf` con `[sshd] enabled = true`, `backend = systemd`, `maxretry = 5`, `findtime = 10m`, `bantime = 1h` y `ignoreip` con la red local; `sudo systemctl enable --now fail2ban` y comprobar con `sudo fail2ban-client status sshd`.
+5. **Actualizaciones** del sistema y de las imágenes de Docker (`caddy`, `open-meteo`), y copia de seguridad del volumen `vikarg-data`.

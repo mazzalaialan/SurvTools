@@ -19,6 +19,7 @@ import { dataRoutes } from './routes/data.ts';
 import { layersRoutes } from './routes/layers.ts';
 import { osmRoutes } from './routes/osm.ts';
 import { omRoutes } from './routes/om.ts';
+import { registerRateLimits } from './rateLimit.ts';
 import { addressRoutes } from './routes/address.ts';
 import { openAroundIndex, type AroundIndex } from './osm/around.ts';
 import { riversRoutes } from './routes/rivers.ts';
@@ -45,6 +46,8 @@ export async function buildApp(
   osmIndex: AroundIndex | null = openAroundIndex(config.osmIndexPath),
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger, trustProxy: true });
+  // Límite de pedidos por IP en los endpoints públicos que cuestan (rateLimit.ts).
+  registerRateLimits(app, config);
 
   await app.register(cors, { origin: config.allowedOrigins === '*' ? true : config.allowedOrigins, methods: ['GET', 'POST', 'PUT', 'DELETE'] });
 

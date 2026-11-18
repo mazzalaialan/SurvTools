@@ -40,7 +40,7 @@ export default defineConfig({
       // Servidor VikArg real, con base en memoria: cada corrida arranca limpia.
       command: 'node ../server/src/main.ts',
       url: 'http://127.0.0.1:8099/api/health',
-      env: { PORT: '8099', HOST: '127.0.0.1', DATA_DIR: ':memory:', DEVICE_REQUESTS_PER_MIN: '100000', DEVICE_FAILURES_PER_10MIN: '100000', LIBRARY_DIR: 'e2e/fixtures/library', LIBRARY_KEY: 'VikArg-prueba' },
+      env: { PORT: '8099', HOST: '127.0.0.1', DATA_DIR: ':memory:', RATE_TRANSFER_UPLOADS_PER_HOUR: '100000', RATE_OM_PER_MIN: '100000', RATE_ADDRESS_PER_MIN: '100000', RATE_OSM_PER_MIN: '100000', DEVICE_REQUESTS_PER_MIN: '100000', DEVICE_FAILURES_PER_10MIN: '100000', LIBRARY_DIR: 'e2e/fixtures/library', LIBRARY_KEY: 'VikArg-prueba' },
       reuseExistingServer: false,
     },
   ],

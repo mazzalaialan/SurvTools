@@ -33,6 +33,12 @@ export function transferRoutes(app: FastifyInstance, db: Db, config: Config): vo
   app.post<{ Body: Buffer }>('/api/transfers', { bodyLimit: config.transferMaxBytes }, async (req, reply) => {
     if (!Buffer.isBuffer(req.body) || req.body.length === 0) return reply.code(400).send({ error: 'empty' });
     const now = Date.now();
+    // Tope de lo que el servidor guarda de transferencias a la vez (se vacían solas a las 24 h y al entregarse): sin él, subidas repetidas
+    // podían llenar el disco.
+    if (config.transferStoreMaxBytes > 0) {
+      const stored = (db.prepare('SELECT COALESCE(SUM(LENGTH(data)), 0) AS bytes FROM transfers WHERE expires_at >= ?').get(now) as { bytes: number }).bytes;
+      if (stored + req.body.length > config.transferStoreMaxBytes) return reply.code(503).header('retry-after', '3600').send({ error: 'storage-full' });
+    }
     const expiresAt = now + config.transferTtlMs;
     let code = generateCode();
     while (db.prepare('SELECT 1 FROM transfers WHERE code = ?').get(code)) code = generateCode();
