@@ -586,6 +586,15 @@ test('clima histórico: elegir una fecha trae el día del historial, con sus hor
   await expect(page.getByTestId('history-temps')).toContainText('Mínima 4° · máxima 14°');
   await expect(page.getByTestId('history-hour')).toHaveCount(24);
   await expect(page.getByRole('heading', { name: /Hora por hora · .*15 de junio/ })).toBeVisible();
+  // Los días cercanos van uno al lado del otro y arriba de la tabla de horas; el elegido está marcado.
+  const strip = (await page.getByTestId('history-days').boundingBox())!;
+  const hours = (await page.getByTestId('history-hours').boundingBox())!;
+  expect(strip.y + strip.height).toBeLessThanOrEqual(hours.y);
+  const first = (await page.getByTestId('history-day-2026-06-12').boundingBox())!;
+  const second = (await page.getByTestId('history-day-2026-06-13').boundingBox())!;
+  expect(second.x).toBeGreaterThan(first.x);
+  expect(Math.abs(second.y - first.y)).toBeLessThan(2);
+  await expect(page.getByTestId('history-day-2026-06-15')).toHaveAttribute('aria-pressed', 'true');
   // Sin tocar nada no se vuelve a pedir (antes se actualizaba solo cada segundo).
   const callsAfterLoad = archiveCalls;
   await page.waitForTimeout(3500);

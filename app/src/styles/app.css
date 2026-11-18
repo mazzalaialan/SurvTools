@@ -5053,3 +5053,53 @@ button.country-pack-icon {
 .chip svg {
   vertical-align: -3px;
 }
+
+/* Clima histórico: los días cercanos, uno al lado del otro */
+.hist-strip {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 6px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+.hist-strip li {
+  flex: none;
+  scroll-snap-align: start;
+}
+.hist-strip-day {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 6.2rem;
+  min-height: 48px;
+  padding: 10px 6px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.hist-strip-day[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.hist-strip-date {
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.hist-strip-temps,
+.hist-strip-rain {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.hist-strip-rain {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+}

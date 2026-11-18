@@ -184,6 +184,25 @@ export function HistoryPage() {
             </ul>
           </section>
 
+          <section className="card stack" aria-labelledby="hist-days-title">
+            <h2 id="hist-days-title" className="section-title" style={{ margin: 0 }}>{t('history.days')}</h2>
+            {/* Los días cercanos uno al lado del otro (se desplazan hacia el costado): tocar uno cambia el resumen y la tabla de horas de abajo. */}
+            <ul className="hist-strip" data-testid="history-days">
+              {history.days.map((d) => (
+                <li key={d.date}>
+                  <button className="hist-strip-day" type="button" aria-pressed={d.date === shown.date} onClick={() => setViewDate(d.date)} data-testid={`history-day-${d.date}`}>
+                    <span className="hist-strip-date">{shortFmt.format(dayAt(d.date))}</span>
+                    <span className="hist-strip-sky">{d.code !== null ? <SkyIcon code={d.code} size={28} /> : <span aria-hidden>·</span>}</span>
+                    <span className="hist-strip-temps">{d.min !== null && d.max !== null ? `${u.temp(d.min)} / ${u.temp(d.max)}` : '—'}</span>
+                    <span className="hist-strip-rain">
+                      <Droplets size={12} aria-hidden /> {d.precipitation !== null && d.precipitation > 0 ? u.rain(d.precipitation) : t('weather.noRain')}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {shown.hours.length > 0 && (
             <section className="card stack" aria-labelledby="hist-hours-title">
               <h2 id="hist-hours-title" className="section-title" style={{ margin: 0 }}>{t('history.hoursOf', { day: longFmt.format(dayAt(shown.date)) })}</h2>
@@ -215,27 +234,6 @@ export function HistoryPage() {
               <p className="hint" style={{ margin: 0 }}>{t('history.windUnit', { unit: u.windUnit })}</p>
             </section>
           )}
-
-          <section className="card stack" aria-labelledby="hist-days-title">
-            <h2 id="hist-days-title" className="section-title" style={{ margin: 0 }}>{t('history.days')}</h2>
-            <ul className="list" data-testid="history-days">
-              {history.days.map((d) => (
-                <li key={d.date} className="list-row">
-                  <button className="list-main zone-go" type="button" aria-pressed={d.date === shown.date} onClick={() => setViewDate(d.date)} data-testid={`history-day-${d.date}`}>
-                    <span className="list-title">
-                      {shortFmt.format(dayAt(d.date))}
-                      {d.code !== null && <> <SkyIcon code={d.code} size={18} /></>}
-                    </span>
-                    <span className="list-sub">
-                      {d.min !== null && d.max !== null ? `${u.temp(d.min)} / ${u.temp(d.max)}` : '—'}
-                      {' · '}
-                      {d.precipitation !== null && d.precipitation > 0 ? u.rain(d.precipitation) : t('weather.noRain')}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
 
           <p className="hint" data-testid="history-note">
             {t('history.note', { elevation: history.elevation !== null ? u.altitude(history.elevation) : '—' })}
