@@ -11,7 +11,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode versionParts[0] * 10000 + versionParts[1] * 100 + versionParts[2]
-        versionName appVersion
+        // Con número de compilación (0.88.0+14) si hay un APK de prueba: lo escribe scripts/generate-android-icons.mjs junto con la cinta del ícono.
+        versionName(file('version-name.txt').exists() ? file('version-name.txt').text.trim() : appVersion)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

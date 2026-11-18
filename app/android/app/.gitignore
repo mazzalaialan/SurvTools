@@ -1,2 +1,5 @@
 /build/*
 !/build/.npmkeep
+
+# Lo genera scripts/generate-android-icons.mjs en cada compilación del APK de prueba
+version-name.txt

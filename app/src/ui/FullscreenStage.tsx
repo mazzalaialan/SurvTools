@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2 } from 'lucide-react';
+import { pushBack } from './backStack';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   /** Datos superpuestos que se muestran solo en pantalla completa. */
@@ -26,7 +27,16 @@ export function FullscreenStage({ overlay, children, className, ...rest }: Props
     return () => document.removeEventListener('fullscreenchange', onChange);
   }, []);
 
-  // En el modo de respaldo, Escape (o "atrás" en el teclado) también sale.
+  // En el modo de respaldo, Escape (o "atrás" en el teclado) también sale; en la app nativa, el botón «atrás» (en pantalla completa de verdad
+  // el navegador ya sale con Escape).
+  useEffect(() => {
+    if (!full) return;
+    return pushBack(() => {
+      setPseudo(false);
+      if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+    });
+  }, [full]);
+
   useEffect(() => {
     if (!pseudo) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setPseudo(false);

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pantalla de inicio (Android 12 o más): fondo de la marca y su emblema. Las imágenes y el ícono salen de scripts/generate-android-splash.mjs. -->
+<resources>
+    <color name="splash_background">#121a24</color>
+</resources>

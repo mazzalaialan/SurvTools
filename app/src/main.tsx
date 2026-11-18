@@ -29,6 +29,8 @@ async function bootstrap() {
     (await import('./core/geo/nativeLocation')).startNativeLocation();
     // El altímetro puede usar el barómetro del teléfono (los navegadores no lo exponen).
     (await import('./core/sensors/nativeBarometer')).startNativeBarometer();
+    // El botón «atrás» de Android: cierra diálogos, vuelve atrás y, en la primera pantalla, minimiza en vez de cerrar.
+    (await import('./core/backButton')).startBackButton();
   }
   // Con servidor configurado, cada cambio de alertas se le envía (agrupado).
   onAlertIndexChange(scheduleAlertSync);

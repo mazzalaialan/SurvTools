@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
+import { pushBack } from './backStack';
 
 interface Props {
   title: string;
@@ -15,10 +16,17 @@ export function Dialog({ title, onClose, children, footer }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
+  // El botón «atrás» de la app nativa cierra el diálogo de arriba (en el navegador es Escape, ver `onCancel`).
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   useEffect(() => {
     const dialog = ref.current;
     dialog?.showModal();
-    return () => dialog?.close();
+    const off = pushBack(() => onCloseRef.current());
+    return () => {
+      off();
+      dialog?.close();
+    };
   }, []);
 
   return (

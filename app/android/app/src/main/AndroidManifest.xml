@@ -37,5 +37,10 @@
 
     <!-- Permissions -->
 
+    <!-- Cámara: el escáner de códigos de barras, la guía del horizonte y las fotos usan getUserMedia en el WebView, que la pide al abrir la cámara. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- La cámara no es obligatoria para instalar la app. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

@@ -4,25 +4,51 @@
 // Uso: npm run icons:android            (con la cinta, para los APK de prueba)
 //      npm run icons:android:release    (sin la cinta, para la versión de la tienda)
 import sharp from 'sharp';
+import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const SRC = 'assets-src/logo.jpg';
 const RES = 'android/app/src/main/res';
 const BG = '#121a24';
 const release = process.argv.includes('--release');
-const version = JSON.parse(readFileSync('package.json', 'utf8')).version.split('.').slice(0, 2).join('.');
-const LABEL = `APK ${version}`;
+const fullVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
+const version = fullVersion.split('.').slice(0, 2).join('.');
+
+/**
+ * Número de compilación: cuántos cambios hay desde la última versión publicada (el commit «Versión x.y.z»). La versión de package.json solo
+ * cambia al publicar, así que entre una publicación y otra todos los APK de prueba dirían lo mismo: con este número se distinguen. En una
+ * versión recién publicada es 0 y la cinta dice solo «APK 0.88».
+ */
+function buildNumber() {
+  try {
+    const last = execSync("git log --grep='^Versión ' --format=%H -1", { encoding: 'utf8' }).trim();
+    return last ? Number(execSync(`git rev-list --count ${last}..HEAD`, { encoding: 'utf8' }).trim()) || 0 : 0;
+  } catch {
+    return 0; // sin git (otra copia del proyecto): solo la versión
+  }
+}
+const build = buildNumber();
+const LABEL = build > 0 ? `APK ${version}+${build}` : `APK ${version}`;
+// Lo que figura en Ajustes → Aplicaciones del teléfono (lo lee android/app/build.gradle).
+writeFileSync('android/app/version-name.txt', build > 0 ? `${fullVersion}+${build}` : fullVersion);
 const RIBBON = '#c62828';
 
-/** La cinta con el texto, como imagen del tamaño del lienzo: `w` x `h` en dp, centrada en horizontal y con su centro a `cy` dp de arriba. */
-function ribbon(canvasDp, k, w, h, cy) {
+/**
+ * La cinta con el texto, como imagen del tamaño del lienzo (`canvasDp` dp): su ancho se ajusta al largo del texto entre `minW` y `maxW` dp (el
+ * máximo es lo que entra en el círculo visible del lanzador), de alto `h`, centrada en horizontal y con su centro a `cy` dp de arriba. La
+ * letra se achica si hace falta para que entre.
+ */
+function ribbon(canvasDp, k, minW, maxW, h, cy) {
   const px = (dp) => Math.round(dp * k * 100) / 100;
   const size = Math.round(canvasDp * k);
+  const glyph = 0.62; // ancho medio de una letra en negrita, en tamaños de letra
+  const w = Math.min(maxW, Math.max(minW, LABEL.length * glyph * h * 0.6 + 4));
+  const font = Math.min(h * 0.6, (w - 4) / (LABEL.length * glyph));
   return Buffer.from(
     `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">` +
       `<rect x="${px((canvasDp - w) / 2)}" y="${px(cy - h / 2)}" width="${px(w)}" height="${px(h)}" rx="${px(h * 0.25)}" fill="${RIBBON}"/>` +
-      `<text x="${size / 2}" y="${px(cy + h * 0.2)}" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="700" ` +
-      `font-size="${px(h * 0.6)}" fill="#fff" textLength="${px(w * 0.88)}" lengthAdjust="spacingAndGlyphs">${LABEL}</text></svg>`,
+      `<text x="${size / 2}" y="${px(cy + font * 0.35)}" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="700" ` +
+      `font-size="${px(font)}" fill="#fff">${LABEL}</text></svg>`,
   );
 }
 
@@ -43,7 +69,7 @@ for (const [name, k] of Object.entries(DENSITIES)) {
   const inner = Math.round(69 * k);
   // La cinta va abajo, dentro del círculo visible de 72 dp del lanzador (44 dp de ancho a 76 dp del borde de arriba).
   await sharp({ create: { width: canvas, height: canvas, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-    .composite([{ input: await emblem(inner), gravity: 'center' }, ...(release ? [] : [{ input: ribbon(108, k, 44, 13, 76) }])])
+    .composite([{ input: await emblem(inner), gravity: 'center' }, ...(release ? [] : [{ input: ribbon(108, k, 44, 54, 13, 76) }])])
     .png()
     .toFile(`${dir}/ic_launcher_foreground.png`);
 
@@ -51,14 +77,14 @@ for (const [name, k] of Object.entries(DENSITIES)) {
   const size = Math.round(48 * k);
   const rounded = Buffer.from(`<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${Math.round(size * 0.22)}"/></svg>`);
   const square = await sharp({ create: { width: size, height: size, channels: 4, background: BG } })
-    .composite([{ input: await emblem(Math.round(size * 0.8)), gravity: 'center' }, ...(release ? [] : [{ input: ribbon(48, k, 40, 11, 40) }])])
+    .composite([{ input: await emblem(Math.round(size * 0.8)), gravity: 'center' }, ...(release ? [] : [{ input: ribbon(48, k, 38, 46, 11, 40) }])])
     .png()
     .toBuffer();
   await sharp(square).composite([{ input: rounded, blend: 'dest-in' }]).png().toFile(`${dir}/ic_launcher.png`);
 
   // Clásico redondo: el emblema ocupa todo el círculo.
   await sharp(await emblem(size))
-    .composite(release ? [] : [{ input: ribbon(48, k, 32, 10, 37) }])
+    .composite(release ? [] : [{ input: ribbon(48, k, 30, 38, 10, 37) }])
     .toFile(`${dir}/ic_launcher_round.png`);
 }
 
