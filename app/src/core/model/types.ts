@@ -287,6 +287,8 @@ export interface MedicalProfile extends BaseEntity {
   bloodType: string;
   allergies: string;
   conditions: string;
+  /** Solo personas: si está embarazada (y la fecha probable de parto, si la sabe). `null` o ausente = no. Se usa para personalizar el botiquín; no sale del dispositivo. */
+  pregnancy?: { dueDate: IsoDay | null } | null;
   medications: Medication[];
   emergencyContact: string;
   /** Médico y obra social; en mascotas, veterinario. */

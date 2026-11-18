@@ -11,6 +11,9 @@ export interface PersonFacts {
   allergies: string;
   conditions: string;
   hasMedication: boolean;
+  pregnant: boolean;
+  /** Semanas que faltan para la fecha probable de parto (negativo si ya pasó); null si no la cargó. */
+  dueInWeeks: number | null;
 }
 
 const strip = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -32,6 +35,13 @@ export function ageYears(birthDate: string | null, today: Date): number | null {
   return age;
 }
 
+export function weeksUntil(date: string | null | undefined, today: Date): number | null {
+  if (!date) return null;
+  const d = new Date(`${date}T12:00:00Z`);
+  if (Number.isNaN(d.getTime())) return null;
+  return Math.round((d.getTime() - today.getTime()) / (7 * 86_400_000));
+}
+
 export function factsOf(p: MedicalProfile, today: Date = new Date()): PersonFacts {
   return {
     name: p.name,
@@ -39,6 +49,8 @@ export function factsOf(p: MedicalProfile, today: Date = new Date()): PersonFact
     allergies: p.allergies ?? '',
     conditions: p.conditions ?? '',
     hasMedication: (p.medications ?? []).some((m) => m.name.trim() !== ''),
+    pregnant: p.pregnancy != null,
+    dueInWeeks: weeksUntil(p.pregnancy?.dueDate, today),
   };
 }
 
@@ -68,6 +80,7 @@ export function personalize(people: PersonFacts[]): Extra[] {
   add('asthma', respiratory, [['inhaler', Math.min(6, respiratory.length)]]);
   const heart = people.filter((p) => has(p.conditions, HEART));
   add('heart', heart, [['bp_monitor', 1], ['med_card', Math.min(4, heart.length)]]);
+  add('pregnancy', people.filter((p) => p.pregnant), [['thermometer', 1], ['bp_monitor', 1], ['med_card', 1], ['space_blanket', 1]]);
   const meds = people.filter((p) => p.hasMedication);
   add('meds', meds, [['personal_meds', Math.min(8, meds.length)]]);
   return out;
@@ -87,4 +100,18 @@ export function applyExtras(lines: BuiltLine[], extras: Extra[]): BuiltLine[] {
     byId.set(e.id, line);
   }
   return [...byId.values()].sort((a, b) => GROUPS.indexOf(a.item.group) - GROUPS.indexOf(b.item.group) || a.item.name.es.localeCompare(b.item.name.es, 'es'));
+}
+
+/** Escenarios lejos de la ayuda médica: con la fecha de parto cerca conviene hablarlo con el médico. */
+const ISOLATED = ['trek', 'camping', 'rural', 'escape', 'travel', 'boat'];
+const NEAR_TERM_WEEKS = 8;
+
+/** Avisos que se muestran junto a la lista según las personas elegidas (claves de `kitBuilder.notes.*`). */
+export function notices(people: PersonFacts[], scenarioId: string): { key: string; names: string[] }[] {
+  const out: { key: string; names: string[] }[] = [];
+  const pregnant = people.filter((p) => p.pregnant);
+  if (pregnant.length) out.push({ key: 'pregnancy', names: pregnant.map((p) => p.name) });
+  const near = pregnant.filter((p) => p.dueInWeeks !== null && p.dueInWeeks <= NEAR_TERM_WEEKS && p.dueInWeeks >= -2);
+  if (near.length && ISOLATED.includes(scenarioId)) out.push({ key: 'pregnancyNear', names: near.map((p) => p.name) });
+  return out;
 }

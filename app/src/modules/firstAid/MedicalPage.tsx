@@ -54,6 +54,7 @@ export function MedicalPage() {
               p.relationship || null,
               p.birthDate ? t('medical.age', { count: ageOn(p.birthDate, todayStr) }) : null,
               p.pet?.lastRabiesVaccine ? t('medical.pet.rabiesShort', { ago: monthsLabel(p.pet.lastRabiesVaccine) }) : null,
+              p.pregnancy ? t('medical.pregnancyShort') : null,
               p.bloodType ? t('medical.bloodShort', { type: p.bloodType }) : null,
               p.medications.length ? t('medical.medCount', { count: p.medications.length }) : null,
             ].filter(Boolean);

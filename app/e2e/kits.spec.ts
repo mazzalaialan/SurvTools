@@ -348,3 +348,48 @@ test('el asistente se personaliza con las fichas médicas elegidas y los invitad
   expect(body).not.toContain('Maní');
   expect(body).not.toContain('anafilaxia');
 });
+
+test('embarazo: se carga en la ficha, personaliza el botiquín con avisos y no queda guardado en el botiquín', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // La ficha tiene el campo «Está embarazada» con la fecha probable de parto (opcional); en mascotas no está.
+  await page.goto('/#/first-aid/medical');
+  await page.getByRole('link', { name: 'Nueva ficha' }).click();
+  await page.getByLabel('Nombre', { exact: true }).fill('Marta');
+  await page.getByLabel('Fecha de nacimiento').fill('1992-03-04');
+  await expect(page.getByLabel('Fecha probable de parto')).toHaveCount(0);
+  await page.getByTestId('pregnancy-toggle').check();
+  await page.getByLabel('Fecha probable de parto').fill(isoInDays(30));
+  await page.getByRole('button', { name: 'Guardar' }).click();
+  await expect(page).toHaveURL(/medical\/[0-9a-f-]{36}$/);
+  await page.goto('/#/first-aid/medical');
+  await expect(page.getByText('Embarazo').first()).toBeVisible();
+  // Al volver a abrir la ficha, el dato sigue.
+  await page.getByRole('link', { name: /Marta/ }).click();
+  await expect(page.getByTestId('pregnancy-toggle')).toBeChecked();
+  await expect(page.getByLabel('Fecha probable de parto')).toHaveValue(isoInDays(30));
+
+  // En el asistente, elegida Marta: artículos con el motivo y el aviso fijo; con el parto cerca y un escenario de montaña, el segundo aviso.
+  await page.goto('/#/first-aid/kits/build');
+  await page.getByTestId('kb-scenario-home').click();
+  await expect(page.getByTestId('kb-note-pregnancy')).toHaveCount(0);
+  await page.getByTestId('kb-profiles').getByLabel('Marta').check();
+  await expect(page.getByTestId('kb-note-pregnancy')).toContainText('consultá a tu médico antes de usar cualquier medicamento');
+  await expect(page.getByTestId('kb-note-pregnancyNear')).toHaveCount(0);
+  await expect(page.getByTestId('kb-why-bp_monitor-pregnancy')).toContainText('Marta');
+  await expect(page.getByTestId('kb-why-thermometer-pregnancy')).toBeVisible();
+  await page.getByTestId('kb-scenario-trek').click();
+  await expect(page.getByTestId('kb-note-pregnancyNear')).toContainText('Marta');
+  await page.getByTestId('kb-name').fill('Botiquín de la salida');
+  await page.getByTestId('kb-create').click();
+  await expect(page.getByRole('heading', { name: 'Botiquín de la salida' })).toBeVisible();
+  const body = await page.locator('main').innerText();
+  expect(body).not.toMatch(/\\bMarta\\b/);
+  expect(body.toLowerCase()).not.toContain('embaraz');
+});

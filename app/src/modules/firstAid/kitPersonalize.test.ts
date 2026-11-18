@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { MedicalProfile } from '@/core/model/types';
-import { ageYears, applyExtras, factsOf, personalize, type PersonFacts } from './kitPersonalize';
+import { ageYears, applyExtras, factsOf, notices, personalize, weeksUntil, type PersonFacts } from './kitPersonalize';
 import { buildList } from './kitTemplates';
 
-const person = (name: string, over: Partial<PersonFacts> = {}): PersonFacts => ({ name, ageYears: 35, allergies: '', conditions: '', hasMedication: false, ...over });
+const person = (name: string, over: Partial<PersonFacts> = {}): PersonFacts => ({ name, ageYears: 35, allergies: '', conditions: '', hasMedication: false, pregnant: false, dueInWeeks: null, ...over });
 const by = (extras: ReturnType<typeof personalize>, id: string) => extras.filter((e) => e.id === id);
 
 describe('personalizar el botiquín con las fichas médicas', () => {
@@ -68,7 +68,36 @@ describe('personalizar el botiquín con las fichas médicas', () => {
   it('de una ficha real toma el nombre, la edad, las alergias, las condiciones y si toma medicación (sin dosis)', () => {
     const p = { name: 'Ana', birthDate: '1990-05-20', allergies: 'Maní', conditions: 'Asma', medications: [{ name: 'Levotiroxina', dose: '50 mcg', schedule: '' }, { name: ' ', dose: '', schedule: '' }] } as MedicalProfile;
     const f = factsOf(p, new Date('2026-11-17T12:00:00Z'));
-    expect(f).toEqual({ name: 'Ana', ageYears: 36, allergies: 'Maní', conditions: 'Asma', hasMedication: true });
+    expect(f).toEqual({ name: 'Ana', ageYears: 36, allergies: 'Maní', conditions: 'Asma', hasMedication: true, pregnant: false, dueInWeeks: null });
     expect(JSON.stringify(f)).not.toContain('mcg');
+  });
+
+  it('embarazo: termómetro, tensiómetro, ficha impresa y manta, con el motivo; sin medicamentos nuevos', () => {
+    const e = personalize([person('Marta', { pregnant: true, dueInWeeks: 20 })]);
+    expect(e.map((x) => x.id).sort()).toEqual(['bp_monitor', 'med_card', 'space_blanket', 'thermometer']);
+    expect(e.every((x) => x.kind === 'pregnancy' && x.names[0] === 'Marta')).toBe(true);
+    // Ningún artículo agregado es un medicamento.
+    expect(applyExtras([], e).every((l) => !l.item.medication)).toBe(true);
+  });
+
+  it('aviso fijo de embarazo, y otro si la fecha de parto está cerca y el escenario queda lejos de la atención médica', () => {
+    const marta = person('Marta', { pregnant: true, dueInWeeks: 5 });
+    expect(notices([marta], 'home').map((n) => n.key)).toEqual(['pregnancy']);
+    expect(notices([marta], 'trek').map((n) => n.key)).toEqual(['pregnancy', 'pregnancyNear']);
+    // Lejos de la fecha (20 semanas) o sin fecha: solo el aviso fijo, también en el trekking.
+    expect(notices([person('M', { pregnant: true, dueInWeeks: 20 })], 'trek').map((n) => n.key)).toEqual(['pregnancy']);
+    expect(notices([person('M', { pregnant: true })], 'trek').map((n) => n.key)).toEqual(['pregnancy']);
+    expect(notices([person('Ana')], 'trek')).toEqual([]);
+  });
+
+  it('las semanas hasta la fecha probable de parto, con fecha mala o vacía en null; una ficha con embarazo lo pasa a los datos', () => {
+    const today = new Date('2026-11-17T12:00:00Z');
+    expect(weeksUntil('2026-12-22', today)).toBe(5);
+    expect(weeksUntil('2026-11-10', today)).toBe(-1);
+    expect(weeksUntil(null, today)).toBeNull();
+    expect(weeksUntil('x', today)).toBeNull();
+    const p = { name: 'Marta', birthDate: '1990-01-01', allergies: '', conditions: '', medications: [], pregnancy: { dueDate: '2027-02-01' } } as unknown as MedicalProfile;
+    expect(factsOf(p, today)).toMatchObject({ pregnant: true, dueInWeeks: 11 });
+    expect(factsOf({ ...p, pregnancy: null } as MedicalProfile, today).pregnant).toBe(false);
   });
 });

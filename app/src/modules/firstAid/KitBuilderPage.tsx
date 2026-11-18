@@ -9,7 +9,7 @@ import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
 import { useMedical } from './medicalStore';
 import { IntField } from './IntField';
-import { applyExtras, factsOf, personalize } from './kitPersonalize';
+import { applyExtras, factsOf, notices as kitNotices, personalize } from './kitPersonalize';
 import { lotsOutsideKits, moveToKit, quantityInKits, quantityOf as lotsQuantity, sourcePlaces } from './kitStock';
 import { buildList, GROUP_NAMES, GROUPS, LEVELS, matchesCatalog, scenarioById, SCENARIOS, SOURCES, type Level } from './kitTemplates';
 
@@ -62,7 +62,9 @@ export function KitBuilderPage() {
 
   // Si cambian las personas, los días o el nivel, las cantidades vuelven a calcularse (las que se habían editado a mano se pierden).
   useEffect(() => setQtys({}), [people, days, level]);
-  const extras = useMemo(() => personalize(picked.map((p) => factsOf(p))), [picked]);
+  const facts = useMemo(() => picked.map((p) => factsOf(p)), [picked]);
+  const extras = useMemo(() => personalize(facts), [facts]);
+  const notes = useMemo(() => kitNotices(facts, scenarioId), [facts, scenarioId]);
   const lines = useMemo(() => applyExtras(buildList(scenarioId, level, people, days), extras), [scenarioId, level, people, days, extras]);
   const itemList = useMemo(() => [...items.values()].filter((i) => !i.deletedAt), [items]);
   const lotList = useMemo(() => [...lots.values()], [lots]);
@@ -203,6 +205,9 @@ export function KitBuilderPage() {
         </div>
         <p className="hint" style={{ margin: 0 }} data-testid="kb-total">{picked.length + guests === 0 ? t('kitBuilder.totalDefault', { count: people }) : t('kitBuilder.total', { count: people })}</p>
         {picked.length > 0 && <p className="hint" style={{ margin: 0 }}>{t('kitBuilder.privacy')}</p>}
+        {notes.map((n) => (
+          <p key={n.key} className="hint kb-why" style={{ margin: 0 }} data-testid={`kb-note-${n.key}`}>{t(`kitBuilder.notes.${n.key}`, { names: n.names.join(', ') })}</p>
+        ))}
         <p className="hint" style={{ margin: 0 }} data-testid="kb-people-hint">{t('kitBuilder.peopleHint')}</p>
       </section>
 

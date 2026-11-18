@@ -113,6 +113,7 @@ export function normalizeProfile(p: MedicalProfile): MedicalProfile {
     ...p,
     kind: p.kind ?? 'person',
     pet: p.pet ?? null,
+    pregnancy: p.pregnancy ?? null,
     relationship: p.relationship ?? '',
     phone: p.phone ?? '',
     inContacts: p.inContacts ?? true,

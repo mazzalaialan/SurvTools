@@ -506,6 +506,20 @@ function ProfileForm({ stored }: { stored: MedicalProfile | undefined }) {
           )}
           {text('allergies')}
           {text('conditions')}
+          {!isPet && (
+            <div className="field" data-testid="pregnancy-field">
+              <label className="check">
+                <input type="checkbox" checked={draft.pregnancy != null} onChange={(e) => set({ pregnancy: e.target.checked ? { dueDate: null } : null })} data-testid="pregnancy-toggle" /> {t('medical.pregnant')}
+              </label>
+              {draft.pregnancy != null && (
+                <>
+                  <label htmlFor="due-date">{t('medical.dueDate')}</label>
+                  <input id="due-date" className="input" type="date" min={todayStr} value={draft.pregnancy.dueDate ?? ''} onChange={(e) => set({ pregnancy: { dueDate: e.target.value || null } })} />
+                  <p className="hint" style={{ margin: 0 }}>{t('medical.pregnancyHint')}</p>
+                </>
+              )}
+            </div>
+          )}
         </section>
 
         {isPet && (
