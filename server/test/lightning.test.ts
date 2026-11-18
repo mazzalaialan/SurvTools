@@ -57,7 +57,7 @@ describe('avisos de rayos', () => {
     assert.equal(new Date(startOfKey('OR_GLM-L2-LCFA_G19_s20263080211400_e2026_c.nc')!).toISOString(), '2026-11-04T02:11:40.000Z');
   });
 
-  it('avisa con distancia y rumbo, como mucho una vez cada 10 minutos', async () => {
+  it('avisa con distancia y rumbo, como mucho una vez cada 30 minutos', async () => {
     assert.equal(hasPlaces(db), false);
     await deviceWith([casa]);
     assert.equal(hasPlaces(db), true);
@@ -72,13 +72,55 @@ describe('avisos de rayos', () => {
     for (let m = 2; m <= 10; m++) await runLightningWatch(db, push, [flashNorth(5), flashNorth(6)], at(m));
     assert.equal(push.sent.length, 1);
 
-    await runLightningWatch(db, push, [flashNorth(4)], at(11)); // pasaron 10 min y siguen cayendo
+    // Pasaron 10 minutos y siguen cayendo, pero no se acercó lo suficiente (12 → 4 km): no se insiste.
+    await runLightningWatch(db, push, [flashNorth(4)], at(11));
+    assert.equal(push.sent.length, 1);
+
+    await runLightningWatch(db, push, [flashNorth(4)], at(31)); // pasaron 30 min y siguen cayendo
     assert.equal(push.sent.length, 2);
     assert.equal(push.sent[1]!.lightning!.distanceKm, 4);
 
-    await runLightningWatch(db, push, [], at(25)); // sin rayos: no avisa
-    await runLightningWatch(db, push, [flashNorth(20)], at(40));
+    await runLightningWatch(db, push, [], at(45)); // sin rayos: no avisa
+    await runLightningWatch(db, push, [flashNorth(20)], at(50)); // 19 min desde el último
+    assert.equal(push.sent.length, 2);
+    await runLightningWatch(db, push, [flashNorth(20)], at(65));
     assert.equal(push.sent.length, 3);
+  });
+
+  it('si la tormenta se acerca (10 km o más) avisa de nuevo antes de los 30 minutos, pero no antes de 10', async () => {
+    await deviceWith([casa]);
+    await runLightningWatch(db, push, [flashNorth(28)], at(1));
+    assert.equal(push.sent.length, 1);
+
+    await runLightningWatch(db, push, [flashNorth(15)], at(5)); // más cerca, pero hace solo 4 minutos
+    assert.equal(push.sent.length, 1);
+
+    await runLightningWatch(db, push, [flashNorth(20)], at(12)); // pasaron 11 min pero se acercó solo 8 km
+    assert.equal(push.sent.length, 1);
+
+    await runLightningWatch(db, push, [flashNorth(15)], at(12)); // 13 km más cerca y pasaron 11 minutos: avisa
+    assert.equal(push.sent.length, 2);
+    assert.equal(push.sent[1]!.lightning!.distanceKm, 15);
+
+    await runLightningWatch(db, push, [flashNorth(3)], at(13)); // se acercó más, pero hace 1 minuto
+    assert.equal(push.sent.length, 2);
+    await runLightningWatch(db, push, [flashNorth(3)], at(23)); // 12 km más cerca y pasaron 11 minutos: avisa
+    assert.equal(push.sent.length, 3);
+
+    // Si se aleja, no avisa hasta que pasen los 30 minutos.
+    await runLightningWatch(db, push, [flashNorth(25)], at(40));
+    assert.equal(push.sent.length, 3);
+    await runLightningWatch(db, push, [flashNorth(25)], at(54));
+    assert.equal(push.sent.length, 4);
+  });
+
+  it('los topes salen de la configuración', () => {
+    const c = loadConfig({ LIGHTNING_NOTIFY_EVERY_MIN: '45', LIGHTNING_APPROACH_KM: '5' });
+    assert.equal(c.lightningNotifyEveryMin, 45);
+    assert.equal(c.lightningApproachKm, 5);
+    const d = loadConfig({});
+    assert.equal(d.lightningNotifyEveryMin, 30);
+    assert.equal(d.lightningApproachKm, 10);
   });
 
   it('"donde estoy" cerca de un waypoint con aviso se ignora (lluvia y rayos)', async () => {

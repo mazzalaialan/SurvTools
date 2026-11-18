@@ -82,6 +82,8 @@ La app queda servida en `https://TU_DOMINIO/` y se puede instalar desde ahí.
 | `LIGHTNING_FILES_PER_POLL` | `3` | Archivos que lee como mucho por pasada (si se atrasa, se pone al día) |
 | `LIGHTNING_PARTIAL` | `true` | Bajar solo las coordenadas de los rayos de cada archivo (~36 KB, ~155 MB por día con los tres por minuto); `false` baja el archivo completo (~380 KB, ~1,6 GB por día) |
 | `LIGHTNING_RADIUS_KM` | `30` | Distancia para avisar de rayos |
+| `LIGHTNING_NOTIFY_EVERY_MIN` | `30` | Como mucho un aviso de rayos por lugar en estos minutos mientras la tormenta sigue (antes 10: insistía demasiado) |
+| `LIGHTNING_APPROACH_KM` | `10` | Si la tormenta se acercó al menos esto desde el último aviso, avisa de nuevo aunque no hayan pasado los minutos de arriba (pero no antes de 10 minutos) |
 | `MAPS_DIR` | `/maps` (con el compose; si no, `DATA_DIR/maps`) | Carpeta con `vector.pmtiles` y `elevation.pmtiles`; vacío = sin mapas |
 | `OSM_INDEX_PATH` | `./osm` | (Solo compose) carpeta del host con `around.sqlite`, la base de calles y números (ver «Base de calles y números»), que se monta en `/osm` de solo lectura |
 | `OSM_INDEX` | `$DATA_DIR/osm/around.sqlite` | Ruta de esa base dentro del contenedor; vacío, se apaga |

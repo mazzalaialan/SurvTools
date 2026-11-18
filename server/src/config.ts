@@ -41,6 +41,9 @@ export interface Config {
   /** Bajar solo las coordenadas de los rayos de cada archivo (~36 KB) en vez del archivo completo (~380 KB). */
   lightningPartial: boolean;
   lightningRadiusKm: number;
+  /** Como mucho un aviso de rayos por lugar en estos minutos mientras la tormenta sigue, y cuántos km más cerca tiene que estar para avisar antes. */
+  lightningNotifyEveryMin: number;
+  lightningApproachKm: number;
   /** Lluvia estimada con el infrarrojo del GOES-19 para los avisos (además del pronóstico). */
   rainObserved: boolean;
   /** Avisos de peligros naturales (sismos de USGS y eventos de GDACS). */
@@ -108,6 +111,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     lightningFilesPerPoll: Number(env.LIGHTNING_FILES_PER_POLL ?? 3),
     lightningPartial: (env.LIGHTNING_PARTIAL ?? 'true') !== 'false',
     lightningRadiusKm: Number(env.LIGHTNING_RADIUS_KM ?? 30),
+    lightningNotifyEveryMin: Number(env.LIGHTNING_NOTIFY_EVERY_MIN ?? 30),
+    lightningApproachKm: Number(env.LIGHTNING_APPROACH_KM ?? 10),
     rainObserved: (env.RAIN_OBSERVED ?? 'true') !== 'false',
     hazardsEnabled: (env.HAZARDS_ENABLED ?? 'true') !== 'false',
     osmIndexPath: env.OSM_INDEX === '' ? null : (env.OSM_INDEX ?? `${env.DATA_DIR ?? './data'}/osm/around.sqlite`),

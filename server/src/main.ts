@@ -123,6 +123,8 @@ async function lightningTick() {
     const { sent, removed } = await runLightningWatch(db, push, flashes, new Date(), {
       ...LIGHTNING_DEFAULTS,
       radiusKm: config.lightningRadiusKm,
+      everyMs: config.lightningNotifyEveryMin * 60_000,
+      approachKm: config.lightningApproachKm,
       hereMaxAgeMs: config.rainHereMaxAgeMs,
     });
     if (sent || removed) app.log.info({ sent, removed }, 'avisos de rayos enviados');
