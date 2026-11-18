@@ -4938,31 +4938,45 @@ button.country-pack-icon {
   font-size: 0.85rem;
 }
 
-/* Faltantes del botiquín: un botón fuerte por fila y el resto en un menú */
+/* Faltantes del botiquín: botones chicos en la misma línea que el texto */
 .km-row .kb-name {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
 }
+.km-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.km-hint {
+  margin: 0;
+  flex: 1 1 10rem;
+  min-width: 0;
+}
 .km-actions {
   display: flex;
-  gap: 8px;
-  align-items: stretch;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
 }
-.km-primary {
-  flex: 1;
+.km-small {
+  min-height: 40px;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 0.9rem;
 }
-.km-more {
-  width: 48px;
-  padding: 0;
-  flex: none;
+.km-accent {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
 }
-.km-menu {
-  display: grid;
-  gap: 8px;
-  padding: 8px;
-  background: var(--surface-2);
-  border-radius: 10px;
+.km-x {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--control-border);
 }
 .km-share-grid {
   display: grid;

@@ -77,7 +77,6 @@
     "myLocation": { "title": "My location", "desc": "Address, road and kilometer, coordinates and ecoregion to give to rescuers" },
     "radio": { "title": "Radio", "desc": "Nearest public radio station and distress frequencies" },
     "kits": { "title": "Kits", "desc": "Trauma, bleeding, anaphylaxis: contents and expiry" },
-    "kitBuilder": { "title": "Build a kit", "desc": "What to carry for each scenario, with quantities" },
     "medical": { "title": "Medical records", "desc": "Blood type, allergies and medication for each person" },
     "firstAidGuides": { "title": "First aid guides", "desc": "What to do in each emergency, offline" },
     "workouts": {"title": "Sessions", "desc": "Record walks, runs, trekking, rowing and cycling, or log an indoor session"},

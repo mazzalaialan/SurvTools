@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Check, EllipsisVertical, FileText, Share2 } from 'lucide-react';
+import { Check, FileText, Share2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
@@ -30,8 +30,6 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
   /** Último aviso y, si se puede, cómo deshacerlo (se muestra arriba, cerca de lo que se tocó). */
   const [notice, setNotice] = useState<{ text: string; undo?: () => Promise<void> } | null>(null);
   const setMessage = (text: string | null) => setNotice(text ? { text } : null);
-  /** La fila que tiene abierto el menú de más acciones. */
-  const [menuFor, setMenuFor] = useState<string | null>(null);
   const fmt = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
 
   const entries: ShopEntry[] = shortages.flatMap(({ stockMin, current }) => {
@@ -58,7 +56,6 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
     if (!item || !(await confirmAction(t('kitMissing.dismissConfirm', { name: item.name })))) return;
     const previous = s.stockMin.minQuantity;
     await setStockMin(item.id, kit.id, null);
-    setMenuFor(null);
     setNotice({ text: t('kitMissing.dismissed', { name: item.name }), undo: async () => void (await setStockMin(item.id, kit.id, previous)) });
   }
 
@@ -81,41 +78,32 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
           const out = lotsOutsideKits(item.id, [...lots.values()], [...locations.values()]);
           const outside = lotsQuantity(out);
           const bring = Math.min(s.missing, outside);
-          const open = menuFor === item.id;
-          const boughtBtn = (primary: boolean) => (
-            <button className={primary ? 'btn btn-primary km-primary' : 'btn'} type="button" onClick={() => { setMenuFor(null); setBuying(s); }} aria-label={t('kitMissing.boughtLabel', { name: item.name })} data-testid={`km-bought-${item.id}`}>
-              <Check size={18} aria-hidden /> {t('kitMissing.bought')}
-            </button>
-          );
           return (
             <li key={s.stockMin.id} className="kb-row km-row" data-testid={`km-row-${item.id}`}>
               <div className="kb-row-main">
                 <Link className="kb-name" to={`/inventory/items/${item.id}`}>{item.name}</Link>
                 <span className="pill pill-warn">{t('stockMin.status', { current: fmt.format(s.current), min: fmt.format(s.stockMin.minQuantity), unit: unitFor(s.stockMin.minQuantity, unit) })}</span>
               </div>
-              <p className="hint" style={{ margin: 0 }}>
-                {t('kitMissing.toBuy', { qty: fmt.format(s.missing), unit: unitFor(s.missing, unit) })}
-                {outside > 0 && <span data-testid={`km-outside-${item.id}`}> · {t('kitMissing.outside', { qty: fmt.format(outside), places: sourcePlaces(out, locations) })}</span>}
-              </p>
-              {/* Un solo botón fuerte por fila: pasar lo que ya tenés guardado afuera o, si no hay, «Compré». Lo demás, en el menú de la derecha. */}
-              <div className="km-actions">
-                {outside > 0 ? (
-                  <button className="btn btn-primary km-primary" type="button" onClick={() => void bringHere(s, bring)} aria-label={t('kitMissing.bringLabel', { qty: fmt.format(bring), name: item.name })} data-testid={`km-bring-${item.id}`}>
-                    <Check size={18} aria-hidden /> {t('kitMissing.bring', { qty: fmt.format(bring) })}
+              <div className="km-line">
+                <p className="hint km-hint">
+                  {t('kitMissing.toBuy', { qty: fmt.format(s.missing), unit: unitFor(s.missing, unit) })}
+                  {outside > 0 && <span data-testid={`km-outside-${item.id}`}> · {t('kitMissing.outside', { qty: fmt.format(outside), places: sourcePlaces(out, locations) })}</span>}
+                </p>
+                {/* Botones chicos en la misma línea: pasar lo que ya tenés afuera (si hay), «Compré» y una cruz para sacarlo de los faltantes. */}
+                <div className="km-actions">
+                  {outside > 0 && (
+                    <button className="btn km-small km-accent" type="button" onClick={() => void bringHere(s, bring)} aria-label={t('kitMissing.bringLabel', { qty: fmt.format(bring), name: item.name })} data-testid={`km-bring-${item.id}`}>
+                      {t('kitMissing.bring', { qty: fmt.format(bring) })}
+                    </button>
+                  )}
+                  <button className="btn km-small km-accent" type="button" onClick={() => setBuying(s)} aria-label={t('kitMissing.boughtLabel', { name: item.name })} data-testid={`km-bought-${item.id}`}>
+                    <Check size={16} aria-hidden /> {t('kitMissing.bought')}
                   </button>
-                ) : (
-                  boughtBtn(true)
-                )}
-                <button className="btn km-more" type="button" onClick={() => setMenuFor(open ? null : item.id)} aria-expanded={open} aria-label={t('kitMissing.moreLabel', { name: item.name })} data-testid={`km-more-${item.id}`}>
-                  <EllipsisVertical size={20} aria-hidden />
-                </button>
-              </div>
-              {open && (
-                <div className="km-menu" data-testid={`km-menu-${item.id}`}>
-                  {outside > 0 && boughtBtn(false)}
-                  <button className="btn btn-danger-outline" type="button" onClick={() => void dismiss(s)} aria-label={t('kitMissing.dismissLabel', { name: item.name })} data-testid={`km-dismiss-${item.id}`}>{t('kitMissing.dismiss')}</button>
+                  <button className="icon-btn km-x" type="button" onClick={() => void dismiss(s)} aria-label={t('kitMissing.dismissLabel', { name: item.name })} title={t('kitMissing.dismiss')} data-testid={`km-dismiss-${item.id}`}>
+                    <X size={18} aria-hidden />
+                  </button>
                 </div>
-              )}
+              </div>
             </li>
           );
         })}

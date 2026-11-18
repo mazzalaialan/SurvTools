@@ -77,7 +77,6 @@
     "myLocation": { "title": "Mi ubicación", "desc": "Dirección, ruta y kilómetro, coordenadas y ecorregión para dar a los socorristas" },
     "radio": { "title": "Radio", "desc": "Radio Nacional más cercana y frecuencias de socorro" },
     "kits": { "title": "Botiquines", "desc": "Trauma, sangrado, anafilaxia: contenido y vencimientos" },
-    "kitBuilder": { "title": "Armar botiquín", "desc": "Qué llevar según el escenario, con cantidades" },
     "medical": { "title": "Ficha médica", "desc": "Grupo sanguíneo, alergias y medicación de cada persona" },
     "firstAidGuides": { "title": "Guías de primeros auxilios", "desc": "Qué hacer ante cada emergencia, sin conexión" },
     "workouts": {"title": "Sesiones", "desc": "Grabá caminatas, carreras, trekking, remo y ciclismo, o cargá una sesión bajo techo"},

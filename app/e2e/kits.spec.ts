@@ -98,9 +98,9 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 
-  // Se llega desde Botiquines (y también hay una tarjeta en Primeros auxilios).
+  // Se llega desde Botiquines (no hay una tarjeta aparte en Primeros auxilios).
   await page.goto('/#/first-aid');
-  await expect(page.getByRole('link', { name: /Armar botiquín/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Armar botiquín/ })).toHaveCount(0);
   await page.getByRole('link', { name: /Botiquines/ }).click();
   await page.getByTestId('kits-build').click();
   await expect(page.getByRole('heading', { name: 'Armar un botiquín' })).toBeVisible();
@@ -158,9 +158,7 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   // «No lo necesito»: se saca de los faltantes (con confirmación) sin tocar el artículo.
   const marker = missingBox.locator('li', { hasText: 'Marcador indeleble' });
   await expect(marker).toBeVisible();
-  // «No lo necesito» está en el menú de la fila (a dos toques), para no tocarlo por error.
-  await expect(marker.getByRole('button', { name: /No lo necesito/ })).toHaveCount(0);
-  await marker.getByRole('button', { name: /Más acciones/ }).click();
+  // La cruz de cada fila saca el artículo de los faltantes; pide confirmación para no tocarla por error.
   await marker.getByRole('button', { name: /No lo necesito/ }).click();
   await expect(page.getByTestId('confirm-message')).toContainText('Marcador indeleble');
   await page.getByTestId('confirm-ok').click();
