@@ -2,7 +2,7 @@ import { ENTITY_TABLES, db } from '@/core/db/db';
 import { isNativePlatform } from '@/core/platform';
 import { isOpenHeader, readStoredHeader } from '@/core/security/vault';
 import { useSettings } from '@/core/settings/settings';
-import { backupFileName, exportBackup } from './backup';
+import { backupFileName, exportBackupStream } from './backup';
 
 /**
  * Copia automática de los datos críticos (app nativa). El inventario, los documentos y los recorridos viven en IndexedDB, dentro del
@@ -84,11 +84,19 @@ async function doBackup(force: boolean): Promise<AutoBackupResult> {
     const prev = await autoBackupState();
     const decision = shouldBackup(prev, fingerprint, Date.now(), force);
     if (decision !== 'run') return decision;
-    const bytes = await exportBackup(__APP_VERSION__, copyPassword);
-    const { saveNative, pruneNative } = await import('@/ui/nativeFiles');
-    const where = await saveNative(bytes, backupFileName().replace('vikarg-backup-', 'vikarg-auto-'), AUTO_DIR);
+    const { openNativeWriter, pruneNative } = await import('@/ui/nativeFiles');
+    // De a pedazos: con muchas fotos, armar el archivo entero en memoria cerraba la app en celulares modestos.
+    const writer = await openNativeWriter(AUTO_DIR, backupFileName().replace('vikarg-backup-', 'vikarg-auto-'));
+    let size: number;
+    try {
+      size = await exportBackupStream(__APP_VERSION__, copyPassword, (chunk) => writer.write(chunk));
+    } catch (err) {
+      await writer.abort();
+      throw err;
+    }
+    const where = await writer.finish();
     await pruneNative(AUTO_DIR, KEEP_COPIES, '.vikarg');
-    await db.meta.put({ key: META_KEY, value: { at: new Date().toISOString(), fingerprint, where, bytes: bytes.length } satisfies AutoBackupState });
+    await db.meta.put({ key: META_KEY, value: { at: new Date().toISOString(), fingerprint, where, bytes: size } satisfies AutoBackupState });
     return 'done';
   } catch (err) {
     console.error('[copia] no se pudo hacer la copia automática', err);

@@ -75,3 +75,32 @@ export async function pruneNative(dir: string, keep: number, ext: string): Promi
   for (const name of old) await Filesystem.deleteFile({ path: `${dir}/${name}`, directory: Directory.Documents }).catch(() => undefined);
   return old.length;
 }
+
+/**
+ * Escribe un archivo grande de a pedazos en Documentos/`dir` (sin tenerlo entero en memoria): va a `<nombre>.part` y recién al terminar se
+ * renombra al nombre final, así un corte a la mitad no deja un archivo roto con nombre de copia buena. `abort` borra lo escrito.
+ */
+export async function openNativeWriter(dir: string, name: string) {
+  const final = `${dir}/${safeName(name)}`;
+  const part = `${final}.part`;
+  let started = false;
+  return {
+    async write(bytes: Uint8Array): Promise<void> {
+      const data = toBase64(bytes);
+      if (!started) {
+        started = true;
+        await Filesystem.writeFile({ path: part, data, directory: Directory.Documents, recursive: true });
+      } else {
+        await Filesystem.appendFile({ path: part, data, directory: Directory.Documents });
+      }
+    },
+    async finish(): Promise<string> {
+      await Filesystem.deleteFile({ path: final, directory: Directory.Documents }).catch(() => undefined);
+      await Filesystem.rename({ from: part, to: final, directory: Directory.Documents, toDirectory: Directory.Documents });
+      return `Documentos/${final}`;
+    },
+    async abort(): Promise<void> {
+      await Filesystem.deleteFile({ path: part, directory: Directory.Documents }).catch(() => undefined);
+    },
+  };
+}

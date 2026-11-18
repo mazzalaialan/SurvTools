@@ -1,4 +1,4 @@
-import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
+import { strFromU8, strToU8, unzipSync, zipSync, Zip, ZipPassThrough } from 'fflate';
 import { normalizeRecoveryKey, unwrapDek, wrapDek, WrongSecretError, type Sealed, type WrappedKey } from '@/core/crypto/crypto';
 import { ENTITY_TABLES, db, type EncryptedRow } from '@/core/db/db';
 import type { EntityTable } from '@/core/model/types';
@@ -112,6 +112,80 @@ export class BackupError extends Error {
  * con ella se cifra el acceso al backup.
  */
 export async function exportBackup(appVersion: string, backupPassword?: string): Promise<Uint8Array<ArrayBuffer>> {
+  const { manifest, data } = await backupParts(appVersion, backupPassword);
+  const files: Record<string, Uint8Array> = {};
+  for (const blob of await db.blobs.toArray()) files[`blobs/${blob.id}`] = blobEntry(blob);
+  files['manifest.json'] = manifest;
+  files['data.json'] = data;
+  // Los datos ya están cifrados (no comprimen): se guardan sin compresión salvo los JSON.
+  return zipSync(files, { level: 0 }) as Uint8Array<ArrayBuffer>;
+}
+
+/** Blob en el ZIP: IV (12 bytes) seguido del texto cifrado. */
+function blobEntry(blob: { iv: Uint8Array; ct: ArrayBuffer }): Uint8Array {
+  const ct = new Uint8Array(blob.ct);
+  const bytes = new Uint8Array(IV_LENGTH + ct.length);
+  bytes.set(blob.iv, 0);
+  bytes.set(ct, IV_LENGTH);
+  return bytes;
+}
+
+/**
+ * Lo mismo que `exportBackup` pero armando el archivo de a pedazos: cada adjunto se lee, se agrega y se entrega a `write` de a uno, así la
+ * memoria que hace falta es la de UN adjunto y no tres veces el archivo entero (con 200 MB de fotos el modo en memoria pedía casi 600 MB
+ * más, que en un celular modesto cierra la app). El resultado es el mismo `.vikarg` (`readBackup` lo lee igual). Devuelve el tamaño total.
+ */
+export async function exportBackupStream(
+  appVersion: string,
+  backupPassword: string | undefined,
+  write: (chunk: Uint8Array) => Promise<void>,
+): Promise<number> {
+  const { manifest, data } = await backupParts(appVersion, backupPassword);
+  let pending: Uint8Array[] = [];
+  let pendingBytes = 0;
+  let total = 0;
+  let failure: unknown = null;
+  const zip = new Zip((err, chunk) => {
+    if (err) failure = err;
+    else {
+      pending.push(chunk);
+      pendingBytes += chunk.length;
+    }
+  });
+  /** Entrega lo acumulado, en bloques de a ~1,5 MB. */
+  const flush = async (all = false) => {
+    if (failure) throw failure;
+    if (!pendingBytes || (!all && pendingBytes < 1_572_864)) return;
+    const out = new Uint8Array(pendingBytes);
+    let off = 0;
+    for (const c of pending) {
+      out.set(c, off);
+      off += c.length;
+    }
+    pending = [];
+    pendingBytes = 0;
+    total += out.length;
+    await write(out);
+  };
+  const add = async (name: string, bytes: Uint8Array) => {
+    const file = new ZipPassThrough(name);
+    zip.add(file);
+    file.push(bytes, true);
+    await flush();
+  };
+  for (const id of await db.blobs.toCollection().primaryKeys()) {
+    const blob = await db.blobs.get(id);
+    if (blob) await add(`blobs/${blob.id}`, blobEntry(blob));
+  }
+  await add('manifest.json', manifest);
+  await add('data.json', data);
+  zip.end();
+  await flush(true);
+  return total;
+}
+
+/** Todo el backup menos los adjuntos: el manifiesto (con el encabezado de la bóveda) y las filas de las tablas. */
+async function backupParts(appVersion: string, backupPassword?: string): Promise<{ manifest: Uint8Array; data: Uint8Array }> {
   const stored = await readStoredHeader();
   if (!stored) throw new BackupError('no-vault');
   let vault: BackupManifest['vault'];
@@ -131,15 +205,6 @@ export async function exportBackup(appVersion: string, backupPassword?: string):
     counts[table] = rows.filter((r) => !r.deletedAt).length;
   }
 
-  const files: Record<string, Uint8Array> = {};
-  for (const blob of await db.blobs.toArray()) {
-    const ct = new Uint8Array(blob.ct);
-    const bytes = new Uint8Array(IV_LENGTH + ct.length);
-    bytes.set(blob.iv, 0);
-    bytes.set(ct, IV_LENGTH);
-    files[`blobs/${blob.id}`] = bytes;
-  }
-
   const manifest: BackupManifest = {
     format: BACKUP_FORMAT,
     formatVersion: BACKUP_FORMAT_VERSION,
@@ -150,11 +215,7 @@ export async function exportBackup(appVersion: string, backupPassword?: string):
     settings: ((await db.settings.get('app'))?.value as Partial<Settings> | undefined) ?? null,
     counts,
   };
-
-  files['manifest.json'] = strToU8(JSON.stringify(manifest, null, 2));
-  files['data.json'] = strToU8(JSON.stringify(data));
-  // Los datos ya están cifrados (no comprimen): se guardan sin compresión salvo los JSON.
-  return zipSync(files, { level: 0 }) as Uint8Array<ArrayBuffer>;
+  return { manifest: strToU8(JSON.stringify(manifest, null, 2)), data: strToU8(JSON.stringify(data)) };
 }
 
 const LAST_BACKUP_KEY = 'lastBackupAt';

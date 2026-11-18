@@ -7,7 +7,7 @@ import { newEntity } from '@/core/model/entity';
 import type { Waypoint } from '@/core/model/types';
 import { isUnlocked } from '@/core/security/session';
 import { initializeOpenVault, initializeVault, isOpenVault, isVaultInitialized, lockVault, setTestIterations } from '@/core/security/vault';
-import { BackupError, exportBackup, readBackup, restoreBackup } from './backup';
+import { BackupError, exportBackup, exportBackupStream, readBackup, restoreBackup } from './backup';
 
 setTestIterations(1_000);
 
@@ -114,5 +114,60 @@ describe('backup de una bóveda sin contraseña', () => {
     await restoreBackup(parsed, 'clave-del-backup', 'password');
     expect(await isOpenVault()).toBe(true);
     expect((await repos.waypoints.loadAll()).map((w) => w.name)).toEqual(['Refugio']);
+  });
+});
+
+describe('exportBackupStream (de a pedazos)', () => {
+  beforeEach(freshDb);
+
+  it('arma el mismo backup que exportBackup: se lee igual y se restaura con la contraseña', async () => {
+    await initializeVault('contraseña-origen');
+    await repos.waypoints.put(waypoint('Refugio'));
+    await repos.waypoints.put(waypoint('Laguna'));
+    // Adjuntos de varios tamaños, uno de más de un bloque de escritura.
+    const big = new Uint8Array(1_700_000);
+    for (let i = 0; i < big.length; i += 65536) crypto.getRandomValues(big.subarray(i, i + 65536));
+    await blobStore.put('foto-grande', big);
+    await blobStore.put('foto-chica', new Uint8Array([1, 2, 3]));
+    await db.settings.put({ key: 'app', value: { language: 'en' } });
+
+    const whole = readBackup(await exportBackup('1.2.3'));
+    const chunks: Uint8Array[] = [];
+    const size = await exportBackupStream('1.2.3', undefined, async (c) => void chunks.push(c));
+    const out = new Uint8Array(size);
+    let off = 0;
+    for (const c of chunks) {
+      out.set(c, off);
+      off += c.length;
+    }
+    expect(off).toBe(size);
+    expect(chunks.length).toBeGreaterThan(1);
+    const streamed = readBackup(out);
+
+    expect(streamed.manifest.counts).toEqual(whole.manifest.counts);
+    expect(streamed.manifest.vault).toEqual(whole.manifest.vault);
+    expect([...streamed.blobs.keys()].sort()).toEqual([...whole.blobs.keys()].sort());
+    for (const [id, sealed] of whole.blobs) {
+      expect(new Uint8Array(streamed.blobs.get(id)!.ct)).toEqual(new Uint8Array(sealed.ct));
+      expect(streamed.blobs.get(id)!.iv).toEqual(sealed.iv);
+    }
+    expect(streamed.data).toEqual(whole.data);
+
+    // Y se restaura en otro dispositivo con la contraseña.
+    await freshDb();
+    await restoreBackup(streamed, 'contraseña-origen', 'password');
+    expect(isUnlocked()).toBe(true);
+    expect((await repos.waypoints.loadAll()).map((w) => w.name).sort()).toEqual(['Laguna', 'Refugio']);
+    expect(await blobStore.get('foto-grande')).toEqual(big);
+  }, 30_000);
+
+  it('si falla la escritura, corta y avisa', async () => {
+    await initializeVault('contraseña-origen');
+    await blobStore.put('foto', new Uint8Array(2 * 1024 * 1024));
+    await expect(
+      exportBackupStream('1.2.3', undefined, async () => {
+        throw new Error('disco lleno');
+      }),
+    ).rejects.toThrow('disco lleno');
   });
 });
