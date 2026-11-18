@@ -87,8 +87,22 @@ Definidos en `.claude/agents/` y cargados al iniciar la sesión (si se crearon d
 | `vikarg-analista-nudos` | — | Mira los diagramas paso a paso de los nudos y los compara con el texto y la técnica real; devuelve defectos o «OK». Solo analiza. |
 | `vikarg-corrector-nudos` | — | Corrige los specs de `tools/knot-diagrams` según esa lista, regenera y verifica. Solo toca `tools/knot-diagrams/specs` y los SVG generados. |
 | `vikarg-legal` | — | Propiedad intelectual, licencias (GPL, CC BY-SA, ODbL, dominio público), contratos y datos personales (Argentina y reglas de Apple/Google). Solo analiza y redacta borradores: lo valida un abogado matriculado. |
+| `vikarg-ux` | haiku | Evaluador de UX/UI: arquitectura de la información, flujos, accesibilidad y consistencia en el celular. Solo lee; devuelve hallazgos en formato fijo. |
+| `vikarg-grafico` | haiku | Evaluador de diseño gráfico: estética, colores, tipografía, espaciado y animaciones, con legibilidad a pleno sol y de noche. Solo lee. |
+| `vikarg-guia-montana` | haiku | Se pone en el lugar de un guía de montaña profesional: uso intensivo, expediciones, seguridad, mapas offline y orientación. No opina de huerta, inventario ni documentos. Solo lee. |
+| `vikarg-trekking` | haiku | Se pone en el lugar de una persona común que hace trekking y camping de fin de semana: simplicidad y uso con una mano. Mismas exclusiones. Solo lee. |
+| `vikarg-horticultor` | haiku | Evalúa solo la sección Huerta con criterio de botánica y agricultura urbana. No opina de la montaña. Solo lee. |
+| `vikarg-qa` | sonnet | Tester exploratorio: corre la batería y prueba flujos y casos borde con specs temporales de Playwright; informa con pasos de reproducción. No modifica el repositorio. (Para solo correr las suites, `vikarg-probador`.) |
 
 Hay además un agente privado de presupuesto que vive fuera del repositorio porque cita a un cliente; no se comparte.
+
+### Ciclo de mejora continua (feedback con evaluadores)
+
+Se pide cuando hay un lote de cambios visibles para el usuario. La sesión principal actúa como **«Desarrollador Core»**: orquesta, recopila y decide; los evaluadores no tocan el código.
+1. **Evaluadores de solo lectura** (`vikarg-ux`, `vikarg-grafico`, `vikarg-guia-montana`, `vikarg-trekking`, `vikarg-horticultor`): se les indica qué pantallas o módulos mirar. Respetan el **aislamiento de dominio** (los de montaña ignoran huerta, inventario y documentos; el horticultor ignora la montaña) y devuelven cada hallazgo como `[Prioridad: Alta/Media/Baja] | [Vista/Componente] | [Problema detectado] | [Solución Técnica Propuesta]`. Los de solo lectura pueden correr en paralelo.
+2. **Pruebas** (`vikarg-probador` para las suites y `vikarg-qa` para la exploración de casos borde): comparten el navegador de pruebas, así que **van de a uno** y nunca a la vez que un evaluador que saque capturas (puertos 5179 y 8099).
+3. **Integración:** la sesión principal junta los informes, descarta lo que no aplica, ordena por impacto/esfuerzo y le muestra a quien dirige lo que se propone hacer; los cambios los hace la sesión principal y se publican solo con aprobación explícita.
+4. Durante una corrida que arma capturas o corre e2e no se editan los archivos de interfaz (las capturas saldrían de un estado a medio cambiar). Los agentes no hacen `git add` amplios ni dejan specs temporales (`_ux_*`, `_qa_*`) en el árbol.
 
 **Regla de costo** (medida en la sesión): cada agente cuesta ~35 a 45 mil tokens aunque la tarea dure 30 segundos (arranque en frío), y los de modelo chico a veces devuelven informes a medias o paran la e2e antes de tiempo. Por eso:
 - **Hacerlo en la sesión principal:** tipos, `vitest` de un módulo o de todo (~35 s), una e2e puntual. Redirigir la salida a un archivo y leer solo el final o las líneas que fallan; para corridas largas usar ejecución en segundo plano y esperar el aviso de fin (sin consultar a cada rato).
