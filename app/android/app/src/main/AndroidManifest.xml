@@ -33,10 +33,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+        <!-- Ícono chico (silueta blanca) y color de los avisos de Firebase: sin esto Android muestra el ícono de la app como un cuadrado gris. -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_vikarg" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_color" />
     </application>
 
     <!-- Permissions -->
 
+    <!-- Vibración: las alarmas del altímetro y los avisos usan navigator.vibrate, que en el WebView necesita este permiso (no pide nada al usuario). -->
+    <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Cámara: el escáner de códigos de barras, la guía del horizonte y las fotos usan getUserMedia en el WebView, que la pide al abrir la cámara. -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- La cámara no es obligatoria para instalar la app. -->

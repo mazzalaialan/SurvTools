@@ -398,3 +398,9 @@ El servidor ya sabe mandar avisos a dispositivos nativos por **Firebase Cloud Me
 - **Qué viaja (decisión provisional del 2026-11-18, para el APK de prueba):** solo el **tipo** de aviso (`data.type`) y un texto **genérico** que el propio teléfono traduce con claves de idioma (`notif_title`, `notif_body_new`, `notif_body_test` en `strings.xml` de la app, en español y en inglés). No viajan nombres de botiquines, lugares ni artículos: FCM no tiene el cifrado de punta a punta del Web Push, y Google vería el contenido. Un mensaje de datos puro no se muestra en Android con la app cerrada, por eso lleva el bloque `notification`. Cambiarlo es reemplazar `fcmMessage` en `fcm.ts`; hay una prueba que falla si el contenido de un aviso llegara a viajar.
 - **Sin probar con Google de verdad:** el envío está probado con un `fetch` simulado y con el formato documentado de la API HTTP v1 (OAuth2 con JWT RS256, `messages:send`). Con la primera cuenta real hay que mandar un aviso de prueba a un teléfono y comprobar la respuesta (en especial el mapeo de errores: un token vencido es `UNREGISTERED`/404 y borra el dispositivo; el resto se lanza).
 - **iPhone:** un mensaje de datos solo despierta la app; mostrar el texto sin que viaje en el mensaje necesita una extensión nativa de iOS. Pendiente para la versión de iPhone.
+
+
+### Servidor y app nativa de Android
+
+- **`ALLOWED_ORIGINS`:** el WebView de la app nativa tiene el origen `https://localhost` (Capacitor, `androidScheme: https`). Con el valor por defecto (`*`) anda sin tocar nada; si se restringe la lista (por ejemplo `ALLOWED_ORIGINS=https://vikarg.ejemplo.com,https://mazzalaialan.github.io`), hay que **sumar `https://localhost`** o la app nativa no podrá hablar con el servidor.
+- **Avisos por FCM:** ver «Avisos a la app nativa (FCM)». El teléfono traduce el texto con claves de idioma; el ícono chico y el color salen de `ic_stat_vikarg` y `notification_color` del proyecto de Android.

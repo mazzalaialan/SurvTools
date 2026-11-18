@@ -91,6 +91,17 @@ for (const [name, k] of Object.entries(DENSITIES)) {
     .toFile(`${dir}/ic_launcher_round.png`);
 }
 
+// Ícono chico de las notificaciones (24 dp): Android lo pinta de una sola tinta, así que tiene que ser una silueta (blanca sobre transparente);
+// con el ícono de la app saldría un cuadrado gris. A ese tamaño el emblema no se reconoce: se dibuja un anillo con la estrella de ocho puntas
+// del compás. Va siempre en src/main/res: no cambia con la versión.
+const STAT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round">
+<circle cx="12" cy="12" r="10"/><path d="M12 3.5v17M3.5 12h17M6 6l12 12M18 6L6 18"/></g><circle cx="12" cy="12" r="2.4" fill="#fff"/></svg>`;
+for (const [name, k] of Object.entries(DENSITIES)) {
+  const size = Math.round(24 * k);
+  mkdirSync(`${MAIN_RES}/drawable-${name}`, { recursive: true });
+  await sharp(Buffer.from(STAT_SVG), { density: 72 * k }).resize(size, size).png().toFile(`${MAIN_RES}/drawable-${name}/ic_stat_vikarg.png`);
+}
+
 // Color de fondo del ícono adaptable.
 writeFileSync(`${MAIN_RES}/values/ic_launcher_background.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">${BG}</color>\n</resources>\n`);
 console.log('Íconos de Android generados en', RES);

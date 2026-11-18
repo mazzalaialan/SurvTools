@@ -9,6 +9,10 @@ const config: CapacitorConfig = {
   appId: 'ar.vikarg.survtools',
   appName: 'SurvTools',
   webDir: 'dist',
+  plugins: {
+    // Los avisos locales (altímetro, lluvia, hora límite) usan el mismo ícono chico y color que los de Firebase.
+    LocalNotifications: { smallIcon: 'ic_stat_vikarg', iconColor: '#b87333' },
+  },
   android: {
     // Solo https: el servidor propio exige https (excepto pruebas en la red local, que se hacen con otro perfil).
     allowMixedContent: false,

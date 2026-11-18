@@ -4,4 +4,5 @@
     <string name="notif_title">VikArg</string>
     <string name="notif_body_new">You have new alerts</string>
     <string name="notif_body_test">Test notification</string>
+    <color name="notification_color">#b87333</color>
 </resources>
