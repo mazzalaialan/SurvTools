@@ -86,11 +86,12 @@ export async function syncSystemBars(): Promise<void> {
   }
 }
 
-/** Muestra u oculta la barra de estado según el ajuste (oculta se ve un instante al deslizar desde arriba). */
+/** Muestra u oculta la barra de estado. Ocultarla es solo de «Rojo nocturno» (se ve un instante al deslizar desde arriba): en los demás temas siempre se ve. */
 export async function syncStatusBar(): Promise<void> {
   try {
     const bar = SystemBarType.StatusBar;
-    if (useSettings.getState().settings.showStatusBar) await SystemBars.show({ bar });
+    const { theme, showStatusBar } = useSettings.getState().settings;
+    if (theme !== 'red' || showStatusBar) await SystemBars.show({ bar });
     else await SystemBars.hide({ bar });
   } catch {
     /* sin el plugin (la web) o todavía sin ventana: se reintenta al volver a la app */
@@ -120,7 +121,7 @@ export function startSystemBars(): void {
   useSettings.subscribe((s, prev) => {
     if (s.settings.theme !== prev.settings.theme || s.settings.systemBarRed !== prev.settings.systemBarRed) soon();
     if (s.settings.hideInRecents !== prev.settings.hideInRecents) void syncSecureWindow();
-    if (s.settings.showStatusBar !== prev.settings.showStatusBar) void syncStatusBar();
+    if (s.settings.showStatusBar !== prev.settings.showStatusBar || s.settings.theme !== prev.settings.theme) void syncStatusBar();
   });
   void syncSecureWindow();
   void syncStatusBar();

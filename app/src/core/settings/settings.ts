@@ -20,7 +20,7 @@ export interface Settings {
    * con íconos negros (ver core/systemBars.ts). Por defecto 1 (el rojo más oscuro). Android solo deja íconos blancos o negros, no rojos.
    */
   systemBarRed: number;
-  /** App nativa: mostrar la barra de estado de Android (hora, batería, señal). Apagado la oculta (se ve al deslizar desde arriba). */
+  /** App nativa, solo en «Rojo nocturno»: mostrar la barra de estado de Android (hora, batería, señal). Apagado la oculta (se ve al deslizar desde arriba). */
   showStatusBar: boolean;
   /**
    * App nativa: oculta la app en «recientes» de Android (la miniatura mostraría fichas médicas, documentos o contactos) y evita las capturas de

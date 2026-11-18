@@ -75,7 +75,7 @@ export function SettingsPage() {
         />
         {settings.theme === 'saver' && <p className="hint" data-testid="saver-hint">{t('settings.saverHint')}</p>}
         <RedScheduleFields settings={settings} onSave={update} />
-        {isNativePlatform() && (
+        {settings.theme === 'red' && isNativePlatform() && (
           <label className="check" data-testid="show-status-bar">
             <input type="checkbox" checked={settings.showStatusBar} onChange={(e) => void update({ showStatusBar: e.target.checked })} />
             <span>
@@ -84,7 +84,7 @@ export function SettingsPage() {
             </span>
           </label>
         )}
-        {settings.theme === 'red' && isNativePlatform() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
+        {settings.theme === 'red' && settings.showStatusBar && isNativePlatform() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
         <Segmented
           label={t('settings.units')}
           value={settings.units}
