@@ -54,6 +54,22 @@ describe('plantillas de botiquín', () => {
     expect(buildList('home', 'individual', 2, 1)).toEqual(buildList('home', 'individual', 2, 30));
   });
 
+  it('las cantidades fijas también crecen con la gente: un juego más por cada grupo de las personas de partida', () => {
+    const qty = (sc: string, people: number, id: string) => buildList(sc, 'individual', people, 1).find((x) => x.id === id)?.qty ?? 0;
+    // Kit individual (1 persona de partida): un torniquete por persona.
+    expect(qty('bleeding', 1, 'tourniquet')).toBe(1);
+    expect(qty('bleeding', 3, 'tourniquet')).toBe(3);
+    // Auto (4 personas de partida): hasta 4 personas, un juego; con 5 a 8, dos.
+    expect(qty('car', 2, 'tourniquet')).toBe(qty('car', 4, 'tourniquet'));
+    expect(qty('car', 8, 'tourniquet')).toBe(2 * qty('car', 4, 'tourniquet'));
+    // Todos los escenarios cambian algo al duplicar la gente de partida.
+    for (const sc of SCENARIOS) {
+      const base = buildList(sc.id, 'advanced', sc.people, sc.days).reduce((a, l) => a + l.qty, 0);
+      const more = buildList(sc.id, 'advanced', sc.people * 2, sc.days).reduce((a, l) => a + l.qty, 0);
+      expect(more, sc.id).toBeGreaterThan(base);
+    }
+  });
+
   it('un artículo repetido en varios conjuntos se suma una sola vez', () => {
     const l = buildList('car', 'advanced', 1, 1);
     expect(new Set(l.map((x) => x.id)).size).toBe(l.length);

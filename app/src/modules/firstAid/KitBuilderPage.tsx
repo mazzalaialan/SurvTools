@@ -192,7 +192,7 @@ export function KitBuilderPage() {
                           {line.item.name[lang]}
                           {line.item.trained && <span className="pill pill-warn" style={{ marginLeft: 6 }}>{t('kitBuilder.trained')}</span>}
                         </button>
-                        <input className="input kb-qty" type="number" min={1} value={qtyOf(line.id, line.qty)} onChange={(e) => setQtys((q) => ({ ...q, [line.id]: Math.max(1, Number(e.target.value) || 1) }))} aria-label={t('kitBuilder.quantity', { name: line.item.name[lang] })} />
+                        <input className="input kb-qty" type="number" min={1} value={qtyOf(line.id, line.qty)} onChange={(e) => setQtys((q) => ({ ...q, [line.id]: Math.max(1, Number(e.target.value) || 1) }))} aria-label={t('kitBuilder.quantity', { name: line.item.name[lang] })} data-testid={`kb-qty-${line.id}`} />
                         <span className="hint kb-unit">{(line.item.unit ?? { es: 'unidades', en: 'units' })[lang]}</span>
                       </div>
                       <div className="kb-row-sub">

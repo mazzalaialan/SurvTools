@@ -329,10 +329,13 @@ export function buildList(scenarioId: string, level: Level, people: number, days
   if (!sc) return [];
   const p = Math.max(1, Math.floor(people));
   const d = Math.max(1, Math.floor(days));
+  // Las cantidades fijas están pensadas para las personas de partida del escenario (1 en los kits individuales, 4 en casa o auto): con más
+  // gente se repiten, un juego más por cada tanto (8 personas en el auto = dos botiquines completos).
+  const sets = Math.max(1, Math.ceil(p / sc.people));
   const totals = new Map<string, number>();
   for (const [id, from, base = 0, perPerson = 0, perDay = 0] of sc.lines) {
     if (rank(from) > rank(level) || !CATALOG[id]) continue;
-    totals.set(id, (totals.get(id) ?? 0) + base + perPerson * p + perDay * p * (sc.usesDays ? d : 1));
+    totals.set(id, (totals.get(id) ?? 0) + base * sets + perPerson * p + perDay * p * (sc.usesDays ? d : 1));
   }
   return [...totals.entries()]
     .map(([id, qty]) => ({ id, item: CATALOG[id]!, qty: Math.max(1, Math.ceil(qty)) }))
