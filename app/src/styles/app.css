@@ -5211,3 +5211,29 @@ button.country-pack-icon {
   margin: 0;
   padding-left: 1.25rem;
 }
+
+.country-map-wrap {
+  position: relative;
+}
+.country-map-wrap .country-map {
+  touch-action: none;
+  cursor: grab;
+  display: block;
+  margin: 0 auto;
+}
+.country-map-zoom {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.country-map-zoom .icon-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.country-map-zoom .icon-btn:disabled {
+  opacity: 0.4;
+}
