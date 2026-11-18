@@ -130,6 +130,7 @@ export const CATALOG: Record<string, CatalogItem> = {
   topical_antibiotic: { name: l('Ungüento antibiótico', 'Antibiotic ointment'), group: 'meds', medication: true, expires: true, note: l('Para raspones y cortes limpios. Consultá a tu médico o farmacéutico.', 'For clean scrapes and cuts. Ask your doctor or pharmacist.') },
   sting_cream: { name: l('Crema para picaduras y alergias de piel', 'Sting and skin-allergy cream'), group: 'meds', medication: true, expires: true, note: l('Alivia picazón de picaduras. Consultá a tu médico o farmacéutico.', 'Relieves itch from stings. Ask your doctor or pharmacist.') },
   eyewash: { name: l('Solución para lavado ocular', 'Eye wash solution'), group: 'meds', expires: true, note: l('Para enjuagar polvo o químicos de los ojos.', 'To rinse dust or chemicals out of the eyes.') },
+  inhaler: { name: l('Medicación para el asma o la falta de aire (la indicada por tu médico)', 'Asthma or breathlessness medication (the one your doctor prescribed)'), group: 'meds', medication: true, expires: true, note: l('Solo para quien la tiene indicada: la prescribe y explica el médico. Llevala siempre encima. Consultá a tu médico o farmacéutico.', 'Only for people who have it prescribed: a doctor prescribes and explains it. Carry it at all times. Ask your doctor or pharmacist.') },
   sugar: { name: l('Azúcar o glucosa rápida', 'Sugar or fast glucose'), group: 'meds', expires: true, note: l('Para una baja de azúcar en quien tiene diabetes.', 'For low blood sugar in someone with diabetes.') },
   sunscreen: { name: l('Protector solar', 'Sunscreen'), group: 'meds', expires: true, note: l('Previene quemaduras de sol, sobre todo en altura y agua.', 'Prevents sunburn, especially at altitude and on water.') },
   repellent: { name: l('Repelente de insectos', 'Insect repellent'), group: 'meds', expires: true, note: l('Previene picaduras y enfermedades que transmiten.', 'Prevents bites and the diseases they carry.') },
@@ -321,6 +322,8 @@ export interface BuiltLine {
   id: string;
   item: CatalogItem;
   qty: number;
+  /** Por qué se agregó o se subió (según las fichas médicas elegidas): solo se muestra en pantalla, no se guarda. */
+  why?: { kind: string; names: string[] }[];
 }
 
 /**

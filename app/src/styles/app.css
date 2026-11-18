@@ -4994,3 +4994,18 @@ button.country-pack-icon {
   border-radius: 8px;
   font-size: 0.9rem;
 }
+
+/* Asistente de botiquines: personas */
+.kb-who-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.kb-who-row input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+}
+.kb-why {
+  color: var(--accent);
+}

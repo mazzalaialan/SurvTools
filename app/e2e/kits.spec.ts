@@ -282,3 +282,69 @@ test('el asistente pasa al botiquín nuevo lo que ya tenés fuera de los botiqui
   await page.getByTestId('kit-missing').getByRole('button', { name: /Pasar 1 de Torniquete CAT/ }).click();
   await expect(page.getByTestId('kit-missing').locator('li', { hasText: 'Torniquete CAT' })).toHaveCount(0);
 });
+
+test('el asistente se personaliza con las fichas médicas elegidas y los invitados, sin guardar datos médicos en el botiquín', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  // Sin fichas: se explica y se puede indicar cuántas personas son.
+  await page.goto('/#/first-aid/kits/build');
+  await expect(page.getByText('Todavía no cargaste fichas médicas')).toBeVisible();
+  await expect(page.getByTestId('kb-total')).toContainText('Sin elegir a nadie');
+
+  // Dos fichas: Ana (alergia grave y diabetes) y Sofi (una nena).
+  const crear = async (nombre: string, nacimiento: string, alergias: string, condiciones: string) => {
+    await page.goto('/#/first-aid/medical');
+    await page.getByRole('link', { name: 'Nueva ficha' }).click();
+    await page.getByLabel('Nombre', { exact: true }).fill(nombre);
+    await page.getByLabel('Fecha de nacimiento').fill(nacimiento);
+    if (alergias) await page.getByLabel('Alergias').fill(alergias);
+    if (condiciones) await page.getByLabel('Enfermedades y condiciones').fill(condiciones);
+    await page.getByRole('button', { name: 'Guardar' }).click();
+    await expect(page).toHaveURL(/medical\/[0-9a-f-]{36}$/);
+  };
+  await crear('Ana', '1990-05-20', 'Maní (anafilaxia)', 'Diabetes tipo 2');
+  await crear('Sofi', '2022-03-10', '', '');
+
+  await page.goto('/#/first-aid/kits/build');
+  await expect(page.getByTestId('kb-profiles')).toContainText('Ana');
+  await expect(page.getByTestId('kb-profiles')).toContainText('Sofi');
+  // Cada vez se elige de nuevo: arranca sin nadie elegido y sin nada personalizado.
+  await expect(page.getByTestId('kb-total')).toContainText('Sin elegir a nadie');
+  await expect(page.getByTestId('kb-row-epinephrine')).toHaveCount(0);
+
+  // Se eligen las dos y se suma un invitado sin ficha: son 3 personas.
+  await page.getByTestId('kb-scenario-home').click();
+  await page.getByTestId('kb-profiles').getByRole('checkbox').first().check();
+  await page.getByTestId('kb-profiles').getByRole('checkbox').nth(1).check();
+  await page.getByTestId('kb-people').fill('1');
+  await expect(page.getByTestId('kb-total')).toHaveText('Para 3 personas.');
+  await expect(page.getByTestId('kb-row-epinephrine')).toBeVisible();
+  await expect(page.getByTestId('kb-why-epinephrine-severeAllergy')).toContainText('Ana');
+  await expect(page.getByTestId('kb-why-glucometer-diabetes')).toContainText('Ana');
+  await expect(page.getByTestId('kb-why-oral_syringe-child')).toContainText('Sofi');
+  await expect(page.getByText('Las fichas se leen solo en tu dispositivo')).toBeVisible();
+  // Una invitada sola, sin ficha, no suma nada personal.
+  await page.getByTestId('kb-profiles').getByRole('checkbox').first().uncheck();
+  await page.getByTestId('kb-profiles').getByRole('checkbox').nth(1).uncheck();
+  await expect(page.getByTestId('kb-row-epinephrine')).toHaveCount(0);
+  await expect(page.getByTestId('kb-total')).toHaveText('Para 1 persona.');
+  await page.getByTestId('kb-profiles').getByRole('checkbox').first().check();
+
+  await page.getByTestId('kb-name').fill('Botiquín de casa');
+  await page.getByTestId('kb-create').click();
+  await expect(page.getByRole('heading', { name: 'Botiquín de casa' })).toBeVisible();
+  // El botiquín lleva el autoinyector (con la aclaración del médico) pero no dice de quién ni por qué.
+  await expect(page.getByText('Autoinyector de adrenalina').first()).toBeVisible();
+  const body = await page.locator('main').innerText();
+  expect(body).not.toMatch(/\bAna\b/);
+  expect(body).not.toMatch(/\bSofi\b/);
+  expect(body).not.toContain('Diabetes tipo 2');
+  expect(body).not.toContain('Maní');
+  expect(body).not.toContain('anafilaxia');
+});

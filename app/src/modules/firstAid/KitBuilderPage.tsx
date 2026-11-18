@@ -7,7 +7,9 @@ import type { Item, Location, Lot } from '@/core/model/types';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
 import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
+import { useMedical } from './medicalStore';
 import { IntField } from './IntField';
+import { applyExtras, factsOf, personalize } from './kitPersonalize';
 import { lotsOutsideKits, moveToKit, quantityInKits, quantityOf as lotsQuantity, sourcePlaces } from './kitStock';
 import { buildList, GROUP_NAMES, GROUPS, LEVELS, matchesCatalog, scenarioById, SCENARIOS, SOURCES, type Level } from './kitTemplates';
 
@@ -26,7 +28,20 @@ export function KitBuilderPage() {
   const [scenarioId, setScenarioId] = useState('home');
   const scenario = scenarioById(scenarioId)!;
   const [level, setLevel] = useState<Level>('individual');
-  const [people, setPeople] = useState(scenario.people);
+  /** Fichas médicas elegidas para este botiquín (se vuelven a elegir cada vez) e invitados u otras personas sin ficha. */
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [guests, setGuests] = useState(0);
+  const profiles = useMedical((s) => s.profiles);
+  useEffect(() => {
+    void useMedical.getState().load();
+  }, []);
+  const persons = useMemo(
+    () => [...profiles.values()].filter((p) => p.kind === 'person' && !p.deletedAt).sort((a, b) => Number(b.isMe ?? false) - Number(a.isMe ?? false) || a.name.localeCompare(b.name, i18n.language)),
+    [profiles, i18n.language],
+  );
+  const picked = persons.filter((p) => selected.has(p.id));
+  /** Cuántas personas: las fichas elegidas más los invitados; si no se eligió a nadie, las de partida del escenario. */
+  const people = picked.length + guests || scenario.people;
   const [days, setDays] = useState(scenario.days);
   const [name, setName] = useState('');
   const [skip, setSkip] = useState<Set<string>>(new Set());
@@ -38,7 +53,7 @@ export function KitBuilderPage() {
 
   // Al cambiar de escenario se vuelve a sus valores de partida.
   useEffect(() => {
-    setPeople(scenarioById(scenarioId)!.people);
+    setGuests(0);
     setDays(scenarioById(scenarioId)!.days);
     setSkip(new Set());
     setHave({});
@@ -47,7 +62,8 @@ export function KitBuilderPage() {
 
   // Si cambian las personas, los días o el nivel, las cantidades vuelven a calcularse (las que se habían editado a mano se pierden).
   useEffect(() => setQtys({}), [people, days, level]);
-  const lines = useMemo(() => buildList(scenarioId, level, people, days), [scenarioId, level, people, days]);
+  const extras = useMemo(() => personalize(picked.map((p) => factsOf(p))), [picked]);
+  const lines = useMemo(() => applyExtras(buildList(scenarioId, level, people, days), extras), [scenarioId, level, people, days, extras]);
   const itemList = useMemo(() => [...items.values()].filter((i) => !i.deletedAt), [items]);
   const lotList = useMemo(() => [...lots.values()], [lots]);
   const locList = useMemo(() => [...locations.values()], [locations]);
@@ -156,10 +172,6 @@ export function KitBuilderPage() {
         </div>
         <p className="hint" style={{ margin: 0 }}>{t(`kitBuilder.levelHint.${level}`)}</p>
         <div className="grid-2">
-          <div className="field">
-            <label htmlFor="kb-people">{t('kitBuilder.people')}</label>
-            <IntField id="kb-people" value={people} min={1} max={50} onChange={setPeople} testId="kb-people" />
-          </div>
           {scenario.usesDays && (
             <div className="field">
               <label htmlFor="kb-days">{t('kitBuilder.days')}</label>
@@ -169,7 +181,30 @@ export function KitBuilderPage() {
         </div>
       </section>
 
-      <p className="hint" style={{ margin: 0 }} data-testid="kb-people-hint">{t('kitBuilder.peopleHint')}</p>
+      <section className="card stack" aria-labelledby="kb-who">
+        <h2 id="kb-who" className="section-title" style={{ margin: 0 }}>{t('kitBuilder.who')}</h2>
+        <p className="hint" style={{ margin: 0 }}>{persons.length > 0 ? t('kitBuilder.whoHint') : t('kitBuilder.noProfiles')}</p>
+        {persons.length > 0 && (
+          <ul className="list" data-testid="kb-profiles">
+            {persons.map((p) => (
+              <li key={p.id} className="kb-row">
+                <label className="kb-who-row">
+                  <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggle(selected, p.id, setSelected)} data-testid={`kb-profile-${p.id}`} />
+                  <span>{p.name}{p.relationship ? <span className="hint"> · {p.relationship}</span> : null}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+        {persons.length === 0 && <Link className="btn" to="/first-aid/medical">{t('kitBuilder.goMedical')}</Link>}
+        <div className="field">
+          <label htmlFor="kb-people">{t('kitBuilder.guests')}</label>
+          <IntField id="kb-people" value={guests} min={0} max={50} onChange={setGuests} testId="kb-people" />
+        </div>
+        <p className="hint" style={{ margin: 0 }} data-testid="kb-total">{picked.length + guests === 0 ? t('kitBuilder.totalDefault', { count: people }) : t('kitBuilder.total', { count: people })}</p>
+        {picked.length > 0 && <p className="hint" style={{ margin: 0 }}>{t('kitBuilder.privacy')}</p>}
+        <p className="hint" style={{ margin: 0 }} data-testid="kb-people-hint">{t('kitBuilder.peopleHint')}</p>
+      </section>
 
       <section className="card stack" aria-labelledby="kb-list">
         <h2 id="kb-list" className="section-title" style={{ margin: 0 }}>
@@ -198,6 +233,9 @@ export function KitBuilderPage() {
                         <span className="hint kb-unit">{(line.item.unit ?? { es: 'unidades', en: 'units' })[lang]}</span>
                       </div>
                       <div className="kb-row-sub">
+                        {line.why?.map((w) => (
+                          <span key={w.kind} className="hint kb-why" data-testid={`kb-why-${line.id}-${w.kind}`}>{t(`kitBuilder.why.${w.kind}`, { names: w.names.join(', ') })}</span>
+                        ))}
                         {ex && stockOf(line.id).outside > 0 && <span className="hint" data-testid={`kb-outside-${line.id}`}>{t('kitBuilder.outside', { name: ex.name, qty: fmt.format(stockOf(line.id).outside), places: stockOf(line.id).places })}</span>}
                         {ex && stockOf(line.id).inKits > 0 && <span className="hint">{t('kitBuilder.inKits', { qty: fmt.format(stockOf(line.id).inKits) })}</span>}
                         {!skip.has(line.id) && (
