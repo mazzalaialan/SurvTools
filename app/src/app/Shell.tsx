@@ -1,3 +1,4 @@
+import { IncomingFileHandler } from './IncomingFileHandler';
 import { Suspense } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -133,6 +134,7 @@ export function Shell() {
         <OutingPlanBar />
         <PocketScreen />
         <ConfirmHost />
+        <IncomingFileHandler />
         <main className="content">
           <Suspense fallback={null}>
             <Outlet />

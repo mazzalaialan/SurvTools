@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download, ScanLine } from 'lucide-react';
+import { useIncoming } from '@/core/incomingFile';
 import { BackupError, readBackup, restoreBackup, BACKUP_EXTENSION, type ParsedBackup, type SecretKind } from '@/core/backup/backup';
 import { TransferError, downloadTransfer, parseTransferLink } from '@/core/backup/transfer';
 import { useCapabilities } from '@/core/capabilities/capabilities';
@@ -44,6 +45,17 @@ export function RestoreForm({ replacesData, initialTransfer, onDone }: Props) {
       setError(t(err.code === 'newer-version' ? 'backup.newerVersion' : 'backup.invalidFile'));
     }
   }
+
+  // Un backup que llegó desde afuera («Abrir con VikArg» o «Compartir» en la app nativa): se carga solo, listo para pedir la clave.
+  const incoming = useIncoming((s) => s.file);
+  useEffect(() => {
+    if (incoming?.kind !== 'backup') return;
+    useIncoming.getState().clear();
+    setSource('file');
+    setError(null);
+    load(incoming.bytes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [incoming]);
 
   async function pickFile(file: File | undefined) {
     setError(null);

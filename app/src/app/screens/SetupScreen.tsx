@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { parseTransferLink } from '@/core/backup/transfer';
+import { useIncoming } from '@/core/incomingFile';
 import { setLanguage } from '@/core/i18n/i18n';
 import { useVault } from '@/core/security/useVault';
 import { LANGUAGES, useSettings, type Language } from '@/core/settings/settings';
@@ -20,7 +21,14 @@ export function SetupScreen() {
   const update = useSettings((s) => s.update);
   // Dispositivo nuevo abierto desde el QR de transferencia: va directo a restaurar.
   const [linkTransfer] = useState(() => parseTransferLink(window.location.href));
+  // Un backup que llegó desde afuera (app nativa) también va directo a restaurar.
+  const incomingBackup = useIncoming((s) => s.file?.kind === 'backup');
   const [restoring, setRestoring] = useState(linkTransfer !== null);
+  // Se queda en «restaurar» aunque el formulario ya haya tomado el archivo (que lo saca de la lista de pendientes).
+  useEffect(() => {
+    if (incomingBackup) setRestoring(true);
+  }, [incomingBackup]);
+  const showRestore = restoring;
 
   function changeLanguage(lang: Language) {
     setLanguage(lang);
@@ -32,14 +40,14 @@ export function SetupScreen() {
       <div className="gate-panel">
         <BrandHeader />
         <div className="card stack">
-          <h2>{restoring ? t('setup.restoreTitle') : t('setup.welcome')}</h2>
+          <h2>{showRestore ? t('setup.restoreTitle') : t('setup.welcome')}</h2>
           <Segmented
             label={t('setup.language')}
             value={language}
             options={LANGUAGES.map((l) => ({ value: l, label: t(`language.${l}`) }))}
             onChange={changeLanguage}
           />
-          {restoring ? (
+          {showRestore ? (
             <>
               <p className="hint">{t('setup.restoreIntro')}</p>
               {/* Al terminar se limpia el link: el código es de un solo uso y no debe reintentarse. */}

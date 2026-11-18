@@ -8,6 +8,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         // Los plugins propios de la app se registran antes de que arranque el puente de Capacitor.
         registerPlugin(SystemColorPlugin.class);
+        registerPlugin(IncomingFilePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
