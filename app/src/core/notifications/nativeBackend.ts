@@ -15,6 +15,12 @@ import { cancelDaily, refreshNativeDaily } from './nativeDaily';
  * El aviso diario sin servidor se programa de antemano con avisos locales (nativeDaily.ts). Falta el envío por APNs de iPhone.
  */
 
+/** Un fallo al programar el aviso diario no debe romper nada, pero tiene que quedar a la vista en el registro. */
+function logDailyError(err: unknown): false {
+  console.error('[avisos] no se pudo programar el aviso diario', err);
+  return false;
+}
+
 type Permission = 'granted' | 'denied' | 'default';
 let permission: Permission = 'default';
 const toPermission = (state: string): Permission => (state === 'granted' ? 'granted' : state === 'denied' ? 'denied' : 'default');
@@ -43,9 +49,9 @@ export const nativeBackend: NotificationBackend = {
     return permission === 'granted';
   },
   // Los avisos diarios se programan de antemano (ver nativeDaily.ts): se arman al activar y se renuevan al abrir la app o cambiar el inventario.
-  registerDaily: async () => (await refreshNativeDaily().catch(() => false)) || true,
+  registerDaily: async () => (await refreshNativeDaily().catch(logDailyError)) || true,
   unregisterDaily: () => cancelDaily(),
-  refreshDaily: async () => void (await refreshNativeDaily().catch(() => false)),
+  refreshDaily: async () => void (await refreshNativeDaily().catch(logDailyError)),
   async subscribePush({ fcm }) {
     if (!fcm) return null; // el servidor no tiene Firebase configurado
     return new Promise((resolve) => {
@@ -103,7 +109,7 @@ export async function startNativeNotifications(): Promise<void> {
   started = true;
   setNotificationBackend(nativeBackend);
   await refreshNativePermission().catch(() => undefined);
-  void refreshNativeDaily().catch(() => undefined);
+  void refreshNativeDaily().catch(logDailyError);
   // Con la app abierta en pantalla Android NO muestra los avisos de FCM: se los entrega a la app y la app los muestra, en su idioma.
   void PushNotifications.addListener('pushNotificationReceived', (n) => {
     const type = (n.data as { type?: string } | undefined)?.type;
