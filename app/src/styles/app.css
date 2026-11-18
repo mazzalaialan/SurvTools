@@ -238,6 +238,18 @@ a {
   cursor: pointer;
 }
 
+/* Controles del navegador (deslizantes, casillas, botones de opción y barras de avance) con el color del tema: sin esto salen del celeste del
+   sistema, que desentona con el resto (sobre todo en «Rojo nocturno»). */
+input[type='range'],
+input[type='checkbox'],
+input[type='radio'],
+progress {
+  accent-color: var(--accent);
+}
+input[type='range'] {
+  width: 100%;
+}
+
 .check input {
   width: 22px;
   height: 22px;
