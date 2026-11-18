@@ -1,4 +1,5 @@
 import { registerPlugin, SystemBars, SystemBarsStyle } from '@capacitor/core';
+import { useSettings } from '@/core/settings/settings';
 
 /**
  * Barras del sistema de Android (app nativa): el fondo que se ve detrás de ellas y el color de sus íconos siguen el tema de la app. Capacitor
@@ -43,6 +44,17 @@ export function isDark({ r, g, b }: Rgb): boolean {
   return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b) < 0.4;
 }
 
+/** Los dos extremos de la escala de rojos de las barras en «Rojo nocturno» (niveles 1 y 10). */
+const RED_DARK: Rgb = { r: 92, g: 23, b: 16, a: 1 };
+const RED_BRIGHT: Rgb = { r: 212, g: 74, b: 51, a: 1 };
+
+/** Rojo de la barra para un nivel de 1 (el más oscuro) a 10 (el más claro). Fuera de ese rango se ajusta. */
+export function redBarColor(level: number): Rgb {
+  const t = (Math.max(1, Math.min(10, Math.round(level))) - 1) / 9;
+  const mix = (a: number, b: number) => a + (b - a) * t;
+  return { r: mix(RED_DARK.r, RED_BRIGHT.r), g: mix(RED_DARK.g, RED_BRIGHT.g), b: mix(RED_DARK.b, RED_BRIGHT.b), a: 1 };
+}
+
 /** El color de fondo que se ve en el borde de arriba de la pantalla: el del primer elemento con fondo, subiendo desde ese punto. */
 export function colorAtTop(doc: Document = document): Rgb | null {
   let el: Element | null = doc.elementFromPoint(Math.floor(window.innerWidth / 2), 2) ?? doc.body;
@@ -60,11 +72,14 @@ export function colorAtTop(doc: Document = document): Rgb | null {
  * su gris al volver a la app.
  */
 export async function syncSystemBars(): Promise<void> {
-  const color = colorAtTop();
+  const { theme, systemBarRed } = useSettings.getState().settings;
+  // «Rojo nocturno» con un nivel de rojo elegido: la barra es de ese rojo y los íconos, negros (Android no permite íconos rojos).
+  const red = theme === 'red' && systemBarRed > 0;
+  const color = red ? redBarColor(systemBarRed) : colorAtTop();
   if (!color) return;
   try {
-    // «Dark» = íconos claros sobre fondo oscuro.
-    await SystemBars.setStyle({ style: isDark(color) ? SystemBarsStyle.Dark : SystemBarsStyle.Light });
+    // «Dark» = íconos claros sobre fondo oscuro; «Light» = íconos negros.
+    await SystemBars.setStyle({ style: !red && isDark(color) ? SystemBarsStyle.Dark : SystemBarsStyle.Light });
     await SystemColor.setBackground({ color: toHex(color) });
   } catch {
     /* se reintenta en el próximo cambio */
@@ -82,6 +97,7 @@ export function startSystemBars(): void {
     clearTimeout(timer);
     timer = setTimeout(() => void syncSystemBars(), 120);
   };
+  useSettings.subscribe((s, prev) => (s.settings.theme !== prev.settings.theme || s.settings.systemBarRed !== prev.settings.systemBarRed) && soon());
   new MutationObserver(soon).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
   window.addEventListener('hashchange', soon);
   document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && soon());

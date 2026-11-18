@@ -2734,6 +2734,10 @@
     "restoreHint": "Los avisos que ocultaste con «Entendido» (seguridad, radio, nudos, etc.) vuelven a aparecer."
   },
   "settings": {
+    "systemBarRed": "Color de las barras del sistema (rojo nocturno)",
+    "systemBarRedOff": "Casi negras, con íconos blancos",
+    "systemBarRedLevel": "Rojo {{level}} de 10 ({{hex}}), con íconos negros",
+    "systemBarRedHint": "Android solo permite íconos blancos o negros, no rojos. Con más rojo se leen mejor los íconos negros, pero la barra brilla más.",
     "noPasswordStatus": "La app no tiene contraseña: cualquiera que tenga este dispositivo desbloqueado puede ver tus datos.",
     "addPassword": "Poner contraseña",
     "addPasswordHint": "Tus datos quedan protegidos y vas a recibir una clave de recuperación nueva para anotar.",

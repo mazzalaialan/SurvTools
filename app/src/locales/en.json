@@ -2734,6 +2734,10 @@
     "restoreHint": "Notices you hid with \"Got it\" (safety, radio, knots, etc.) show up again."
   },
   "settings": {
+    "systemBarRed": "System bars color (night red)",
+    "systemBarRedOff": "Almost black, with white icons",
+    "systemBarRedLevel": "Red {{level}} of 10 ({{hex}}), with black icons",
+    "systemBarRedHint": "Android only allows white or black icons, not red. More red makes the black icons easier to read, but the bar is brighter.",
     "noPasswordStatus": "The app has no password: anyone with this device unlocked can see your data.",
     "addPassword": "Add a password",
     "addPasswordHint": "Your data will be protected and you will get a new recovery key to write down.",

@@ -30,6 +30,7 @@ import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
 import { ArchivedVaults } from '../screens/ArchivedVaults';
 import { isNativePlatform } from '@/core/platform';
+import { redBarColor, toHex } from '@/core/systemBars';
 import { BiometricTest } from '../screens/BiometricTest';
 import { BiometricUnlockSettings } from '../screens/BiometricUnlockSettings';
 import { NotificationsSection } from './NotificationsSection';
@@ -70,6 +71,7 @@ export function SettingsPage() {
         />
         {settings.theme === 'saver' && <p className="hint" data-testid="saver-hint">{t('settings.saverHint')}</p>}
         <RedScheduleFields settings={settings} onSave={update} />
+        {settings.theme === 'red' && isNativePlatform() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
         <Segmented
           label={t('settings.units')}
           value={settings.units}
@@ -156,6 +158,23 @@ export function SettingsPage() {
           <Info size={18} /> {t('about.link')}
         </Link>
       </section>
+    </div>
+  );
+}
+
+/**
+ * App nativa, tema «Rojo nocturno»: cuán claro es el rojo de las barras del sistema. En 0 quedan casi negras con íconos blancos; de 1 a 10 el rojo
+ * va de más oscuro a más claro con íconos negros (Android no permite íconos rojos). Se ve en vivo.
+ */
+function SystemBarRedField({ level, onChange }: { level: number; onChange: (n: number) => void }) {
+  const { t } = useTranslation();
+  const shown = level > 0 ? toHex(redBarColor(level)) : '';
+  return (
+    <div className="field" data-testid="system-bar-red">
+      <label htmlFor="system-bar-red-input">{t('settings.systemBarRed')}</label>
+      <input id="system-bar-red-input" type="range" min={0} max={10} step={1} value={level} onChange={(e) => onChange(Number(e.target.value))} aria-valuetext={level === 0 ? t('settings.systemBarRedOff') : t('settings.systemBarRedLevel', { level, hex: shown })} />
+      <p className="hint" style={{ margin: 0 }}>{level === 0 ? t('settings.systemBarRedOff') : t('settings.systemBarRedLevel', { level, hex: shown })}</p>
+      <p className="hint" style={{ margin: 0 }}>{t('settings.systemBarRedHint')}</p>
     </div>
   );
 }

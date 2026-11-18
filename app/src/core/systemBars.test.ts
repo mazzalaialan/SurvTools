@@ -23,3 +23,16 @@ describe('barras del sistema: colores', () => {
     expect(isDark({ r: 244, g: 246, b: 248, a: 1 })).toBe(false);
   });
 });
+
+describe('escala de rojos de las barras', () => {
+  it('va del más oscuro (1) al más claro (10), sin salirse del rango, y es monótona', async () => {
+    const { redBarColor } = await import('./systemBars');
+    const lum = (n: number) => { const c = redBarColor(n); return c.r + c.g + c.b; };
+    expect(toHex(redBarColor(1))).toBe('#5c1710');
+    expect(toHex(redBarColor(10))).toBe('#d44a33');
+    for (let n = 1; n < 10; n++) expect(lum(n + 1)).toBeGreaterThan(lum(n));
+    expect(toHex(redBarColor(0))).toBe('#5c1710');
+    expect(toHex(redBarColor(99))).toBe('#d44a33');
+    expect(redBarColor(1).r).toBeGreaterThan(redBarColor(1).g * 3); // sigue siendo rojo
+  });
+});
