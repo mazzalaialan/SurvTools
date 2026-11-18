@@ -3,12 +3,15 @@ apply plugin: 'com.android.application'
 android {
     namespace = "ar.vikarg.survtools"
     compileSdk = rootProject.ext.compileSdkVersion
+    // La versión del APK sale de app/package.json (la misma de la web): 0.87.0 -> versionName 0.87.0 y versionCode 8700 (mayor*10000 + menor*100 + parche).
+    def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
+    def versionParts = appVersion.tokenize('.').collect { it.toInteger() }
     defaultConfig {
         applicationId "ar.vikarg.survtools"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode versionParts[0] * 10000 + versionParts[1] * 100 + versionParts[2]
+        versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

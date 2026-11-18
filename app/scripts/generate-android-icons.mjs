@@ -1,12 +1,31 @@
 // Íconos de la app de Android (Capacitor) a partir del logo original (assets-src/logo.jpg), igual que los de la PWA (generate-icons.mjs).
 // Genera el ícono ADAPTABLE (emblema sobre el fondo de la marca, dentro de la zona segura) y los clásicos (cuadrado redondeado y redondo, para
-// Android 7). Uso: npm run icons:android
+// Android 7). Los APK de prueba llevan una cinta «APK <versión>» (la versión sale de package.json) para distinguirlos de la app de la tienda.
+// Uso: npm run icons:android            (con la cinta, para los APK de prueba)
+//      npm run icons:android:release    (sin la cinta, para la versión de la tienda)
 import sharp from 'sharp';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const SRC = 'assets-src/logo.jpg';
 const RES = 'android/app/src/main/res';
 const BG = '#121a24';
+const release = process.argv.includes('--release');
+const version = JSON.parse(readFileSync('package.json', 'utf8')).version.split('.').slice(0, 2).join('.');
+const LABEL = `APK ${version}`;
+const RIBBON = '#c62828';
+
+/** La cinta con el texto, como imagen del tamaño del lienzo: `w` x `h` en dp, centrada en horizontal y con su centro a `cy` dp de arriba. */
+function ribbon(canvasDp, k, w, h, cy) {
+  const px = (dp) => Math.round(dp * k * 100) / 100;
+  const size = Math.round(canvasDp * k);
+  return Buffer.from(
+    `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">` +
+      `<rect x="${px((canvasDp - w) / 2)}" y="${px(cy - h / 2)}" width="${px(w)}" height="${px(h)}" rx="${px(h * 0.25)}" fill="${RIBBON}"/>` +
+      `<text x="${size / 2}" y="${px(cy + h * 0.2)}" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="700" ` +
+      `font-size="${px(h * 0.6)}" fill="#fff" textLength="${px(w * 0.88)}" lengthAdjust="spacingAndGlyphs">${LABEL}</text></svg>`,
+  );
+}
+
 // dp de cada densidad: mdpi 1x, hdpi 1,5x, xhdpi 2x, xxhdpi 3x, xxxhdpi 4x.
 const DENSITIES = { mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 };
 
@@ -22,8 +41,9 @@ for (const [name, k] of Object.entries(DENSITIES)) {
   // Adaptable: lienzo de 108 dp; la zona segura es un círculo de 66 dp, el emblema ocupa 69 dp.
   const canvas = Math.round(108 * k);
   const inner = Math.round(69 * k);
+  // La cinta va abajo, dentro del círculo visible de 72 dp del lanzador (44 dp de ancho a 76 dp del borde de arriba).
   await sharp({ create: { width: canvas, height: canvas, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-    .composite([{ input: await emblem(inner), gravity: 'center' }])
+    .composite([{ input: await emblem(inner), gravity: 'center' }, ...(release ? [] : [{ input: ribbon(108, k, 44, 13, 76) }])])
     .png()
     .toFile(`${dir}/ic_launcher_foreground.png`);
 
@@ -31,13 +51,15 @@ for (const [name, k] of Object.entries(DENSITIES)) {
   const size = Math.round(48 * k);
   const rounded = Buffer.from(`<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${Math.round(size * 0.22)}"/></svg>`);
   const square = await sharp({ create: { width: size, height: size, channels: 4, background: BG } })
-    .composite([{ input: await emblem(Math.round(size * 0.8)), gravity: 'center' }])
+    .composite([{ input: await emblem(Math.round(size * 0.8)), gravity: 'center' }, ...(release ? [] : [{ input: ribbon(48, k, 40, 11, 40) }])])
     .png()
     .toBuffer();
   await sharp(square).composite([{ input: rounded, blend: 'dest-in' }]).png().toFile(`${dir}/ic_launcher.png`);
 
   // Clásico redondo: el emblema ocupa todo el círculo.
-  await sharp(await emblem(size)).toFile(`${dir}/ic_launcher_round.png`);
+  await sharp(await emblem(size))
+    .composite(release ? [] : [{ input: ribbon(48, k, 32, 10, 37) }])
+    .toFile(`${dir}/ic_launcher_round.png`);
 }
 
 // Color de fondo del ícono adaptable.
