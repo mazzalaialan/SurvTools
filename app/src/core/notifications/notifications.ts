@@ -212,6 +212,7 @@ export async function deleteServerAccount(): Promise<boolean> {
  * dispositivo: el token de FCM de la app nativa cambia de vez en cuando (Firebase lo renueva) y hay que avisarle al servidor.
  */
 export async function syncPushAlerts(subscription?: unknown): Promise<void> {
+  void notificationBackend().refreshDaily?.();
   const { push } = await readNotificationState();
   if (!push || !navigator.onLine) return;
   const alerts = (await db.alertIndex.toArray()).map(({ lotId, itemName, kind, dueDate, notifyFrom }) => ({

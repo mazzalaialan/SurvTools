@@ -15,6 +15,8 @@ export interface NotificationState {
   /** Último día en que el aviso local (sin servidor) notificó o revisó. */
   lastLocalNotifiedDay: string | null;
   push: PushRegistration | null;
+  /** App nativa: los avisos diarios sin servidor ya programados (día y momento), para saber cuáles ya sonaron. */
+  localPlan: { day: string; at: number }[];
   /**
    * Cuentas que hay que borrar del servidor y todavía no lo confirmó (se
    * desactivaron las notificaciones o se cambió de servidor sin conexión).
@@ -24,7 +26,7 @@ export interface NotificationState {
 }
 
 const KEY = 'notifications';
-const EMPTY: NotificationState = { lastLocalNotifiedDay: null, push: null, pendingDeletes: [] };
+const EMPTY: NotificationState = { lastLocalNotifiedDay: null, push: null, localPlan: [], pendingDeletes: [] };
 
 export async function readNotificationState(): Promise<NotificationState> {
   return { ...EMPTY, ...((await db.meta.get(KEY))?.value as Partial<NotificationState> | undefined) };

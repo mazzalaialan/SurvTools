@@ -33,6 +33,8 @@ export interface NotificationBackend {
   /** Registra el aviso diario sin servidor; `true` si quedó activo (el navegador puede negarlo). */
   registerDaily(): Promise<boolean>;
   unregisterDaily(): Promise<void>;
+  /** Opcional: vuelve a armar el aviso diario con el inventario y los ajustes actuales (la nativa lo programa de antemano). */
+  refreshDaily?(): Promise<void>;
   /**
    * Lo que el servidor necesita para mandar un push a este dispositivo (en la web, la suscripción de Web Push; en la nativa, el token de
    * FCM). `null` si el dispositivo no tiene push. La clave pública VAPID solo la usa la implementación web; `fcm` dice si el servidor

@@ -5,14 +5,14 @@ import { setNotificationBackend, type LocalNotification, type NotificationBacken
 import { useSettings } from '@/core/settings/settings';
 import { genericPushNotification, testNotification } from './format';
 import { syncPushAlerts } from './notifications';
+import { cancelDaily, refreshNativeDaily } from './nativeDaily';
 
 /**
  * Notificaciones en la app nativa (Capacitor): avisos locales con `@capacitor/local-notifications` y push con Firebase Cloud Messaging
  * (`@capacitor/push-notifications`). Reemplaza al backend web (service worker) y se instala al arrancar la app (`startNativeNotifications`).
  * Ver docs/PENDIENTES.md, «App nativa».
  *
- * Qué NO está todavía: el aviso diario sin servidor (`registerDaily` devuelve `false`: en la web lo arma el service worker con Periodic
- * Background Sync y en la nativa haría falta programar avisos locales con el contenido calculado) y el envío por APNs de iPhone.
+ * El aviso diario sin servidor se programa de antemano con avisos locales (nativeDaily.ts). Falta el envío por APNs de iPhone.
  */
 
 type Permission = 'granted' | 'denied' | 'default';
@@ -42,8 +42,10 @@ export const nativeBackend: NotificationBackend = {
     permission = toPermission((await LocalNotifications.requestPermissions()).display);
     return permission === 'granted';
   },
-  registerDaily: async () => false,
-  unregisterDaily: async () => undefined,
+  // Los avisos diarios se programan de antemano (ver nativeDaily.ts): se arman al activar y se renuevan al abrir la app o cambiar el inventario.
+  registerDaily: async () => (await refreshNativeDaily().catch(() => false)) || true,
+  unregisterDaily: () => cancelDaily(),
+  refreshDaily: async () => void (await refreshNativeDaily().catch(() => false)),
   async subscribePush({ fcm }) {
     if (!fcm) return null; // el servidor no tiene Firebase configurado
     return new Promise((resolve) => {
@@ -101,6 +103,7 @@ export async function startNativeNotifications(): Promise<void> {
   started = true;
   setNotificationBackend(nativeBackend);
   await refreshNativePermission().catch(() => undefined);
+  void refreshNativeDaily().catch(() => undefined);
   // Con la app abierta en pantalla Android NO muestra los avisos de FCM: se los entrega a la app y la app los muestra, en su idioma.
   void PushNotifications.addListener('pushNotificationReceived', (n) => {
     const type = (n.data as { type?: string } | undefined)?.type;
