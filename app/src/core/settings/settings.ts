@@ -20,6 +20,8 @@ export interface Settings {
    * con íconos negros (ver core/systemBars.ts). Por defecto 1 (el rojo más oscuro). Android solo deja íconos blancos o negros, no rojos.
    */
   systemBarRed: number;
+  /** App nativa: mostrar la barra de estado de Android (hora, batería, señal). Apagado la oculta (se ve al deslizar desde arriba). */
+  showStatusBar: boolean;
   /**
    * App nativa: oculta la app en «recientes» de Android (la miniatura mostraría fichas médicas, documentos o contactos) y evita las capturas de
    * pantalla (`FLAG_SECURE`). Por defecto apagado: quien lo necesita lo activa en Ajustes → Seguridad.
@@ -250,6 +252,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: detectLanguage(),
   theme: 'dark',
   systemBarRed: 1,
+  showStatusBar: true,
   hideInRecents: false,
   firstUseAt: null,
   backupReminderSnoozedUntil: null,

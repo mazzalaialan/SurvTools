@@ -1,4 +1,4 @@
-import { registerPlugin, SystemBars, SystemBarsStyle } from '@capacitor/core';
+import { registerPlugin, SystemBars, SystemBarsStyle, SystemBarType } from '@capacitor/core';
 import { useSettings } from '@/core/settings/settings';
 
 /**
@@ -86,6 +86,17 @@ export async function syncSystemBars(): Promise<void> {
   }
 }
 
+/** Muestra u oculta la barra de estado según el ajuste (oculta se ve un instante al deslizar desde arriba). */
+export async function syncStatusBar(): Promise<void> {
+  try {
+    const bar = SystemBarType.StatusBar;
+    if (useSettings.getState().settings.showStatusBar) await SystemBars.show({ bar });
+    else await SystemBars.hide({ bar });
+  } catch {
+    /* sin el plugin (la web) o todavía sin ventana: se reintenta al volver a la app */
+  }
+}
+
 /** Oculta la app en «recientes» y evita las capturas de pantalla (o lo deja como antes), según el ajuste. */
 export async function syncSecureWindow(): Promise<void> {
   try {
@@ -109,11 +120,17 @@ export function startSystemBars(): void {
   useSettings.subscribe((s, prev) => {
     if (s.settings.theme !== prev.settings.theme || s.settings.systemBarRed !== prev.settings.systemBarRed) soon();
     if (s.settings.hideInRecents !== prev.settings.hideInRecents) void syncSecureWindow();
+    if (s.settings.showStatusBar !== prev.settings.showStatusBar) void syncStatusBar();
   });
   void syncSecureWindow();
+  void syncStatusBar();
   new MutationObserver(soon).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
   window.addEventListener('hashchange', soon);
-  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && soon());
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    soon();
+    void syncStatusBar();
+  });
   window.addEventListener('load', soon);
   soon();
   // La primera pantalla se dibuja después del arranque: se reintenta un par de veces.

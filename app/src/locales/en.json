@@ -1392,6 +1392,9 @@
     "checking": "Checking…",
     "upToDate": "You have the latest version.",
     "error": "Couldn't check (offline?).",
+    "isApk": "You installed this app from an APK file, so it does not update itself: when there is a new version, download the APK and install it over this one. Your data is kept.",
+    "apkNewVersion": "There is a new version of the app: {{version}}",
+    "apkHowTo": "Download the APK and install it over this version; your data is kept.",
     "check": "Check for updates"
   },
   "fullscreen": {
@@ -2764,6 +2767,8 @@
     "dlRemove": "Remove from the list",
     "hideInRecents": "Hide the app in recent apps and block screenshots",
     "hideInRecentsHint": "The recent apps list of Android does not show the app content (medical records, documents, contacts) and screenshots are blocked while it is open. Off by default.",
+    "showStatusBar": "Show the status bar",
+    "showStatusBarHint": "The top one, with the time, battery and signal. If you hide it, it shows for a moment when you swipe down from the top edge.",
     "systemBarRed": "System bars color (night red)",
     "systemBarRedOff": "Almost black, with white icons",
     "systemBarRedLevel": "Red {{level}} of 10 ({{hex}}), with black icons",

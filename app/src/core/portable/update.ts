@@ -1,9 +1,11 @@
 import { create } from 'zustand';
+import { isNativePlatform } from '@/core/platform';
 
 /**
  * Aviso de versión nueva para el paquete portable (ARQUITECTURA §13). La
  * versión de internet se actualiza sola; el paquete es una copia fija, así que
- * con conexión consulta la última Release de GitHub (una vez por día).
+ * con conexión consulta la última Release de GitHub (una vez por día). Lo mismo vale para la app nativa instalada a mano con un APK: la web que
+ * lleva dentro no se actualiza sola, así que también consulta la última Release (y ofrece el `.apk` si la Release lo trae).
  */
 
 const REPO = 'mazzalaialan/SurvTools';
@@ -16,6 +18,8 @@ export interface LatestRelease {
   version: string;
   /** Enlace directo al .zip del paquete, o a la página de la versión. */
   downloadUrl: string;
+  /** Enlace directo al `.apk` de la Release, si lo trae; si no, la página de la versión. */
+  apkUrl: string;
 }
 
 interface Stored {
@@ -39,7 +43,9 @@ export function parseRelease(json: unknown): LatestRelease | null {
   const r = json as { tag_name?: string; html_url?: string; assets?: { name?: string; browser_download_url?: string }[] };
   if (!r?.tag_name) return null;
   const zip = r.assets?.find((a) => a.name?.startsWith('vikarg-survival-portable-') && a.name.endsWith('.zip'));
-  return { version: r.tag_name.replace(/^v/, ''), downloadUrl: zip?.browser_download_url ?? r.html_url ?? RELEASES_URL };
+  const apk = r.assets?.find((a) => a.name?.toLowerCase().endsWith('.apk'));
+  const page = r.html_url ?? RELEASES_URL;
+  return { version: r.tag_name.replace(/^v/, ''), downloadUrl: zip?.browser_download_url ?? page, apkUrl: apk?.browser_download_url ?? page };
 }
 
 function readStored(): Stored {
@@ -72,6 +78,8 @@ async function detectPortable(): Promise<boolean> {
 
 interface PortableUpdateState {
   portable: boolean;
+  /** App nativa instalada con un APK (no por una tienda): también busca versiones nuevas. */
+  apk: boolean;
   latest: LatestRelease | null;
   dismissed: string | null;
   checking: boolean;
@@ -84,6 +92,7 @@ interface PortableUpdateState {
 
 export const usePortableUpdate = create<PortableUpdateState>((set, get) => ({
   portable: false,
+  apk: false,
   latest: null,
   dismissed: null,
   checking: false,
@@ -93,13 +102,14 @@ export const usePortableUpdate = create<PortableUpdateState>((set, get) => ({
   async init() {
     const stored = readStored();
     set({ latest: stored.latest, dismissed: stored.dismissed, checkedAt: stored.checkedAt });
-    if (!(await detectPortable())) return;
-    set({ portable: true });
+    if (isNativePlatform()) set({ apk: true });
+    else if (await detectPortable()) set({ portable: true });
+    else return;
     await get().check();
   },
 
   async check(force = false) {
-    if (!get().portable || !navigator.onLine) return;
+    if (!(get().portable || get().apk) || !navigator.onLine) return;
     if (!force && Date.now() - get().checkedAt < CHECK_EVERY_MS) return;
     set({ checking: true, error: false });
     try {

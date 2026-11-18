@@ -1392,6 +1392,9 @@
     "checking": "Buscando…",
     "upToDate": "Tenés la última versión.",
     "error": "No se pudo consultar (¿sin conexión?).",
+    "isApk": "Instalaste esta app con un archivo APK, así que no se actualiza sola: cuando haya una versión nueva, descargá el APK e instalalo encima. Tus datos se mantienen.",
+    "apkNewVersion": "Hay una versión nueva de la app: {{version}}",
+    "apkHowTo": "Descargá el APK e instalalo encima de esta versión; tus datos se mantienen.",
     "check": "Buscar actualizaciones"
   },
   "fullscreen": {
@@ -2764,6 +2767,8 @@
     "dlRemove": "Quitar de la lista",
     "hideInRecents": "Ocultar la app en «recientes» y evitar capturas de pantalla",
     "hideInRecentsHint": "En la lista de apps recientes de Android no se ve el contenido de la app (fichas médicas, documentos, contactos) y no se pueden sacar capturas mientras está abierta. Apagado por defecto.",
+    "showStatusBar": "Mostrar la barra de estado",
+    "showStatusBarHint": "La de arriba, con la hora, la batería y la señal. Si la ocultás, se ve un momento al deslizar desde el borde de arriba.",
     "systemBarRed": "Color de las barras del sistema (rojo nocturno)",
     "systemBarRedOff": "Casi negras, con íconos blancos",
     "systemBarRedLevel": "Rojo {{level}} de 10 ({{hex}}), con íconos negros",

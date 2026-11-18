@@ -75,6 +75,15 @@ export function SettingsPage() {
         />
         {settings.theme === 'saver' && <p className="hint" data-testid="saver-hint">{t('settings.saverHint')}</p>}
         <RedScheduleFields settings={settings} onSave={update} />
+        {isNativePlatform() && (
+          <label className="check" data-testid="show-status-bar">
+            <input type="checkbox" checked={settings.showStatusBar} onChange={(e) => void update({ showStatusBar: e.target.checked })} />
+            <span>
+              {t('settings.showStatusBar')}
+              <span className="hint" style={{ display: 'block' }}>{t('settings.showStatusBarHint')}</span>
+            </span>
+          </label>
+        )}
         {settings.theme === 'red' && isNativePlatform() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
         <Segmented
           label={t('settings.units')}
@@ -223,20 +232,20 @@ function BackupSection() {
 /** Solo en el paquete portable: buscar versiones nuevas a mano. */
 export function PortableUpdateCheck() {
   const { t } = useTranslation();
-  const { portable, latest, checking, error, checkedAt, check } = usePortableUpdate();
-  if (!portable) return null;
+  const { portable, apk, latest, checking, error, checkedAt, check } = usePortableUpdate();
+  if (!portable && !apk) return null;
   const newer = newerRelease(latest, __APP_VERSION__);
   return (
     <div className="stack" style={{ gap: 8 }}>
-      <p className="hint" style={{ margin: 0 }}>{t('portable.isPortable')}</p>
+      <p className="hint" style={{ margin: 0 }}>{t(apk ? 'portable.isApk' : 'portable.isPortable')}</p>
       <p style={{ margin: 0 }} data-testid="portable-status">
         {checking ? (
           t('portable.checking')
         ) : error ? (
           t('portable.error')
         ) : newer ? (
-          <a href={newer.downloadUrl} target="_blank" rel="noreferrer">
-            {t('portable.newVersion', { version: newer.version })}
+          <a href={apk ? newer.apkUrl : newer.downloadUrl} target="_blank" rel="noreferrer">
+            {t(apk ? 'portable.apkNewVersion' : 'portable.newVersion', { version: newer.version })}
           </a>
         ) : checkedAt ? (
           t('portable.upToDate')
