@@ -6,6 +6,7 @@ import { speak, stopSpeaking, useSpeechVoice } from '@/core/speech/speech';
 import { useSettings } from '@/core/settings/settings';
 import { useLibrary } from '@/modules/library/store';
 import { anchorsUsing } from './anchors';
+import { useBookImage } from '@/modules/library/useBookImage';
 import { findKnotRefs, isKnotBook, type KnotRef } from './libraryRefs';
 import { creditFor, KNOT_BY_ID, knotImages, RISKY_USES, type Knot } from './knots';
 import { tl } from './KnotGuidePage';
@@ -81,6 +82,12 @@ function Practice({ knot, onClose }: { knot: Knot; onClose: () => void }) {
 
 /** Ficha de un nudo (ARQUITECTURA §10.2). */
 /** Dónde aparece el nudo en los libros de nudos bajados (sin conexión). */
+/** La figura de un libro bajado, leída de lo guardado en el dispositivo (sin service worker). */
+function KnotRefImage({ bookId, path }: { bookId: string; path: string | null }) {
+  const src = useBookImage(bookId, path);
+  return src ? <img src={src} alt="" loading="lazy" className="knot-ref-img" /> : null;
+}
+
 function LibraryRefs({ knot }: { knot: Knot }) {
   const { t } = useTranslation();
   const installed = useLibrary((s) => s.installed);
@@ -120,7 +127,7 @@ function LibraryRefs({ knot }: { knot: Knot }) {
         <ul className="list knot-refs">
           {refs.map((r) => (
             <li key={`${r.bookId}-${r.file}`} className="knot-ref">
-              {r.image && <img src={r.image} alt="" loading="lazy" className="knot-ref-img" />}
+              <KnotRefImage bookId={r.bookId} path={r.image} />
               <Link className="list-main" to={`/library/read/${r.bookId}?${new URLSearchParams({ cap: r.file, q: r.term }).toString()}`}>
                 <span className="list-title">
                   <BookOpen size={16} aria-hidden /> {r.bookTitle}

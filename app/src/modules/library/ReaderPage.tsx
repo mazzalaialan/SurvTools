@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { AArrowDown, AArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
-import { bookUrl } from './books';
+import { ObjectUrls, chapterHtml } from './bookAssets';
 import { useLibrary } from './store';
 
 /**
@@ -30,29 +30,7 @@ function readerCss(fontPct: number): string {
   `;
 }
 
-/** Visor de un libro bajado, sin conexión. */
-/**
- * Los capítulos los sirve el service worker desde lo guardado en el dispositivo:
- * hasta que controla la página (primera visita, recién instalado) el marco quedaría
- * vacío. Se espera a que tome el control, como mucho 10 s (sin service worker, por
- * ejemplo en desarrollo, se intenta igual).
- */
-function useServiceWorkerControl(): boolean {
-  const sw = typeof navigator !== 'undefined' ? navigator.serviceWorker : undefined;
-  const [ready, setReady] = useState(() => !sw || !!sw.controller);
-  useEffect(() => {
-    if (ready || !sw) return;
-    const on = () => setReady(true);
-    sw.addEventListener('controllerchange', on);
-    const timer = setTimeout(on, 10_000);
-    return () => {
-      sw.removeEventListener('controllerchange', on);
-      clearTimeout(timer);
-    };
-  }, [ready, sw]);
-  return ready;
-}
-
+/** Visor de un libro bajado, sin conexión. El capítulo se arma desde lo guardado en el dispositivo (`bookAssets.ts`) y se muestra con `srcdoc`. */
 export function ReaderPage() {
   const { id = '' } = useParams();
   const [params, setParams] = useSearchParams();
@@ -63,10 +41,32 @@ export function ReaderPage() {
   const fontPct = useSettings((s) => s.settings.readerFontPct);
   const update = useSettings((s) => s.update);
   const frame = useRef<HTMLIFrameElement>(null);
-  const swReady = useServiceWorkerControl();
+  const [html, setHtml] = useState<string | null>(null);
+  const [missing, setMissing] = useState(false);
+  const fontRef = useRef(fontPct);
+  fontRef.current = fontPct;
   const chapters = book?.chapters ?? [];
   const file = params.get('cap') ?? chapters[0]?.file ?? 'index.html';
   const idx = Math.max(0, chapters.findIndex((c) => c.file === file));
+
+  // Cada capítulo se arma al abrirlo; las direcciones de sus imágenes se liberan al cambiar de capítulo o salir.
+  const bookId = book?.id;
+  useEffect(() => {
+    if (!bookId) return;
+    let alive = true;
+    const urls = new ObjectUrls();
+    setHtml(null);
+    setMissing(false);
+    void chapterHtml(bookId, file, readerCss(fontRef.current), urls).then((h) => {
+      if (!alive) return;
+      if (h === null) setMissing(true);
+      else setHtml(h);
+    });
+    return () => {
+      alive = false;
+      urls.revokeAll();
+    };
+  }, [bookId, file]);
 
   function style() {
     const doc = frame.current?.contentDocument;
@@ -89,10 +89,25 @@ export function ReaderPage() {
     // Los enlaces del índice del libro abren el capítulo en el visor (y quedan en el historial de la app).
     doc.querySelectorAll('a[href]').forEach((a) => {
       const href = a.getAttribute('href')!;
+      if ((a as HTMLElement).dataset.vkLink) return;
       if (/^cap-\d+\.html|^index\.html/.test(href)) {
+        (a as HTMLElement).dataset.vkLink = '1';
         a.addEventListener('click', (e) => {
           e.preventDefault();
           setParams({ cap: href.split('#')[0]! });
+        });
+      } else if (href.startsWith('#')) {
+        // Notas y referencias dentro del capítulo: en un documento incrustado el «#» no siempre se queda en el marco.
+        (a as HTMLElement).dataset.vkLink = '1';
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          let id = href.slice(1);
+          try {
+            id = decodeURIComponent(id);
+          } catch {
+            /* se usa tal cual */
+          }
+          (doc.getElementById(id) ?? doc.getElementsByName(id)[0])?.scrollIntoView();
         });
       }
     });
@@ -124,22 +139,22 @@ export function ReaderPage() {
           <AArrowUp size={20} />
         </button>
       </div>
-      {!swReady ? (
-        <p className="hint reader-frame" role="status" data-testid="reader-wait">
-          {t('library.preparing')}
+      {html === null ? (
+        <p className="hint reader-frame" role="status" data-testid={missing ? 'reader-missing' : 'reader-wait'}>
+          {missing ? t('library.missingBook') : t('library.preparing')}
         </p>
       ) : (
-      <iframe
-        ref={frame}
-        key={file}
-        className="reader-frame"
-        title={book.title}
-        src={bookUrl(book.id, file)}
-        // Sin scripts: solo lectura. "allow-same-origin" deja que lo sirva el service worker y aplicar el estilo.
-        sandbox="allow-same-origin"
-        onLoad={style}
-        data-testid="reader-frame"
-      />
+        <iframe
+          ref={frame}
+          key={file}
+          className="reader-frame"
+          title={book.title}
+          srcDoc={html}
+          // Sin scripts: solo lectura. «allow-same-origin» deja aplicar el estilo y resaltar lo buscado desde la app.
+          sandbox="allow-same-origin"
+          onLoad={style}
+          data-testid="reader-frame"
+        />
       )}
       {chapters.length > 1 && (
         <div className="reader-nav">

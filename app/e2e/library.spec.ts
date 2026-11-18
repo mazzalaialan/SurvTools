@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { waitForServiceWorker } from './serviceWorker';
 
 const PASSWORD = 'prueba-segura-123';
 const SERVER = 'http://127.0.0.1:8099';
@@ -64,6 +65,8 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-61-reader.png` });
 
   // Sin conexión: el libro con derechos se lee igual (está descifrado en el dispositivo), también tras recargar.
+  // La app sin conexión depende del service worker (precache): se espera a que esté listo antes de cortar la red.
+  await waitForServiceWorker(page);
   await context.setOffline(true);
   await page.goto('/#/library/read/enciclopedia');
   await page.reload();
@@ -85,12 +88,16 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
   const refs = page.getByTestId('knot-library');
   await expect(refs).toContainText('Manual de montañismo del Ejército');
   await expect(refs).toContainText('El nudo Prusik sirve para subir por una cuerda');
-  await expect(refs.locator('img')).toHaveAttribute('src', /library\/books\/montanismo\/img\/prusik\.webp$/);
+  // La figura sale de lo guardado en el dispositivo (dirección blob:, sin service worker).
+  await expect(refs.locator('img')).toHaveAttribute('src', /^blob:/);
   // La imagen carga en diferido: la sección queda abajo de los pasos.
   await refs.locator('img').scrollIntoViewIfNeeded();
   await expect.poll(() => refs.locator('img').evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);
   await refs.getByRole('link').first().click();
   await expect(frame.locator('.reader-hit')).toContainText('Prusik');
+  // Las imágenes del capítulo también salen del dispositivo y cargan (rutas relativas del libro reescritas).
+  await expect(frame.locator('img').first()).toHaveAttribute('src', /^blob:/);
+  await expect.poll(() => frame.locator('img').first().evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);
   // Un nudo que no está en esos libros.
   await page.goto('/#/knots/guide/cornamusa');
   await expect(page.getByTestId('knot-library')).toContainText('No aparece en los 2 libros de nudos');

@@ -146,25 +146,7 @@ self.addEventListener('install', (event) => event.waitUntil(onInstall(event)));
 // Al activarse se borra lo viejo del precache (solo entonces: antes la versión vieja lo necesita).
 self.addEventListener('activate', (event) => event.waitUntil(precache.activate(event)));
 
-// Libros bajados de la biblioteca: solo desde el dispositivo (se registran antes que la navegación,
-// porque el visor abre cada capítulo como página).
-const LIBRARY_CACHE = 'vikarg-library-books';
-const LIBRARY_PREFIX = new URL('library/books/', self.registration.scope).pathname;
-registerRoute(
-  ({ url }) => url.origin === self.location.origin && url.pathname.startsWith(LIBRARY_PREFIX),
-  async ({ url }) =>
-    (await caches.match(url.origin + url.pathname, { cacheName: LIBRARY_CACHE })) ??
-    new Response('Este libro no está en el dispositivo.', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } }),
-);
-
 registerRoute(new NavigationRoute(precache.createHandlerBoundToURL('index.html')));
-
-// Elevación de los mapas offline: primero lo descargado por zona (curvas de nivel sin conexión).
-const MAP_CACHE = 'vikarg-maps';
-registerRoute(
-  ({ url }) => url.hostname === 's3.amazonaws.com' && url.pathname.startsWith('/elevation-tiles-prod/'),
-  async ({ request }) => (await caches.match(request.url, { cacheName: MAP_CACHE })) ?? fetch(request),
-);
 
 // La app pide activar la versión nueva cuando el usuario toca "Actualizar".
 self.addEventListener('message', (event) => {

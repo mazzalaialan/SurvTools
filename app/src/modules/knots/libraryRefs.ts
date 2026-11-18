@@ -1,3 +1,4 @@
+import { resolveAssetPath } from '@/modules/library/bookAssets';
 import { BOOKS_CACHE, bookText, bookUrl, type InstalledBook } from '@/modules/library/books';
 import type { Knot } from './knots';
 
@@ -16,7 +17,7 @@ export interface KnotRef {
   snippet: string;
   /** Lo que se encontró (para resaltarlo en el lector). */
   term: string;
-  /** Figura cercana a la mención (URL del libro guardado), si hay. */
+  /** Figura cercana a la mención: ruta dentro del libro guardado (se muestra con `useBookImage`), si hay. */
   image: string | null;
 }
 
@@ -81,8 +82,7 @@ async function nearbyImage(bookId: string, file: string, term: string): Promise<
   const img = near.find((el) => el.tagName === 'IMG' && el.getAttribute('src')) as HTMLImageElement | undefined;
   const src = img?.getAttribute('src');
   if (!src || /^(https?:|data:)/.test(src)) return null;
-  const dir = file.includes('/') ? file.slice(0, file.lastIndexOf('/') + 1) : '';
-  return bookUrl(bookId, (dir + src).replace(/^\.\//, ''));
+  return resolveAssetPath(file, src);
 }
 
 /** Referencias del nudo en los libros de nudos bajados: hasta `perBook` por libro y `max` en total. */

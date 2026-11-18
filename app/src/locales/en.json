@@ -3347,6 +3347,7 @@
     "chapter": "Chapter",
     "chapterOf": "{{n}} of {{total}}",
     "preparing": "Getting the reader ready…",
+    "missingBook": "This book is not on the device. Download it again from the library.",
     "smaller": "Smaller text",
     "bigger": "Larger text",
     "allBooks": "All books",

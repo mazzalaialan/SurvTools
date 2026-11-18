@@ -3347,6 +3347,7 @@
     "chapter": "Capítulo",
     "chapterOf": "{{n}} de {{total}}",
     "preparing": "Preparando el lector…",
+    "missingBook": "Este libro no está en el dispositivo. Volvé a bajarlo desde la biblioteca.",
     "smaller": "Letra más chica",
     "bigger": "Letra más grande",
     "allBooks": "Todos los libros",
