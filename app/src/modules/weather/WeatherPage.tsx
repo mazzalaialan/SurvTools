@@ -4,6 +4,7 @@ import { OfficialWeatherNotice } from '@/ui/OfficialWeatherNotice';
 import { Link } from 'react-router-dom';
 import { ArrowDown, ArrowUp, Droplets, Gauge, Minus, RefreshCw, TriangleAlert, Wind } from 'lucide-react';
 import { cardinalOf } from '@/core/geo/geo';
+import { notificationBackend } from '@/core/notifications/backend';
 import { readNotificationState } from '@/core/notifications/state';
 import { useSettings } from '@/core/settings/settings';
 import type { UnitSystem } from '@/core/units/units';
@@ -238,7 +239,9 @@ function RainAlertsSettings() {
   const waypoints = useWaypoints((s) => s.waypoints);
   const statuses = useRainWatch((s) => s.statuses);
   const watched = [...waypoints.values()].filter((w) => w.rainAlerts);
-  const permission = 'Notification' in window ? Notification.permission : 'denied';
+  // El permiso sale de la capa de notificaciones: en la app nativa `Notification` no existe en el WebView.
+  const backend = notificationBackend();
+  const permission = backend.supported() ? backend.permission() : 'denied';
   const notificationsEnabled = useSettings((s) => s.settings.notificationsEnabled);
   // Con la app cerrada avisa el servidor: hace falta tenerlo registrado (Ajustes → Notificaciones).
   const [hasServer, setHasServer] = useState<boolean | null>(null);

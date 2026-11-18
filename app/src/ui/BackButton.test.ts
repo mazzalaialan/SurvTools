@@ -5,7 +5,8 @@ import { parentOf, ROUTE_PATHS } from './BackButton';
 describe('volver', () => {
   it('la lista de rutas es la misma que la de la app', () => {
     const app = readFileSync(new URL('../app/App.tsx', import.meta.url), 'utf8');
-    const paths = [...app.matchAll(/path: '([^']+)'/g)].map((m) => m[1]);
+    // La ruta comodín («*», las direcciones que no existen vuelven al Inicio) no es una pantalla.
+    const paths = [...app.matchAll(/path: '([^']+)'/g)].map((m) => m[1]).filter((p) => p !== '*');
     expect([...paths].sort()).toEqual([...ROUTE_PATHS].sort());
   });
 

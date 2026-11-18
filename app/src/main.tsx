@@ -27,6 +27,8 @@ async function bootstrap() {
   // bóveda: al reabrir, una grabación que se cortó recupera del registro nativo lo que quedó pendiente.
   if (isNativePlatform()) {
     (await import('./core/geo/nativeLocation')).startNativeLocation();
+    // El WebView de Android no trae `speechSynthesis`: la voz de la app (kilómetros, entrenamiento, «Mi ubicación») pasa a hablar con el motor del teléfono.
+    (await import('./core/speech/nativeSpeech')).installNativeSpeech();
     // El altímetro puede usar el barómetro del teléfono (los navegadores no lo exponen).
     (await import('./core/sensors/nativeBarometer')).startNativeBarometer();
     // El botón «atrás» de Android: cierra diálogos, vuelve atrás y, en la primera pantalla, minimiza en vez de cerrar.
