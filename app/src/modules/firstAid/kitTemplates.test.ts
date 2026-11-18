@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CATALOG, GROUPS, LEVELS, SCENARIOS, buildList, matchesCatalog } from './kitTemplates';
+import { CATALOG, GROUPS, LEVELS, SCENARIOS, buildList, matchesCatalog, setsFor } from './kitTemplates';
 
 describe('plantillas de botiquín', () => {
   it('todo lo que citan los escenarios existe en el catálogo, y todo artículo tiene grupo, nota y los dos idiomas', () => {
@@ -62,6 +62,14 @@ describe('plantillas de botiquín', () => {
     // Auto (4 personas de partida): hasta 4 personas, un juego; con 5 a 8, dos.
     expect(qty('car', 2, 'tourniquet')).toBe(qty('car', 4, 'tourniquet'));
     expect(qty('car', 8, 'tourniquet')).toBe(2 * qty('car', 4, 'tourniquet'));
+    // Un grupo grande no lleva un torniquete por persona: más allá de 4 juegos, uno más cada 20 personas.
+    expect(qty('bleeding', 4, 'tourniquet')).toBe(4);
+    expect(qty('bleeding', 20, 'tourniquet')).toBe(5);
+    expect(qty('bleeding', 50, 'tourniquet')).toBe(7);
+    expect(qty('car', 16, 'tourniquet')).toBe(4);
+    expect(qty('car', 20, 'tourniquet')).toBe(5);
+    expect(setsFor(1, 1)).toBe(1);
+    expect(setsFor(100, 4)).toBe(4 + Math.ceil(84 / 20));
     // Todos los escenarios cambian algo al duplicar la gente de partida.
     for (const sc of SCENARIOS) {
       const base = buildList(sc.id, 'advanced', sc.people, sc.days).reduce((a, l) => a + l.qty, 0);
