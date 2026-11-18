@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '@/core/db/db';
 import { useSettings } from '@/core/settings/settings';
-import { notificationBackend, setNotificationBackend, webBackend, type NotificationBackend } from './backend';
+import { canShowLocal, notificationBackend, setNotificationBackend, webBackend, type NotificationBackend } from './backend';
 import { deleteServerAccount, disableNotifications, enableNotifications, sendTestNotification, ServerError } from './notifications';
 import { readNotificationState, updateNotificationState } from './state';
 
@@ -25,7 +25,9 @@ function fakeBackend(over: Partial<NotificationBackend> = {}): NotificationBacke
       return { endpoint: 'https://push.example/abc', keys: { p256dh: 'p', auth: 'a' } };
     },
     unsubscribePush: note('unsubscribe', undefined),
-    showLocal: async (title: string) => void calls.push(`local:${title}`),
+    permission: () => 'granted',
+    showLocal: async (n) => void calls.push(`local:${n.title}`),
+    shownByTag: async () => null,
     ...over,
   };
 }
@@ -43,6 +45,15 @@ describe('notificaciones con una implementación intercambiable', () => {
   afterEach(() => {
     setNotificationBackend(previous);
     vi.unstubAllGlobals();
+  });
+
+  it('canShowLocal exige soporte y permiso concedido', () => {
+    setNotificationBackend(fakeBackend({ permission: () => 'granted' }));
+    expect(canShowLocal()).toBe(true);
+    setNotificationBackend(fakeBackend({ permission: () => 'denied' }));
+    expect(canShowLocal()).toBe(false);
+    setNotificationBackend(fakeBackend({ supported: () => false }));
+    expect(canShowLocal()).toBe(false);
   });
 
   it('por defecto es la implementación web', () => expect(notificationBackend()).toBe(webBackend));

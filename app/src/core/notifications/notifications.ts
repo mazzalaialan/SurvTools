@@ -244,7 +244,7 @@ export async function sendTestNotification(): Promise<'server' | 'local'> {
     if (res?.ok) return 'server';
   }
   const { title, body } = testNotification(useSettings.getState().settings.language);
-  await notificationBackend().showLocal(title, body);
+  await notificationBackend().showLocal({ title, body });
   return 'local';
 }
 

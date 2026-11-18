@@ -3,9 +3,31 @@
  * esta interfaz y no con el navegador. Hoy hay una sola implementación, la web (service worker, Web Push y Periodic Background Sync); en la
  * app nativa va a haber otra (Firebase Cloud Messaging y notificaciones locales de Capacitor, ver docs/PENDIENTES.md, «App nativa»).
  */
+/** Un aviso mostrado desde la propia app (la prueba, el altímetro, la lluvia, la hora límite de una salida). */
+export interface LocalNotification {
+  title: string;
+  body: string;
+  /** Un aviso con la misma etiqueta reemplaza al anterior en lugar de sumarse. */
+  tag?: string;
+  /** Pantalla que abre al tocarlo (por ejemplo `#/weather/forecast`). */
+  url?: string;
+  /** Sin sonido ni vibración (para poner al día un aviso ya mostrado). */
+  silent?: boolean;
+  /** Datos propios que viajan con el aviso y se leen después con `shownByTag`. */
+  data?: Record<string, unknown>;
+}
+
+/** Un aviso que ya está en la barra de notificaciones. */
+export interface ShownNotification {
+  data: unknown;
+  close(): void;
+}
+
 export interface NotificationBackend {
   /** ¿Este dispositivo puede mostrar notificaciones? */
   supported(): boolean;
+  /** Estado del permiso, sin pedirlo. */
+  permission(): 'granted' | 'denied' | 'default';
   /** Pide el permiso; `true` si quedó concedido. */
   requestPermission(): Promise<boolean>;
   /** Registra el aviso diario sin servidor; `true` si quedó activo (el navegador puede negarlo). */
@@ -18,7 +40,9 @@ export interface NotificationBackend {
   subscribePush(vapidPublicKey: string): Promise<unknown | null>;
   unsubscribePush(): Promise<void>;
   /** Muestra una notificación desde la propia app (prueba y avisos locales). */
-  showLocal(title: string, body: string): Promise<void>;
+  showLocal(n: LocalNotification): Promise<void>;
+  /** El aviso con esa etiqueta que está en la barra de notificaciones, si hay. */
+  shownByTag(tag: string): Promise<ShownNotification | null>;
 }
 
 const PERIODIC_SYNC_TAG = 'vikarg-alerts';
@@ -42,6 +66,7 @@ function base64UrlToBytes(s: string): Uint8Array<ArrayBuffer> {
  */
 export const webBackend: NotificationBackend = {
   supported: () => typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator,
+  permission: () => (typeof Notification === 'undefined' ? 'denied' : Notification.permission),
   async requestPermission() {
     return (await Notification.requestPermission()) === 'granted';
   },
@@ -71,11 +96,25 @@ export const webBackend: NotificationBackend = {
     const reg = await navigator.serviceWorker.ready;
     await (await reg.pushManager?.getSubscription())?.unsubscribe();
   },
-  async showLocal(title, body) {
+  async showLocal({ title, body, tag, url, silent, data }) {
     const reg = await navigator.serviceWorker.ready;
-    await reg.showNotification(title, { body, icon: 'brand/icon-192.png' });
+    await reg.showNotification(title, {
+      body,
+      tag,
+      silent,
+      icon: 'brand/icon-192.png',
+      badge: 'brand/icon-192.png',
+      data: { ...(url ? { url } : {}), ...data },
+    });
+  },
+  async shownByTag(tag) {
+    const reg = await navigator.serviceWorker.ready;
+    return (await reg.getNotifications({ tag }))[0] ?? null;
   },
 };
+
+/** ¿Se puede mostrar un aviso local ahora mismo (hay soporte y el permiso está concedido)? */
+export const canShowLocal = (): boolean => notificationBackend().supported() && notificationBackend().permission() === 'granted';
 
 let current: NotificationBackend = webBackend;
 

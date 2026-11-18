@@ -8,6 +8,7 @@ import { useWaypoints } from '@/modules/waypoints/store';
 import { CLEAR_AFTER_MS, nextEpisode, type RainEpisode } from './rainEpisode';
 import { fetchNowcast, rainOutlook, type RainOutlook } from './nowcast';
 import { hereIsDuplicate } from './samePlace';
+import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
 
 /**
  * Avisos de lluvia mientras la app está abierta: cada 15 minutos (60 con ahorro de batería) revisa "mi
@@ -46,12 +47,11 @@ export const useRainWatch = create<RainWatchState>((set, get) => ({
 /** Episodio de lluvia de cada lugar: no se repite el aviso hasta 3 horas sin lluvia, salvo que se intensifique (rainEpisode.ts). */
 const episodes = new Map<string, RainEpisode>();
 
-const canNotify = () => 'Notification' in window && Notification.permission === 'granted' && 'serviceWorker' in navigator;
+const canNotify = canShowLocal;
 
 async function systemNotify(title: string, body: string, tag: string, data: { state: 'raining' | 'soon'; startsAt: number | null }, silent = false) {
   if (!canNotify()) return;
-  const registration = await navigator.serviceWorker.ready;
-  await registration.showNotification(title, { body, tag, silent, icon: 'brand/icon-192.png', badge: 'brand/icon-192.png', data: { url: '#/weather/forecast', ...data } });
+  await notificationBackend().showLocal({ title, body, tag, silent, url: '#/weather/forecast', data });
 }
 
 /**
@@ -61,8 +61,7 @@ async function systemNotify(title: string, body: string, tag: string, data: { st
  */
 async function refreshShown(tag: string, label: string, outlook: RainOutlook, drySince: number | null, t: (key: string, o?: Record<string, unknown>) => string, lang: string, mmText: string) {
   if (!canNotify()) return;
-  const registration = await navigator.serviceWorker.ready;
-  const shown = (await registration.getNotifications({ tag }))[0];
+  const shown = await notificationBackend().shownByTag(tag);
   if (!shown) return;
   const data = (shown.data ?? {}) as { state?: string };
   if (outlook.state === 'dry') {

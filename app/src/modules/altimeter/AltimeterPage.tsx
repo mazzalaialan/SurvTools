@@ -12,6 +12,7 @@ import { Segmented } from '@/ui/Segmented';
 import { alarmReached, MAX_VERTICAL_ACCURACY, mapOffset, reachAlarm, smoothAltitude, type AltSample } from './altimeter';
 import { useAltimeter } from './store';
 import { Notice } from '@/ui/Notice';
+import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
 
 type AlarmKind = 'reach' | 'climb';
 
@@ -40,9 +41,8 @@ function beep() {
 }
 
 async function systemNotify(title: string, body: string) {
-  if (!('Notification' in window) || Notification.permission !== 'granted' || !('serviceWorker' in navigator)) return;
-  const registration = await navigator.serviceWorker.ready;
-  await registration.showNotification(title, { body, tag: 'altimeter', icon: 'brand/icon-192.png', data: { url: '#/orientation/altimeter' } });
+  if (!canShowLocal()) return;
+  await notificationBackend().showLocal({ title, body, tag: 'altimeter', url: '#/orientation/altimeter' });
 }
 
 /** Altura en el tiempo de lo que va del recorrido. */

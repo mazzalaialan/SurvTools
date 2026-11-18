@@ -4,15 +4,15 @@ import { Link } from 'react-router-dom';
 import { CircleCheck, TriangleAlert } from 'lucide-react';
 import { activeOuting, formatLeft } from './outingPlan';
 import { useTraining } from './store';
+import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
 
 /** Cada cuánto se repite la notificación con la hora límite vencida. */
 const RENOTIFY_MS = 15 * 60_000;
 
 async function notify(title: string, body: string, id: string) {
-  if (!('Notification' in window) || Notification.permission !== 'granted' || !('serviceWorker' in navigator)) return;
+  if (!canShowLocal()) return;
   try {
-    const registration = await navigator.serviceWorker.ready;
-    await registration.showNotification(title, { body, tag: `outing-plan-${id}`, icon: 'brand/icon-192.png', data: { url: `#/training/outings/${id}` } });
+    await notificationBackend().showLocal({ title, body, tag: `outing-plan-${id}`, url: `#/training/outings/${id}` });
   } catch {
     // Sin notificaciones: queda la barra.
   }

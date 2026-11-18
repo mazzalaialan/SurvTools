@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { isNativePlatform } from '@/core/platform';
 import { formatBytes, networkInfo } from '@/modules/emergency/countryDownload';
 
 /**
@@ -24,7 +25,17 @@ interface Progress {
   files: number;
 }
 
+/**
+ * En la app nativa (Capacitor) no hay service worker: los archivos de la app van dentro del paquete y las versiones nuevas llegan por la
+ * tienda (Google Play o App Store). El aviso «hay una versión nueva, bajar X MB» y el registro del service worker son solo de la web, y por
+ * eso viven en un componente aparte (el registro ocurre al montar `useRegisterSW`: en la nativa no se monta). La descarga diferida de datos
+ * (paquetes de países, mapas, libros) no depende de esto y se mantiene.
+ */
 export function UpdatePrompt({ visible }: { visible: boolean }) {
+  return isNativePlatform() ? null : <WebUpdatePrompt visible={visible} />;
+}
+
+function WebUpdatePrompt({ visible }: { visible: boolean }) {
   const { t, i18n } = useTranslation();
   const [downloading, setDownloading] = useState(false);
   const [later, setLater] = useState(false);

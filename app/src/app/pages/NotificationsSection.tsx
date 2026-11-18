@@ -12,6 +12,7 @@ import {
 } from '@/core/notifications/notifications';
 import { readNotificationState, type NotificationState } from '@/core/notifications/state';
 import { useSettings } from '@/core/settings/settings';
+import { notificationBackend } from '@/core/notifications/backend';
 
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
 
@@ -25,8 +26,8 @@ export function NotificationsSection() {
   const [busy, setBusy] = useState(false);
   const [testSent, setTestSent] = useState<'server' | 'local' | null>(null);
   const [deletePending, setDeletePending] = useState(false);
-  const supported = 'Notification' in window && 'serviceWorker' in navigator;
-  const denied = supported && Notification.permission === 'denied';
+  const supported = notificationBackend().supported();
+  const denied = supported && notificationBackend().permission() === 'denied';
 
   useEffect(() => {
     void readNotificationState().then(setState);
