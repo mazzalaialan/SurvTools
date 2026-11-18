@@ -326,3 +326,17 @@ Con una escuela entera detrás de una sola IP los valores de clima, calles y alt
 3. **SSH.** Solo con clave (`PasswordAuthentication no` en `/etc/ssh/sshd_config`, probando antes con la clave desde otra terminal) y, si no hace falta desde afuera, sin reenviar el puerto 22.
 4. **fail2ban para SSH.** `sudo apt install -y fail2ban`, un archivo `/etc/fail2ban/jail.d/sshd-local.conf` con `[sshd] enabled = true`, `backend = systemd`, `maxretry = 5`, `findtime = 10m`, `bantime = 1h` y `ignoreip` con la red local; `sudo systemctl enable --now fail2ban` y comprobar con `sudo fail2ban-client status sshd`.
 5. **Actualizaciones** del sistema y de las imágenes de Docker (`caddy`, `open-meteo`), y copia de seguridad del volumen `vikarg-data`.
+
+
+### Equipo en la zona DMZ del módem (2026-11-18)
+
+El equipo que aloja el servidor está en la **zona DMZ**: el proveedor no da acceso al módem y solo abre puertos así. Con DMZ, el módem manda **todo** el tráfico de internet al equipo, así que cada servicio que escucha en todas las interfaces queda público. Se encontró expuesto lo ajeno a VikArg (Ollama, Qdrant, Dozzle, administrador, Filebrowser, Jellyfin y demás, más el escritorio remoto): Ollama ya tenía pedidos de escáneres de IPs públicas y SSH, unos 31.000 intentos fallidos en 7 días (no hubo logins aceptados desde fuera de la LAN).
+
+Como `ufw` no filtra los puertos que publica Docker (van por `FORWARD`), la defensa se hace en la propia máquina con los scripts de `deploy/seguridad/` (se corren con `sudo`, sin `--apply` solo simulan):
+
+| Script | Qué hace |
+|---|---|
+| `cerrar-puertos.sh` | Reglas en `DOCKER-USER`: desde internet solo entran 80 y 443; la LAN (`LAN=192.168.0.0/24`) y los contenedores entre sí siguen igual. Escritorio remoto (3389) solo desde `RDP_FROM`. Instala `cerrar-puertos.service` para que sobreviva al reinicio. |
+| `ssh-solo-clave.sh` | SSH sin contraseña (archivo aparte en `sshd_config.d`, validado con `sshd -t`). Probar antes que se entra con clave. |
+
+Aplicado el 2026-11-18: `cerrar-puertos.sh`. Se verificó que 9999 y 11434 dejaron de responder por la IP pública y que nomad y VikArg siguen andando. Pendiente de confirmar desde afuera (datos del celular). fail2ban tiene activa la jaula `sshd` (5 intentos, ban de 1 h, LAN exenta). Regla general: **un servicio nuevo en este equipo se publica en `127.0.0.1` o desde la LAN, nunca abierto, salvo 80/443.**
