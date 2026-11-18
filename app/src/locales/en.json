@@ -1803,6 +1803,8 @@
     "kmlHint": "KML: the track line. Works in Google Earth, Google Maps and many map apps."
   },
   "topoPrint": {
+    "savedTo": "PDF saved in {{where}}.",
+    "noViewer": "There is no app to open PDFs on this phone: use «Share» or «Save».",
     "coverageOk": "Map and terrain of the area are downloaded: you can print offline.",
     "coverageOnline": "{{missing}} of {{total}} map and terrain tiles are missing on the device: they will be downloaded when you generate. To print offline, download the area in Maps.",
     "coverageOffline": "Offline and {{missing}} of {{total}} map and terrain tiles are missing: the sheet would have gaps or no contour lines. Download the area in Maps when you have internet.",
@@ -2625,6 +2627,9 @@
     }
   },
   "backup": {
+    "saveHere": "Save on this phone",
+    "savedTo": "Backup saved in {{where}}. Copy it somewhere safe (another device, the cloud): if you lose the phone, it is lost with it.",
+    "saveFailed": "The backup could not be saved on the phone. Try «Export» and choose where to send it.",
     "openPasswordTitle": "Backup password",
     "openPasswordHint": "The app has no password, but the backup is encrypted: choose a password to open it. Write it down: without it the backup cannot be restored (there is no recovery key).",
     "exportTitle": "Export",
@@ -2667,6 +2672,7 @@
     "restoring": "Restoring…"
   },
   "recovery": {
+    "shareFile": "Save or send",
     "title": "Recovery key",
     "intro": "If you forget your password, this key is the only way to recover your data. It is shown only once.",
     "warning": "Write it down on paper or print it, and keep it somewhere safe. Without the password and this key, your data cannot be recovered.",

@@ -7,7 +7,8 @@ import { TransferError, formatTransferCode, transferLink, uploadTransfer, type T
 import { useSettings } from '@/core/settings/settings';
 import { useVault } from '@/core/security/useVault';
 import { MIN_PASSWORD_LENGTH } from '@/core/security/vault';
-import { deliverFile } from '@/ui/files';
+import { isNativePlatform } from '@/core/platform';
+import { deliverFile, saveFile } from '@/ui/files';
 import { QrCode } from '@/ui/QrCode';
 import { daysBetween, today } from '@/modules/inventory/domain/dates';
 import { RestoreForm } from './RestoreForm';
@@ -45,6 +46,22 @@ export function BackupPage() {
       setMessage(t(how === 'shared' ? 'backup.shared' : 'backup.downloaded'));
     } catch (err) {
       if (!(err instanceof DOMException && err.name === 'AbortError')) throw err;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Solo en la app nativa: guarda el backup en Documentos/VikArg del teléfono, sin pasar por el menú de compartir. */
+  async function handleSave() {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const { where } = await saveFile(await exportBackup(__APP_VERSION__, secret), backupFileName());
+      await markBackupDone();
+      setLast(await lastBackupAt());
+      setMessage(t('backup.savedTo', { where }));
+    } catch {
+      setMessage(t('backup.saveFailed'));
     } finally {
       setBusy(false);
     }
@@ -89,6 +106,11 @@ export function BackupPage() {
             <button className="btn btn-primary" type="button" onClick={handleExport} disabled={busy || !passwordOk}>
               <Download size={20} /> {busy ? t('backup.exporting') : t('backup.export')}
             </button>
+            {isNativePlatform() && (
+              <button className="btn" type="button" onClick={handleSave} disabled={busy || !passwordOk} data-testid="backup-save-here">
+                <Download size={20} /> {t('backup.saveHere')}
+              </button>
+            )}
           </section>
 
           <SendSection secret={secret} ready={passwordOk} onSent={() => void markBackupDone().then(lastBackupAt).then(setLast)} />

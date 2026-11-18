@@ -2,18 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download, ExternalLink, Printer, Share2 } from 'lucide-react';
 import { Dialog } from '@/ui/Dialog';
-import { deliverFile } from '@/ui/files';
+import { deliverFile, openFile, saveFile } from '@/ui/files';
 import { gridLabel, gridStepM, PAPERS, paperMm, scaleEquivalence, zoomForScale, type Orientation, type PaperId } from './geometry';
 import { mapCoverage, sheetBounds, type Coverage } from './coverage';
 import { DEFAULT_SCALE, planSheet, scaleChoices, type TopoSheetInput } from './plan';
 
 const slug = (s: string) => s.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'mapa';
-function saveAs(url: string, name: string) {
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name;
-  a.click();
-}
 const fmtScale = (n: number) => n.toLocaleString('es-AR');
 
 /**
@@ -91,22 +85,24 @@ export function PrintTopoDialog({ input, onClose }: { input: TopoSheetInput; onC
   }
 
   /** Abre el PDF en el visor del mismo celular (sin pasar por el menú de compartir). */
-  function openPdf() {
+  async function openPdf() {
     if (!result) return;
-    const url = URL.createObjectURL(new Blob([result.pdf], { type: 'application/pdf' }));
-    const win = window.open(url, '_blank');
-    // Si el navegador bloquea la pestaña, se baja el archivo.
-    if (!win) {
-      saveAs(url, result.name);
-      setNotice(t('topoPrint.openBlocked'));
+    try {
+      // Si el navegador bloquea la pestaña, se baja el archivo.
+      if ((await openFile(result.pdf, result.name, 'application/pdf')) === 'blocked') setNotice(t('topoPrint.openBlocked'));
+    } catch {
+      // Sin visor de PDF en el teléfono: se ofrece compartirlo.
+      setError(t('topoPrint.noViewer'));
     }
-    setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
   }
-  function download() {
+  async function download() {
     if (!result) return;
-    const url = URL.createObjectURL(new Blob([result.pdf], { type: 'application/pdf' }));
-    saveAs(url, result.name);
-    setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    try {
+      const { where } = await saveFile(result.pdf, result.name, 'application/pdf');
+      if (where) setNotice(t('topoPrint.savedTo', { where }));
+    } catch {
+      setError(t('topoPrint.failed'));
+    }
   }
   async function share() {
     if (!result) return;
@@ -125,9 +121,9 @@ export function PrintTopoDialog({ input, onClose }: { input: TopoSheetInput; onC
           <div className="stack" data-testid="topo-result">
             <p className="ok" role="status" data-testid="topo-done">{t('topoPrint.ready', { count: result.pages })}</p>
             <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
-              <button className="btn btn-primary" type="button" onClick={openPdf} data-testid="topo-open"><ExternalLink size={18} aria-hidden /> {t('topoPrint.open')}</button>
+              <button className="btn btn-primary" type="button" onClick={() => void openPdf()} data-testid="topo-open"><ExternalLink size={18} aria-hidden /> {t('topoPrint.open')}</button>
               <button className="btn" type="button" onClick={() => void share()} data-testid="topo-share"><Share2 size={18} aria-hidden /> {t('topoPrint.share')}</button>
-              <button className="btn" type="button" onClick={download} data-testid="topo-download"><Download size={18} aria-hidden /> {t('topoPrint.download')}</button>
+              <button className="btn" type="button" onClick={() => void download()} data-testid="topo-download"><Download size={18} aria-hidden /> {t('topoPrint.download')}</button>
             </div>
             {notice && <p className="hint" style={{ margin: 0 }}>{notice}</p>}
             {error && <p className="error" role="alert" data-testid="topo-error">{error}</p>}

@@ -1803,6 +1803,8 @@
     "kmlHint": "KML: la línea del recorrido. Sirve en Google Earth, Google Maps y muchas apps de mapas."
   },
   "topoPrint": {
+    "savedTo": "PDF guardado en {{where}}.",
+    "noViewer": "No hay una app para abrir PDF en este teléfono: usá «Compartir» o «Guardar».",
     "coverageOk": "Mapa y relieve de la zona descargados: se puede imprimir sin conexión.",
     "coverageOnline": "Faltan {{missing}} de {{total}} teselas de mapa y relieve en el dispositivo: se bajan de internet al generar. Para imprimir sin conexión, descargá la zona en Mapas.",
     "coverageOffline": "Sin conexión y faltan {{missing}} de {{total}} teselas del mapa y el relieve: la hoja saldría con huecos o sin curvas de nivel. Descargá la zona en Mapas cuando tengas internet.",
@@ -2625,6 +2627,9 @@
     }
   },
   "backup": {
+    "saveHere": "Guardar en el teléfono",
+    "savedTo": "Backup guardado en {{where}}. Copialo a un lugar seguro (otro equipo, la nube) porque si perdés el teléfono se pierde con él.",
+    "saveFailed": "No se pudo guardar el backup en el teléfono. Probá con «Exportar» y elegí dónde enviarlo.",
     "openPasswordTitle": "Contraseña del backup",
     "openPasswordHint": "La app no tiene contraseña, pero el backup sale cifrado: elegí una contraseña para abrirlo. Anotala: sin ella no se puede restaurar (no hay clave de recuperación).",
     "exportTitle": "Exportar",
@@ -2667,6 +2672,7 @@
     "restoring": "Restaurando…"
   },
   "recovery": {
+    "shareFile": "Guardar o enviar",
     "title": "Clave de recuperación",
     "intro": "Si olvidás la contraseña, esta clave es la única forma de recuperar tus datos. Se muestra una sola vez.",
     "warning": "Anotala en papel o imprimila y guardala en un lugar seguro. Sin la contraseña y sin esta clave, los datos son irrecuperables.",
