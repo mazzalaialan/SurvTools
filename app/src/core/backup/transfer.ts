@@ -1,4 +1,11 @@
 import { normalizeServerUrl } from '@/core/notifications/notifications';
+import { isNativePlatform } from '@/core/platform';
+
+/** Dónde vive la web pública de la app: en la nativa la página es `https://localhost/` (el WebView), que no sirve en otro teléfono. */
+export const PUBLIC_APP_URL = 'https://mazzalaialan.github.io/SurvTools/';
+
+/** La dirección que lleva el enlace: la de la página en el navegador y la web pública en la app nativa. */
+export const defaultLinkBase = (): string => (isNativePlatform() ? PUBLIC_APP_URL : `${location.origin}${location.pathname}`);
 
 /**
  * Transferencia por código (ARQUITECTURA §8.2): el backup, ya cifrado, se sube
@@ -54,7 +61,7 @@ export async function downloadTransfer(serverUrl: string, code: string): Promise
  * Link para el QR: abre esta misma app en la pantalla de recepción con el
  * servidor y el código ya cargados, aunque el otro dispositivo no tenga servidor configurado.
  */
-export function transferLink(serverUrl: string, code: string, base = `${location.origin}${location.pathname}`): string {
+export function transferLink(serverUrl: string, code: string, base = defaultLinkBase()): string {
   const params = new URLSearchParams({ server: normalizeServerUrl(serverUrl), code });
   return `${base}#/transfer?${params}`;
 }
