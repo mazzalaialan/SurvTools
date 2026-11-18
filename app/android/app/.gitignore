@@ -3,3 +3,6 @@
 
 # Lo genera scripts/generate-android-icons.mjs en cada compilación del APK de prueba
 version-name.txt
+
+# Íconos con la cinta «APK <versión>» de los APK de prueba (los genera scripts/generate-android-icons.mjs)
+src/debug/

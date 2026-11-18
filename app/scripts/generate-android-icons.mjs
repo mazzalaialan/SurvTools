@@ -1,16 +1,18 @@
 // Íconos de la app de Android (Capacitor) a partir del logo original (assets-src/logo.jpg), igual que los de la PWA (generate-icons.mjs).
 // Genera el ícono ADAPTABLE (emblema sobre el fondo de la marca, dentro de la zona segura) y los clásicos (cuadrado redondeado y redondo, para
 // Android 7). Los APK de prueba llevan una cinta «APK <versión>» (la versión sale de package.json) para distinguirlos de la app de la tienda.
-// Uso: npm run icons:android            (con la cinta, para los APK de prueba)
-//      npm run icons:android:release    (sin la cinta, para la versión de la tienda)
+// Uso: npm run icons:android            (con la cinta, en src/debug/res: solo para los APK de prueba, ignorada por git)
+//      npm run icons:android:release    (sin la cinta, en src/main/res: los de la versión de la tienda, los que van en el repositorio)
 import sharp from 'sharp';
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const SRC = 'assets-src/logo.jpg';
-const RES = 'android/app/src/main/res';
+const MAIN_RES = 'android/app/src/main/res';
+// Los APK de prueba (build «debug») usan los íconos de src/debug/res, que Android prefiere a los de src/main/res.
 const BG = '#121a24';
 const release = process.argv.includes('--release');
+const RES = release ? MAIN_RES : 'android/app/src/debug/res';
 const fullVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
 const version = fullVersion.split('.').slice(0, 2).join('.');
 
@@ -63,6 +65,7 @@ async function emblem(size) {
 
 for (const [name, k] of Object.entries(DENSITIES)) {
   const dir = `${RES}/mipmap-${name}`;
+  mkdirSync(dir, { recursive: true });
 
   // Adaptable: lienzo de 108 dp; la zona segura es un círculo de 66 dp, el emblema ocupa 69 dp.
   const canvas = Math.round(108 * k);
@@ -89,5 +92,5 @@ for (const [name, k] of Object.entries(DENSITIES)) {
 }
 
 // Color de fondo del ícono adaptable.
-writeFileSync(`${RES}/values/ic_launcher_background.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">${BG}</color>\n</resources>\n`);
+writeFileSync(`${MAIN_RES}/values/ic_launcher_background.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">${BG}</color>\n</resources>\n`);
 console.log('Íconos de Android generados en', RES);
