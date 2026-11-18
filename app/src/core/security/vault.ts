@@ -31,6 +31,8 @@ export interface BiometricWrap {
   /** DEK envuelta con AES-GCM (base64). */
   wrapped: string;
   createdAt: string;
+  /** App nativa: el secreto está en el Keystore de Android atado a la huella (`nativeBiometric.ts`), no en una clave de acceso de WebAuthn (`credentialId` y `salt` van vacíos). */
+  native?: boolean;
 }
 
 /**

@@ -1,4 +1,5 @@
 import { db } from '@/core/db/db';
+import { isNativePlatform } from '@/core/platform';
 import { browserEnv, kekFrom, type BiometricEnv } from './biometricTest';
 import { getDek, setDek } from './session';
 import { readHeader, VAULT_HEADER_KEY, type BiometricWrap, type VaultHeader } from './vault';
@@ -23,7 +24,10 @@ const fromB64 = (s: string): Uint8Array<ArrayBuffer> => Uint8Array.from(atob(s),
 const isCancel = (e: unknown) => e instanceof Error && (e.name === 'NotAllowedError' || e.name === 'AbortError');
 
 /** ¿Este dispositivo y navegador pueden dar biometría con PRF? (solo mira si hay autenticador; la prueba completa está en Ajustes). */
-export async function biometricSupported(env: BiometricEnv = browserEnv()): Promise<boolean> {
+export async function biometricSupported(env?: BiometricEnv): Promise<boolean> {
+  // App nativa: el secreto va en el Keystore de Android atado a la huella (el WebView no tiene WebAuthn con PRF).
+  if (isNativePlatform()) return (await import('./nativeBiometric')).nativeAvailable();
+  env ??= browserEnv();
   if (!env.secureContext || !env.credentials) return false;
   try {
     return await env.platformAvailable();
@@ -66,9 +70,11 @@ async function writeHeader(header: VaultHeader): Promise<void> {
  * Activa el desbloqueo biométrico (hace falta tener la bóveda desbloqueada): crea la clave de acceso, pide la biometría una vez para obtener el
  * secreto y guarda la DEK envuelta con él. Si algo falla no se cambia nada.
  */
-export async function enableBiometric(env: BiometricEnv = browserEnv()): Promise<void> {
+export async function enableBiometric(env?: BiometricEnv): Promise<void> {
   const header = await readHeader();
   if (!header) throw new BiometricError('no-vault');
+  if (isNativePlatform()) return enableNative(header);
+  env ??= browserEnv();
   if (!(await biometricSupported(env))) throw new BiometricError('unsupported');
   const dek = getDek();
   const salt = env.random(32);
@@ -103,21 +109,45 @@ export async function enableBiometric(env: BiometricEnv = browserEnv()): Promise
   await writeHeader({ ...header, biometric });
 }
 
+/**
+ * App nativa: guarda un secreto nuevo en el Keystore atado a la huella, lo lee una vez (pide la huella: comprueba que se puede usar) y con él
+ * envuelve la DEK. Si algo falla, el secreto se borra y no se cambia nada.
+ */
+async function enableNative(header: VaultHeader): Promise<void> {
+  const native = await import('./nativeBiometric');
+  if (!(await native.nativeAvailable())) throw new BiometricError('unsupported');
+  const dek = getDek();
+  try {
+    await native.createNativeSecret();
+    const secret = await native.readNativeSecret();
+    const kek = await kekFrom(crypto.subtle, secret.buffer as ArrayBuffer);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const wrapped = await crypto.subtle.wrapKey('raw', dek, kek, { name: 'AES-GCM', iv });
+    await writeHeader({ ...header, biometric: { credentialId: '', salt: '', iv: toB64(iv), wrapped: toB64(wrapped), createdAt: new Date().toISOString(), native: true } });
+  } catch (e) {
+    await native.deleteNativeSecret();
+    throw new BiometricError(native.nativeErrorCode(e));
+  }
+}
+
 /** Desactiva el desbloqueo biométrico (hace falta tener la bóveda desbloqueada). La clave de acceso queda en el dispositivo: se borra desde su lista. */
 export async function disableBiometric(): Promise<void> {
   getDek();
   const header = await readHeader();
   if (!header?.biometric) return;
-  const { biometric: _removed, ...rest } = header;
-  void _removed;
+  const { biometric: removed, ...rest } = header;
   await writeHeader(rest);
+  // App nativa: también se borra el secreto del Keystore.
+  if (removed?.native && isNativePlatform()) await (await import('./nativeBiometric')).deleteNativeSecret();
 }
 
 /** Desbloquea con la biometría. Lanza `BiometricError` (`cancelled` si la persona cancela; `failed` o `no-prf` si no se pudo: que use la contraseña). */
-export async function unlockWithBiometric(env: BiometricEnv = browserEnv()): Promise<void> {
+export async function unlockWithBiometric(env?: BiometricEnv): Promise<void> {
   const header = await readHeader();
   const b = header?.biometric;
   if (!b) throw new BiometricError('no-vault');
+  if (b.native) return unlockNative(b);
+  env ??= browserEnv();
   if (!env.secureContext || !env.credentials) throw new BiometricError('unsupported');
   const secret = await secretFor(env, fromB64(b.credentialId).buffer, fromB64(b.salt));
   try {
@@ -126,6 +156,26 @@ export async function unlockWithBiometric(env: BiometricEnv = browserEnv()): Pro
     setDek(dek);
   } catch {
     // El secreto no abre la clave: la clave de acceso es otra (por ejemplo, se borró y se creó de nuevo).
+    throw new BiometricError('failed');
+  }
+}
+
+/** App nativa: pide la huella, recibe el secreto del Keystore y abre la DEK con él. */
+async function unlockNative(b: BiometricWrap): Promise<void> {
+  if (!isNativePlatform()) throw new BiometricError('unsupported');
+  const native = await import('./nativeBiometric');
+  let secret: Uint8Array;
+  try {
+    secret = await native.readNativeSecret();
+  } catch (e) {
+    // Cancelada, o el secreto ya no existe (se agregó otra huella y Android invalidó la clave): se entra con la contraseña.
+    throw new BiometricError(native.nativeErrorCode(e));
+  }
+  try {
+    const kek = await kekFrom(crypto.subtle, secret.buffer as ArrayBuffer);
+    const dek = await crypto.subtle.unwrapKey('raw', fromB64(b.wrapped), kek, { name: 'AES-GCM', iv: fromB64(b.iv) }, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+    setDek(dek);
+  } catch {
     throw new BiometricError('failed');
   }
 }

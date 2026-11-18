@@ -29,6 +29,7 @@ import { useMapZones } from '@/modules/maps/store';
 import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
 import { ArchivedVaults } from '../screens/ArchivedVaults';
+import { isNativePlatform } from '@/core/platform';
 import { BiometricTest } from '../screens/BiometricTest';
 import { BiometricUnlockSettings } from '../screens/BiometricUnlockSettings';
 import { NotificationsSection } from './NotificationsSection';
@@ -123,7 +124,8 @@ export function SettingsPage() {
         {/* Bóvedas anteriores guardadas aparte (si las hay): se recuperan con su contraseña o clave. */}
         <ArchivedVaults hasCurrent />
         {/* Prueba (sin cambiar nada) de si este dispositivo puede desbloquear con huella, cara o PIN. */}
-        <BiometricTest />
+        {/* La prueba usa claves de acceso de WebAuthn: en la app nativa la huella va por el Keystore de Android y no aplica. */}
+        {!isNativePlatform() && <BiometricTest />}
       </section>
 
       {settings.dismissedNotices.length > 0 && (
