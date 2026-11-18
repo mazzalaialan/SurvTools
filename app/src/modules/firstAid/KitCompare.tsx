@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { newEntity } from '@/core/model/entity';
@@ -7,6 +7,8 @@ import { systemCategoryId } from '@/modules/inventory/domain/categories';
 import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
 import { kitLots } from './kits';
+import { IntField } from './IntField';
+import { clearDismissed, dismissedOf, onDismissedChange } from './kitDismissed';
 import { exportShoppingPdf, shareShoppingText, type ShopEntry } from './shoppingExport';
 import { buildList, GROUP_NAMES, GROUPS, LEVELS, unitFor, matchesCatalog, scenarioById, SCENARIOS, type Level } from './kitTemplates';
 
@@ -30,10 +32,17 @@ export function KitCompare({ kit }: { kit: Location }) {
   const [people, setPeople] = useState(scenario.people);
   const [days, setDays] = useState(scenario.days);
   const [message, setMessage] = useState<string | null>(null);
+  /** Lo que se dijo «no lo necesito» en este botiquín: no se pide. */
+  const [dismissed, setDismissed] = useState<string[]>([]);
+  useEffect(() => {
+    const load = () => void dismissedOf(kit.id).then(setDismissed);
+    load();
+    return onDismissedChange(load);
+  }, [kit.id]);
 
   const contents = useMemo(() => kitLots(kit.id, [...lots.values()], [...locations.values()]), [kit.id, lots, locations]);
   const rows = useMemo(() => {
-    return buildList(scenarioId, level, people, days).map((line) => {
+    return buildList(scenarioId, level, people, days).filter((l) => !dismissed.includes(l.id)).map((line) => {
       const owned = new Map<string, number>();
       for (const lot of contents) {
         const item = items.get(lot.itemId);
@@ -42,7 +51,7 @@ export function KitCompare({ kit }: { kit: Location }) {
       const have = [...owned.values()].reduce((a, b) => a + b, 0);
       return { ...line, have, status: have >= line.qty ? ('ok' as const) : have > 0 ? ('partial' as const) : ('missing' as const) };
     });
-  }, [scenarioId, level, people, days, contents, items]);
+  }, [scenarioId, level, people, days, contents, items, dismissed]);
 
   const missing = rows.filter((r) => r.status === 'missing');
   const partial = rows.filter((r) => r.status === 'partial');
@@ -113,16 +122,22 @@ export function KitCompare({ kit }: { kit: Location }) {
           <div className="grid-2">
             <div className="field">
               <label htmlFor="kc-people">{t('kitBuilder.people')}</label>
-              <input id="kc-people" className="input" type="number" min={1} max={50} value={people} onChange={(e) => setPeople(Math.min(50, Math.max(1, Number(e.target.value) || 1)))} />
+              <IntField id="kc-people" value={people} min={1} max={50} onChange={setPeople} />
             </div>
             {scenario.usesDays && (
               <div className="field">
                 <label htmlFor="kc-days">{t('kitBuilder.days')}</label>
-                <input id="kc-days" className="input" type="number" min={1} max={60} value={days} onChange={(e) => setDays(Math.min(60, Math.max(1, Number(e.target.value) || 1)))} />
+                <IntField id="kc-days" value={days} min={1} max={60} onChange={setDays} />
               </div>
             )}
           </div>
 
+          {dismissed.length > 0 && (
+            <p className="hint" style={{ margin: 0 }} data-testid="kc-dismissed">
+              {t('kitCompare.dismissedCount', { count: dismissed.length })}{' '}
+              <button className="btn-link" type="button" onClick={() => void clearDismissed(kit.id)} data-testid="kc-include-again">{t('kitCompare.includeAgain')}</button>
+            </p>
+          )}
           <p className={missing.length + partial.length === 0 ? 'hint' : 'error'} data-testid="kc-summary" style={{ margin: 0 }}>
             {missing.length + partial.length === 0 ? t('kitCompare.complete') : t('kitCompare.summary', { missing: missing.length, partial: partial.length, ok: ok.length })}
           </p>

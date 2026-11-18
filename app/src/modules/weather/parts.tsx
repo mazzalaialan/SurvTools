@@ -65,6 +65,7 @@ export function SkyIcon({ code, size = 24 }: { code: number; size?: number }) {
 export function useUnits(system: UnitSystem, locale: string) {
   const n0 = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
   const n1 = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  const n2 = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
   const imperial = system === 'imperial';
   return {
     temp: (c: number) => `${n0.format(imperial ? toFahrenheit(c) : c)}°`,
@@ -72,7 +73,8 @@ export function useUnits(system: UnitSystem, locale: string) {
     /** Solo el número (la unidad va en la leyenda, para que entre en cada hora). */
     windValue: (kmh: number) => n0.format(imperial ? kmhToMph(kmh) : kmh),
     windUnit: imperial ? 'mph' : 'km/h',
-    rain: (mm: number) => (imperial ? `${n1.format(mmToInch(mm))} in` : `${n1.format(mm)} mm`),
+    // En pulgadas un milímetro son 0,04: con un decimal se veía «0 in».
+    rain: (mm: number) => (imperial ? `${n2.format(mmToInch(mm))} in` : `${n1.format(mm)} mm`),
     snow: (cm: number) => (imperial ? `${n1.format(mmToInch(cm * 10))} in` : `${n1.format(cm)} cm`),
     visibility: (m: number) =>
       imperial ? `${n1.format(metersToMiles(m))} mi` : m < 1000 ? `${n0.format(Math.round(m / 50) * 50)} m` : `${n0.format(m / 1000)} km`,

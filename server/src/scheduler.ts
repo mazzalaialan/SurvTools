@@ -1,4 +1,5 @@
 import type { Db } from './db.ts';
+import { compactAlerts } from './alertPayload.ts';
 import { selectNotifiable, type NotifiableAlert } from './notifiable.ts';
 import type { PushSender, PushSubscriptionJson } from './push.ts';
 import { localParts } from './time.ts';
@@ -48,10 +49,17 @@ export async function runScheduler(db: Db, push: PushSender, now = new Date()): 
 
     if (pending.length > 0) {
       const subscription = JSON.parse(device.subscription) as PushSubscriptionJson;
-      const delivered = await push.send(subscription, {
-        type: 'alerts',
-        alerts: pending.map(({ itemName, kind, dueDate }) => ({ itemName, kind, dueDate })),
-      });
+      let delivered: boolean;
+      try {
+        delivered = await push.send(subscription, {
+          type: 'alerts',
+          alerts: compactAlerts(pending.map(({ itemName, kind, dueDate }) => ({ itemName, kind, dueDate }))),
+        });
+      } catch {
+        // Un dispositivo cuyo envío falla (por ejemplo 413 por una carga grande o un error del servicio de push) no corta la pasada de los
+        // demás; el día queda sin marcar y se reintenta en la próxima.
+        continue;
+      }
       if (!delivered) {
         removeDevice.run(device.id);
         result.removed++;

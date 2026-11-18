@@ -236,31 +236,39 @@ export function ComparePage() {
   const alt = place?.alt ?? null;
   const key = lat === null || lon === null ? null : compareKey(placeKey(lat, lon));
   const where = useRef({ lat, lon, alt });
+  /** Número de la última consulta: una respuesta que llega tarde (de otro lugar) no pisa a la actual. */
+  const requestNo = useRef(0);
   where.current = { lat, lon, alt };
 
   const load = useCallback(
     async (force = false) => {
       const { lat, lon, alt } = where.current;
       if (lat === null || lon === null || !key) return;
+      const mine = ++requestNo.current;
       setError(null);
       const cached = await cachedCompare(key);
+      if (mine !== requestNo.current) return;
       if (cached) {
         setData(cached);
-        if (!force && Date.now() - Date.parse(cached.fetchedAt) < STALE_MS) return;
+        if (!force && Date.now() - Date.parse(cached.fetchedAt) < STALE_MS) {
+          setLoading(false);
+          return;
+        }
       } else setData(null);
       if (!navigator.onLine) {
         if (!cached) setError('offline');
+        setLoading(false);
         return;
       }
       setLoading(true);
       try {
         const fresh = await fetchCompare(base, lat, lon, alt);
         await storeCompare(key, fresh);
-        setData(fresh);
+        if (mine === requestNo.current) setData(fresh);
       } catch (e) {
-        setError(e instanceof WeatherError ? e.code : 'unreachable');
+        if (mine === requestNo.current) setError(e instanceof WeatherError ? e.code : 'unreachable');
       } finally {
-        setLoading(false);
+        if (mine === requestNo.current) setLoading(false);
       }
     },
     [key, base],

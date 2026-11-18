@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { KIT_SEPARATOR, alertsNotification, lightningNotification, officialNotification, rainNotification, volcanoNotification } from './format';
+import { COUNT_SEPARATOR, KIT_SEPARATOR, alertsNotification, lightningNotification, officialNotification, rainNotification, volcanoNotification } from './format';
 
 describe('texto de notificaciones', () => {
   it('lista lo más urgente primero y resume el resto', () => {
@@ -44,6 +44,11 @@ describe('texto de notificaciones', () => {
     expect(title).toBe('2 alertas pendientes');
     expect(body).toBe('Atún: vence el 5 nov\nFaltan 2 artículos en Auto');
     expect(body).not.toContain(KIT_SEPARATOR);
+  });
+
+  it('el servidor junta los faltantes de un botiquín en una fila con la cantidad: el aviso suma esa cantidad', () => {
+    const { body } = alertsNotification([{ itemName: `Gasa${KIT_SEPARATOR}Auto${COUNT_SEPARATOR}12`, kind: 'minStock', dueDate: null }, { itemName: `Venda${KIT_SEPARATOR}Auto`, kind: 'minStock', dueDate: null }], 'es', '2026-11-02');
+    expect(body).toBe('Faltan 13 artículos en Auto');
   });
 
   it('en inglés los botiquines también se agrupan', () => {

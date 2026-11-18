@@ -7,6 +7,7 @@ import type { Item, Location, Lot } from '@/core/model/types';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
 import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
+import { IntField } from './IntField';
 import { lotsOutsideKits, moveToKit, quantityInKits, quantityOf as lotsQuantity, sourcePlaces } from './kitStock';
 import { buildList, GROUP_NAMES, GROUPS, LEVELS, matchesCatalog, scenarioById, SCENARIOS, SOURCES, type Level } from './kitTemplates';
 
@@ -44,6 +45,8 @@ export function KitBuilderPage() {
     setQtys({});
   }, [scenarioId]);
 
+  // Si cambian las personas, los días o el nivel, las cantidades vuelven a calcularse (las que se habían editado a mano se pierden).
+  useEffect(() => setQtys({}), [people, days, level]);
   const lines = useMemo(() => buildList(scenarioId, level, people, days), [scenarioId, level, people, days]);
   const itemList = useMemo(() => [...items.values()].filter((i) => !i.deletedAt), [items]);
   const lotList = useMemo(() => [...lots.values()], [lots]);
@@ -155,12 +158,12 @@ export function KitBuilderPage() {
         <div className="grid-2">
           <div className="field">
             <label htmlFor="kb-people">{t('kitBuilder.people')}</label>
-            <input id="kb-people" className="input" type="number" min={1} max={50} value={people} onChange={(e) => setPeople(Math.min(50, Math.max(1, Number(e.target.value) || 1)))} data-testid="kb-people" />
+            <IntField id="kb-people" value={people} min={1} max={50} onChange={setPeople} testId="kb-people" />
           </div>
           {scenario.usesDays && (
             <div className="field">
               <label htmlFor="kb-days">{t('kitBuilder.days')}</label>
-              <input id="kb-days" className="input" type="number" min={1} max={60} value={days} onChange={(e) => setDays(Math.min(60, Math.max(1, Number(e.target.value) || 1)))} data-testid="kb-days" />
+              <IntField id="kb-days" value={days} min={1} max={60} onChange={setDays} testId="kb-days" />
             </div>
           )}
         </div>

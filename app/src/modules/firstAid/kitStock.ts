@@ -55,10 +55,13 @@ export async function moveToKit(kitId: Id, itemId: Id, qty: number, lots: Lot[],
     if (take >= source.quantity) {
       await saveLot({ ...source, locationId: kitId });
     } else {
-      const noPackage = { packageCount: null, packageSize: null, packageName: null };
-      await saveLot({ ...source, ...noPackage, quantity: source.quantity - take });
+      // Si el lote es de envases y lo que se toma son envases enteros, cada pedazo conserva su envase (2 × 10 → 1 × 10 y 1 × 10); si no, se
+      // pasan a cantidad directa (el total se conserva; solo se pierde el detalle del envase).
+      const whole = source.packageCount != null && source.packageSize != null && Math.abs((take / source.packageSize) % 1) < 1e-9;
+      const keep = (qty: number) => (whole ? { packageCount: qty / source.packageSize!, packageSize: source.packageSize, packageName: source.packageName } : { packageCount: null, packageSize: null, packageName: null, packageTareGrams: null });
+      await saveLot({ ...source, ...keep(source.quantity - take), quantity: source.quantity - take });
       const { id: _id, createdAt: _c, updatedAt: _u, deletedAt: _d, ...fields } = source;
-      await saveLot(newEntity<Lot>({ ...fields, ...noPackage, locationId: kitId, quantity: take }));
+      await saveLot(newEntity<Lot>({ ...fields, ...keep(take), locationId: kitId, quantity: take }));
     }
     moved += take;
   }

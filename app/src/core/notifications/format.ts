@@ -16,6 +16,8 @@ type Lang = 'es' | 'en';
  * («Faltan 12 artículos en Botiquín del auto») sin cambiar el formato del índice ni lo que acepta el servidor, que guarda el nombre tal cual.
  */
 export const KIT_SEPARATOR = '\u001f';
+/** El servidor junta los faltantes de un botiquín en una fila con la cantidad: `artículo␟botiquín␞N` (server/src/alertPayload.ts). */
+export const COUNT_SEPARATOR = '\u001e';
 
 const TEXT = {
   es: {
@@ -164,8 +166,11 @@ export function alertsNotification(alerts: AlertSummary[], lang: Lang, today: st
     const at = a.kind === 'minStock' ? a.itemName.indexOf(KIT_SEPARATOR) : -1;
     if (at < 0) single.push(a);
     else {
-      const kit = a.itemName.slice(at + 1);
-      perKit.set(kit, (perKit.get(kit) ?? 0) + 1);
+      const rest = a.itemName.slice(at + 1);
+      const c = rest.indexOf(COUNT_SEPARATOR);
+      const kit = c < 0 ? rest : rest.slice(0, c);
+      const n = c < 0 ? 1 : Math.max(1, Number(rest.slice(c + 1)) || 1);
+      perKit.set(kit, (perKit.get(kit) ?? 0) + n);
     }
   }
   // Lo más urgente primero: vencidos y los que vencen antes; los botiquines, después.

@@ -32,6 +32,17 @@ export function stockShortages(stockMins: StockMin[], lots: Lot[], locations: Lo
  * último cambio del mínimo o del stock contado, que es estable mientras nada
  * cambie: así no se avisa de nuevo todos los días.
  */
+/** Recorta a `max` caracteres sin partir un emoji ni otro carácter de dos unidades (un emoji cortado queda como un símbolo roto). */
+export function clip(s: string, max: number): string {
+  if (s.length <= max) return s;
+  let out = '';
+  for (const ch of s) {
+    if (out.length + ch.length > max) break;
+    out += ch;
+  }
+  return out;
+}
+
 export function minStockAlertRows(
   shortages: StockShortage[],
   lots: Lot[],
@@ -52,7 +63,7 @@ export function minStockAlertRows(
     return {
       lotId: `min:${stockMin.id}`,
       // En un botiquín, el nombre lleva también el del botiquín (el aviso los agrupa); el servidor lo guarda tal cual (máx. 200).
-      itemName: kit ? `${(items.get(stockMin.itemId)?.name ?? '').slice(0, 100)}${KIT_SEPARATOR}${kit.name.slice(0, 90)}` : (items.get(stockMin.itemId)?.name ?? '').slice(0, 200),
+      itemName: kit ? `${clip(items.get(stockMin.itemId)?.name ?? '', 100)}${KIT_SEPARATOR}${clip(kit.name, 90)}` : clip(items.get(stockMin.itemId)?.name ?? '', 200),
       notifyFrom: changedOn < todayStr ? changedOn : todayStr,
     };
   });

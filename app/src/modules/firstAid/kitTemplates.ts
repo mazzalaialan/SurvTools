@@ -381,6 +381,13 @@ export const KEYS: Record<string, string[]> = {
   antihistamine: ['antihistamin'],
   ors: ['rehidrata', 'oral rehydration'],
   epinephrine: ['adrenalina', 'epinephrine', 'epipen'],
+  sting_cream: ['picadura', 'sting'],
+  closure_strips: ['cierre de heridas', 'closure strip', 'steri'],
+  sugar: ['azucar', 'glucosa', 'glucose', 'sugar'],
+  antiseptic: ['antiseptic', 'povidona', 'iodo'],
+  nonadherent: ['no adherente', 'non-adherent'],
+  heat_pack: ['calentador', 'heat pack'],
+  eyewash: ['lavado ocular', 'eye wash'],
 };
 
 export const matchesCatalog = (id: string, normalizedItemName: string): boolean => {

@@ -12,6 +12,7 @@ import { normalize } from '@/modules/inventory/selectors';
 import { useInventory } from '@/modules/inventory/store';
 import { confirmAction } from '@/ui/confirm';
 import { Dialog } from '@/ui/Dialog';
+import { addDismissed, dismissKey, removeDismissed } from './kitDismissed';
 import { lotsOutsideKits, moveToKit, quantityOf as lotsQuantity, sourcePlaces } from './kitStock';
 import { exportShoppingPdf, shareShoppingText, type ShopEntry } from './shoppingExport';
 import { CATALOG, GROUP_NAMES, GROUPS, matchesCatalog, unitFor } from './kitTemplates';
@@ -55,8 +56,17 @@ export function KitMissing({ kit, shortages }: { kit: Location; shortages: Stock
     const item = items.get(s.stockMin.itemId);
     if (!item || !(await confirmAction(t('kitMissing.dismissConfirm', { name: item.name })))) return;
     const previous = s.stockMin.minQuantity;
+    const key = dismissKey(Object.keys(CATALOG).find((k) => matchesCatalog(k, normalize(item.name))), item.id);
     await setStockMin(item.id, kit.id, null);
-    setNotice({ text: t('kitMissing.dismissed', { name: item.name }), undo: async () => void (await setStockMin(item.id, kit.id, previous)) });
+    // «¿Qué le falta a este botiquín?» tampoco lo vuelve a pedir.
+    await addDismissed(kit.id, key);
+    setNotice({
+      text: t('kitMissing.dismissed', { name: item.name }),
+      undo: async () => {
+        await setStockMin(item.id, kit.id, previous);
+        await removeDismissed(kit.id, key);
+      },
+    });
   }
 
   return (

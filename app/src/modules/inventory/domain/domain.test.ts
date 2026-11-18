@@ -6,7 +6,7 @@ import { buildSystemCategories, missingSystemCategories, systemCategoryId } from
 import { addDays, addMonths, daysBetween, today } from './dates';
 import { buildTree, canMoveTo, pathLabel } from './locations';
 import { KIT_SEPARATOR } from '@/core/notifications/format';
-import { itemWeightGrams, lotWeightGrams, groupShortages, minStockAlertRows, normalizeLot, packagedQuantity, quantityOf, stockShortages, weightAt } from './stock';
+import { itemWeightGrams, lotWeightGrams, clip, groupShortages, minStockAlertRows, normalizeLot, packagedQuantity, quantityOf, stockShortages, weightAt } from './stock';
 
 const cats = buildSystemCategories();
 const catMap = new Map(cats.map((c) => [c.id, c]));
@@ -191,6 +191,14 @@ describe('ubicaciones', () => {
     );
     // El lote del auto no cuenta para el mínimo de la casa: la fecha es la del lote de la caja.
     expect(rows).toEqual([{ lotId: `min:${min.id}`, itemName: 'Atún', notifyFrom: '2026-10-20' }]);
+  });
+
+  it('recortar un nombre no parte un emoji', () => {
+    const name = `${'a'.repeat(99)}🩹resto`;
+    const out = clip(name, 100);
+    expect(out).toBe('a'.repeat(99));
+    expect(clip('hola', 100)).toBe('hola');
+    expect(Array.from(clip('🩹🩹🩹', 4)).length).toBe(2);
   });
 
   it('los faltantes de un botiquín se agrupan en una fila por botiquín; los de lugares comunes siguen sueltos', () => {

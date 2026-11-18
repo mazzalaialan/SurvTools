@@ -40,6 +40,21 @@ describe('stock que puede pasar a un botiquín', () => {
     expect(saved.some((l) => l.id === 'c' || l.id === 'd')).toBe(false);
   });
 
+  it('al partir un lote de envases, si se toman envases enteros cada pedazo conserva su envase', async () => {
+    const packaged = { ...lot('p', 'placard', 20, '2027-01-01'), packageCount: 2, packageSize: 10, packageName: 'botella', packageTareGrams: 30 };
+    const saved: Lot[] = [];
+    await moveToKit('nuevo', 'gasa', 10, [packaged], locations, async (l) => void saved.push(l));
+    const rest = saved.find((l) => l.id === 'p')!;
+    const moved = saved.find((l) => l.id !== 'p')!;
+    expect([rest.quantity, rest.packageCount, rest.packageSize]).toEqual([10, 1, 10]);
+    expect([moved.quantity, moved.packageCount, moved.packageSize, moved.packageName]).toEqual([10, 1, 10, 'botella']);
+    // Si no son envases enteros, pasan a cantidad directa y el total se conserva.
+    const odd: Lot[] = [];
+    await moveToKit('nuevo', 'gasa', 5, [packaged], locations, async (l) => void odd.push(l));
+    expect(odd.map((l) => l.quantity).sort((a, b) => a - b)).toEqual([5, 15]);
+    expect(odd.every((l) => l.packageCount === null)).toBe(true);
+  });
+
   it('si hay menos de lo pedido, pasa lo que hay', async () => {
     const saved: Lot[] = [];
     expect(await moveToKit('nuevo', 'gasa', 50, lots, locations, async (l) => void saved.push(l))).toBe(7);

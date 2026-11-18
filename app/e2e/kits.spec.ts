@@ -112,6 +112,12 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await expect(page.getByTestId('kb-row-hemostatic')).toBeVisible();
   // Lo que requiere entrenamiento no aparece en el nivel individual y sí en el avanzado, marcado.
   await expect(page.getByTestId('kb-row-needle')).toHaveCount(0);
+  // El campo de personas se puede borrar y tipear de nuevo sin que se pegue el «1» anterior.
+  await page.getByTestId('kb-people').fill('');
+  await page.getByTestId('kb-people').pressSequentially('7');
+  await expect(page.getByTestId('kb-people')).toHaveValue('7');
+  await page.getByTestId('kb-people').fill('1');
+  await expect(page.getByTestId('kb-people')).toHaveValue('1');
   await page.getByTestId('kb-level-advanced').click();
   await expect(page.getByTestId('kb-row-needle')).toContainText('solo personal entrenado');
   await page.getByTestId('kb-level-individual').click();
@@ -168,12 +174,21 @@ test('asistente «Armar botiquín»: crea el botiquín con los mínimos y despu�
   await page.getByTestId('km-undo').click();
   await expect(missingBox.locator('li', { hasText: 'Marcador indeleble' })).toBeVisible();
 
+  // Lo que se dijo «no lo necesito» tampoco lo pide «¿Qué le falta?» (hasta volver a incluirlo).
+  const note = missingBox.locator('li', { hasText: 'Libreta o tarjeta' });
+  await note.getByRole('button', { name: /No lo necesito/ }).click();
+  await page.getByTestId('confirm-ok').click();
+  await expect(note).toHaveCount(0);
   // «¿Qué le falta?»: se compara con la plantilla y se puede dejar como mínimo.
   await page.getByTestId('kc-toggle').click();
   await expect(page.getByTestId('kc-scenario')).toHaveValue('bleeding');
   await expect(page.getByTestId('kc-summary')).toContainText('Faltan');
   await expect(page.getByTestId('kc-missing')).toContainText('Gasa hemostática');
   await expect(page.getByTestId('kc-missing')).toContainText('Tijera de trauma');
+  await expect(page.getByTestId('kc-missing')).not.toContainText('Libreta o tarjeta');
+  await expect(page.getByTestId('kc-dismissed')).toContainText('Dejaste afuera 1 artículo');
+  await page.getByTestId('kc-include-again').click();
+  await expect(page.getByTestId('kc-missing')).toContainText('Libreta o tarjeta');
   await page.getByTestId('kc-mins').click();
   await expect(page.getByTestId('kc-message')).toContainText('stock mínimo');
 
