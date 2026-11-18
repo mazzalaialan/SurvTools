@@ -2710,6 +2710,11 @@
       "knots": { "name": "Nudos", "text": "Los dibujos son propios; para verificarlos se usaron referencias de Wikimedia Commons (cada archivo con su licencia) y manuales de dominio público." },
       "library": { "name": "Biblioteca", "text": "Manuales de dominio público o con licencia libre; cada documento indica su fuente y su licencia." }
     },
+    "mplTitle": "Componentes con licencia MPL-2.0",
+    "mplText": "Estos componentes se distribuyen bajo la Mozilla Public License 2.0, una licencia que se aplica archivo por archivo: su código fuente está disponible bajo esa misma licencia en los enlaces de abajo. El resto de VikArg sigue bajo la GPL-3.0-or-later.",
+    "mplSource": "Código fuente",
+    "mplModified": "Si modificamos archivos de estos componentes, las modificaciones se publican bajo la MPL-2.0 junto con el código de VikArg ({{repo}}). Los avisos de derechos de autor de sus autores se conservan.",
+    "mplFullText": "Texto completo de la MPL-2.0",
     "depsTitle": "Componentes de terceros",
     "depsIntro": "La app incluye {{count}} componentes de código abierto. Cada uno se rige por su propia licencia, que se puede leer acá.",
     "loading": "Cargando la lista…",

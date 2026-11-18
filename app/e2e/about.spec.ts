@@ -71,6 +71,12 @@ test('licencias y créditos: licencia de la app, fuentes de datos y componentes 
   await expect(page.getByTestId('credit-weather')).toContainText('Open-Meteo');
   // Aviso legal del SMN (obligatorio donde se muestran datos del SMN).
   await expect(page.getByTestId('licenses')).toContainText('Servicio Meteorológico Nacional (SMN)');
+  // Aviso de la MPL-2.0 de los plugins de la app nativa: dónde está su código fuente.
+  const mpl = page.getByTestId('lic-mpl');
+  await expect(mpl).toContainText('Mozilla Public License 2.0');
+  await expect(mpl).toContainText('@capgo/background-geolocation');
+  await expect(mpl).toContainText('@capgo/capacitor-barometer');
+  await expect(mpl.getByRole('link', { name: 'Código fuente' }).first()).toHaveAttribute('href', /github\.com\/Cap-go\//);
   // Componentes de terceros, cargados aparte, con el texto de cada licencia.
   const deps = page.getByTestId('lic-deps');
   await expect(deps.locator('li').first()).toBeVisible();

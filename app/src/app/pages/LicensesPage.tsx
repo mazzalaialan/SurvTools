@@ -28,6 +28,10 @@ export function LicensesPage() {
     void import('@/core/third-party-licenses.json').then((m) => setList(m.default as ThirdParty[]));
   }, []);
 
+  // Componentes con licencia MPL-2.0 (los plugins de ubicación y barómetro de la app nativa): la MPL exige avisar que su código fuente está
+  // disponible y dónde. Su código también viaja en la versión web (como archivos que ahí no se usan), por eso el aviso se ve en las dos.
+  const mpl = (list ?? []).filter((p) => /\bMPL\b/.test(p.license));
+
   return (
     <div className="stack" data-testid="licenses">
       <div className="page-head">
@@ -66,6 +70,30 @@ export function LicensesPage() {
         </ul>
         <OfficialWeatherNotice />
       </section>
+
+      {mpl.length > 0 && (
+        <section className="card stack" aria-labelledby="lic-mpl" data-testid="lic-mpl">
+          <h2 id="lic-mpl" className="section-title" style={{ margin: 0 }}>{t('licenses.mplTitle')}</h2>
+          <p style={{ margin: 0 }}>{t('licenses.mplText')}</p>
+          <ul className="stack" style={{ margin: 0, paddingLeft: 18, gap: 6 }}>
+            {mpl.map((p) => (
+              <li key={`${p.name}@${p.version}`}>
+                <strong>{p.name}</strong> <span className="hint">{p.version} · {p.license}</span>
+                {p.url && (
+                  <>
+                    {' · '}
+                    <a href={p.url} target="_blank" rel="noreferrer">{t('licenses.mplSource')}</a>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+          <p className="hint" style={{ margin: 0 }}>{t('licenses.mplModified', { repo: REPO_URL })}</p>
+          <a className="btn" href="https://www.mozilla.org/MPL/2.0/" target="_blank" rel="noreferrer">
+            <ExternalLink size={18} aria-hidden /> {t('licenses.mplFullText')}
+          </a>
+        </section>
+      )}
 
       <section className="card stack" aria-labelledby="lic-deps">
         <h2 id="lic-deps" className="section-title" style={{ margin: 0 }}>{t('licenses.depsTitle')}</h2>

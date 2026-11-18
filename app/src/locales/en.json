@@ -2710,6 +2710,11 @@
       "knots": { "name": "Knots", "text": "The drawings are our own; Wikimedia Commons references (each file under its own license) and public-domain manuals were used to check them." },
       "library": { "name": "Library", "text": "Public-domain or freely licensed manuals; each document states its source and license." }
     },
+    "mplTitle": "Components under the MPL-2.0",
+    "mplText": "These components are distributed under the Mozilla Public License 2.0, a file-level license: their source code is available under that same license at the links below. The rest of VikArg remains under the GPL-3.0-or-later.",
+    "mplSource": "Source code",
+    "mplModified": "If we modify files of these components, the modifications are published under the MPL-2.0 together with the VikArg code ({{repo}}). Their authors' copyright notices are kept.",
+    "mplFullText": "Full text of the MPL-2.0",
     "depsTitle": "Third-party components",
     "depsIntro": "The app includes {{count}} open-source components. Each is governed by its own license, which you can read here.",
     "loading": "Loading the list…",
