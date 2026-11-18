@@ -5119,7 +5119,7 @@ button.country-pack-icon {
 /* Mapa de países para bajar los datos sin conexión (Ajustes → País → «Ver en el mapa»). */
 .country-map {
   width: 100%;
-  max-height: 52vh;
+  max-height: 42vh;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;

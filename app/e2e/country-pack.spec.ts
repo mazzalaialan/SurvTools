@@ -69,3 +69,35 @@ test('Ajustes: el mapa de países muestra el estado de cada uno y baja el que se
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('country-pack-PY').getByRole('button', { name: 'Paraguay', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('Ajustes: un país con datos viejos se ve en ámbar con «Actualizar» y vuelve al verde al actualizarlo', async ({ page }, testInfo) => {
+  await start(page);
+  await page.goto('/#/settings');
+  const py = page.getByTestId('country-pack-PY');
+  await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+  await page.getByTestId('country-pack-get-PY').click();
+  await expect(py).toHaveAttribute('data-state', 'ready', { timeout: 60_000 });
+
+  // Se le pone a un archivo guardado una fecha vieja: el índice de la app tiene una más nueva, así que hay una versión nueva para bajar.
+  await page.evaluate(async () => {
+    const cache = await caches.open('vikarg-country');
+    const req = (await cache.keys()).find((r) => new URL(r.url).pathname.endsWith('/PY.json'));
+    if (!req) throw new Error('no está PY.json');
+    const data = await (await cache.match(req))!.json();
+    await cache.put(req, new Response(JSON.stringify({ ...data, generatedAt: '2020-01-01' }), { headers: { 'content-type': 'application/json' } }));
+    window.dispatchEvent(new Event('online'));
+  });
+  await expect(py).toHaveAttribute('data-state', 'outdated', { timeout: 15_000 });
+  await expect(page.getByTestId('country-pack-get-PY')).toHaveAttribute('aria-label', /Actualizar los datos sin conexión de Paraguay/);
+
+  // En el mapa: ámbar con ↻ y el botón «Actualizar».
+  await page.getByTestId('country-pack-map-open').click();
+  const map = page.getByTestId('country-map-PY');
+  await expect(map).toHaveAttribute('data-state', 'outdated');
+  await expect(map).toContainText('↻');
+  await map.click();
+  await expect(page.getByTestId('country-map-state')).toContainText('Hay una versión nueva');
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-100-country-map-outdated.png` });
+  await page.getByTestId('country-map-get').click();
+  await expect(map).toHaveAttribute('data-state', 'ready', { timeout: 60_000 });
+});
