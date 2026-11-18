@@ -1765,7 +1765,7 @@
       }
     }
   },
-  "compass": {
+  "compass": { "calibDrawing": "Move the phone through the air drawing a sideways figure 8, turning your wrist so it tilts to the sides", "calibStep1": "Move away from metal, magnets, speakers and magnetic cases (computers and cars interfere too).", "calibStep2": "Hold the phone and draw a sideways figure 8 in the air, turning your wrist to tilt it sideways and forwards and back.", "calibStep3": "Repeat about 5 times, slowly. When the notice above changes to “calibrated”, you are done.", "accuracy": {"unreliable": "The compass is not calibrated (the error can exceed 15°). Calibrate it by moving the phone in a figure 8, away from metal and magnets.", "low": "The compass is poorly calibrated (error up to 15°). Calibrate it by moving the phone in a figure 8.", "medium": "Compass well calibrated (error up to 10°).", "high": "Compass calibrated (error under 5°)."},
     "advanced": "True or magnetic north, declination and calibration",
     "roseLabel": "Compass rose",
     "waiting": "Waiting for the phone's compass…",

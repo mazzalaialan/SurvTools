@@ -1765,7 +1765,7 @@
       }
     }
   },
-  "compass": {
+  "compass": { "calibDrawing": "Mové el celular en el aire dibujando un 8 acostado, girando la muñeca para que se incline hacia los lados", "calibStep1": "Alejate de metales, imanes, parlantes y fundas con imán (la computadora y el auto también molestan).", "calibStep2": "Sostené el celular con la mano y dibujá en el aire un 8 acostado, girando la muñeca para inclinarlo hacia los lados y hacia adelante y atrás.", "calibStep3": "Repetilo unas 5 veces, despacio. Cuando el aviso de arriba cambie a «calibrada», listo.", "accuracy": {"unreliable": "La brújula está descalibrada (el error puede pasar de 15°). Calibrala moviendo el celular en forma de 8, lejos de metales e imanes.", "low": "La brújula está poco calibrada (error de hasta 15°). Conviene calibrarla moviendo el celular en forma de 8.", "medium": "Brújula bien calibrada (error de hasta 10°).", "high": "Brújula calibrada (error menor a 5°)."},
     "advanced": "Norte verdadero o magnético, declinación y calibración",
     "roseLabel": "Rosa de los vientos",
     "waiting": "Esperando la brújula del celular…",

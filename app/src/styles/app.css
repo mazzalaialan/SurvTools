@@ -5200,3 +5200,14 @@ button.country-pack-icon {
 .country-map-key[data-state='outdated'] { background: var(--warn); }
 
 .country-map-panel { gap: 8px; }
+
+/* Brújula: cómo calibrarla (el 8 en el aire). */
+.calib-drawing {
+  width: min(320px, 100%);
+  height: auto;
+  align-self: center;
+}
+.calib-steps {
+  margin: 0;
+  padding-left: 1.25rem;
+}

@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { useCapabilities, useCapability } from '@/core/capabilities/capabilities';
 import { useWakeLock } from '@/core/power/useWakeLock';
 import { useGeolocation } from '@/core/geo/useGeolocation';
+import { useCompassAccuracy } from '@/core/sensors/compassAccuracy';
 import { useHeading } from '@/core/sensors/useHeading';
 import { useSettings, type NorthReference } from '@/core/settings/settings';
 import { useFormatBearing } from '@/modules/waypoints/components';
 import { Segmented } from '@/ui/Segmented';
+import { CalibrationDrawing } from './CalibrationDrawing';
 import { CompassRose } from './CompassRose';
 
 export function CompassPage() {
@@ -15,6 +17,7 @@ export function CompassPage() {
   const { fix } = useGeolocation(hasGps);
   const caps = useCapabilities((s) => s.caps);
   const heading = useHeading(fix);
+  const accuracy = useCompassAccuracy(!!heading);
   // Con la brújula a la vista la pantalla no se apaga sola.
   useWakeLock(!!heading);
   const formatBearing = useFormatBearing();
@@ -30,6 +33,15 @@ export function CompassPage() {
           <p className="compass-readout" data-testid="compass-heading" aria-live="off">
             {formatBearing(heading.heading)}
           </p>
+          {/* App nativa: Android informa cuán calibrada está la brújula; si no lo está, se avisa con lo que hay que hacer. */}
+          {accuracy && (accuracy === 'low' || accuracy === 'unreliable' ? (
+            <div className="warning-box stack" role="status" data-testid="compass-accuracy" data-level={accuracy}>
+              <span>{t(`compass.accuracy.${accuracy}`)}</span>
+              <CalibrationDrawing />
+            </div>
+          ) : (
+            <p className="hint" style={{ textAlign: 'center' }} data-testid="compass-accuracy" data-level={accuracy}>{t(`compass.accuracy.${accuracy}`)}</p>
+          ))}
           <CompassRose heading={heading.heading} />
           <p className="hint" style={{ textAlign: 'center' }}>
             {heading.mode === 'upright' ? t('compass.upright') : t('compass.flat')}
@@ -67,6 +79,12 @@ export function CompassPage() {
           <Link to="/orientation/declination">{t('compass.moreDeclination')}</Link>
         </p>
         <p className="hint">{t('compass.calibrate')}</p>
+        <CalibrationDrawing />
+        <ol className="hint calib-steps" data-testid="calibration-steps">
+          <li>{t('compass.calibStep1')}</li>
+          <li>{t('compass.calibStep2')}</li>
+          <li>{t('compass.calibStep3')}</li>
+        </ol>
         </div>
       </details>
     </div>

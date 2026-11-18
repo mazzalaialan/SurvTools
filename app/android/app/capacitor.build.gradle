@@ -18,6 +18,7 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capgo-background-geolocation')
     implementation project(':capgo-capacitor-barometer')
+    implementation project(':capgo-capacitor-compass')
     implementation project(':capgo-capacitor-native-biometric')
 
 }

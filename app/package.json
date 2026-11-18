@@ -35,6 +35,7 @@
     "@capacitor/share": "8.0.3",
     "@capgo/background-geolocation": "8.6.4",
     "@capgo/capacitor-barometer": "8.0.25",
+    "@capgo/capacitor-compass": "8.1.26",
     "@capgo/capacitor-native-biometric": "8.9.3",
     "@neaps/tide-predictor": "0.11.0",
     "astronomy-engine": "2.1.19",
