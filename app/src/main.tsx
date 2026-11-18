@@ -31,6 +31,8 @@ async function bootstrap() {
     (await import('./core/sensors/nativeBarometer')).startNativeBarometer();
     // El botón «atrás» de Android: cierra diálogos, vuelve atrás y, en la primera pantalla, minimiza en vez de cerrar.
     (await import('./core/backButton')).startBackButton();
+    // El fondo y los íconos de las barras del sistema siguen el tema de la app (si no, quedan de un gris que no combina).
+    (await import('./core/systemBars')).startSystemBars();
   }
   // Con servidor configurado, cada cambio de alertas se le envía (agrupado).
   onAlertIndexChange(scheduleAlertSync);
