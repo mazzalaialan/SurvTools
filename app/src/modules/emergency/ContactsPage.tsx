@@ -1,3 +1,4 @@
+import { pregnancyText } from '@/modules/firstAid/emergencyCard';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -181,6 +182,7 @@ function MyDataSection() {
     [t('medical.bloodType'), me.bloodType],
     [t('medical.allergies'), me.allergies],
     [t('medical.conditions'), me.conditions],
+    [t('medical.pregnancy'), pregnancyText(me, t)],
   ];
   // Obra social compartida: nombre y teléfonos actuales del contacto.
   const insContact = me.insurance?.contactId ? savedContacts.get(me.insurance.contactId) : undefined;

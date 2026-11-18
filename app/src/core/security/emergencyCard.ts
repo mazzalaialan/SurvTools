@@ -24,6 +24,8 @@ export interface EmergencyCardPerson {
   bloodType: string;
   allergies: string;
   conditions: string;
+  /** «Embarazo» o «Embarazo · fecha probable de parto: …»; vacío si no está embarazada (ausente en tarjetas guardadas antes). */
+  pregnancy?: string;
   /** Una línea por medicamento: nombre, dosis y cuándo. */
   medications: string[];
   /** A quién avisar, en orden de prioridad. */

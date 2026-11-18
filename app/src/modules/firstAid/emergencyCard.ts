@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { i18n } from '@/core/i18n/i18n';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import type { Id, MedicalProfile } from '@/core/model/types';
@@ -14,6 +15,15 @@ import { doctorLabel, insurancePhones, medLine, resolveEmergencyContacts } from 
  * de las personas (las mascotas no): primero la tuya, después el resto por
  * nombre. Solo lo que sirve para asistir: sin notas, fotos ni fecha de nacimiento.
  */
+/** «Embarazo» o, si cargó la fecha probable de parto, «Embarazo · fecha probable de parto: 12 de marzo de 2027». */
+export function pregnancyText(p: MedicalProfile, t: TFunction): string {
+  if (!p.pregnancy) return '';
+  const due = p.pregnancy.dueDate;
+  if (!due) return t('medical.pregnancyShort');
+  const date = new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${due}T12:00:00Z`));
+  return t('medical.pregnancyDue', { date });
+}
+
 export function buildEmergencyCard(profiles: Map<Id, MedicalProfile>, t: TFunction, now = new Date()): EmergencyCard {
   const day = today(now);
   const isMe = (p: MedicalProfile) => !!p.isMe || isMeRelationship(p.relationship);
@@ -30,6 +40,7 @@ export function buildEmergencyCard(profiles: Map<Id, MedicalProfile>, t: TFuncti
         bloodType: p.bloodType,
         allergies: p.allergies,
         conditions: p.conditions,
+        pregnancy: pregnancyText(p, t),
         medications: p.medications.filter((m) => m.name.trim()).map((m) => medLine(m, t)),
         contacts: resolveEmergencyContacts(p, profiles),
         doctors: (p.doctors ?? []).filter((d) => d.name.trim() || d.phone.trim()).map((d) => ({ label: doctorLabel(d), phone: d.phone.trim() || null })),

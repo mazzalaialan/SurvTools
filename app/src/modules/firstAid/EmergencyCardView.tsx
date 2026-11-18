@@ -82,6 +82,12 @@ export function EmergencyCardView({ card }: { card: EmergencyCard | null }) {
                   <dd>{p.conditions}</dd>
                 </>
               )}
+              {p.pregnancy && (
+                <>
+                  <dt>{t('medical.pregnancy')}</dt>
+                  <dd data-testid="lock-card-pregnancy">{p.pregnancy}</dd>
+                </>
+              )}
               {p.medications.length > 0 && (
                 <>
                   <dt>{t('medical.medications')}</dt>

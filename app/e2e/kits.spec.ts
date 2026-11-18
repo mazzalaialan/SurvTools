@@ -375,6 +375,18 @@ test('embarazo: se carga en la ficha, personaliza el botiquín con avisos y no q
   await expect(page.getByTestId('pregnancy-toggle')).toBeChecked();
   await expect(page.getByLabel('Fecha probable de parto')).toHaveValue(isoInDays(30));
 
+  // Con «Mostrar datos de emergencia sin desbloquear» activado, la pantalla de bloqueo muestra también el embarazo (y la fecha de parto);
+  // con la opción apagada, no hay tarjeta.
+  await page.goto('/#/settings');
+  await page.getByTestId('emergency-on-lock').check();
+  await page.waitForTimeout(1200);
+  await page.getByRole('button', { name: 'Bloquear ahora' }).first().click();
+  await page.getByRole('button', { name: 'Ver datos de emergencia' }).click();
+  await expect(page.getByTestId('lock-card-pregnancy')).toContainText('Embarazo · fecha probable de parto');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByRole('button', { name: 'Desbloquear' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
   // En el asistente, elegida Marta: artículos con el motivo y el aviso fijo; con el parto cerca y un escenario de montaña, el segundo aviso.
   await page.goto('/#/first-aid/kits/build');
   await page.getByTestId('kb-scenario-home').click();
