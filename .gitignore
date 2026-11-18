@@ -29,3 +29,6 @@ google-services.json
 # Secretos del servidor (clave de la cuenta de servicio de Firebase) y la configuración propia de cada equipo
 deploy/secrets/
 deploy/docker-compose.override.yml
+
+# APK de cada versión (se sube a la Release con app/scripts/publish-apk.sh)
+app/release/
