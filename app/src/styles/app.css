@@ -5237,3 +5237,17 @@ button.country-pack-icon {
 .country-map-zoom .icon-btn:disabled {
   opacity: 0.4;
 }
+
+/* Mapa de países: el país principal lleva un halo del color de acento y una ★. */
+.country-map-country.is-current > path.country-map-halo {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 9;
+  stroke-linejoin: round;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.country-map-key-main {
+  background: var(--accent);
+  color: var(--on-accent);
+}

@@ -218,21 +218,24 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
               return (
                 <g
                   key={c}
-                  className={`country-map-country${selected === c ? ' is-selected' : ''}`}
+                  className={`country-map-country${selected === c ? ' is-selected' : ''}${current === c ? ' is-current' : ''}`}
+                  data-current={current === c ? 'true' : 'false'}
                   data-state={state}
                   data-testid={`country-map-${c}`}
                   role="button"
                   tabIndex={0}
                   aria-pressed={selected === c}
-                  aria-label={`${nameOf(c)}: ${stateText(c)}`}
+                  aria-label={`${nameOf(c)}${current === c ? ` (${t('country.map.mainShort')})` : ''}: ${stateText(c)}`}
                   onClick={() => tap(c)}
                   onKeyDown={onKey(c)}
                 >
+                  {/* Tu país: un halo del color de acento alrededor del contorno (el color de adentro dice si los datos están al día). */}
+                  {current === c && <path d={paths.own[c] ?? ''} className="country-map-halo" vectorEffect="non-scaling-stroke" />}
                   <path d={paths.own[c] ?? ''} vectorEffect="non-scaling-stroke" />
                   {at && (
                     <g transform={`translate(${at.x} ${-at.y}) scale(${labelScale})`}>
                       <text y={-30} fontSize={46} textAnchor="middle" className="country-map-name">
-                        {nameOf(c)}
+                        {current === c ? `★ ${nameOf(c)}` : nameOf(c)}
                       </text>
                       <g transform="translate(0 22)" className="country-map-badge">
                         <circle r={34} />
@@ -263,10 +266,11 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
         <li><span className="country-map-key" data-state="ready">✓</span> {t('country.map.state.ready')}</li>
         <li><span className="country-map-key" data-state="outdated">↻</span> {t('country.map.state.outdated')}</li>
         <li><span className="country-map-key" data-state="missing">⬇</span> {t('country.map.state.missing')}</li>
+        <li><span className="country-map-key country-map-key-main">★</span> {t('country.map.legendMain')}</li>
       </ul>
 
       <div className="card stack country-map-panel" data-testid="country-map-panel" aria-live="polite">
-        <strong>{nameOf(selected)}</strong>
+        <strong>{current === selected ? `★ ${nameOf(selected)}` : nameOf(selected)}</strong>
         <p style={{ margin: 0 }} data-testid="country-map-state">
           {stateText(selected)}
           {sel && sel.state !== 'ready' && sizeOf(selected) ? ` · ${sizeOf(selected)}` : ''}

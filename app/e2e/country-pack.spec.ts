@@ -114,6 +114,13 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   // Antes de tocar nada, el panel explica cómo se usa.
   await expect(page.getByTestId('country-map-next')).toContainText('Tocá un país del mapa para marcarlo');
 
+  // El país principal (Argentina) se distingue en el mapa con un halo y una ★.
+  await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'true');
+  await expect(page.getByTestId('country-map-AR').locator('.country-map-halo')).toHaveCount(1);
+  await expect(page.getByTestId('country-map-AR')).toContainText('★');
+  await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'false');
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-102-country-map-main.png` });
+
   // 1.er toque: lo marca, no baja nada.
   await map.click();
   await expect(page.getByTestId('country-map-panel')).toContainText('Paraguay');
@@ -133,6 +140,10 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   await map.click();
   await expect(page.getByTestId('country-pack-PY').getByRole('button', { name: 'Paraguay', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('country-map-next')).toContainText('Es tu país');
+  // El halo y la ★ pasaron a Paraguay.
+  await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'true');
+  await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'false');
+  await expect(page.getByTestId('country-map-AR')).not.toContainText('★');
 });
 
 test('Mapa de países: se puede acercar, alejar y arrastrar sin marcar nada por error', async ({ page }) => {
