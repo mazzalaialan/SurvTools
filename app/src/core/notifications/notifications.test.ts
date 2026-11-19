@@ -83,6 +83,21 @@ describe('notificaciones con una implementación intercambiable', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('iPhone nativo con servidor: sin push explica que los avisos del servidor no están (no «este navegador»), y los demás siguen activos', async () => {
+    vi.stubGlobal('Capacitor', { isNativePlatform: () => true, getPlatform: () => 'ios' });
+    useSettings.setState({ settings: { ...useSettings.getState().settings, serverUrl: SERVER } });
+    fetchMock.mockImplementation(async (url: string) =>
+      url.endsWith('/api/health') ? new Response(JSON.stringify({ ok: true, version: '1', vapidPublicKey: 'clave' }), { status: 200 }) : new Response('{}', { status: 200 }),
+    );
+    setNotificationBackend(fakeBackend({ subscribePush: async () => null }));
+    const r = await enableNotifications();
+    expect(r.push).toBe(false);
+    expect(r.pushError?.code).toBe('push-ios');
+    expect(r.localDaily).toBe(true);
+    vi.unstubAllGlobals();
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
   it('con servidor: manda lo que devuelve la implementación (la suscripción) al servidor y guarda la cuenta', async () => {
     useSettings.setState({ settings: { ...useSettings.getState().settings, serverUrl: SERVER } });
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {

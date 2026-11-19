@@ -1,3 +1,4 @@
+import { currentPlatform } from '@/core/platform';
 import { db } from '@/core/db/db';
 import { useSettings } from '@/core/settings/settings';
 import { testNotification } from './format';
@@ -12,7 +13,7 @@ import { readNotificationState, updateNotificationState, type PushRegistration }
  */
 
 export class ServerError extends Error {
-  constructor(public readonly code: 'unreachable' | 'invalid-response' | 'push-unsupported' | 'permission-denied' | 'insecure') {
+  constructor(public readonly code: 'unreachable' | 'invalid-response' | 'push-unsupported' | 'push-ios' | 'permission-denied' | 'insecure') {
     super(code);
     this.name = 'ServerError';
   }
@@ -75,7 +76,8 @@ async function registerPush(serverUrl: string): Promise<PushRegistration> {
   const info = await checkServer(serverUrl);
   // En la web es la suscripción de Web Push; en la app nativa, lo que necesite el servidor para ese dispositivo (ver backend.ts).
   const subscription = await notificationBackend().subscribePush(info);
-  if (!subscription) throw new ServerError('push-unsupported');
+  // iPhone nativo: los avisos del servidor todavía no existen (ver nativeBackend.ts); no es «un navegador sin soporte».
+  if (!subscription) throw new ServerError(currentPlatform() === 'ios' ? 'push-ios' : 'push-unsupported');
   const res = await fetch(`${normalizeServerUrl(serverUrl)}/api/devices`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

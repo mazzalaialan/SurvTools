@@ -2287,7 +2287,7 @@
       "insecure": "La dirección tiene que empezar con https:// (con http el código de tu dispositivo viajaría sin cifrar). Solo se acepta http en tu propia máquina o red local.",
       "unreachable": "No se pudo conectar con el servidor. Revisá la dirección y la conexión.",
       "invalid-response": "La dirección responde, pero no es un servidor VikArg.",
-      "push-unsupported": "Este navegador no admite notificaciones push.",
+      "push-unsupported": "Este navegador no admite notificaciones push.", "push-ios": "En el iPhone los avisos desde el servidor todavía no están disponibles. Los avisos propios de la app (vencimientos, lluvia, hora límite) sí funcionan.",
       "permission-denied": "Las notificaciones están bloqueadas. Habilitalas en los permisos del sitio."
     }
   },

@@ -2288,6 +2288,7 @@
       "unreachable": "Couldn't reach the server. Check the address and your connection.",
       "invalid-response": "The address responds, but it isn't a VikArg server.",
       "push-unsupported": "This browser doesn't support push notifications.",
+      "push-ios": "On iPhone, notices from the server are not available yet. The app's own notices (expiry, rain, return deadline) do work.",
       "permission-denied": "Notifications are blocked. Allow them in the site permissions."
     }
   },
