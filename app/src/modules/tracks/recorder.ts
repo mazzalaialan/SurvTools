@@ -208,7 +208,8 @@ export const useRecorder = create<RecorderState>((set, get) => ({
     if (s.status !== 'recording') return;
     // Un corte que todavía no tiene el punto de después no se une con lo que se camine en pausa.
     const gaps = s.track ? dropOpenGap(s.track.gaps) : undefined;
-    set({ status: 'paused', elapsedMs: s.elapsedMs + (s.since !== null ? Date.now() - s.since : 0), since: null, error: null, ...(s.track && gaps ? { track: { ...s.track, gaps } } : {}) });
+    // Queda anotado que la pausa fue a propósito: al reabrir la app (nativa) no se reanuda sola.
+    set({ status: 'paused', elapsedMs: s.elapsedMs + (s.since !== null ? Date.now() - s.since : 0), since: null, error: null, ...(s.track ? { track: { ...s.track, ...(gaps ? { gaps } : {}), recPaused: true } } : {}) });
     await persist();
   },
 
@@ -217,7 +218,7 @@ export const useRecorder = create<RecorderState>((set, get) => ({
     if (s.status !== 'paused' || !s.track) return;
     // Lo que se camine en pausa no se une con una recta: arranca un tramo nuevo.
     const segments = s.track.segments.at(-1)?.length ? [...s.track.segments, []] : s.track.segments;
-    set({ status: 'recording', track: { ...s.track, segments }, since: Date.now() });
+    set({ status: 'recording', track: { ...s.track, segments, recPaused: false }, since: Date.now() });
     startWatch();
   },
 
@@ -319,7 +320,11 @@ useTracks.subscribe((s, prev) => {
   if (open) void restore(open);
 });
 
-/** La grabación que quedó abierta (la app se cerró) vuelve en pausa, con lo grabado mientras estaba bloqueada. */
+/**
+ * La grabación que quedó abierta (la app se cerró) vuelve con lo grabado mientras estaba bloqueada o cerrada. En la app nativa, donde el servicio en
+ * primer plano sigue grabando con la app cerrada, SE REANUDA SOLA (salvo que la persona la haya pausado a propósito: `recPaused`); en el navegador, que
+ * no graba con la app cerrada, vuelve en pausa.
+ */
 async function restore(open: Track) {
   const locked = await readLocked(open.id, open.recKey);
   let segments = open.segments.length ? open.segments : [[]];
@@ -334,6 +339,23 @@ async function restore(open: Track) {
   const recKey = open.recKey ?? (await newRecKey());
   prepareLocked(recKey);
   if (useRecorder.getState().status !== 'idle') return;
+  if (recordingLocation().background && !open.recPaused) {
+    // El servicio estuvo grabando todo el rato que la app estuvo cerrada: ese tiempo cuenta, y el recorrido sigue en el mismo tramo.
+    const now = Date.now();
+    const closedMs = recovered.length ? Math.max(0, now - Date.parse(open.updatedAt)) : 0;
+    useRecorder.setState({
+      status: 'recording',
+      track: { ...open, segments, ...trackStats(segments), recKey, recPaused: false },
+      elapsedMs: (open.durationS ?? 0) * 1000 + closedMs,
+      since: now,
+      error: null,
+      accuracy: null,
+    });
+    await persist();
+    await clearLocked();
+    startWatch();
+    return;
+  }
   useRecorder.setState({
     status: 'paused',
     track: { ...open, segments, ...trackStats(segments), recKey },

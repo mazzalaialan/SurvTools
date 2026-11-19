@@ -592,6 +592,8 @@ export interface Track extends BaseEntity {
   routeId?: Id;
   /** Grabación en curso: se guarda a medida que avanza, para no perderla si la app se cierra. */
   recording?: boolean;
+  /** Grabación en curso que la persona pausó a propósito: al reabrir la app sigue en pausa (si no, en la app nativa se reanuda sola). */
+  recPaused?: boolean;
   /** Tiempo grabando, sin contar las pausas. */
   durationS?: number;
   /** Mientras se graba: clave privada para leer los puntos grabados con la app bloqueada (ver tracks/lockedBuffer). */

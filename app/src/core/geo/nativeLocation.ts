@@ -87,53 +87,24 @@ function bindVisibility() {
   });
 }
 
+/**
+ * `start` y `stop` del servicio nativo se hacen de a uno, en el orden en que se piden. El grabador llama a `stop()` sin esperarlo y enseguida a `start()`
+ * (al reanudar o al empezar): si corrieran a la vez, el `stop()` —que termina DESPUÉS, porque el puente nativo tarda— dejaba `sink = null` y paraba el plugin
+ * cuando el `start()` ya había arrancado, y desde ahí la app ignoraba todas las posiciones («Buscando señal GPS…» para siempre) aunque el servicio siguiera
+ * grabando en el registro nativo. Pasaba al reanudar una grabación y en cada grabación nueva.
+ */
+let queue: Promise<unknown> = Promise.resolve();
+function serial<T>(job: () => Promise<T>): Promise<T> {
+  const run = queue.then(job, job);
+  queue = run.catch(() => undefined);
+  return run;
+}
+
 export const nativeLocation: RecordingLocationBackend = {
   background: true,
   supported: () => Capacitor.isNativePlatform(),
-  async start(onFix, onError, text) {
-    sink = onFix;
-    active = true;
-    lastId = 0;
-    bindVisibility();
-    // Registro limpio: lo que pudiera haber de una grabación anterior ya se recuperó (`recover`) o no sirve.
-    await BackgroundGeolocation.clearLocationLog().catch(() => undefined);
-    try {
-      await BackgroundGeolocation.start(
-        {
-          backgroundTitle: text.title,
-          backgroundMessage: text.message,
-          requestPermissions: true,
-          stale: false,
-          distanceFilter: 0,
-          // Solo Android: en iPhone la `url` del plugin es de las geovallas y no hace falta para que siga con la app cerrada.
-          ...(Capacitor.getPlatform?.() === 'ios' ? {} : { url: NO_DELIVERY_URL }),
-          locationLog: true,
-          locationLogMaxEntries: 50_000,
-        },
-        (position, error) => {
-          if (error) onError(errorCode(error));
-          else if (position && sink) void drainOnce(sink).catch(() => undefined);
-        },
-      );
-    } catch (e) {
-      active = false;
-      onError(errorCode(e as { message?: string }));
-      return;
-    }
-    clearInterval(timer);
-    timer = setInterval(() => {
-      if (sink && document.visibilityState === 'visible') void drainOnce(sink).catch(() => undefined);
-    }, POLL_MS);
-  },
-  async stop() {
-    clearInterval(timer);
-    timer = undefined;
-    // Lo último que quedó en el registro se entrega antes de cortar.
-    if (sink) await drainOnce(sink).catch(() => undefined);
-    active = false;
-    await BackgroundGeolocation.stop().catch(() => undefined);
-    sink = null;
-  },
+  start: (onFix, onError, text) => serial(() => startNow(onFix, onError, text)),
+  stop: () => serial(stopNow),
   async flush() {
     if (sink) await drainOnce(sink).catch(() => undefined);
   },
@@ -141,6 +112,52 @@ export const nativeLocation: RecordingLocationBackend = {
     return drainOnce(onFix).catch(() => 0);
   },
 };
+
+async function startNow(onFix: (fix: Fix) => void, onError: (code: LocationErrorCode) => void, text: { title: string; message: string }): Promise<void> {
+  sink = onFix;
+  active = true;
+  lastId = 0;
+  bindVisibility();
+  // Registro limpio: lo que pudiera haber de una grabación anterior ya se recuperó (`recover`) o no sirve.
+  await BackgroundGeolocation.clearLocationLog().catch(() => undefined);
+  try {
+    await BackgroundGeolocation.start(
+      {
+        backgroundTitle: text.title,
+        backgroundMessage: text.message,
+        requestPermissions: true,
+        stale: false,
+        distanceFilter: 0,
+        // Solo Android: en iPhone la `url` del plugin es de las geovallas y no hace falta para que siga con la app cerrada.
+        ...(Capacitor.getPlatform?.() === 'ios' ? {} : { url: NO_DELIVERY_URL }),
+        locationLog: true,
+        locationLogMaxEntries: 50_000,
+      },
+      (position, error) => {
+        if (error) onError(errorCode(error));
+        else if (position && sink) void drainOnce(sink).catch(() => undefined);
+      },
+    );
+  } catch (e) {
+    active = false;
+    onError(errorCode(e as { message?: string }));
+    return;
+  }
+  clearInterval(timer);
+  timer = setInterval(() => {
+    if (sink && document.visibilityState === 'visible') void drainOnce(sink).catch(() => undefined);
+  }, POLL_MS);
+}
+
+async function stopNow(): Promise<void> {
+  clearInterval(timer);
+  timer = undefined;
+  // Lo último que quedó en el registro se entrega antes de cortar.
+  if (sink) await drainOnce(sink).catch(() => undefined);
+  active = false;
+  await BackgroundGeolocation.stop().catch(() => undefined);
+  sink = null;
+}
 
 /** Se llama una vez al arrancar la app nativa: la grabación pasa a usar el servicio en primer plano. */
 export function startNativeLocation(): void {

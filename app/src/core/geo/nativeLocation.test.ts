@@ -110,3 +110,51 @@ describe('ubicación en segundo plano (app nativa)', () => {
     expect(recordingLocation().background).toBe(false);
   });
 });
+
+describe('reanudar o empezar una grabación: «parar» y «empezar» seguidos (como hace el grabador)', () => {
+  const later = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  it('un `stop()` que todavía no terminó no apaga la grabación que empieza justo después', async () => {
+    // El plugin tarda en contestar (como el puente nativo real): el `stop()` termina DESPUÉS de que `start()` ya arrancó.
+    plugin.stop.mockImplementation(async () => void (await later(30)));
+    plugin.start.mockImplementation(async (_o: unknown, cb: typeof callback) => {
+      await later(10);
+      callback = cb;
+    });
+    const got: number[] = [];
+    // Igual que `startWatch` del grabador: `stopWatch()` sin esperar y enseguida `start()`.
+    void nativeLocation.stop();
+    void nativeLocation.start((f) => got.push(f.timestamp), () => undefined, text);
+    await later(150);
+    log = [entry(1), entry(2)];
+    callback!(entry(2));
+    await later(20);
+    expect(got).toEqual([1_700_000_001_000, 1_700_000_002_000]);
+    // Y el plugin quedó andando: el último llamado al plugin fue el `start`, no un `stop` tardío.
+    expect(plugin.stop.mock.invocationCallOrder[0]!).toBeLessThan(plugin.start.mock.invocationCallOrder[0]!);
+    await nativeLocation.stop();
+  });
+
+  it('al reabrir la app con una grabación abierta (se recupera el registro) y reanudar, las posiciones nuevas llegan', async () => {
+    plugin.stop.mockImplementation(async () => void (await later(30)));
+    plugin.start.mockImplementation(async (_o: unknown, cb: typeof callback) => {
+      await later(10);
+      callback = cb;
+    });
+    // Reapertura: `restore` recupera lo que quedó en el registro nativo.
+    log = [entry(10), entry(11)];
+    const recovered: number[] = [];
+    await nativeLocation.recover!((f) => recovered.push(f.timestamp));
+    expect(recovered).toHaveLength(2);
+    // «Reanudar»: parar (sin esperar) y empezar.
+    const got: number[] = [];
+    void nativeLocation.stop();
+    void nativeLocation.start((f) => got.push(f.timestamp), () => undefined, text);
+    await later(150);
+    log = [entry(12), entry(13), entry(14)];
+    callback!(entry(14));
+    await later(20);
+    expect(got).toHaveLength(3);
+    await nativeLocation.stop();
+  });
+});
