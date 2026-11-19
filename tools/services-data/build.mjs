@@ -22,11 +22,12 @@
  * Combustibles (`fuels`): códigos que la app traduce: gasoline (nafta,
  * bencina, gasolina), diesel, cng (GNC/GNV) y lpg (GLP).
  *
- * Brasil (BR): solo Sul y Mato Grosso do Sul (RS, SC, PR y MS), recortado de los extractos de Geofabrik con tools/osm-index/brazil.sh
- * (hay que apuntar OSM_LOCAL_DIR a su carpeta de salida; sin ese archivo no se genera, no se consulta Brasil entero a Overpass).
- * Fuente: OpenStreetMap (ODbL), fecha del extracto en `meta-BR.json`; GeoNames CC BY 4.0 no interviene acá.
+ * Brasil (BR): por sectores (macrorregiones del IBGE: sul, sudeste, centro-oeste, nordeste, norte), un archivo por categoría y sector:
+ * `<categoría>-BR-<sector>.json`, con `country: 'BR'`, `sector` y `coverage` (qué sector y estados cubre). Recortado de los extractos de
+ * Geofabrik con tools/osm-index/brazil.sh (hay que apuntar OSM_LOCAL_DIR a su carpeta de salida; sin ese archivo no se genera, no se consulta
+ * Brasil a Overpass). Fuente: OpenStreetMap (ODbL), fecha del extracto en `meta-BR-<sector>.json`; GeoNames CC BY 4.0 no interviene acá.
  *
- * Uso: node tools/services-data/build.mjs [AR|CL|UY|BO|PE|PY|BR] [categoría]
+ * Uso: node tools/services-data/build.mjs [AR|CL|UY|BO|PE|PY|BR|BR-<sector>] [categoría]
  *      (necesita conexión; el resultado se versiona; sin país, todos; sin categoría, todas)
  */
 
@@ -41,7 +42,8 @@ const UA = 'VikArg-Prepping-Tools-build/1.0 (https://github.com/mazzalaialan/Sur
 const AR_PACKAGE = 'http://datos.energia.gob.ar/api/3/action/package_show?id=1c181390-5045-475e-94dc-410429be4b17';
 /** Estaciones que no informan precios hace más de esto: se consideran cerradas. */
 const MAX_AGE_MONTHS = 24;
-export const COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY', 'BR'];
+export const BR_SECTORS = ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte'];
+export const COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY', ...BR_SECTORS.map((s) => `BR-${s}`)];
 
 const r5 = (n) => Math.round(n * 1e5) / 1e5;
 /** Distancia aproximada en metros (para no duplicar una estación oficial con la de OpenStreetMap). */
@@ -155,7 +157,10 @@ export const CATEGORIES = {
     selectors: ['nwr["amenity"="drinking_water"]', 'nwr["amenity"="water_point"]', 'nwr["man_made"="water_tap"]["drinking_water"="yes"]', 'nwr["natural"="spring"]'],
     // Una vertiente no siempre es potable: se aclara.
     type: (t) => (t.natural === 'spring' ? (t.drinking_water === 'yes' ? 'Vertiente (potable)' : t.drinking_water === 'no' ? 'Vertiente (no potable)' : 'Vertiente (potabilidad desconocida)') : t.amenity === 'water_point' ? 'Punto de agua' : 'Agua potable'),
-    keep: (t) => !(t.natural !== 'spring' && t.drinking_water === 'no'),
+    // Brasil: en Mato Grosso, Goiás y la Amazonia hay decenas de miles de `natural=spring` importados de la hidrografía (nacientes de arroyos,
+    // sin nombre ni dato de potabilidad: 54.000 solo en el Centro-Oeste, 4,8 MB). No sirven para «buscar agua»: se descartan los sin nombre y
+    // sin `drinking_water`. Los nombrados y los que dicen si son potables quedan.
+    keep: (t, cc = '') => !(t.natural !== 'spring' && t.drinking_water === 'no') && !(cc.startsWith('BR') && t.natural === 'spring' && !t.name && !t.drinking_water),
   },
   shelter: {
     selectors: ['nwr["tourism"="alpine_hut"]', 'nwr["tourism"="wilderness_hut"]', `nwr["amenity"="shelter"]["shelter_type"~"^(${SHELTER_TYPES})$"]`],
@@ -228,7 +233,7 @@ async function osmPlaces(cc, category) {
       const t = e.tags ?? {};
       const lat = e.lat ?? e.center?.lat;
       const lon = e.lon ?? e.center?.lon;
-      if (lat === undefined || lon === undefined || (cat.keep && !cat.keep(t))) return null;
+      if (lat === undefined || lon === undefined || (cat.keep && !cat.keep(t, cc))) return null;
       // Un banco con cajero y el cajero cargado aparte, o un nodo dentro de su edificio: uno solo.
       const key = `${r5(lat).toFixed(4)},${r5(lon).toFixed(4)}`;
       if (seen.has(key)) return null;
@@ -287,9 +292,10 @@ async function build(cc, category) {
   const places = official ? withOsm(official, osm) : osm;
   // Una respuesta cortada de Overpass trae de menos: con las estaciones (que siempre hay muchas) se nota.
   if (category === 'fuel' && places.length < MIN_FUEL[cc]) throw new Error(`${cc}: muy pocas estaciones (${places.length}); probá de nuevo más tarde`);
-  const brMeta = cc === 'BR' ? localMeta('BR') : null;
+  const brMeta = cc.startsWith('BR-') ? localMeta(cc) : null;
   const data = {
-    country: cc,
+    country: cc.slice(0, 2),
+    ...(brMeta && { sector: brMeta.sector }),
     category,
     generatedAt: new Date().toISOString().slice(0, 10),
     // Sin listado oficial, todos vienen de OpenStreetMap.
@@ -297,7 +303,7 @@ async function build(cc, category) {
     source: official
       ? 'Secretaría de Energía, precios vigentes en surtidor (datos.energia.gob.ar, CC BY 4.0); las que faltan: © colaboradores de OpenStreetMap (ODbL)'
       : brMeta
-        ? `© colaboradores de OpenStreetMap (ODbL), extracto de Geofabrik del ${brMeta.extractDate}. Cubre solo ${brMeta.coverage}, no todo Brasil`
+        ? `© colaboradores de OpenStreetMap (ODbL), extracto de Geofabrik del ${brMeta.extractDate}. Cubre solo el sector ${brMeta.coverage}, no todo Brasil`
         : '© colaboradores de OpenStreetMap (ODbL)',
     ...(brMeta && { coverage: brMeta.coverage, extractDate: brMeta.extractDate }),
     places,
@@ -308,16 +314,18 @@ async function build(cc, category) {
 }
 
 /** Mínimo esperable de estaciones por país: si hay menos, la respuesta vino cortada y no se genera. */
-const MIN_FUEL = { AR: 3000, CL: 800, UY: 200, BO: 150, PE: 800, PY: 800, BR: 3000 };
+const MIN_FUEL = { AR: 3000, CL: 800, UY: 200, BO: 150, PE: 800, PY: 800, 'BR-sul': 3000, 'BR-sudeste': 6000, 'BR-centro-oeste': 1200, 'BR-nordeste': 4000, 'BR-norte': 800 };
 
 const [onlyCountry, onlyCategory] = process.argv.slice(2);
 if (onlyCategory && !CATEGORIES[onlyCategory]) throw new Error(`Categoría desconocida: ${onlyCategory} (${Object.keys(CATEGORIES).join(', ')})`);
+const wanted = onlyCountry === 'BR' ? BR_SECTORS.map((x) => `BR-${x}`) : onlyCountry ? [onlyCountry] : null;
+if (wanted && !wanted.every((c) => COUNTRIES.includes(c))) throw new Error(`País desconocido: ${onlyCountry} (${COUNTRIES.join(', ')}, BR)`);
 for (const cc of COUNTRIES) {
-  if (onlyCountry && onlyCountry !== cc) continue;
-  // Brasil solo se arma con el recorte regional local: sin él se salta (y si se pide a propósito, avisa).
-  if (cc === 'BR' && !hasLocal('BR')) {
-    if (onlyCountry) throw new Error('BR: falta places-BR.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)');
-    console.warn('BR: sin places-BR.jsonl, se salta');
+  if (wanted && !wanted.includes(cc)) continue;
+  // Brasil solo se arma con el recorte local de cada sector: sin él se salta (y si se pide a propósito, avisa).
+  if (cc.startsWith('BR-') && !hasLocal(cc)) {
+    if (onlyCountry) throw new Error(`${cc}: falta places-${cc}.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)`);
+    console.warn(`${cc}: sin places-${cc}.jsonl, se salta`);
     continue;
   }
   for (const category of Object.keys(CATEGORIES)) if (!onlyCategory || onlyCategory === category) await build(cc, category);

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Genera los paquetes de datos sin conexión de Chile, Uruguay, Bolivia, Perú, Paraguay y Brasil:
- * app/public/data/CL.json, UY.json, BO.json, PE.json, PY.json y BR.json. No van en la descarga inicial de la app:
+ * app/public/data/CL.json, UY.json, BO.json, PE.json, PY.json y, de Brasil, uno por sector: BR-sul.json, BR-sudeste.json, etc. No van en la descarga inicial de la app:
  * se bajan una vez al elegir el país (ver app/src/modules/emergency/country.ts).
  *
  * - Localidades: GeoNames (CC BY 4.0), con población, para la detección de
@@ -20,12 +20,13 @@
  *   frecuencias confirmadas) y Radio Nacional del Perú (planilla oficial del IRTP),
  *   ubicadas con GeoNames.
  *
- * - Brasil (BR): SOLO Sul y Mato Grosso do Sul (RS, SC, PR y MS; Brasil entero pesa demasiado). Los bomberos, la policía y la salud salen
- *   del recorte de OpenStreetMap de tools/osm-index/brazil.sh (extractos de Geofabrik; ODbL) y las localidades de GeoNames (CC BY 4.0)
- *   dentro del mismo contorno de los cuatro estados (`border-BR.geojson`, junto a `places-BR.jsonl`). Hay que apuntar OSM_LOCAL_DIR a esa
- *   carpeta. Radio: no hay una fuente pública verificada: queda vacía (no se inventan emisoras).
+ * - Brasil (BR): se arma por sectores (macrorregiones del IBGE; Brasil entero pesa demasiado): sul (PR, SC, RS), sudeste (SP, RJ, MG, ES), centro-oeste
+ *   (MT, MS, GO, DF), nordeste (MA, PI, CE, RN, PB, PE, AL, SE, BA) y norte (AC, AM, AP, PA, RO, RR, TO). Los bomberos, la policía y la salud salen
+ *   del recorte de OpenStreetMap de tools/osm-index/brazil.sh (extractos de Geofabrik; ODbL) y las localidades de GeoNames (CC BY 4.0) dentro
+ *   del mismo contorno de los estados del sector (`border-BR-<sector>.geojson`, junto a `places-BR-<sector>.jsonl`). Hay que apuntar OSM_LOCAL_DIR
+ *   a esa carpeta. Cada archivo lleva `country: 'BR'`, `sector` y `coverage`. Radio: no hay una fuente pública verificada: queda vacía.
  *
- * Uso: node tools/country-data/build.mjs [UY|CL|BO|PE|PY|BR]   (necesita conexión; el resultado se versiona; sin país, todos)
+ * Uso: node tools/country-data/build.mjs [UY|CL|BO|PE|PY|BR|BR-<sector>]   (necesita conexión; el resultado se versiona; sin país, todos; BR = los sectores que tengan archivo local)
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -259,16 +260,16 @@ function insideGeometry(geometry) {
   return (lat, lon) => polys.some((p, i) => lon >= boxes[i][0] && lon <= boxes[i][2] && lat >= boxes[i][1] && lat <= boxes[i][3] && inRing(p[0], lon, lat) && !p.slice(1).some((h) => inRing(h, lon, lat)));
 }
 
-/** Contorno de la región recortada (Brasil): el que armó tools/osm-index/brazil.sh junto a places-BR.jsonl. */
+/** Contorno del sector recortado (Brasil, `BR-<sector>`): el que armó tools/osm-index/brazil.sh junto a places-BR-<sector>.jsonl. */
 function regionFilter(cc) {
-  if (cc !== 'BR') return null;
-  if (!hasLocal('BR')) throw new Error('BR: falta places-BR.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)');
-  const border = JSON.parse(readFileSync(localFile('BR').replace(/places-BR\.jsonl$/, 'border-BR.geojson'), 'utf8'));
+  if (!cc.startsWith('BR-')) return null;
+  if (!hasLocal(cc)) throw new Error(`${cc}: falta places-${cc}.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)`);
+  const border = JSON.parse(readFileSync(localFile(cc).replace(/places-BR-([a-z-]+)\.jsonl$/, 'border-BR-$1.geojson'), 'utf8'));
   return insideGeometry(border.geometry);
 }
 
 /** Localidades con población (o cabeceras) de GeoNames; `inside(lat, lon)` las restringe a una región (Brasil: Sul y Mato Grosso do Sul). */
-async function geonames(cc, admin1, inside = null) {
+async function geonames(cc, admin1, inside = null, onlyProvinces = null) {
   const zip = unzipSync(await getBytes(`https://download.geonames.org/export/dump/${cc}.zip`));
   const rows = strFromU8(zip[`${cc}.txt`]).split('\n');
   const SKIP = new Set(['PPLH', 'PPLQ', 'PPLW', 'PPLX', 'PPLCH']);
@@ -285,6 +286,8 @@ async function geonames(cc, admin1, inside = null) {
     all.push([f[1], f[10], Math.round(Number(f[4]) * 1e3) / 1e3, Math.round(Number(f[5]) * 1e3) / 1e3, population]);
     if (population === 0 && !seat) continue;
     const province = admin1.get(`${cc}.${f[10]}`) ?? '';
+    // Brasil: un lugar cuya provincia (admin1 de GeoNames) no es de los estados del sector es un error de la fuente en el borde: se descarta.
+    if (onlyProvinces && !onlyProvinces.has(province)) continue;
     provinces.add(province);
     // Misma escala que el nomenclátor argentino: 2000 = localidad; +población; cabeceras +500.
     const rank = 2000 + population + (seat ? 500 : 0);
@@ -488,10 +491,17 @@ function withOsm(official, osm) {
 
 const brSrc = (m) => `OpenStreetMap (ODbL), extracto de Geofabrik del ${m.extractDate}; cubre solo ${m.coverage}`;
 
+/** Nombre del estado en GeoNames (admin1CodesASCII, `BR.<código>`) por sigla: para los estados de cada sector. */
+const BR_UF = { PR: 'Paraná', SC: 'Santa Catarina', RS: 'Rio Grande do Sul', SP: 'São Paulo', RJ: 'Rio de Janeiro', MG: 'Minas Gerais', ES: 'Espírito Santo', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', GO: 'Goiás', DF: 'Federal District', MA: 'Maranhão', PI: 'Piauí', CE: 'Ceará', RN: 'Rio Grande do Norte', PB: 'Paraíba', PE: 'Pernambuco', AL: 'Alagoas', SE: 'Sergipe', BA: 'Bahia', AC: 'Acre', AM: 'Amazonas', AP: 'Amapá', PA: 'Pará', RO: 'Rondônia', RR: 'Roraima', TO: 'Tocantins' };
+
+/** `cc` es el código del país o, en Brasil, `BR-<sector>` (el archivo de salida lleva ese nombre; `country` dentro, siempre `BR`). */
 async function build(cc, radioList, labels) {
+  const iso = cc.slice(0, 2);
   const admin1 = await admin1Names();
-  const { provinces, places, all } = await geonames(cc, admin1, regionFilter(cc));
-  const brMeta = cc === 'BR' ? localMeta('BR') : null;
+  const brMeta = cc.startsWith('BR-') ? localMeta(cc) : null;
+  const { provinces: rawProvinces, places, all } = await geonames(iso, admin1, regionFilter(cc), brMeta && new Set(brMeta.states.map((u) => BR_UF[u.slice(3)])));
+  // GeoNames llama «Federal District» al Distrito Federal: en la app va con su nombre en portugués.
+  const provinces = rawProvinces.map((p) => (p === 'Federal District' ? 'Distrito Federal' : p));
   const elements = await overpass(cc);
   const fire = [];
   const police = [];
@@ -513,11 +523,12 @@ async function build(cc, radioList, labels) {
   const pe = cc === 'PE' ? await peOfficial() : null;
   const UY_SRC = 'Ministerio del Interior (catalogodatos.gub.uy, Licencia de Datos Abiertos de Uruguay)';
   const data = {
-    country: cc,
+    country: iso,
+    ...(brMeta && { sector: brMeta.sector }),
     generatedAt: new Date().toISOString().slice(0, 10),
     // Sin listados oficiales, todos los lugares vienen de OpenStreetMap.
     ...(official || pe ? {} : { osm: true }),
-    // Brasil: solo una región (el resto del país no está en el paquete).
+    // Brasil: solo un sector (el resto del país está en los otros archivos BR-<sector>.json).
     ...(brMeta && { coverage: brMeta.coverage, extractDate: brMeta.extractDate }),
     sources: official
       ? {
@@ -568,10 +579,19 @@ const RADIO_PY = [
 const RADIO_BR = [];
 
 const only = process.argv[2];
+const BR_SECTORS = ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte'];
 if (!only || only === 'UY') await build('UY', RADIO_UY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radiodifusión Nacional del Uruguay (Wikipedia)' });
 if (!only || only === 'CL') await build('CL', RADIO_CL, { fire: 'Bomberos', police: 'Carabineros', health: 'Centro de salud', radioSource: 'Radio Bío-Bío (Wikipedia)' });
 if (!only || only === 'BO') await build('BO', RADIO_BO, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Red Patria Nueva (State Media Monitor)' });
 if (!only || only === 'PE') await build('PE', RADIO_PE, { fire: 'Bomberos', police: 'Comisaría', health: 'Centro de salud', radioSource: 'Radio Nacional del Perú (IRTP, datos abiertos de datosabiertos.gob.pe, ODC-By, planilla de 2021)' });
 if (!only || only === 'PY') await build('PY', RADIO_PY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radio Nacional del Paraguay (radionacional.gov.py, sitio oficial, 2026-11-16)' });
-if (only === 'BR' || (!only && hasLocal('BR'))) await build('BR', RADIO_BR, { fire: 'Bombeiros', police: 'Polícia', health: 'Unidade de saúde', radioSource: 'Sin fuente pública verificada: no se incluyen emisoras' });
-else if (!only) console.warn('BR: sin places-BR.jsonl, se salta');
+// Brasil: `BR` arma los sectores que tengan archivo local; `BR-<sector>` uno solo.
+const BR_LABELS = { fire: 'Bombeiros', police: 'Polícia', health: 'Unidade de saúde', radioSource: 'Sin fuente pública verificada: no se incluyen emisoras' };
+for (const sector of BR_SECTORS) {
+  const cc = `BR-${sector}`;
+  if (only === cc || only === 'BR' || (!only && hasLocal(cc))) {
+    if (!hasLocal(cc)) throw new Error(`${cc}: falta places-${cc}.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)`);
+    await build(cc, RADIO_BR, BR_LABELS);
+  }
+}
+if (!only && !BR_SECTORS.some((s) => hasLocal(`BR-${s}`))) console.warn('BR: sin places-BR-<sector>.jsonl, se salta');

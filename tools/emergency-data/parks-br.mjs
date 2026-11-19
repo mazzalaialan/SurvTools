@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Áreas protegidas de Brasil para usar sin conexión: app/public/data/parks-BR.json
- * (se baja aparte, como los de Bolivia, Perú, Paraguay y Uruguay).
+ * Áreas protegidas de Brasil para usar sin conexión, por sectores (macrorregiones del IBGE): app/public/data/parks-BR-<sector>.json
+ * (sul, sudeste, centro-oeste, nordeste, norte; se bajan aparte, como los de Bolivia, Perú, Paraguay y Uruguay).
  *
  * Fuente: CNUC, Cadastro Nacional de Unidades de Conservação, Ministério do Meio Ambiente (MMA), portal dados.mma.gov.br.
  *   Ficha: https://dados.mma.gov.br/dataset/unidadesdeconservacao  (CKAN: license_id "cc-by", Creative Commons Atribuição = CC BY)
@@ -16,16 +16,16 @@
  * - El CNUC no trae teléfonos, direcciones ni reglas de acceso ni sitio de cada unidad: esos campos quedan vacíos (no se inventan).
  *   `url` es la página del órgano gestor solo cuando es el ICMBio (federal, página oficial del instituto); en las estaduales queda vacía.
  *
- * Alcance (criterio):
- *  - Todos los parques nacionales de Brasil (esfera federal, categoría «Parque»), y
- *  - todas las unidades federales y estaduales de RS, SC, PR y MS (región cargada primero), en las categorías útiles para trekking y
- *    camping: Parque, Reserva Biológica, Estación Ecológica, Monumento Natural, Refugio de Vida Silvestre, Floresta (FLONA/FLOE),
- *    Área de Relevante Interesse Ecológico y Área de Protección Ambiental (APA).
+ * Alcance (criterio), por sector (cada área va en el sector de su(s) estado(s); una que cruza sectores aparece en cada uno; ya no hay un grupo
+ * «todo Brasil»: los parques nacionales se reparten por estado):
+ *  - Todas las unidades federales y estaduales de los estados del sector, en las categorías útiles para trekking y camping: Parque,
+ *    Reserva Biológica, Estación Ecológica, Monumento Natural, Refugio de Vida Silvestre, Floresta (FLONA/FLOE), Área de Relevante
+ *    Interesse Ecológico y Área de Protección Ambiental (APA).
  *  - Quedan afuera: las RPPN (propiedad privada, 1.500 en el país, sin acceso público garantizado), las reservas extractivistas y de
- *    desarrollo sostenible (territorio de comunidades), las unidades municipales (fuera del alcance pedido) y las demás categorías.
- *  - Las APA son enormes y de uso mixto (ciudades y chacras adentro): se incluyen solo si el archivo cabe en el límite de peso; ver MAX_BYTES.
+ *    desarrollo sostenible (territorio de comunidades), las unidades municipales y las demás categorías.
+ *  - Las APA son enormes y de uso mixto (ciudades y chacras adentro): se incluyen solo si el archivo del sector cabe en el límite de peso; ver MAX_BYTES.
  *
- * Uso: node tools/emergency-data/parks-br.mjs   (necesita conexión; el resultado se versiona)
+ * Uso: node tools/emergency-data/parks-br.mjs [sul|sudeste|centro-oeste|nordeste|norte]   (sin sector, los cinco; necesita conexión; el resultado se versiona)
  *   Carpeta de trabajo: BR_WORK (por defecto ~/parks-br-work; no usar /tmp, es RAM). Se puede borrar al terminar.
  */
 
@@ -36,7 +36,7 @@ import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { centerOf, inRing, simplified } from '../lib/osm-geo.mjs';
 
-const OUT = process.env.VIKARG_DATA_OUT ? `${process.env.VIKARG_DATA_OUT.replace(/\/$/, '')}/parks-BR.json` : fileURLToPath(new URL('../../app/public/data/parks-BR.json', import.meta.url));
+const OUT_DIR = process.env.VIKARG_DATA_OUT ? `${process.env.VIKARG_DATA_OUT.replace(/\/$/, '')}/` : fileURLToPath(new URL('../../app/public/data/', import.meta.url));
 const WORK = process.env.BR_WORK ?? `${homedir()}/parks-br-work`;
 const UA = 'VikArg-Prepping-Tools/1.0';
 const BASE = 'https://dados.mma.gov.br/dataset/44b6dc8a-dc82-4a84-8d95-1b0da7c85dac/resource';
@@ -44,9 +44,18 @@ const CSV_URL = `${BASE}/72dd3d2d-3cca-4b97-b382-a1c90531e379/download/cnuc_2026
 const SHP_URL = `${BASE}/6ba9a557-87e8-4882-acb7-b3e0f0ea192d/download/shp_cnuc_2025_08.zip`;
 const LICENSE_URL = 'https://dados.mma.gov.br/dataset/unidadesdeconservacao';
 const ICMBIO = 'https://www.gov.br/icmbio/pt-br';
-const UFS = new Set(['RS', 'SC', 'PR', 'MS']);
+/** Sectores (macrorregiones del IBGE) y sus estados; misma convención que tools/osm-index/brazil.sh. */
+const SECTORS = {
+  sul: { name: 'Sul', ufs: ['PR', 'SC', 'RS'] },
+  sudeste: { name: 'Sudeste', ufs: ['SP', 'RJ', 'MG', 'ES'] },
+  'centro-oeste': { name: 'Centro-Oeste', ufs: ['MT', 'MS', 'GO', 'DF'] },
+  nordeste: { name: 'Nordeste', ufs: ['MA', 'PI', 'CE', 'RN', 'PB', 'PE', 'AL', 'SE', 'BA'] },
+  norte: { name: 'Norte', ufs: ['AC', 'AM', 'AP', 'PA', 'RO', 'RR', 'TO'] },
+};
+const onlySector = process.argv[2];
+if (onlySector && !SECTORS[onlySector]) throw new Error(`Sector desconocido: ${onlySector} (${Object.keys(SECTORS).join(', ')})`);
 const CATS = new Set(['Parque', 'Reserva Biológica', 'Estação Ecológica', 'Monumento Natural', 'Refúgio de Vida Silvestre', 'Floresta', 'Área de Relevante Interesse Ecológico', 'Área de Proteção Ambiental']);
-const MAX_BYTES = 1.5 * 1024 * 1024;
+const MAX_BYTES = 2.5 * 1024 * 1024; // por sector
 const TOL = Number(process.env.BR_TOL ?? 0.0015); // grados (≈ 170 m)
 
 async function fetchTo(url, file) {
@@ -153,15 +162,13 @@ const HALF = 0.01;
 const square = ([x, y]) => [[[[x - HALF, y - HALF], [x - HALF, y + HALF], [x + HALF, y + HALF], [x + HALF, y - HALF], [x - HALF, y - HALF]]]];
 
 const titleCase = (s) => s.toLowerCase().replace(/(^|[\s(\-/])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\b(Da|De|Do|Das|Dos|E|Em|Na|No|Nas|Nos|Para|A|O)\b/g, (w) => w.toLowerCase()).replace(/^./, (c) => c.toUpperCase());
-const federal = (r) => r['Esfera Administrativa'] === 'Federal';
 const ufs = (r) => r.UF.split(',').map((s) => s.trim()).filter(Boolean);
-const keep = (r) => CATS.has(r['Categoria de Manejo']) && r['Esfera Administrativa'] !== 'Municipal' &&
-  ((federal(r) && r['Categoria de Manejo'] === 'Parque') || ufs(r).some((u) => UFS.has(u)));
+const keep = (r, UFS) => CATS.has(r['Categoria de Manejo']) && r['Esfera Administrativa'] !== 'Municipal' && ufs(r).some((u) => UFS.has(u));
 
-function build(withApa) {
+function build(withApa, UFS) {
   const missing = [];
   const parks = [];
-  for (const r of table.filter(keep)) {
+  for (const r of table.filter((x) => keep(x, UFS))) {
     if (!withApa && r['Categoria de Manejo'] === 'Área de Proteção Ambiental') continue;
     let polys = byCode.get(r['Código UC']);
     const pt = pointByCode.get(r['Código UC']);
@@ -196,23 +203,31 @@ function build(withApa) {
 }
 
 const generatedAt = new Date().toISOString().slice(0, 10);
-const wrap = (parks) => ({
+const wrap = (parks, sector) => ({
+  country: 'BR',
+  sector,
+  coverage: `${SECTORS[sector].name} (${SECTORS[sector].ufs.join(', ')})`,
   generatedAt,
-  source: `Dados: Cadastro Nacional de Unidades de Conservação (CNUC), Ministério do Meio Ambiente do Brasil, licencia CC BY (${LICENSE_URL}). Atributos: cnuc_2026_07.csv (julio 2026); límites: shp_cnuc_2025_08 (agosto 2025), simplificados. Descargado el ${generatedAt}. Sin teléfonos ni reglas de acceso: el CNUC no los trae.`,
+  source: `Dados: Cadastro Nacional de Unidades de Conservação (CNUC), Ministério do Meio Ambiente do Brasil, licencia CC BY (${LICENSE_URL}). Atributos: cnuc_2026_07.csv (julio 2026); límites: shp_cnuc_2025_08 (agosto 2025), simplificados. Descargado el ${generatedAt}. Cubre solo el sector ${SECTORS[sector].name}: las unidades federales y estaduales de sus estados; una que cruza sectores está en cada uno. Sin teléfonos ni reglas de acceso: el CNUC no los trae.`,
   parks,
 });
 
-let { parks, missing } = build(true);
-let json = JSON.stringify(wrap(parks));
-let note = 'con APA';
-if (Buffer.byteLength(json) > MAX_BYTES) {
-  ({ parks, missing } = build(false));
-  json = JSON.stringify(wrap(parks));
-  note = 'SIN APA (no entraban en el peso)';
+const count = (parks, f) => Object.entries(parks.reduce((m, p) => { for (const k of f(p)) m[k] = (m[k] ?? 0) + 1; return m; }, {})).sort().map(([k, v]) => `${k}: ${v}`).join('; ');
+for (const sector of Object.keys(SECTORS)) {
+  if (onlySector && onlySector !== sector) continue;
+  const UFS = new Set(SECTORS[sector].ufs);
+  let { parks, missing } = build(true, UFS);
+  let json = JSON.stringify(wrap(parks, sector));
+  let note = 'con APA';
+  if (Buffer.byteLength(json) > MAX_BYTES) {
+    ({ parks, missing } = build(false, UFS));
+    json = JSON.stringify(wrap(parks, sector));
+    note = 'SIN APA (no entraban en el peso)';
+  }
+  const out = `${OUT_DIR}parks-BR-${sector}.json`;
+  await writeFile(out, json);
+  console.log(`\n[${sector}] ${parks.length} áreas (${note}) → ${out} (${Buffer.byteLength(json)} bytes, tolerancia ${TOL}°)`);
+  console.log('Por categoría:', count(parks, (p) => [p.category]));
+  console.log('Por estado:', count(parks, (p) => p.states.filter((u) => UFS.has(u))));
+  console.log(`Sin polígono ni punto (${missing.length}):`, missing.slice(0, 40).join(' | '));
 }
-await writeFile(OUT, json);
-console.log(`${parks.length} áreas (${note}) → ${OUT} (${Buffer.byteLength(json)} bytes, tolerancia ${TOL}°)`);
-const count = (f) => Object.entries(parks.reduce((m, p) => { for (const k of f(p)) m[k] = (m[k] ?? 0) + 1; return m; }, {})).sort().map(([k, v]) => `${k}: ${v}`).join('; ');
-console.log('Por categoría:', count((p) => [p.category]));
-console.log('Por estado:', count((p) => p.states));
-console.log(`Sin polígono en el shapefile (${missing.length}):`, missing.slice(0, 40).join(' | '));
