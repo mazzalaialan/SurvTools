@@ -4787,6 +4787,18 @@ button.country-pack-icon {
   border-radius: 10px;
 }
 
+.maps-layers-group {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.maps-layers-group:first-child {
+  margin-top: 0;
+}
+
 .maps-area-overlay {
   display: flex;
   flex-direction: column;

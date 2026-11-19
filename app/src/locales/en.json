@@ -861,7 +861,7 @@
     "goHere": "Go to my location",
     "center": "Center: {{coords}} · zoom {{zoom}}",
     "layers": "Layers",
-    "fsLayers": "Map layers (one at a time)",
+    "fsLayers": "Map layers", "fsLayersTogether": "Added to the others", "fsLayersExclusive": "One at a time",
     "layer": {
       "geology": "Geology",
       "ecoregions": "Ecoregions", "hillshade": "Terrain", "slope": "Avalanche risk", "contours": "Contour lines", "mine": "My waypoints and routes", "tracks": "Tracks" },

@@ -45,6 +45,8 @@ import { confirmAction } from '@/ui/confirm';
 // 100 y 200 km solo entran en el límite del servidor propio.
 const RADII = [2, 5, 10, 20, 50, 100, 200];
 const LAYER_KEYS: (keyof MapLayers)[] = ['hillshade', 'contours', 'slope', 'ecoregions', 'geology', 'mine', 'tracks'];
+/** Capas del menú de pantalla completa que no se pisan con nada: conviven con cualquiera de las otras. */
+const FS_TOGETHER_LAYERS: (keyof MapLayers)[] = ['hillshade', 'contours'];
 const SLOPE_ZONES = ['low', 'caution', 'avalanche', 'steep', 'extreme'] as const;
 /** Vista que muestra un track entero (centro y zoom según lo que ocupa). */
 function trackView(tr: { segments: [number, number, number | null, number?][][] }): ViewState | null {
@@ -587,6 +589,14 @@ export function MapsPage() {
           </button>
           {layersOpen && (
             <div className="maps-layers-menu" role="group" aria-label={t('maps.fsLayers')} onPointerDown={(e) => e.stopPropagation()}>
+              {/* El relieve y las curvas de nivel se SUMAN a cualquier otra capa; las otras tres se pisan entre sí (una a la vez). */}
+              <p className="maps-layers-group">{t('maps.fsLayersTogether')}</p>
+              {FS_TOGETHER_LAYERS.map((key) => (
+                <button key={key} type="button" className="chip" aria-pressed={layers[key]} onClick={() => setLayer(key, !layers[key])} data-testid={`fs-layer-${key}`}>
+                  {t(`maps.layer.${key}`)}
+                </button>
+              ))}
+              <p className="maps-layers-group">{t('maps.fsLayersExclusive')}</p>
               {EXCLUSIVE_LAYERS.map((key) => (
                 <button key={key} type="button" className="chip" aria-pressed={layers[key]} onClick={() => setLayer(key, !layers[key])} data-testid={`fs-layer-${key}`}>
                   {t(`maps.layer.${key}`)}

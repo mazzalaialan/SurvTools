@@ -598,6 +598,20 @@ test('mapas offline: la capa de ecorregiones dice en cuál está el centro del m
   await page.getByTestId('fs-layers-btn').click();
   await page.getByTestId('fs-layer-slope').click();
   await expect(page.getByTestId('fs-layer-slope')).toHaveAttribute('aria-pressed', 'true');
+  // Relieve y curvas de nivel están en el mismo menú y se SUMAN: prenderlas o apagarlas no toca la capa de avalancha (ni las otras).
+  await expect(page.getByTestId('fs-layer-hillshade')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('fs-layer-contours')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('fs-layer-hillshade').click();
+  await expect(page.getByTestId('fs-layer-hillshade')).toHaveAttribute('aria-pressed', 'false');
+  await page.getByTestId('fs-layer-contours').click();
+  await expect(page.getByTestId('fs-layer-contours')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByTestId('fs-layer-slope')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('fs-layer-ecoregions')).toHaveAttribute('aria-pressed', 'false');
+  await page.getByTestId('fs-layer-hillshade').click();
+  await page.getByTestId('fs-layer-contours').click();
+  await expect(page.getByTestId('fs-layer-hillshade')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('fs-layer-contours')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('fs-layer-slope')).toHaveAttribute('aria-pressed', 'true');
   // El cartel de avalancha se cierra con su cruz.
   await expect(page.getByTestId('fs-slope-legend')).toBeVisible();
   await page.getByTestId('fs-slope-close').click();
