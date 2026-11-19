@@ -4,6 +4,7 @@ import { useCapabilities, useCapability } from '@/core/capabilities/capabilities
 import { useWakeLock } from '@/core/power/useWakeLock';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { useCompassAccuracy } from '@/core/sensors/compassAccuracy';
+import { useSensorPermission } from '@/core/sensors/orientationSource';
 import { useHeading } from '@/core/sensors/useHeading';
 import { useSettings, type NorthReference } from '@/core/settings/settings';
 import { useFormatBearing } from '@/modules/waypoints/components';
@@ -18,6 +19,7 @@ export function CompassPage() {
   const caps = useCapabilities((s) => s.caps);
   const heading = useHeading(fix);
   const accuracy = useCompassAccuracy(!!heading);
+  const permission = useSensorPermission((s) => s.state);
   // Con la brújula a la vista la pantalla no se apaga sola.
   useWakeLock(!!heading);
   const formatBearing = useFormatBearing();
@@ -47,6 +49,13 @@ export function CompassPage() {
             {heading.mode === 'upright' ? t('compass.upright') : t('compass.flat')}
           </p>
         </>
+      ) : permission === 'prompt' ? (
+        // iPhone: iOS pide permiso para leer los sensores y solo deja pedirlo desde un toque.
+        <button className="btn btn-primary" type="button" onClick={() => void useSensorPermission.getState().request()} data-testid="compass-enable">
+          {t('compass.enableSensors')}
+        </button>
+      ) : permission === 'denied' ? (
+        <p className="warning-box" role="alert" data-testid="compass-denied">{t('compass.sensorsDenied')}</p>
       ) : caps && !caps.orientation ? (
         // Una PC no tiene el sensor: no se espera para siempre.
         <p className="empty" data-testid="compass-none">{t('compass.noSensor')}</p>
