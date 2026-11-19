@@ -2336,6 +2336,31 @@
    "reference": "Níveis em metros acima do zero de cada régua. A DMH publica uma leitura por dia, sem níveis de alerta nem de evacuação, e algumas estações ficam meses sem dados novos: veja sempre a data. A localização das estações é aproximada.",
    "source": "Dados: Dirección de Meteorología e Hidrología (DMH) do Paraguai, com a Armada, a ANNP, o MADES e o MOPC, sem licença declarada. Localizações: YRATO (Itaipu) e © colaboradores do OpenStreetMap. Informativo, não é um alerta oficial."
   },
+  "brRivers": {
+   "title": "Rios do Brasil",
+   "intro": "Níveis quase em tempo real dos rios da bacia do Uruguai, do Iguaçu e do Paraná na fronteira, da telemetria da ANA. O servidor próprio os lê.",
+   "needsServer": "Para ver os níveis dos rios do Brasil é preciso o servidor próprio (Ajustes).",
+   "loading": "Buscando os níveis…",
+   "warming": "O servidor está lendo as estações pela primeira vez e leva cerca de um minuto. Ele tenta de novo sozinho.",
+   "error": "Não foi possível ler os níveis. Tente de novo com conexão.",
+   "offlineSaved": "Sem conexão ou sem resposta: aparecem os últimos níveis guardados (lidos em {{when}}).",
+   "none": "Não há estações da ANA a menos de 250 km deste lugar.",
+   "distance": "a {{km}} km",
+   "reading": "leitura de {{when}} (horário de Brasília)",
+   "old": "leitura antiga: {{when}} (horário de Brasília)",
+   "flow": "vazão {{q}} m³/s",
+   "change": "{{cm}} cm em {{h}} h",
+   "thresholds": "Cotas do SGB: atenção {{a}} · alerta {{b}} · inundação {{c}} m",
+   "noThresholds": "Sem cotas oficiais: só o nível, sem situação.",
+   "state": {
+    "normal": "Abaixo das cotas",
+    "attention": "Atenção",
+    "alert": "Alerta",
+    "flood": "Inundação"
+   },
+   "reference": "Níveis em metros acima do zero de cada régua, no horário de Brasília. As cotas são as do SGB/CPRM para a bacia do rio Uruguai, de uma tabela de dezembro de 2023: podem ter mudado. Onde não há cotas oficiais (Iguaçu, Paraná e algumas do Uruguai) aparece só o nível. Uma leitura com mais de um dia é marcada como antiga e não tem situação nem tendência.",
+   "source": "Dados: ANA (Agência Nacional de Águas e Saneamento Básico), telemetria; cotas: SGB/CPRM (Serviço Geológico do Brasil, 2023). Sem licença declarada. Informativo, não é um alerta oficial: em caso de alerta real, siga a Defesa Civil."
+  },
   "bolivia": {
    "title": "Rios e lago Titicaca da Bolívia",
    "intro": "Nível dos rios e do lago Titicaca perto do local escolhido, do relatório diário do SENAMHI Bolívia (quem lê é o servidor próprio).",

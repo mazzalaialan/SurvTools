@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataTable xmlns="http://MRCS/">
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="DadosHidrometereologicos" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="DadosHidrometereologicos">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="CodEstacao" type="xs:string" minOccurs="0" />
+                <xs:element name="DataHora" type="xs:string" minOccurs="0" />
+                <xs:element name="Vazao" type="xs:string" minOccurs="0" />
+                <xs:element name="Nivel" type="xs:string" minOccurs="0" />
+                <xs:element name="Chuva" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+    <DocumentElement xmlns="">
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos1" msdata:rowOrder="0">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 16:30:00 </DataHora>
+        <Vazao>6666.76</Vazao>
+        <Nivel>556.30</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos2" msdata:rowOrder="1">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 16:15:00 </DataHora>
+        <Vazao>6672.68</Vazao>
+        <Nivel>556.60</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos3" msdata:rowOrder="2">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 16:00:00 </DataHora>
+        <Vazao>6676.63</Vazao>
+        <Nivel>556.80</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos4" msdata:rowOrder="3">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 15:45:00 </DataHora>
+        <Vazao>6674.65</Vazao>
+        <Nivel>556.70</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos5" msdata:rowOrder="4">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 15:30:00 </DataHora>
+        <Vazao>6678.60</Vazao>
+        <Nivel>556.90</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos6" msdata:rowOrder="5">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 15:15:00 </DataHora>
+        <Vazao>6710.21</Vazao>
+        <Nivel>558.50</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos7" msdata:rowOrder="6">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 15:00:00 </DataHora>
+        <Vazao>6702.30</Vazao>
+        <Nivel>558.10</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos8" msdata:rowOrder="7">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 14:45:00 </DataHora>
+        <Vazao>6708.23</Vazao>
+        <Nivel>558.40</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos9" msdata:rowOrder="8">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 14:30:00 </DataHora>
+        <Vazao>6731.97</Vazao>
+        <Nivel>559.60</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos10" msdata:rowOrder="9">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 14:15:00 </DataHora>
+        <Vazao>6741.88</Vazao>
+        <Nivel>560.10</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos11" msdata:rowOrder="10">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 14:00:00 </DataHora>
+        <Vazao>6747.82</Vazao>
+        <Nivel>560.40</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos12" msdata:rowOrder="11">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 13:45:00 </DataHora>
+        <Vazao>6763.69</Vazao>
+        <Nivel>561.20</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos13" msdata:rowOrder="12">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 13:30:00 </DataHora>
+        <Vazao>6781.55</Vazao>
+        <Nivel>562.10</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos14" msdata:rowOrder="13">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 13:15:00 </DataHora>
+        <Vazao>6779.57</Vazao>
+        <Nivel>562.00</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos15" msdata:rowOrder="14">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 13:00:00 </DataHora>
+        <Vazao>6789.50</Vazao>
+        <Nivel>562.50</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos16" msdata:rowOrder="15">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 12:45:00 </DataHora>
+        <Vazao>6793.48</Vazao>
+        <Nivel>562.70</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos17" msdata:rowOrder="16">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 12:30:00 </DataHora>
+        <Vazao>6793.48</Vazao>
+        <Nivel>562.70</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos18" msdata:rowOrder="17">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 12:15:00 </DataHora>
+        <Vazao>6801.43</Vazao>
+        <Nivel>563.10</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos19" msdata:rowOrder="18">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 12:00:00 </DataHora>
+        <Vazao>6833.28</Vazao>
+        <Nivel>564.70</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos20" msdata:rowOrder="19">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 11:45:00 </DataHora>
+        <Vazao>6901.18</Vazao>
+        <Nivel>568.10</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos21" msdata:rowOrder="20">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 11:30:00 </DataHora>
+        <Vazao>6901.18</Vazao>
+        <Nivel>568.10</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos22" msdata:rowOrder="21">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 11:15:00 </DataHora>
+        <Vazao>6925.21</Vazao>
+        <Nivel>569.30</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos23" msdata:rowOrder="22">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 11:00:00 </DataHora>
+        <Vazao>6931.23</Vazao>
+        <Nivel>569.60</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos24" msdata:rowOrder="23">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 10:45:00 </DataHora>
+        <Vazao>6893.18</Vazao>
+        <Nivel>567.70</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos25" msdata:rowOrder="24">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 10:30:00 </DataHora>
+        <Vazao>6893.18</Vazao>
+        <Nivel>567.70</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos26" msdata:rowOrder="25">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 10:15:00 </DataHora>
+        <Vazao>6899.18</Vazao>
+        <Nivel>568.00</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos27" msdata:rowOrder="26">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 10:00:00 </DataHora>
+        <Vazao>6905.18</Vazao>
+        <Nivel>568.30</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos28" msdata:rowOrder="27">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 09:45:00 </DataHora>
+        <Vazao>6897.18</Vazao>
+        <Nivel>567.90</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos29" msdata:rowOrder="28">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 09:30:00 </DataHora>
+        <Vazao>6907.19</Vazao>
+        <Nivel>568.40</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos30" msdata:rowOrder="29">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 09:15:00 </DataHora>
+        <Vazao>6925.21</Vazao>
+        <Nivel>569.30</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos31" msdata:rowOrder="30">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 09:00:00 </DataHora>
+        <Vazao>6943.26</Vazao>
+        <Nivel>570.20</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos32" msdata:rowOrder="31">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-19 08:45:00 </DataHora>
+        <Vazao>7017.67</Vazao>
+        <Nivel>573.90</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos101" msdata:rowOrder="100">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-18 14:45:00 </DataHora>
+        <Vazao>8133.31</Vazao>
+        <Nivel>627.50</Nivel>
+        <Chuva>0.20</Chuva>
+      </DadosHidrometereologicos>
+      <DadosHidrometereologicos diffgr:id="DadosHidrometereologicos102" msdata:rowOrder="101">
+        <CodEstacao>77150000</CodEstacao>
+        <DataHora>2026-11-18 14:30:00 </DataHora>
+        <Vazao>8161.23</Vazao>
+        <Nivel>628.80</Nivel>
+        <Chuva>0.00</Chuva>
+      </DadosHidrometereologicos>
+    </DocumentElement>
+  </diffgr:diffgram>
+</DataTable>

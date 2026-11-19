@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import type { FastifyInstance } from 'fastify';
 import type { Config } from '../config.ts';
 import { fetchBoLevels, type BoLevels } from '../rivers/bo.ts';
+import { fetchBrLevels, type BrCatalogStation, type BrLevels } from '../rivers/br.ts';
 import { fetchBoExtras, type BoExtras } from '../rivers/boExtra.ts';
 import { fetchPyLevels, type PyCatalogStation, type PyLevels } from '../rivers/py.ts';
 import { fetchUyLevels, type UyLevels } from '../rivers/uy.ts';
@@ -24,6 +25,10 @@ function mergeUy(before: UyLevels, fresh: UyLevels): UyLevels {
 }
 const PY_FRESH_MS = 2 * 3_600_000;
 const PY_STALE_MS = 3 * 86_400_000;
+const BR_FRESH_MS = 30 * 60_000;
+const BR_STALE_MS = 3 * 86_400_000;
+/** La primera lectura de Brasil tarda más de un minuto (33 estaciones, de a una, con pausa): se espera esto y se responde «cargando». */
+const BR_FIRST_WAIT_MS = 45_000;
 const EXTRA_FRESH_MS = 6 * 3_600_000;
 const EXTRA_PARTIAL_MS = 3_600_000;
 const EXTRA_STALE_MS = 14 * 86_400_000;
@@ -32,7 +37,7 @@ export interface BoSource {
   fetch: (stations: { name: string }[]) => Promise<BoLevels>;
 }
 
-export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now()), uy: () => Promise<UyLevels> = () => fetchUyLevels(now(), { caruUrl: config.caruUrl, dinaguaUrl: config.dinaguaUrl }), py: (catalog: PyCatalogStation[]) => Promise<PyLevels> = (catalog) => fetchPyLevels(catalog, now())): void {
+export function riversRoutes(app: FastifyInstance, config: Config, source: BoSource = { fetch: fetchBoLevels }, now: () => number = Date.now, extras: () => Promise<BoExtras> = () => fetchBoExtras(now()), uy: () => Promise<UyLevels> = () => fetchUyLevels(now(), { caruUrl: config.caruUrl, dinaguaUrl: config.dinaguaUrl }), py: (catalog: PyCatalogStation[]) => Promise<PyLevels> = (catalog) => fetchPyLevels(catalog, now()), br: (catalog: BrCatalogStation[], previous: BrLevels | null) => Promise<BrLevels> = (catalog, previous) => fetchBrLevels(catalog, now(), previous), brFirstWaitMs = BR_FIRST_WAIT_MS): void {
   let lastPy: PyLevels | null = null;
   let inflightPy: Promise<PyLevels> | null = null;
   let pyStations: PyCatalogStation[] | null = null;
@@ -59,6 +64,51 @@ export function riversRoutes(app: FastifyInstance, config: Config, source: BoSou
     } catch (err) {
       app.log.warn({ err: String(err) }, 'no se pudieron leer los niveles de la DMH de Paraguay');
       if (lastPy && now() - lastPy.fetchedAt < PY_STALE_MS) return { ...lastPy, stale: true };
+      return reply.code(503).send({ error: 'unavailable' });
+    }
+  });
+
+  let lastBr: BrLevels | null = null;
+  let inflightBr: Promise<BrLevels> | null = null;
+  let brStations: BrCatalogStation[] | null = null;
+
+  function brCatalog(): BrCatalogStation[] {
+    if (!brStations) {
+      if (!config.appDir) throw new Error('sin catálogo de estaciones de Brasil');
+      brStations = (JSON.parse(readFileSync(`${config.appDir}/data/rivers-BR.json`, 'utf8')) as { stations: BrCatalogStation[] }).stations;
+    }
+    return brStations;
+  }
+
+  /**
+   * `GET /api/rivers/br`: niveles de los ríos de Brasil de la telemetría de la ANA (ver rivers/br.ts). Una ronda lleva más de un minuto, así que
+   * se responde con lo último guardado y, si tiene más de 30 minutos, se actualiza por detrás. Sin nada guardado se espera hasta 45 segundos y,
+   * si la ronda sigue, se responde 503 «loading» (la ronda sigue sola y el próximo pedido la encuentra lista). Lo guardado vale hasta 3 días.
+   */
+  app.get('/api/rivers/br', async (_req, reply) => {
+    reply.header('cache-control', 'no-store');
+    const refresh = () => {
+      inflightBr ??= br(brCatalog(), lastBr).then(
+        (l) => (lastBr = l),
+        (err) => {
+          app.log.warn({ err: String(err) }, 'no se pudieron leer los niveles de la ANA de Brasil');
+          throw err;
+        },
+      ).finally(() => (inflightBr = null));
+      return inflightBr;
+    };
+    try {
+      if (lastBr && now() - lastBr.fetchedAt < BR_STALE_MS) {
+        const age = now() - lastBr.fetchedAt;
+        if (age >= BR_FRESH_MS) refresh().catch(() => undefined);
+        return { ...lastBr, stale: age >= BR_FRESH_MS };
+      }
+      const pending = refresh();
+      pending.catch(() => undefined);
+      const result = await Promise.race([pending, new Promise<null>((r) => setTimeout(() => r(null), brFirstWaitMs).unref())]);
+      if (!result) return reply.code(503).send({ error: 'loading' });
+      return { ...result, stale: false };
+    } catch {
       return reply.code(503).send({ error: 'unavailable' });
     }
   });

@@ -3,7 +3,7 @@
  * dato) y con licencia no comercial o con derechos reservados se usa mientras la app sea gratuita y sin publicidad. Para una copia paga,
  * con publicidad o institucional (por ejemplo la de una escuela) se compila con `VITE_COMMERCIAL=1` y se apagan esas fuentes.
  */
-export type SourceId = 'shn' | 'sohma' | 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py';
+export type SourceId = 'shn' | 'sohma' | 'ina' | 'tides' | 'open-meteo' | 'armada-cl' | 'inumet' | 'senamhi-bo' | 'ioc' | 'caru' | 'dinagua' | 'dmh-py' | 'ana-br';
 export type LicenseKind = 'open' | 'undeclared' | 'reserved' | 'non-commercial';
 
 export interface NavSource {
@@ -118,6 +118,15 @@ export const NAV_SOURCES: NavSource[] = [
     licenseText: 'Sin licencia ni términos declarados; la tabla es pública (sin CORS) y se lee desde el servidor propio',
     url: 'https://www.meteorologia.gov.py/nivel-rio/',
     cite: 'Dirección de Meteorología e Hidrología (DMH) de Paraguay, por convenio con la Armada, la ANNP, el MADES y el MOPC; ubicación aproximada: estaciones publicadas por YRATO (Itaipú) y OpenStreetMap (© OpenStreetMap contributors)',
+  },
+  {
+    id: 'ana-br',
+    name: 'ANA y SGB/CPRM, ríos de Brasil',
+    provides: 'Niveles casi en tiempo real de los ríos Uruguai, Iguaçu y Paraná de frontera (telemetría de la ANA), con las cotas de atención, alerta e inundación del SGB/CPRM donde existen, leídos por el servidor',
+    license: 'undeclared',
+    licenseText: 'Sin licencia ni términos declarados (ni en el servicio de telemetría ni en el informe de las cotas, de diciembre de 2023): se usa con crédito, desde el servidor propio y pidiendo de a una estación con pausa',
+    url: 'https://www.gov.br/ana/pt-br',
+    cite: 'Agência Nacional de Águas e Saneamento Básico (ANA), telemetría hidrológica; cotas de referencia: Serviço Geológico do Brasil (SGB/CPRM), «Relatório de operação do Sistema de Alerta Hidrológico da Bacia do Rio Uruguai» (2023)',
   },
   {
     id: 'ioc',

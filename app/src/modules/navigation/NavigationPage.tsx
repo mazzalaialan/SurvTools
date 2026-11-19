@@ -10,6 +10,7 @@ import { ChileMarineCard } from './ChileMarineCard';
 import { SourcesCard } from './SourcesCard';
 import { UruguayMarineCard } from './UruguayMarineCard';
 import { ParaguayRiversCard } from './ParaguayRiversCard';
+import { BrazilRiversCard } from './BrazilRiversCard';
 import { UruguayRiversCard } from './UruguayRiversCard';
 import { sourceEnabled } from './sources';
 import { WavesCard } from './WavesCard';
@@ -40,6 +41,7 @@ export function NavigationPage() {
       <ChileMarineCard place={place} />
       {(sourceEnabled('caru') || sourceEnabled('dinagua')) && <UruguayRiversCard place={place} />}
       {sourceEnabled('dmh-py') && <ParaguayRiversCard place={place} />}
+      {sourceEnabled('ana-br') && <BrazilRiversCard place={place} />}
       <UruguayMarineCard place={place} />
       <SourcesCard />
     </div>
