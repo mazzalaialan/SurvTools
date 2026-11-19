@@ -8,7 +8,7 @@ import type { MapSourceMode } from '@/modules/maps/sources';
  * Ajustes no sensibles: se guardan en claro porque se necesitan antes de
  * desbloquear (idioma y tema de la pantalla de desbloqueo).
  */
-export type Language = 'es' | 'en';
+export type Language = 'es' | 'en' | 'pt';
 /** `saver`: ahorro de batería (negro puro para pantallas OLED y menos trabajo de fondo; ver core/power/saver.ts). */
 export type Theme = 'dark' | 'light' | 'red' | 'saver';
 
@@ -250,12 +250,16 @@ export interface StarmapLayers {
   grid: boolean;
 }
 
-export const LANGUAGES: Language[] = ['es', 'en'];
+export const LANGUAGES: Language[] = ['es', 'en', 'pt'];
 export const THEMES: Theme[] = ['dark', 'light', 'red', 'saver'];
 export const AUTO_LOCK_OPTIONS = [1, 5, 15, 30, 60];
 
-function detectLanguage(): Language {
-  return globalThis.navigator?.language?.toLowerCase().startsWith('es') === false ? 'en' : 'es';
+/** Por el idioma del navegador: español, portugués (de Brasil) o, para cualquier otro, inglés. */
+export function detectLanguage(lang: string | undefined = globalThis.navigator?.language): Language {
+  const l = (lang ?? 'es').toLowerCase();
+  if (l.startsWith('es')) return 'es';
+  if (l.startsWith('pt')) return 'pt';
+  return 'en';
 }
 
 /** Servidor VikArg que viene cargado (se puede cambiar o vaciar en Ajustes). */

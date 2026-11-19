@@ -159,9 +159,9 @@ self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim(
 
 // ---------- Notificaciones ----------
 
-async function language(): Promise<'es' | 'en'> {
+async function language(): Promise<'es' | 'en' | 'pt'> {
   const settings = (await db.settings.get('app'))?.value as Partial<Settings> | undefined;
-  return settings?.language === 'en' ? 'en' : 'es';
+  return settings?.language === 'en' || settings?.language === 'pt' ? settings.language : 'es';
 }
 
 async function show(title: string, body: string, url = ALERTS_URL) {

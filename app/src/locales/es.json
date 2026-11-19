@@ -2859,7 +2859,7 @@
   },
   "theme": { "dark": "Oscuro", "light": "Claro", "red": "Rojo nocturno", "saver": "Ahorro de batería" },
   "units": { "metric": "Métrico", "imperial": "Imperial" },
-  "language": { "es": "Español", "en": "English" },
+  "language": { "es": "Español", "en": "English", "pt": "Português" },
   "pwa": {
     "updateAvailable": "Hay una versión nueva disponible.",
     "update": "Actualizar",

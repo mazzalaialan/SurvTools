@@ -30,7 +30,7 @@ export async function refreshNativeDaily(): Promise<boolean> {
     return false;
   }
   const alerts = await db.alertIndex.toArray();
-  const plan = planDailyNotices(alerts, today(), now, notifyHour, last, language === 'en' ? 'en' : 'es');
+  const plan = planDailyNotices(alerts, today(), now, notifyHour, last, language);
   if (plan.length) {
     await LocalNotifications.schedule({
       notifications: plan.map((p, i) => ({

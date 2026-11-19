@@ -116,7 +116,7 @@ export async function startNativeNotifications(): Promise<void> {
   // Con la app abierta en pantalla Android NO muestra los avisos de FCM: se los entrega a la app y la app los muestra, en su idioma.
   void PushNotifications.addListener('pushNotificationReceived', (n) => {
     const type = (n.data as { type?: string } | undefined)?.type;
-    const lang = useSettings.getState().settings.language === 'en' ? 'en' : 'es';
+    const lang = useSettings.getState().settings.language;
     const { title, body } = type === 'test' ? testNotification(lang) : genericPushNotification(lang);
     void nativeBackend.showLocal({ title, body, tag: 'vikarg-alerts', url: routeForPush({ type }) });
   });

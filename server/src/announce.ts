@@ -8,15 +8,15 @@ import type { PushPayload, PushSender, PushSubscriptionJson } from './push.ts';
  * versión una sola vez:
  *
  *   node src/announce.ts --version 0.23.0 \
- *     --title-es "…" --body-es "…" --title-en "…" --body-en "…" [--dry-run] [--force]
+ *     --title-es "…" --body-es "…" --title-en "…" --body-en "…" [--title-pt "…" --body-pt "…"] [--dry-run] [--force]
  *
  * En el servidor: `docker compose exec vikarg node src/announce.ts …`.
  */
 
 export interface Announcement {
   version: string;
-  title: { es: string; en: string };
-  body: { es: string; en: string };
+  title: { es: string; en: string; pt?: string };
+  body: { es: string; en: string; pt?: string };
 }
 
 export interface AnnounceResult {
@@ -71,6 +71,8 @@ export function parseAnnouncement(argv: string[]): { announcement: Announcement;
       'body-es': { type: 'string' },
       'title-en': { type: 'string' },
       'body-en': { type: 'string' },
+      'title-pt': { type: 'string' },
+      'body-pt': { type: 'string' },
       'dry-run': { type: 'boolean', default: false },
       force: { type: 'boolean', default: false },
     },
@@ -83,11 +85,15 @@ export function parseAnnouncement(argv: string[]): { announcement: Announcement;
   };
   const version = need('version', 32);
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('--version tiene que ser como 0.23.0');
+  // El portugués es opcional: sin él, los usuarios en portugués reciben el aviso en español.
+  const optional = (k: 'title-pt' | 'body-pt', max: number) => (typeof values[k] === 'string' && values[k]!.trim() ? need(k, max) : undefined);
+  const titlePt = optional('title-pt', LIMIT.title);
+  const bodyPt = optional('body-pt', LIMIT.body);
   return {
     announcement: {
       version,
-      title: { es: need('title-es', LIMIT.title), en: need('title-en', LIMIT.title) },
-      body: { es: need('body-es', LIMIT.body), en: need('body-en', LIMIT.body) },
+      title: { es: need('title-es', LIMIT.title), en: need('title-en', LIMIT.title), ...(titlePt ? { pt: titlePt } : {}) },
+      body: { es: need('body-es', LIMIT.body), en: need('body-en', LIMIT.body), ...(bodyPt ? { pt: bodyPt } : {}) },
     },
     dryRun: values['dry-run'] === true,
     force: values.force === true,

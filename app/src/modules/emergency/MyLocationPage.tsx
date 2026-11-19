@@ -44,7 +44,7 @@ export function MyLocationPage() {
   const [info, setInfo] = useState<LocationInfo | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'error' | 'offline'>('idle');
   const lastLookup = useRef<{ lat: number; lon: number } | null>(null);
-  const voice = useSpeechVoice(i18n.language.startsWith('en') ? 'en' : 'es');
+  const voice = useSpeechVoice(i18n.language.startsWith('en') ? 'en' : i18n.language.startsWith('pt') ? 'pt' : 'es');
   const [reading, setReading] = useState(false);
 
   async function lookup(lat: number, lon: number) {

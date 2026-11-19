@@ -64,7 +64,7 @@ function storedTarget(target: PushTarget): PushTarget {
 const prefsProperties = {
   timezone: { type: 'string', maxLength: 64 },
   notifyHour: { type: 'integer', minimum: 0, maximum: 23 },
-  language: { type: 'string', enum: ['es', 'en'] },
+  language: { type: 'string', enum: ['es', 'en', 'pt'] },
   /** Avisos de actualizaciones importantes (por defecto, sí). */
   updates: { type: 'boolean' },
   /** Avisos de peligros naturales cerca (por defecto, sí). */
@@ -86,7 +86,7 @@ const alertSchema = {
 interface Prefs {
   timezone: string;
   notifyHour: number;
-  language: 'es' | 'en';
+  language: 'es' | 'en' | 'pt';
   updates?: boolean;
   hazards?: boolean;
 }

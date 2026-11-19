@@ -2860,7 +2860,7 @@
   },
   "theme": { "dark": "Dark", "light": "Light", "red": "Red night", "saver": "Battery saver" },
   "units": { "metric": "Metric", "imperial": "Imperial" },
-  "language": { "es": "Español", "en": "English" },
+  "language": { "es": "Español", "en": "English", "pt": "Português" },
   "pwa": {
     "updateAvailable": "A new version is available.",
     "update": "Update",

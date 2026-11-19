@@ -25,7 +25,7 @@ export function planDailyNotices(
   now: number,
   hour: number,
   last: string | null,
-  lang: 'es' | 'en',
+  lang: 'es' | 'en' | 'pt',
 ): PlannedNotice[] {
   const plan: PlannedNotice[] = [];
   for (let i = 0; i < PLAN_DAYS; i++) {

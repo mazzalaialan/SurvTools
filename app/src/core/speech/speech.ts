@@ -9,11 +9,11 @@ import { useEffect, useState } from 'react';
 
 const synth = (): SpeechSynthesis | null => (typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null);
 
-/** La mejor voz para el idioma: primero las que andan sin conexión, y en español las de Argentina. */
-export function pickVoice(voices: SpeechSynthesisVoice[], lang: 'es' | 'en'): SpeechSynthesisVoice | null {
+/** La mejor voz para el idioma: primero las que andan sin conexión, en español las de Argentina y en portugués las de Brasil. */
+export function pickVoice(voices: SpeechSynthesisVoice[], lang: 'es' | 'en' | 'pt'): SpeechSynthesisVoice | null {
   const own = voices.filter((v) => v.lang.toLowerCase().replace('_', '-').startsWith(lang));
   if (own.length === 0) return null;
-  const preferred = lang === 'es' ? ['es-ar', 'es-419', 'es-us', 'es-mx', 'es-es'] : ['en-us', 'en-gb'];
+  const preferred = lang === 'es' ? ['es-ar', 'es-419', 'es-us', 'es-mx', 'es-es'] : lang === 'pt' ? ['pt-br', 'pt-pt'] : ['en-us', 'en-gb'];
   const rank = (v: SpeechSynthesisVoice) => {
     const i = preferred.indexOf(v.lang.toLowerCase().replace('_', '-'));
     return (v.localService ? 0 : 100) + (i === -1 ? preferred.length : i);
@@ -22,7 +22,7 @@ export function pickVoice(voices: SpeechSynthesisVoice[], lang: 'es' | 'en'): Sp
 }
 
 /** ¿Hay voz para este idioma? `null` mientras el sistema todavía carga las voces. */
-export function useSpeechVoice(lang: 'es' | 'en'): SpeechSynthesisVoice | null | undefined {
+export function useSpeechVoice(lang: 'es' | 'en' | 'pt'): SpeechSynthesisVoice | null | undefined {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[] | null>(() => {
     const list = synth()?.getVoices() ?? [];
     return list.length ? list : null;
