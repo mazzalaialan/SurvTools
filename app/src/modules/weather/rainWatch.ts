@@ -8,6 +8,7 @@ import { useWaypoints } from '@/modules/waypoints/store';
 import { CLEAR_AFTER_MS, nextEpisode, type RainEpisode } from './rainEpisode';
 import { fetchNowcast, rainOutlook, type RainOutlook } from './nowcast';
 import { hereIsDuplicate } from './samePlace';
+import { radarSaysDry } from './radarCheck';
 import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
 
 /**
@@ -80,6 +81,8 @@ export function useRainWatcher() {
   const { t, i18n } = useTranslation();
   const here = useSettings((s) => s.settings.rainAlertsHere);
   const base = useSettings((s) => s.settings.weatherUrl);
+  const serverUrl = useSettings((s) => s.settings.serverUrl);
+  const serverLocation = useSettings((s) => s.settings.serverLocation);
   const checkMs = useBatterySaver() ? RAIN_CHECK_MS.saver : RAIN_CHECK_MS.normal;
   const waypoints = useWaypoints((s) => s.waypoints);
   // La lista se reduce a lo que importa para no reiniciar el ciclo por cambios ajenos (nombre, notas…).
@@ -114,6 +117,9 @@ export function useRainWatcher() {
         } catch {
           continue;
         }
+        // Doble chequeo con el radar argentino (vía el servidor propio): si hay cobertura y no ve nada cerca, no corresponde avisar.
+        // «Mi ubicación» solo se consulta si el usuario permite mandarla al servidor.
+        if (outlook.state !== 'dry' && (place.id !== HERE_ID || serverLocation) && (await radarSaysDry(serverUrl, place.lat, place.lon, outlook))) outlook = { state: 'dry' };
         const status: RainStatus = { placeId: place.id, label: place.label, outlook, checkedAt: Date.now() };
         const state = useRainWatch.getState();
         useRainWatch.setState({ statuses: new Map(state.statuses).set(place.id, status) });
@@ -156,5 +162,5 @@ export function useRainWatcher() {
       document.removeEventListener('visibilitychange', onVisible);
     };
     // `watchKey` resume los waypoints vigilados (la lista `watched` cambia de identidad en cada render).
-  }, [here, base, watchKey, checkMs, i18n.language, t]);
+  }, [here, base, serverUrl, serverLocation, watchKey, checkMs, i18n.language, t]);
 }

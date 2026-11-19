@@ -13,6 +13,7 @@ import { runRainWatch } from './rain/watch.ts';
 import { createRadarStore, radarTick } from './radar/sinarame.ts';
 import { createRainMapStore, RAIN_MAP_ACTIVE_MS, updateRainMap } from './rain/map.ts';
 import { irObserver, withObservedRain } from './rain/observer.ts';
+import { withRadarCheck } from './rain/radarCheck.ts';
 import { openMeteoSource } from './rain/source.ts';
 import { runScheduler } from './scheduler.ts';
 import { runOutingWatch } from './outings/watch.ts';
@@ -88,12 +89,19 @@ async function tick() {
 const weatherFetch = localWeatherFetch(config.weatherUrl, { localUrl: config.openMeteoLocalUrl, archiveFromYear: config.openMeteoArchiveFromYear });
 const forecastSource = openMeteoSource(config.weatherUrl, weatherFetch);
 const observer = irObserver();
-const rainSource = config.rainObserved ? withObservedRain(forecastSource, observer) : forecastSource;
+const observedSource = config.rainObserved ? withObservedRain(forecastSource, observer) : forecastSource;
+// Doble chequeo con el radar argentino: solo descarta avisos donde hay cobertura e imágenes recientes (ver rain/radarCheck.ts).
+const radarChecked = config.radarSinarame ? withRadarCheck(observedSource, { store: radarStore, fetchOpts: { base: config.radarBaseUrl, pauseMs: config.radarPauseMs }, refreshMs: config.radarRefreshMin * 60_000 }) : null;
+const rainSource = radarChecked ?? observedSource;
+let radarVetoedLogged = 0;
 
 async function rainTick() {
   try {
     const { sent, removed } = await runRainWatch(db, push, rainSource, new Date(), config.rainHereMaxAgeMs);
     if (sent || removed) app.log.info({ sent, removed }, 'avisos de lluvia enviados');
+    const vetoed = radarChecked?.vetoed() ?? 0;
+    if (vetoed > radarVetoedLogged) app.log.info({ descartados: vetoed - radarVetoedLogged }, 'avisos de lluvia descartados por el radar (sin eco cerca)');
+    radarVetoedLogged = vetoed;
     await monitor.ok('open-meteo', 'El pronóstico de lluvia (Open-Meteo)');
   } catch (err) {
     await monitor.fail('open-meteo', 'El pronóstico de lluvia (Open-Meteo)', err);

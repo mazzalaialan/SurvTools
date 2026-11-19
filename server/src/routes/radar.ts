@@ -8,13 +8,14 @@ import {
   stampToUtcMs,
   type RadarStore,
 } from '../radar/sinarame.ts';
+import { checkRadar, type RadarCheckDeps } from '../rain/radarCheck.ts';
 
 /**
  * Imágenes de los radares argentinos para el mapa de la app. `GET /api/radar` lista los radares (con su posición y los límites de su imagen);
  * con `?ids=RMA1,RMA10` además dice qué imágenes hay de esos y despierta la tarea que las busca (solo se le pregunta al servicio de radares
  * mientras alguien las mira). `GET /api/radar/:id/:stamp.png` es la imagen. Sin clave: son datos públicos (CC BY 4.0, con atribución).
  */
-export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (ids: string[]) => void, enabled = true): void {
+export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (ids: string[]) => void, enabled = true, check?: RadarCheckDeps): void {
   app.get('/api/radar', async (req, reply) => {
     reply.header('cache-control', 'no-store');
     if (!enabled) return { enabled: false, attribution: RADAR_ATTRIBUTION, rangeKm: RADAR_RANGE_KM, radars: [] };
@@ -44,6 +45,23 @@ export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (id
         };
       }),
     };
+  });
+  /**
+   * Doble chequeo de un aviso de lluvia para la app abierta: `?lat=&lon=&state=raining|soon&minutes=`. Responde `{ verdict: 'clear' | 'echo' | 'unknown' }`;
+   * solo `clear` (hay radar con imágenes recientes y no ve nada cerca) permite descartar el aviso, todo lo demás lo deja como está.
+   */
+  app.get('/api/radar/check', async (req, reply) => {
+    reply.header('cache-control', 'no-store');
+    const q = req.query as { lat?: string; lon?: string; state?: string; minutes?: string };
+    const lat = Number(q.lat);
+    const lon = Number(q.lon);
+    const minutes = Number(q.minutes ?? 0);
+    if (!enabled || !check) return { verdict: 'unknown' };
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180 || (q.state !== 'raining' && q.state !== 'soon') || !Number.isFinite(minutes)) {
+      return reply.code(400).send({ error: 'invalid-query' });
+    }
+    const outlook = q.state === 'raining' ? ({ state: 'raining', mm: 0, peakMmH: 0 } as const) : ({ state: 'soon', inMinutes: minutes, startsAt: '', mm: 0, peakMmH: 0 } as const);
+    return { verdict: await checkRadar(check, lat, lon, outlook) };
   });
   app.get('/api/radar/:id/:file', async (req, reply) => {
     const { id, file } = req.params as { id: string; file: string };

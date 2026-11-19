@@ -71,7 +71,11 @@ export async function buildApp(
   liveSessionRoutes(app, db, config);
   lightningRoutes(app, lightning.store, lightning.wake);
   rainMapRoutes(app, rainMap.store, rainMap.wake);
-  radarRoutes(app, radar.store, radar.wake, config.radarSinarame);
+  radarRoutes(app, radar.store, radar.wake, config.radarSinarame, {
+    store: radar.store,
+    fetchOpts: { base: config.radarBaseUrl, pauseMs: config.radarPauseMs },
+    refreshMs: config.radarRefreshMin * 60_000,
+  });
   mapRoutes(app, maps, config);
   libraryRoutes(app, config);
   dataRoutes(app, config);
