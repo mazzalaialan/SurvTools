@@ -314,6 +314,41 @@ export async function fetchRainMap(serverUrl: string): Promise<RainMap> {
   return { at: data.at ?? null, bounds: data.bounds, image: data.image ? `${base}${data.image}` : null };
 }
 
+// ---------- Radares argentinos (SINARAME y SMN, desde el servidor propio) ----------
+
+export interface SinarameRadar {
+  id: string;
+  name: string;
+  bounds: { west: number; east: number; south: number; north: number };
+  /** De la más vieja a la más nueva; `url` ya es la dirección completa de la imagen. */
+  frames: { at: Date; url: string }[];
+}
+
+export interface SinarameData {
+  attribution: string;
+  radars: SinarameRadar[];
+}
+
+/** Los radares y las imágenes de los `ids` pedidos (el servidor solo las busca mientras alguien las mira; la primera vez tardan un rato). */
+export async function fetchSinarame(serverUrl: string, ids: string[]): Promise<SinarameData> {
+  const base = serverUrl.replace(/\/+$/, '');
+  const data = await getJson<{
+    enabled?: boolean;
+    attribution?: string;
+    radars?: { id: string; name: string; bounds: SinarameRadar['bounds']; frames: { at: string; url: string }[] }[];
+  }>(`${base}/api/radar?ids=${ids.join(',')}`, 'sinarame');
+  if (!data.enabled || !data.radars) throw new MapSourceError('sinarame');
+  return {
+    attribution: data.attribution ?? '',
+    radars: data.radars.map((r) => ({ id: r.id, name: r.name, bounds: r.bounds, frames: r.frames.map((f) => ({ at: new Date(f.at), url: `${base}${f.url}` })) })),
+  };
+}
+
+/** ¿El rectángulo del radar toca lo que se ve en el mapa? (grados; para pedir solo los radares que hacen falta) */
+export function radarTouchesView(b: SinarameRadar['bounds'], view: { west: number; east: number; south: number; north: number }): boolean {
+  return b.west < view.east && b.east > view.west && b.south < view.north && b.north > view.south;
+}
+
 // ---------- Alertas oficiales (SMN, DMC, INUMET, SENAMHI de Bolivia y Perú; desde el servidor propio) ----------
 
 export type OfficialSeverity = 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown';

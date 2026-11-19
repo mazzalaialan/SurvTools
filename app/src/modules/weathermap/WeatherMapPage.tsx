@@ -21,7 +21,7 @@ import { RiverForecastLine } from './RiverForecastLine';
 import { TideGaugeLine } from './TideGaugeLine';
 import { boThreatLine } from '@/modules/navigation/bolivia';
 import { tideExtremes, tideLevelAt } from '@/modules/navigation/tides';
-import { fitBounds, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
+import { fitBounds, fromMercator, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
 import { Notice } from '@/ui/Notice';
 import {
   alertCovers,
@@ -31,6 +31,8 @@ import {
   volcanoAlertAt,
   fetchLightning,
   fetchRainMap,
+  fetchSinarame,
+  radarTouchesView,
   fetchQuakes,
   fetchRadarFrames,
   fetchZoneWeather,
@@ -51,6 +53,8 @@ import {
   type OfficialAlert,
   type VolcanoAlert,
   type RainMap,
+  type SinarameData,
+  type SinarameRadar,
   type Quake,
   type RadarFrames,
   type ZoneWeather,
@@ -64,13 +68,13 @@ const SETTLE_MS = 500;
 /** Teselas de radar por cuadro (si hacen falta más, se usa un zoom menor). */
 const RADAR_TILES_MAX = 16;
 const PRELOAD_PARALLEL = 4;
-const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waves', 'waypoints'];
+const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'sinarame', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waves', 'waypoints'];
 /** Cada cuánto se piden los rayos (el satélite saca un archivo cada 20 s). */
 const LIGHTNING_MS = 20_000;
 /** La lluvia estimada sale cada 10 minutos. */
 const RAIN_MAP_MS = 5 * 60_000;
 const VALUES: WeatherMapValue[] = ['temp', 'rain', 'wind'];
-type SourceKey = 'satellite' | 'radar' | 'zoneWeather' | 'earthquakes' | 'hazards' | 'lightning' | 'satRain' | 'official';
+type SourceKey = 'satellite' | 'radar' | 'zoneWeather' | 'earthquakes' | 'hazards' | 'lightning' | 'satRain' | 'sinarame' | 'official';
 
 export function WeatherMapPage() {
   const { t, i18n } = useTranslation();
@@ -120,6 +124,10 @@ export function WeatherMapPage() {
   const showLightning = layers.lightning && !!serverUrl;
   const [rainMap, setRainMap] = useState<RainMap | null>(null);
   const showSatRain = layers.satRain && !!serverUrl;
+  // Radares argentinos (SINARAME): primero la lista de radares con su ubicación; después las imágenes de los que tocan lo que se ve.
+  const showSinarame = layers.sinarame && !!serverUrl;
+  const [sinaSites, setSinaSites] = useState<SinarameRadar[] | null>(null);
+  const [sinarame, setSinarame] = useState<SinarameData | null>(null);
 
   useEffect(() => {
     void loadGeoData().then(setGeo);
@@ -323,6 +331,60 @@ export function WeatherMapPage() {
     };
   }, [showSatRain, online, serverUrl]);
 
+  // Radares argentinos: la lista de radares (sin imágenes), una sola vez.
+  useEffect(() => {
+    if (!showSinarame || !online || sinaSites) return;
+    let cancelled = false;
+    fetchSinarame(serverUrl, []).then(
+      (d) => !cancelled && (setSinaSites(d.radars), setSinarame((cur) => cur ?? { attribution: d.attribution, radars: [] })),
+      () => !cancelled && fail('sinarame', true),
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [showSinarame, online, serverUrl, sinaSites]);
+
+  // Los radares cuyo cuadrado toca lo que se ve (en el país entero son casi todos; al acercar, pocos).
+  const sinaIds = useMemo(() => {
+    if (!sinaSites || !request) return '';
+    const a = fromMercator(viewBBox(request.view, request.size).minX, viewBBox(request.view, request.size).minY);
+    const b = fromMercator(viewBBox(request.view, request.size).maxX, viewBBox(request.view, request.size).maxY);
+    const view = { west: a.lon, east: b.lon, south: a.lat, north: b.lat };
+    return sinaSites.filter((r) => radarTouchesView(r.bounds, view)).map((r) => r.id).join(',');
+  }, [sinaSites, request]);
+
+  // Las imágenes de esos radares: el servidor las busca recién cuando alguien las pide, así que la primera vez tardan; se vuelve a pedir
+  // enseguida y después cada 5 minutos (sale una imagen nueva cada 10).
+  useEffect(() => {
+    if (!showSinarame || !online || !sinaIds) return;
+    let cancelled = false;
+    const load = () =>
+      document.visibilityState === 'visible' &&
+      fetchSinarame(serverUrl, sinaIds.split(',')).then(
+        async (d) => {
+          if (cancelled) return;
+          // Las imágenes del cuadro más nuevo primero, así se ve algo enseguida.
+          for (const r of d.radars) for (const f of [...r.frames].reverse().slice(0, 1)) await preload(f.url);
+          if (cancelled) return;
+          setSinarame(d);
+          setVersion((v) => v + 1);
+          fail('sinarame', false);
+        },
+        () => !cancelled && fail('sinarame', true),
+      );
+    void load();
+    const early = [20_000, 60_000].map((ms) => setTimeout(() => void load(), ms));
+    const timer = setInterval(() => void load(), 5 * 60_000);
+    const onVisible = () => document.visibilityState === 'visible' && void load();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      cancelled = true;
+      early.forEach(clearTimeout);
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [showSinarame, online, serverUrl, sinaIds]);
+
   // Mi ubicación, una sola lectura (el GPS gasta batería): para mis puntos y para los anillos de los rayos.
   // Mi ubicación, siempre que el permiso ya esté dado; con waypoints o rayos (los pidió el usuario), se pide si hace falta.
   const askHere = layers.waypoints || showLightning;
@@ -353,7 +415,9 @@ export function WeatherMapPage() {
     }
   }, [request]);
   const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
-  const frameCount = Math.max(satTimes?.length ?? 1, radar?.frames.length ?? 1);
+  const sinaRadars = useMemo(() => (showSinarame && sinarame ? sinarame.radars.filter((r) => r.frames.length > 0) : []), [showSinarame, sinarame]);
+  const sinaLen = sinaRadars.reduce((n, r) => Math.max(n, r.frames.length), 0);
+  const frameCount = Math.max(satTimes?.length ?? 1, radar?.frames.length ?? 1, sinaLen || 1);
   const idxAt = (i: number, len: number) => Math.round((Math.min(i, frameCount - 1) * (len - 1)) / Math.max(1, frameCount - 1));
   const idx = (len: number) => idxAt(frame, len);
 
@@ -368,6 +432,13 @@ export function WeatherMapPage() {
     if (layers.radar && radar?.frames.length) {
       const f = radar.frames[idxAt(i, radar.frames.length)]!;
       for (const tile of radarTiles) out.push({ url: radarTileUrl(radar.host, f.path, tile.z, tile.x, tile.y), bbox: tileBBox(tile.x, tile.y, tile.z), opacity: 0.85 });
+    }
+    // Radares argentinos: de cada uno, la imagen que corresponde a este cuadro (los radares pueden tener distinta cantidad: se reparten parejo).
+    for (const r of sinaRadars) {
+      const f = r.frames[idxAt(i, r.frames.length)]!;
+      const sw = toMercator(r.bounds.west, r.bounds.south);
+      const ne = toMercator(r.bounds.east, r.bounds.north);
+      out.push({ url: f.url, bbox: { minX: sw.x, minY: sw.y, maxX: ne.x, maxY: ne.y }, opacity: 0.7 });
     }
     return out;
   };
@@ -398,7 +469,7 @@ export function WeatherMapPage() {
       cancelled = true;
     };
     // frameOverlays depende de estos mismos datos.
-  }, [request, satTimes, satSource, radar, radarTiles, layers.satellite, layers.fires, gibsFires, layers.radar, online, ratio, frameCount]);
+  }, [request, satTimes, satSource, radar, radarTiles, layers.satellite, layers.fires, gibsFires, layers.radar, sinaRadars, online, ratio, frameCount]);
 
   // Se saltean los cuadros que todavía no bajaron (si no, el radar aparece vacío en esa parte).
   useEffect(() => {
@@ -439,7 +510,12 @@ export function WeatherMapPage() {
   const timeFmt = new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' });
   const setLayer = (key: keyof WeatherMapLayers, on: boolean) => void update({ weatherMapLayers: { ...layers, [key]: on } });
   const zoom = (factor: number) => view && size && setView(zoomAt(view, size, factor));
-  const animated = !saver && frameCount > 1 && (layers.satellite || layers.radar);
+  const animated = !saver && frameCount > 1 && (layers.satellite || layers.radar || sinaLen > 1);
+  /** Hora de la imagen de radar argentino que se está viendo (la más nueva entre los radares de este cuadro). */
+  const sinaTime = sinaRadars.reduce<Date | undefined>((t, r) => {
+    const at = r.frames[idx(r.frames.length)]?.at;
+    return at && (!t || at > t) ? at : t;
+  }, undefined);
   const satTime = satTimes?.[idx(satTimes.length)];
   const radarTime = radar?.frames[idx(radar.frames.length)]?.time;
   const satRainTime = showSatRain && rainMap?.at ? new Date(rainMap.at) : undefined;
@@ -472,7 +548,7 @@ export function WeatherMapPage() {
 
       <FullscreenStage
         className="wmap"
-        overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fires={firesTime} fmt={timeFmt} />}
+        overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} sina={showSinarame ? sinaTime : undefined} fires={firesTime} fmt={timeFmt} />}
       >
         {geo ? (
           <MapCanvas
@@ -553,7 +629,7 @@ export function WeatherMapPage() {
         )}
       </FullscreenStage>
 
-      <MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} fires={firesTime} fmt={timeFmt} />
+      <MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} sina={showSinarame ? sinaTime : undefined} fires={firesTime} fmt={timeFmt} />
 
       {selected && <FeatureCard feature={selected} u={u} now={now} volcanoAlerts={showOfficial ? official?.volcanoes : undefined} firesFetchedAt={fires.data?.fetchedAt} onClose={() => setSelected(null)} />}
       {showOfficial && official && <AlertsHere alerts={activeAlerts} here={here} waypoints={waypointMap} onSelect={(a) => setSelected({ kind: 'official', item: a })} />}
@@ -563,7 +639,7 @@ export function WeatherMapPage() {
         <div className="chips" role="group" aria-label={t('weatherMap.layers')}>
           {LAYER_KEYS.filter((k) => k !== 'waves' || sourceEnabled('open-meteo')).map((key) => {
             // Los rayos los junta el servidor propio: sin servidor, no hay.
-            const noServer = (key === 'lightning' || key === 'satRain' || key === 'official') && !serverUrl;
+            const noServer = (key === 'lightning' || key === 'satRain' || key === 'sinarame' || key === 'official') && !serverUrl;
             return (
               <button
                 key={key}
@@ -595,7 +671,12 @@ export function WeatherMapPage() {
             ))}
           </div>
         )}
-        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} firesHidden={fires.data?.hidden ?? 0} satNoaa={satSource === 'noaa'} />
+        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, sinarame: showSinarame, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} firesHidden={fires.data?.hidden ?? 0} satNoaa={satSource === 'noaa'} />
+        {showSinarame && sinarame?.attribution && (
+          <p className="hint" style={{ margin: 0 }} data-testid="sinarame-attribution">
+            {t('weatherMap.sinarameCredit', { source: sinarame.attribution })}
+          </p>
+        )}
         {showLightning && (
           <p className="hint" style={{ margin: 0 }} data-testid="lightning-status">
             {lightning?.updatedAt
@@ -611,9 +692,9 @@ export function WeatherMapPage() {
   );
 }
 
-function MapTimes({ sat, satNoaa, stale, rain, radar, fires, fmt }: { sat: Date | undefined; satNoaa?: boolean; stale?: boolean; rain?: Date; radar: Date | undefined; fires?: Date; fmt: Intl.DateTimeFormat }) {
+function MapTimes({ sat, satNoaa, stale, rain, radar, sina, fires, fmt }: { sat: Date | undefined; sina?: Date; satNoaa?: boolean; stale?: boolean; rain?: Date; radar: Date | undefined; fires?: Date; fmt: Intl.DateTimeFormat }) {
   const { t } = useTranslation();
-  if (!sat && !radar && !rain && !fires && !stale) return null;
+  if (!sat && !radar && !sina && !rain && !fires && !stale) return null;
   return (
     <p className="hint wmap-times" data-testid="map-times">
       {[
@@ -621,6 +702,7 @@ function MapTimes({ sat, satNoaa, stale, rain, radar, fires, fmt }: { sat: Date 
         stale && t('weatherMap.satelliteStaleShort'),
         rain && t('weatherMap.satRainAt', { time: fmt.format(rain) }),
         radar && t('weatherMap.radarAt', { time: fmt.format(radar) }),
+        sina && t('weatherMap.sinarameAt', { time: fmt.format(sina) }),
         fires && t('weatherMap.firesAt', { time: fmt.format(fires) }),
       ]
         .filter(Boolean)
@@ -636,6 +718,7 @@ function Legend({ layers, zoneValue, windUnit, firmsFires, firesHidden, satNoaa 
     [layers.regionWeather && zoneValue === 'wind', 'wind', t('weatherMap.legend.wind', { unit: windUnit })],
     [layers.satellite, 'satellite', t(satNoaa ? 'weatherMap.legend.satelliteNoaa' : 'weatherMap.legend.satellite')],
     [layers.satRain, 'satRain', t('weatherMap.legend.satRain')],
+    [layers.sinarame, 'sinarame', t('weatherMap.legend.sinarame')],
     [layers.radar, 'radar', t('weatherMap.legend.radar')],
     [layers.earthquakes, 'quake', t('weatherMap.legend.earthquakes')],
     [layers.hazards, 'hazard', t('weatherMap.legend.hazards')],

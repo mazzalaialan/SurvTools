@@ -75,6 +75,10 @@ async function mockSources(page: Page) {
   await ctx.route('**/api/rain/map', (route) =>
     route.fulfill({ json: { at: rainAt, bounds: { west: -76, east: -52, south: -58, north: -21 }, image: '/api/rain/map.png?t=1' }, headers: { 'Access-Control-Allow-Origin': '*' } }),
   );
+  // Radares argentinos (servidor propio): por defecto sin radares, para no tocar lo que miden las demás pruebas.
+  await ctx.route('**/api/radar**', (route) =>
+    route.fulfill({ json: { enabled: true, attribution: 'SINARAME y SMN (CC BY 4.0)', rangeKm: 240, radars: [] }, headers: { 'Access-Control-Allow-Origin': '*' } }),
+  );
   await ctx.route('**/api/rain/map.png**', (route) => route.fulfill({ body: rainPng, contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } }));
   // El servidor propio (el que viene cargado): rayos de la última pasada.
   lightningBatch = [
@@ -654,4 +658,64 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
   await expect(page.getByTestId('compare-table').locator('tbody tr').first()).toContainText('Mín:');
   await page.getByTestId('compare-var-precipitation').click();
   await expect(page.getByText(/Lluvia acumulada desde ahora/)).toBeVisible();
+});
+
+
+test('mapa de tiempo: el radar argentino (SINARAME) pide solo los radares que se ven, anima las imágenes y muestra la atribución', async ({ page, context }) => {
+  await mockSources(page);
+  await setup(page);
+  // Un radar de Bahía Blanca con tres imágenes (la más vieja a la más nueva) y otro en Salta.
+  const bounds = (lat: number, lon: number) => ({ south: lat - 2.17, north: lat + 2.17, west: lon - 2.8, east: lon + 2.8 });
+  const sites = [
+    { id: 'RMA10', name: 'Bahía Blanca', bounds: bounds(-38.7, -62.2) },
+    { id: 'RMA20', name: 'Las Lajitas', bounds: bounds(-24.7, -64.2) },
+  ];
+  const stamps = ['20260101090000', '20260101091000', '20260101092000'];
+  const asked: string[] = [];
+  const imagePng = await sharp({ create: { width: 64, height: 64, channels: 4, background: { r: 30, g: 160, b: 60, alpha: 0.6 } } }).png().toBuffer();
+  const imageRequests: string[] = [];
+  await context.route('**/api/radar**', (route) => {
+    const url = new URL(route.request().url());
+    if (/\.png$/.test(url.pathname)) {
+      imageRequests.push(url.pathname);
+      return route.fulfill({ body: imagePng, contentType: 'image/png', headers: { 'Access-Control-Allow-Origin': '*' } });
+    }
+    const ids = (url.searchParams.get('ids') ?? '').split(',').filter(Boolean);
+    asked.push(ids.join(','));
+    const at = (i: number) => new Date(Date.now() - (2 - i) * 600_000).toISOString();
+    return route.fulfill({
+      json: {
+        enabled: true,
+        attribution: 'Sistema Nacional de Radares Meteorológicos (SINARAME), Subsecretaría de Recursos Hídricos, y Servicio Meteorológico Nacional (CC BY 4.0)',
+        rangeKm: 240,
+        radars: sites.map((r) => ({
+          ...r,
+          lat: 0,
+          lon: 0,
+          frames: ids.includes(r.id) ? stamps.map((st, i) => ({ at: at(i), url: `/api/radar/${r.id}/${st}.png` })) : [],
+        })),
+      },
+      headers: { 'Access-Control-Allow-Origin': '*' },
+    });
+  });
+  await page.goto('/#/weather');
+  await page.getByRole('link', { name: /Mapa de alertas y clima/ }).click();
+  await expect(page.getByTestId('weather-map')).toBeVisible();
+
+  // La capa está prendida por defecto, la hora aparece y se muestra la atribución.
+  await expect(page.getByRole('button', { name: 'Radar argentino' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('map-times').first()).toContainText(/Radar argentino \d\d:\d\d/, { timeout: 20_000 });
+  await expect(page.getByTestId('sinarame-attribution')).toContainText('SINARAME');
+  await expect(page.getByTestId('sinarame-attribution')).toContainText('orientativos');
+  await expect(page.getByText(/Radares meteorológicos argentinos \(SINARAME y SMN\)/)).toBeVisible();
+  // Se pidió primero la lista (sin radares elegidos) y después las imágenes de los que se ven en el país entero (los dos).
+  expect(asked[0]).toBe('');
+  await expect.poll(() => asked.some((a) => a.includes('RMA10'))).toBe(true);
+  // Se bajaron las imágenes del radar.
+  await expect.poll(() => imageRequests.some((u) => u.includes('/RMA10/'))).toBe(true);
+
+  // Apagarla saca la hora y la atribución.
+  await page.getByRole('button', { name: 'Radar argentino' }).click();
+  await expect(page.getByTestId('sinarame-attribution')).toHaveCount(0);
+  await expect(page.getByTestId('map-times').first()).not.toContainText('Radar argentino');
 });
