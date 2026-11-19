@@ -3,7 +3,10 @@ apply plugin: 'com.android.application'
 android {
     namespace = "ar.vikarg.survtools"
     compileSdk = rootProject.ext.compileSdkVersion
-    // La versión del APK sale de app/package.json (la misma de la web): 0.87.0 -> versionName 0.87.0 y versionCode 8700 (mayor*10000 + menor*100 + parche).
+    // La versión del APK sale de app/package.json (la misma de la web): 0.99.0 -> versionName 0.99.0 y versionCode 99000 (mayor*1000000 + menor*1000 + parche).
+    // Hasta la 0.99.0 la fórmula era mayor*10000 + menor*100 + parche, pero con la 0.100.0 chocaba con la 1.0.0 (las dos daban 10000) y Android no deja instalar
+    // una versión con versionCode más bajo: la 1.0.0 habría quedado por debajo de la 0.100.1. La nueva fórmula da siempre un número MAYOR que la anterior
+    // (0.99.0: 9900 -> 99000), así que los teléfonos con una versión vieja actualizan sin problema. Hasta 999 de menor y 999 de parche.
     def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
     def versionParts = appVersion.tokenize('.').collect { it.toInteger() }
     defaultConfig {
@@ -14,7 +17,7 @@ android {
         applicationId "ar.vikarg.survtools"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode versionParts[0] * 10000 + versionParts[1] * 100 + versionParts[2]
+        versionCode versionParts[0] * 1000000 + versionParts[1] * 1000 + versionParts[2]
         // Con número de compilación (0.88.0+14) si hay un APK de prueba: lo escribe scripts/generate-android-icons.mjs junto con la cinta del ícono.
         versionName(file('version-name.txt').exists() ? file('version-name.txt').text.trim() : appVersion)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

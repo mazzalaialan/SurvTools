@@ -7,6 +7,12 @@ describe('versiones del paquete portable', () => {
     expect(compareVersions('v0.7.1', '0.7.1')).toBe(0);
     expect(compareVersions('0.7.0', '0.7.1')).toBe(-1);
     expect(compareVersions('1.0', '0.99.99')).toBe(1);
+    // El número de después del primer punto es un entero, no un decimal: 0.100.0 es más nueva que 0.99.0.
+    expect(compareVersions('0.100.0', '0.99.0')).toBe(1);
+    expect(compareVersions('0.99.0', '0.100.0')).toBe(-1);
+    expect(compareVersions('v0.100.0', '0.100.0')).toBe(0);
+    expect(compareVersions('0.100.1', '0.100.0')).toBe(1);
+    expect(compareVersions('1.0.0', '0.100.9')).toBe(1);
   });
 
   it('toma el .zip del paquete de la Release', () => {
