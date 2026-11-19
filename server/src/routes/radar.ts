@@ -61,7 +61,10 @@ export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (id
       return reply.code(400).send({ error: 'invalid-query' });
     }
     const outlook = q.state === 'raining' ? ({ state: 'raining', mm: 0, peakMmH: 0 } as const) : ({ state: 'soon', inMinutes: minutes, startsAt: '', mm: 0, peakMmH: 0 } as const);
-    return { verdict: await checkRadar(check, lat, lon, outlook) };
+    const { verdict, radars } = checkRadar(check, lat, lon, outlook);
+    // Primera vez para ese radar: se despierta la tarea para que baje las imágenes (esta respuesta ya no las espera).
+    if (radars.some((id) => stateOf(store, id).frames.length === 0)) onWake(radars);
+    return { verdict };
   });
   app.get('/api/radar/:id/:file', async (req, reply) => {
     const { id, file } = req.params as { id: string; file: string };

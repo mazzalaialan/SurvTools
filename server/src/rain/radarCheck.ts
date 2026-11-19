@@ -1,5 +1,5 @@
 import { decodePng, type Rgba } from '../radar/pixels.ts';
-import { RADARS, RADAR_RANGE_KM, radarBounds, refreshRadar, stateOf, type RadarFetchOptions, type RadarSite, type RadarStore } from '../radar/sinarame.ts';
+import { RADARS, RADAR_RANGE_KM, radarBounds, stateOf, type RadarSite, type RadarStore } from '../radar/sinarame.ts';
 import type { RainOutlook } from './outlook.ts';
 import type { RainSource } from './source.ts';
 
@@ -101,36 +101,27 @@ export function vetoRadiusKm(outlook: RainOutlook): number | null {
 
 export interface RadarCheckDeps {
   store: RadarStore;
-  fetchOpts?: RadarFetchOptions;
-  /** Cada cuánto se busca una imagen nueva de un radar (ms). */
-  refreshMs?: number;
   now?: () => number;
 }
 
-/** Pone al día las imágenes de los radares que cubren estos puntos (respeta la espera si el servicio falló). */
-async function ensureFresh(deps: RadarCheckDeps, points: { lat: number; lon: number }[]): Promise<void> {
-  const now = (deps.now ?? Date.now)();
-  const ids = new Set(points.flatMap((p) => radarsCovering(p.lat, p.lon).map((r) => r.id)));
-  for (const radar of RADARS) {
-    if (!ids.has(radar.id)) continue;
-    const state = stateOf(deps.store, radar.id);
-    // Mientras haya avisos para revisar, la tarea de radares sigue trayendo imágenes de este radar.
-    state.requestedAt = now;
-    if (now - state.checkedAt < (deps.refreshMs ?? 10 * 60_000)) continue;
-    try {
-      await refreshRadar(deps.store, radar, { ...deps.fetchOpts, now: deps.now });
-    } catch {
-      // Sin imágenes nuevas: queda lo que haya (y si es viejo, el veredicto es `unknown`).
-    }
-  }
+/**
+ * Marca como «pedidos» los radares que cubren estos lugares, para que la tarea de radares (main.ts, cada minuto) los mantenga al día en
+ * segundo plano. No sale a la red: validar un aviso lee solo las imágenes que el servidor ya tiene en memoria, nunca consulta a SINARAME
+ * en ese momento.
+ */
+export function keepRadarsFor(store: RadarStore, points: { lat: number; lon: number }[], now = Date.now()): string[] {
+  const ids = [...new Set(points.flatMap((p) => radarsCovering(p.lat, p.lon).map((r) => r.id)))];
+  for (const id of ids) stateOf(store, id).requestedAt = now;
+  return ids;
 }
 
 /** Lo que dice el radar sobre un aviso de un lugar, trayendo antes las imágenes que falten. Sirve a la app abierta (`GET /api/radar/check`). */
-export async function checkRadar(deps: RadarCheckDeps, lat: number, lon: number, outlook: RainOutlook): Promise<RadarVerdict> {
+export function checkRadar(deps: RadarCheckDeps, lat: number, lon: number, outlook: RainOutlook): { verdict: RadarVerdict; radars: string[] } {
+  const now = (deps.now ?? Date.now)();
+  // Si todavía no hay imágenes de ese radar (nadie lo pidió antes), la tarea las baja y la próxima consulta ya las encuentra.
+  const radars = keepRadarsFor(deps.store, [{ lat, lon }], now);
   const radius = vetoRadiusKm(outlook);
-  if (radius === null) return 'unknown';
-  await ensureFresh(deps, [{ lat, lon }]);
-  return radarVerdict(deps.store, lat, lon, radius, (deps.now ?? Date.now)());
+  return { verdict: radius === null ? 'unknown' : radarVerdict(deps.store, lat, lon, radius, now), radars };
 }
 
 export interface RadarCheckedSource extends RainSource {
@@ -140,7 +131,7 @@ export interface RadarCheckedSource extends RainSource {
 
 /**
  * Envuelve una fuente de lluvia: lo que dice «llueve» o «va a llover» se verifica con el radar y se convierte en «seco» si el radar, con
- * cobertura e imágenes recientes, no ve nada cerca. Solo consulta el radar cuando hay algo que verificar.
+ * cobertura e imágenes recientes, no ve nada cerca. Solo lee las imágenes que ya están en memoria (las mantiene la tarea de radares).
  */
 export function withRadarCheck(source: RainSource, deps: RadarCheckDeps): RadarCheckedSource {
   let vetoed = 0;
@@ -151,7 +142,6 @@ export function withRadarCheck(source: RainSource, deps: RadarCheckDeps): RadarC
       const outlooks = await source.outlooks(points);
       const toCheck = outlooks.flatMap((o, i) => (o && vetoRadiusKm(o) !== null ? [i] : []));
       if (toCheck.length === 0) return outlooks;
-      await ensureFresh(deps, toCheck.map((i) => points[i]!));
       const now = (deps.now ?? Date.now)();
       return outlooks.map((o, i): RainOutlook | null => {
         const radius = o ? vetoRadiusKm(o) : null;

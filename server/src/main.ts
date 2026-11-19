@@ -13,7 +13,7 @@ import { runRainWatch } from './rain/watch.ts';
 import { createRadarStore, radarTick } from './radar/sinarame.ts';
 import { createRainMapStore, RAIN_MAP_ACTIVE_MS, updateRainMap } from './rain/map.ts';
 import { irObserver, withObservedRain } from './rain/observer.ts';
-import { withRadarCheck } from './rain/radarCheck.ts';
+import { keepRadarsFor, withRadarCheck } from './rain/radarCheck.ts';
 import { openMeteoSource } from './rain/source.ts';
 import { runScheduler } from './scheduler.ts';
 import { runOutingWatch } from './outings/watch.ts';
@@ -91,7 +91,7 @@ const forecastSource = openMeteoSource(config.weatherUrl, weatherFetch);
 const observer = irObserver();
 const observedSource = config.rainObserved ? withObservedRain(forecastSource, observer) : forecastSource;
 // Doble chequeo con el radar argentino: solo descarta avisos donde hay cobertura e imágenes recientes (ver rain/radarCheck.ts).
-const radarChecked = config.radarSinarame ? withRadarCheck(observedSource, { store: radarStore, fetchOpts: { base: config.radarBaseUrl, pauseMs: config.radarPauseMs }, refreshMs: config.radarRefreshMin * 60_000 }) : null;
+const radarChecked = config.radarSinarame ? withRadarCheck(observedSource, { store: radarStore }) : null;
 const rainSource = radarChecked ?? observedSource;
 let radarVetoedLogged = 0;
 
@@ -223,6 +223,9 @@ async function radarTickRun() {
   if (!config.radarSinarame || radarBusy) return;
   radarBusy = true;
   try {
+    // Los radares que cubren lugares con aviso de lluvia se mantienen al día siempre: validar un aviso lee la memoria, no consulta a SINARAME.
+    const watched = db.prepare('SELECT DISTINCT lat, lon FROM rain_places').all() as unknown as { lat: number; lon: number }[];
+    if (watched.length) keepRadarsFor(radarStore, watched);
     const got = await radarTick(radarStore, { base: config.radarBaseUrl, pauseMs: config.radarPauseMs, refreshMs: config.radarRefreshMin * 60_000 });
     if (got) {
       radarImages += got;

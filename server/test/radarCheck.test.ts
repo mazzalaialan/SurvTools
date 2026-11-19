@@ -4,7 +4,7 @@ import { decodePng } from '../src/radar/pixels.ts';
 import { RADARS, createRadarStore, frameStamp, radarBounds, stateOf, type RadarSite } from '../src/radar/sinarame.ts';
 import { encodePng } from '../src/rain/map.ts';
 import type { RainOutlook } from '../src/rain/outlook.ts';
-import { echoWithin, radarVerdict, radarsCovering, vetoRadiusKm, withRadarCheck } from '../src/rain/radarCheck.ts';
+import { echoWithin, keepRadarsFor, radarVerdict, radarsCovering, vetoRadiusKm, withRadarCheck } from '../src/rain/radarCheck.ts';
 import type { RainSource } from '../src/rain/source.ts';
 
 const bahia = RADARS.find((r) => r.id === 'RMA10')!;
@@ -89,11 +89,7 @@ describe('doble chequeo de los avisos', () => {
   const raining: RainOutlook = { state: 'raining', mm: 1, peakMmH: 4 };
   const soon = (inMinutes: number): RainOutlook => ({ state: 'soon', inMinutes, startsAt: '2026-11-19T14:00', mm: 1, peakMmH: 4 });
   const source = (o: RainOutlook | null): RainSource => ({ name: 'prueba', outlooks: async (pts) => pts.map(() => o) });
-  const deps = (store: ReturnType<typeof createRadarStore>, fetchFn: typeof fetch = async () => { throw new Error('sin red'); }) => ({
-    store,
-    fetchOpts: { fetchFn, pauseMs: 0 },
-    now: () => NOW,
-  });
+  const deps = (store: ReturnType<typeof createRadarStore>) => ({ store, now: () => NOW });
 
   it('descarta «está lloviendo» y «va a llover» si el radar no ve nada cerca', async () => {
     const clear = storeWith(bahia, [frame(bahia), frame(bahia)]);
@@ -119,34 +115,30 @@ describe('doble chequeo de los avisos', () => {
     assert.equal(vetoRadiusKm({ state: 'dry' }), null);
   });
 
-  it('si el servicio de radares falla, queda la lógica actual', async () => {
-    const store = createRadarStore(); // sin imágenes y con ganas de buscarlas
-    const checked = withRadarCheck(source(raining), deps(store));
-    assert.deepEqual(await checked.outlooks([HERE]), [raining]);
-    assert.equal(checked.vetoed(), 0);
-  });
-
-  it('con pronóstico seco o sin dato no se le pregunta nada al servicio de radares', async () => {
+  it('sin imágenes en memoria queda la lógica actual, y validar nunca sale a la red', async () => {
+    const original = globalThis.fetch;
     let calls = 0;
-    const fetchFn = (async () => {
+    globalThis.fetch = (async () => {
       calls++;
       return new Response('', { status: 404 });
     }) as typeof fetch;
-    const store = createRadarStore();
-    assert.deepEqual(await withRadarCheck(source({ state: 'dry' }), deps(store, fetchFn)).outlooks([HERE]), [{ state: 'dry' }]);
-    assert.deepEqual(await withRadarCheck(source(null), deps(store, fetchFn)).outlooks([HERE]), [null]);
-    assert.equal(calls, 0);
+    try {
+      const checked = withRadarCheck(source(raining), deps(createRadarStore()));
+      assert.deepEqual(await checked.outlooks([HERE]), [raining]);
+      assert.equal(checked.vetoed(), 0);
+      const clear = storeWith(bahia, [frame(bahia), frame(bahia)]);
+      assert.deepEqual(await withRadarCheck(source(raining), deps(clear)).outlooks([HERE]), [{ state: 'dry' }]);
+      assert.equal(calls, 0);
+    } finally {
+      globalThis.fetch = original;
+    }
   });
 
-  it('pide imágenes al servicio solo para el radar que cubre el lugar', async () => {
-    const urls: string[] = [];
-    const fetchFn = (async (u: string) => {
-      urls.push(String(u));
-      return new Response('', { status: 404 });
-    }) as typeof fetch;
-    await withRadarCheck(source(raining), deps(createRadarStore(), fetchFn)).outlooks([HERE]);
-    assert.ok(urls.length > 0);
-    assert.ok(urls.every((u) => u.includes('/RMA10/')));
+  it('keepRadarsFor marca solo los radares que cubren los lugares, para que la tarea los mantenga al día', () => {
+    const store = createRadarStore();
+    assert.deepEqual(keepRadarsFor(store, [HERE, { lat: -25.3, lon: -57.6 }], NOW), ['RMA10']);
+    assert.equal(stateOf(store, 'RMA10').requestedAt, NOW);
+    assert.equal(store.radars.size, 1);
   });
 });
 
@@ -155,7 +147,7 @@ describe('GET /api/radar/check (la app abierta)', () => {
     const { default: Fastify } = await import('fastify');
     const { radarRoutes } = await import('../src/routes/radar.ts');
     const a = Fastify();
-    radarRoutes(a, store, () => undefined, enabled, { store, fetchOpts: { fetchFn: async () => new Response('', { status: 404 }), pauseMs: 0 }, now: () => NOW });
+    radarRoutes(a, store, () => undefined, enabled, { store, now: () => NOW });
     return a;
   }
   const url = (state: string, extra = '') => `/api/radar/check?lat=${HERE.lat}&lon=${HERE.lon}&state=${state}${extra}`;
