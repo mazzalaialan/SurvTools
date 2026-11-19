@@ -22,13 +22,17 @@
  * Combustibles (`fuels`): códigos que la app traduce: gasoline (nafta,
  * bencina, gasolina), diesel, cng (GNC/GNV) y lpg (GLP).
  *
- * Uso: node tools/services-data/build.mjs [AR|CL|UY|BO|PE|PY] [categoría]
+ * Brasil (BR): solo Sul y Mato Grosso do Sul (RS, SC, PR y MS), recortado de los extractos de Geofabrik con tools/osm-index/brazil.sh
+ * (hay que apuntar OSM_LOCAL_DIR a su carpeta de salida; sin ese archivo no se genera, no se consulta Brasil entero a Overpass).
+ * Fuente: OpenStreetMap (ODbL), fecha del extracto en `meta-BR.json`; GeoNames CC BY 4.0 no interviene acá.
+ *
+ * Uso: node tools/services-data/build.mjs [AR|CL|UY|BO|PE|PY|BR] [categoría]
  *      (necesita conexión; el resultado se versiona; sin país, todos; sin categoría, todas)
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { osmByCountry } from '../lib/osm-local.mjs';
+import { hasLocal, localMeta, osmByCountry } from '../lib/osm-local.mjs';
 
 // Salida: la app (por defecto) o, con VIKARG_DATA_OUT, la carpeta que sirve el servidor
 // (actualización mensual, server/src/data/update-data.sh).
@@ -37,7 +41,7 @@ const UA = 'VikArg-Prepping-Tools-build/1.0 (https://github.com/mazzalaialan/Sur
 const AR_PACKAGE = 'http://datos.energia.gob.ar/api/3/action/package_show?id=1c181390-5045-475e-94dc-410429be4b17';
 /** Estaciones que no informan precios hace más de esto: se consideran cerradas. */
 const MAX_AGE_MONTHS = 24;
-export const COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
+export const COUNTRIES = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY', 'BR'];
 
 const r5 = (n) => Math.round(n * 1e5) / 1e5;
 /** Distancia aproximada en metros (para no duplicar una estación oficial con la de OpenStreetMap). */
@@ -283,6 +287,7 @@ async function build(cc, category) {
   const places = official ? withOsm(official, osm) : osm;
   // Una respuesta cortada de Overpass trae de menos: con las estaciones (que siempre hay muchas) se nota.
   if (category === 'fuel' && places.length < MIN_FUEL[cc]) throw new Error(`${cc}: muy pocas estaciones (${places.length}); probá de nuevo más tarde`);
+  const brMeta = cc === 'BR' ? localMeta('BR') : null;
   const data = {
     country: cc,
     category,
@@ -291,7 +296,10 @@ async function build(cc, category) {
     ...(official ? {} : { osm: true }),
     source: official
       ? 'Secretaría de Energía, precios vigentes en surtidor (datos.energia.gob.ar, CC BY 4.0); las que faltan: © colaboradores de OpenStreetMap (ODbL)'
-      : '© colaboradores de OpenStreetMap (ODbL)',
+      : brMeta
+        ? `© colaboradores de OpenStreetMap (ODbL), extracto de Geofabrik del ${brMeta.extractDate}. Cubre solo ${brMeta.coverage}, no todo Brasil`
+        : '© colaboradores de OpenStreetMap (ODbL)',
+    ...(brMeta && { coverage: brMeta.coverage, extractDate: brMeta.extractDate }),
     places,
   };
   await mkdir(OUT_DIR, { recursive: true });
@@ -300,11 +308,17 @@ async function build(cc, category) {
 }
 
 /** Mínimo esperable de estaciones por país: si hay menos, la respuesta vino cortada y no se genera. */
-const MIN_FUEL = { AR: 3000, CL: 800, UY: 200, BO: 150, PE: 800, PY: 800 };
+const MIN_FUEL = { AR: 3000, CL: 800, UY: 200, BO: 150, PE: 800, PY: 800, BR: 3000 };
 
 const [onlyCountry, onlyCategory] = process.argv.slice(2);
 if (onlyCategory && !CATEGORIES[onlyCategory]) throw new Error(`Categoría desconocida: ${onlyCategory} (${Object.keys(CATEGORIES).join(', ')})`);
 for (const cc of COUNTRIES) {
   if (onlyCountry && onlyCountry !== cc) continue;
+  // Brasil solo se arma con el recorte regional local: sin él se salta (y si se pide a propósito, avisa).
+  if (cc === 'BR' && !hasLocal('BR')) {
+    if (onlyCountry) throw new Error('BR: falta places-BR.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)');
+    console.warn('BR: sin places-BR.jsonl, se salta');
+    continue;
+  }
   for (const category of Object.keys(CATEGORIES)) if (!onlyCategory || onlyCategory === category) await build(cc, category);
 }

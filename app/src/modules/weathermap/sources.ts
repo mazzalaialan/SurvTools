@@ -349,14 +349,14 @@ export function radarTouchesView(b: SinarameRadar['bounds'], view: { west: numbe
   return b.west < view.east && b.east > view.west && b.south < view.north && b.north > view.south;
 }
 
-// ---------- Alertas oficiales (SMN, DMC, INUMET, SENAMHI de Bolivia y Perú; desde el servidor propio) ----------
+// ---------- Alertas oficiales (SMN, DMC, INUMET, INMET de Brasil, SENAMHI de Bolivia y Perú; desde el servidor propio) ----------
 
 export type OfficialSeverity = 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown';
 
 /** Alerta de un servicio meteorológico, tal como la publica (CAP). Ver server/src/official/. */
 export interface OfficialAlert {
   key: string;
-  source: 'SMN' | 'DMC' | 'INUMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
+  source: 'SMN' | 'DMC' | 'INUMET' | 'INMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
   senderName: string;
   event: string;
   headline: string;

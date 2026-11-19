@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Genera los paquetes de datos sin conexión de Chile, Uruguay, Bolivia, Perú y Paraguay:
- * app/public/data/CL.json, UY.json, BO.json, PE.json y PY.json. No van en la descarga inicial de la app:
+ * Genera los paquetes de datos sin conexión de Chile, Uruguay, Bolivia, Perú, Paraguay y Brasil:
+ * app/public/data/CL.json, UY.json, BO.json, PE.json, PY.json y BR.json. No van en la descarga inicial de la app:
  * se bajan una vez al elegir el país (ver app/src/modules/emergency/country.ts).
  *
  * - Localidades: GeoNames (CC BY 4.0), con población, para la detección de
@@ -20,12 +20,18 @@
  *   frecuencias confirmadas) y Radio Nacional del Perú (planilla oficial del IRTP),
  *   ubicadas con GeoNames.
  *
- * Uso: node tools/country-data/build.mjs [UY|CL|BO|PE|PY]   (necesita conexión; el resultado se versiona; sin país, todos)
+ * - Brasil (BR): SOLO Sul y Mato Grosso do Sul (RS, SC, PR y MS; Brasil entero pesa demasiado). Los bomberos, la policía y la salud salen
+ *   del recorte de OpenStreetMap de tools/osm-index/brazil.sh (extractos de Geofabrik; ODbL) y las localidades de GeoNames (CC BY 4.0)
+ *   dentro del mismo contorno de los cuatro estados (`border-BR.geojson`, junto a `places-BR.jsonl`). Hay que apuntar OSM_LOCAL_DIR a esa
+ *   carpeta. Radio: no hay una fuente pública verificada: queda vacía (no se inventan emisoras).
+ *
+ * Uso: node tools/country-data/build.mjs [UY|CL|BO|PE|PY|BR]   (necesita conexión; el resultado se versiona; sin país, todos)
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { inflateRawSync } from 'node:zlib';
-import { osmByCountry } from '../lib/osm-local.mjs';
+import { readFileSync } from 'node:fs';
+import { hasLocal, localFile, localMeta, osmByCountry } from '../lib/osm-local.mjs';
 import { fileURLToPath } from 'node:url';
 
 // Salida: los paquetes de la app (por defecto) o, con VIKARG_DATA_OUT, la carpeta que sirve el servidor
@@ -232,8 +238,37 @@ async function getBytes(url) {
   return new Uint8Array(await res.arrayBuffer());
 }
 
-/** Localidades con población (o cabeceras) de GeoNames. */
-async function geonames(cc, admin1) {
+/** ¿El punto cae dentro de un GeoJSON Feature con Polygon o MultiPolygon? (rayos; los anillos interiores son agujeros) */
+function insideGeometry(geometry) {
+  const polys = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+  const inRing = (ring, x, y) => {
+    let c = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i];
+      const [xj, yj] = ring[j];
+      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  // Caja de cada polígono para descartar rápido.
+  const boxes = polys.map((p) => {
+    const xs = p[0].map((c) => c[0]);
+    const ys = p[0].map((c) => c[1]);
+    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  });
+  return (lat, lon) => polys.some((p, i) => lon >= boxes[i][0] && lon <= boxes[i][2] && lat >= boxes[i][1] && lat <= boxes[i][3] && inRing(p[0], lon, lat) && !p.slice(1).some((h) => inRing(h, lon, lat)));
+}
+
+/** Contorno de la región recortada (Brasil): el que armó tools/osm-index/brazil.sh junto a places-BR.jsonl. */
+function regionFilter(cc) {
+  if (cc !== 'BR') return null;
+  if (!hasLocal('BR')) throw new Error('BR: falta places-BR.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)');
+  const border = JSON.parse(readFileSync(localFile('BR').replace(/places-BR\.jsonl$/, 'border-BR.geojson'), 'utf8'));
+  return insideGeometry(border.geometry);
+}
+
+/** Localidades con población (o cabeceras) de GeoNames; `inside(lat, lon)` las restringe a una región (Brasil: Sul y Mato Grosso do Sul). */
+async function geonames(cc, admin1, inside = null) {
   const zip = unzipSync(await getBytes(`https://download.geonames.org/export/dump/${cc}.zip`));
   const rows = strFromU8(zip[`${cc}.txt`]).split('\n');
   const SKIP = new Set(['PPLH', 'PPLQ', 'PPLW', 'PPLX', 'PPLCH']);
@@ -244,6 +279,7 @@ async function geonames(cc, admin1) {
   for (const line of rows) {
     const f = line.split('\t');
     if (f[6] !== 'P' || SKIP.has(f[7])) continue;
+    if (inside && !inside(Number(f[4]), Number(f[5]))) continue;
     const population = Number(f[14]) || 0;
     const seat = /^PPL(A\d?|C)$/.test(f[7]);
     all.push([f[1], f[10], Math.round(Number(f[4]) * 1e3) / 1e3, Math.round(Number(f[5]) * 1e3) / 1e3, population]);
@@ -450,9 +486,12 @@ function withOsm(official, osm) {
   return out;
 }
 
+const brSrc = (m) => `OpenStreetMap (ODbL), extracto de Geofabrik del ${m.extractDate}; cubre solo ${m.coverage}`;
+
 async function build(cc, radioList, labels) {
   const admin1 = await admin1Names();
-  const { provinces, places, all } = await geonames(cc, admin1);
+  const { provinces, places, all } = await geonames(cc, admin1, regionFilter(cc));
+  const brMeta = cc === 'BR' ? localMeta('BR') : null;
   const elements = await overpass(cc);
   const fire = [];
   const police = [];
@@ -478,6 +517,8 @@ async function build(cc, radioList, labels) {
     generatedAt: new Date().toISOString().slice(0, 10),
     // Sin listados oficiales, todos los lugares vienen de OpenStreetMap.
     ...(official || pe ? {} : { osm: true }),
+    // Brasil: solo una región (el resto del país no está en el paquete).
+    ...(brMeta && { coverage: brMeta.coverage, extractDate: brMeta.extractDate }),
     sources: official
       ? {
           fire: `Destacamentos de bomberos: ${UY_SRC}; los que faltan: OpenStreetMap (ODbL)`,
@@ -487,13 +528,13 @@ async function build(cc, radioList, labels) {
           places: 'GeoNames (CC BY 4.0)',
         }
       : {
-          fire: 'OpenStreetMap (ODbL)',
-          police: 'OpenStreetMap (ODbL)',
-          health: pe
+          fire: brMeta ? brSrc(brMeta) : 'OpenStreetMap (ODbL)',
+          police: brMeta ? brSrc(brMeta) : 'OpenStreetMap (ODbL)',
+          health: brMeta ? brSrc(brMeta) : pe
             ? `Establecimientos de salud: RENIPRESS de SUSALUD (${pe.at}, datosabiertos.gob.pe, Open Data Commons Attribution); los que faltan: OpenStreetMap (ODbL)`
             : 'OpenStreetMap (ODbL)',
           radio: labels.radioSource,
-          places: 'GeoNames (CC BY 4.0)',
+          places: brMeta ? `GeoNames (CC BY 4.0), solo las localidades dentro de ${brMeta.coverage}` : 'GeoNames (CC BY 4.0)',
         },
     // En Perú solo la salud es oficial: policía y bomberos van marcados como de OpenStreetMap uno por uno.
     fire: official ? withOsm(official.fire, fire) : fire.filter(Boolean).map((p) => (pe ? { ...p, osm: true } : p)),
@@ -520,9 +561,17 @@ const RADIO_PY = [
   ['Radio Nacional del Paraguay', 'Pilar', 700, null, { province: 'Ñeembucú', lat: -26.867, lon: -58.3 }],
 ];
 
+/**
+ * Radio de Brasil: sin fuente pública verificada (la EBC/Radio Nacional no publica un listado de frecuencias con licencia clara y la
+ * ANATEL no ofrece uno abierto que se pueda usar así). Se deja vacía a propósito: no se inventan emisoras. `build` y la app aceptan la lista vacía.
+ */
+const RADIO_BR = [];
+
 const only = process.argv[2];
 if (!only || only === 'UY') await build('UY', RADIO_UY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radiodifusión Nacional del Uruguay (Wikipedia)' });
 if (!only || only === 'CL') await build('CL', RADIO_CL, { fire: 'Bomberos', police: 'Carabineros', health: 'Centro de salud', radioSource: 'Radio Bío-Bío (Wikipedia)' });
 if (!only || only === 'BO') await build('BO', RADIO_BO, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Red Patria Nueva (State Media Monitor)' });
 if (!only || only === 'PE') await build('PE', RADIO_PE, { fire: 'Bomberos', police: 'Comisaría', health: 'Centro de salud', radioSource: 'Radio Nacional del Perú (IRTP, datos abiertos de datosabiertos.gob.pe, ODC-By, planilla de 2021)' });
 if (!only || only === 'PY') await build('PY', RADIO_PY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radio Nacional del Paraguay (radionacional.gov.py, sitio oficial, 2026-11-16)' });
+if (only === 'BR' || (!only && hasLocal('BR'))) await build('BR', RADIO_BR, { fire: 'Bombeiros', police: 'Polícia', health: 'Unidade de saúde', radioSource: 'Sin fuente pública verificada: no se incluyen emisoras' });
+else if (!only) console.warn('BR: sin places-BR.jsonl, se salta');

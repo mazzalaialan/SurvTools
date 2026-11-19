@@ -16,6 +16,7 @@
  *   estación de nivel (INA, SENAMHI Bolivia) aparezca, los cursos de OpenStreetMap (ODbL, © OpenStreetMap contributors)
  *   a menos de 12 km de una estación, como el Paraná de las Palmas, que Natural Earth no trae.
  * - `node build.mjs --solo-paraguay` suma Paraguay (departamentos, frontera, capitales) al archivo ya generado.
+ * - `node build.mjs --solo-brasil` suma Brasil (27 estados, frontera, capitales) al archivo ya generado.
  * - `node build.mjs --solo-mundo` genera aparte `world-borders.json`: el contorno de todos los países del mundo (Natural Earth 1:50m) para el mapa del clima.
  * - `node build.mjs --solo-contornos` suma al archivo ya generado el contorno de América Central y de la Antártida (sector de la Península).
  *   `node build.mjs --solo-rios` reemplaza solo los ríos en el archivo ya generado (sin volver a bajar volcanos ni provincias).
@@ -233,6 +234,53 @@ if (process.argv.includes('--solo-paraguay')) {
   data.capitals = [...data.capitals.filter((c) => c.country !== 'PY'), ...capitals].sort((a, b) => a.name.localeCompare(b.name));
   await writeFile(OUT, JSON.stringify(data));
   console.log(`Paraguay: ${regions.length} departamentos, ${capitals.length} capitales → ${OUT} (${JSON.stringify(data).length} bytes)`);
+  process.exit(0);
+}
+
+/** Capitales de los 26 estados de Brasil y del Distrito Federal: [nombre, latitud, longitud] (casco urbano, aproximado). */
+const BR_CAPITALS = [
+  ['Rio Branco', -9.975, -67.824], ['Maceió', -9.666, -35.735], ['Macapá', 0.035, -51.07], ['Manaus', -3.119, -60.022],
+  ['Salvador', -12.971, -38.501], ['Fortaleza', -3.732, -38.527], ['Brasília', -15.794, -47.882], ['Vitória', -20.315, -40.312],
+  ['Goiânia', -16.686, -49.264], ['São Luís', -2.53, -44.302], ['Cuiabá', -15.601, -56.097], ['Campo Grande', -20.469, -54.62],
+  ['Belo Horizonte', -19.917, -43.934], ['Belém', -1.456, -48.502], ['João Pessoa', -7.115, -34.863], ['Curitiba', -25.43, -49.271],
+  ['Recife', -8.054, -34.881], ['Teresina', -5.092, -42.803], ['Rio de Janeiro', -22.907, -43.173], ['Natal', -5.795, -35.209],
+  ['Porto Alegre', -30.035, -51.218], ['Porto Velho', -8.761, -63.9], ['Boa Vista', 2.82, -60.673], ['Florianópolis', -27.595, -48.548],
+  ['São Paulo', -23.55, -46.633], ['Aracaju', -10.947, -37.073], ['Palmas', -10.184, -48.333],
+];
+const BR_NAMES = {
+  AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo',
+  GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná',
+  PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima',
+  SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins',
+};
+/** Brasil es enorme y de costa larga: los estados se simplifican más que las provincias de los otros países (~3 km). */
+const BR_TOLERANCE = 0.03;
+
+if (process.argv.includes('--solo-brasil')) {
+  // Brasil deja de ser solo contorno: sus 26 estados y el Distrito Federal, frontera, capitales y nombre. Se suma al archivo ya generado.
+  const data = JSON.parse(await readFile(OUT, 'utf8'));
+  const [admin1, admin0hi] = await Promise.all([
+    get(`${NE}/ne_10m_admin_1_states_provinces.geojson`),
+    get(`${NE}/ne_10m_admin_0_countries.geojson`),
+  ]);
+  const regions = admin1.features
+    .filter((f) => f.properties.adm0_a3 === 'BRA')
+    .map((f) => ({
+      id: f.properties.iso_3166_2 || f.properties.adm1_code,
+      country: 'BR',
+      // Nombre oficial en portugués (el mismo en todos los idiomas de la app), no el `name_es` de Natural Earth («Estado de Acre», «Bahía»…).
+      name: BR_NAMES[(f.properties.iso_3166_2 || '').slice(3)] ?? f.properties.name,
+      label: [r3(f.properties.longitude), r3(f.properties.latitude)],
+      rings: rings(f.geometry, BR_TOLERANCE),
+    }));
+  const border = admin0hi.features.find((f) => f.properties.ADM0_A3 === 'BRA');
+  const capitals = BR_CAPITALS.map(([name, lat, lon]) => ({ name, country: 'BR', national: name === 'Brasília', lon, lat }));
+  data.regions = [...data.regions.filter((r) => r.country !== 'BR'), ...regions].sort((a, b) => a.id.localeCompare(b.id));
+  data.neighbors = data.neighbors.filter((n) => n.code !== 'BR');
+  data.borders = [...data.borders.filter((b) => b.code !== 'BR'), { code: 'BR', rings: rings(border.geometry, BR_TOLERANCE, BORDER_MIN_AREA) }];
+  data.capitals = [...data.capitals.filter((c) => c.country !== 'BR'), ...capitals].sort((a, b) => a.name.localeCompare(b.name));
+  await writeFile(OUT, JSON.stringify(data));
+  console.log(`Brasil: ${regions.length} estados, ${capitals.length} capitales → ${OUT} (${JSON.stringify(data).length} bytes)`);
   process.exit(0);
 }
 

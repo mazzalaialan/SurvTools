@@ -7,7 +7,7 @@
  * fuentes: a Overpass se le pasan tal cual y para el archivo local se convierten en una función.
  */
 import { createHash } from 'node:crypto';
-import { createReadStream, existsSync } from 'node:fs';
+import { createReadStream, existsSync, readFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { overpass } from './overpass.mjs';
@@ -15,6 +15,14 @@ import { overpass } from './overpass.mjs';
 const DEFAULT_DIR = fileURLToPath(new URL('../../deploy/osm/countries/', import.meta.url));
 const dirOf = () => (process.env.OSM_LOCAL_DIR ?? DEFAULT_DIR).replace(/\/?$/, '/');
 export const localFile = (cc) => `${dirOf()}places-${cc}.jsonl`;
+/** Metadatos del recorte regional de Brasil (`meta-BR.json` de osm-index/brazil.sh): fecha del extracto, estados y fuente. `null` si no hay. */
+export function localMeta(cc) {
+  try {
+    return JSON.parse(readFileSync(`${dirOf()}meta-${cc}.json`, 'utf8'));
+  } catch {
+    return null;
+  }
+}
 export const hasLocal = (cc) => process.env.OSM_LOCAL !== '0' && existsSync(localFile(cc));
 
 /** `nwr["amenity"~"^(a|b)$"]["phone"]` → función sobre las etiquetas. Soporta `=`, `!=`, `~`, `!~` y la existencia de la clave (`["k"]`). */
@@ -67,6 +75,8 @@ export async function localByCountry(cc, selectors) {
 
 /** Lo mismo desde Overpass (el respaldo, y lo que se usa si no hay archivo local del país). */
 export function overpassByCountry(cc, selectors, { timeout = 300, ...opts } = {}) {
+  // Brasil entero no cabe en Overpass ni en un paquete: solo se arma con el recorte regional (tools/osm-index/brazil.sh).
+  if (cc === 'BR') throw new Error('BR: falta places-BR.jsonl (sh tools/osm-index/brazil.sh; OSM_LOCAL_DIR=<salida>); no se consulta Brasil entero a Overpass');
   const query = `[out:json][timeout:${timeout}];
 area["ISO3166-1"="${cc}"][admin_level=2]->.a;
 (

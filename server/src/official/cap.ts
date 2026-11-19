@@ -32,9 +32,9 @@ export interface OfficialAlert {
   areas: OfficialArea[];
 }
 
-/** Servicios meteorológicos (CAP; los SENAMHI de Bolivia y Perú, de sus datos abiertos) y SIGMET de ceniza volcánica (aviación). */
-export type OfficialSource = 'SMN' | 'DMC' | 'INUMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
-export type CapSource = 'SMN' | 'DMC' | 'INUMET';
+/** Servicios meteorológicos (CAP; INMET de Brasil; los SENAMHI de Bolivia y Perú, de sus datos abiertos) y SIGMET de ceniza volcánica (aviación). */
+export type OfficialSource = 'SMN' | 'DMC' | 'INUMET' | 'INMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
+export type CapSource = 'SMN' | 'DMC' | 'INUMET' | 'INMET';
 
 const ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
 

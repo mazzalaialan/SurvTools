@@ -177,3 +177,15 @@ describe('aviso de un río cerca de un lugar', () => {
     expect(riverNotification(r, 'en').title).toBe('Río de la Plata at Buenos Aires: 3.50 m, above the alert level (3.30 m) · 1.2 km north of Muelle');
   });
 });
+
+describe('Brasil', () => {
+  const inmet = { key: 'INMET:urn:oid:2.49.0.0.76.0.2026.28735.1:0', source: 'INMET' as const, senderName: 'Instituto Nacional de Meteorologia', event: 'Tempestade', headline: 'Aviso de Tempestade. Severidade Grau: Moderate', severity: 'Moderate' as const, onset: '2026-11-22T09:33:00-03:00', expires: '2026-11-22T23:59:00-03:00', here: true, fixAt: null, places: [], stock: [], url: '' };
+
+  it('alerta del INMET: el nombre del organismo en el título, en los tres idiomas', () => {
+    for (const lang of ['es', 'en', 'pt'] as const) {
+      const n = officialNotification(inmet, lang);
+      expect(n.title).toMatch(/^INMET: Aviso de Tempestade\. Severidade Grau: Moderate/);
+      expect(n.body).toMatch(/Instituto Nacional de Meteorologia/);
+    }
+  });
+});

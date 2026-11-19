@@ -60,7 +60,7 @@ const TEXT = {
     volcano: (name: string, level: string, km: number, dir: string, place: string) => `Volcán ${name}: alerta técnica ${level} · a ${km} km al ${dir} de ${place}`,
     volcanoBody: 'Según el Observatorio Argentino de Vigilancia Volcánica (OAVV, SEGEMAR). Tocá para ver el reporte. Seguí las indicaciones de Protección Civil.',
     volcanoBodyCENVUL: 'Según el Centro Vulcanológico Nacional del Instituto Geofísico del Perú (CENVUL). Tocá para ver el reporte. Seguí las indicaciones de Defensa Civil (INDECI).',
-    sources: { SENAMHI_BO: 'SENAMHI Bolivia', SENAMHI_PE: 'SENAMHI Perú', SIGMET: 'SIGMET' } as Record<string, string>,
+    sources: { INMET: 'INMET', SENAMHI_BO: 'SENAMHI Bolivia', SENAMHI_PE: 'SENAMHI Perú', SIGMET: 'SIGMET' } as Record<string, string>,
     volcanoLevels: { yellow: 'amarilla', orange: 'naranja', red: 'roja' },
     river: (river: string, station: string, level: string, status: string, km: string, dir: string, place: string) => `${river} en ${station}: ${level} m, ${status} · a ${km} km al ${dir} de ${place}`,
     riverStates: { alert: (m: string) => `sobre el nivel de alerta (${m} m)`, evac: (m: string) => `sobre el nivel de evacuación (${m} m)`, low: (m: string) => `en aguas bajas (bajo ${m} m)` },
@@ -121,7 +121,7 @@ const TEXT = {
     volcano: (name: string, level: string, km: number, dir: string, place: string) => `${name} volcano: ${level} technical alert · ${km} km ${dir} of ${place}`,
     volcanoBody: 'According to the Argentine Volcano Observatory (OAVV, SEGEMAR). Tap to see the report. Follow civil protection instructions.',
     volcanoBodyCENVUL: 'According to the National Volcano Center of the Geophysical Institute of Peru (CENVUL). Tap to see the report. Follow civil defense (INDECI) instructions.',
-    sources: { SENAMHI_BO: 'SENAMHI Bolivia', SENAMHI_PE: 'SENAMHI Peru', SIGMET: 'SIGMET' } as Record<string, string>,
+    sources: { INMET: 'INMET', SENAMHI_BO: 'SENAMHI Bolivia', SENAMHI_PE: 'SENAMHI Peru', SIGMET: 'SIGMET' } as Record<string, string>,
     volcanoLevels: { yellow: 'yellow', orange: 'orange', red: 'red' },
     river: (river: string, station: string, level: string, status: string, km: string, dir: string, place: string) => `${river} at ${station}: ${level} m, ${status} · ${km} km ${dir} of ${place}`,
     riverStates: { alert: (m: string) => `above the alert level (${m} m)`, evac: (m: string) => `above the evacuation level (${m} m)`, low: (m: string) => `at low water (below ${m} m)` },
@@ -182,7 +182,7 @@ const TEXT = {
     volcano: (name: string, level: string, km: number, dir: string, place: string) => `Vulcão ${name}: alerta técnico ${level} · a ${km} km ao ${dir} de ${place}`,
     volcanoBody: 'Segundo o Observatório Argentino de Vigilância Vulcânica (OAVV, SEGEMAR). Toque para ver o relatório. Siga as orientações da Defesa Civil.',
     volcanoBodyCENVUL: 'Segundo o Centro Vulcanológico Nacional do Instituto Geofísico do Peru (CENVUL). Toque para ver o relatório. Siga as orientações da Defesa Civil (INDECI).',
-    sources: { SENAMHI_BO: 'SENAMHI Bolívia', SENAMHI_PE: 'SENAMHI Peru', SIGMET: 'SIGMET' } as Record<string, string>,
+    sources: { INMET: 'INMET', SENAMHI_BO: 'SENAMHI Bolívia', SENAMHI_PE: 'SENAMHI Peru', SIGMET: 'SIGMET' } as Record<string, string>,
     volcanoLevels: { yellow: 'amarelo', orange: 'laranja', red: 'vermelho' },
     river: (river: string, station: string, level: string, status: string, km: string, dir: string, place: string) => `${river} em ${station}: ${level} m, ${status} · a ${km} km ao ${dir} de ${place}`,
     riverStates: { alert: (m: string) => `acima do nível de alerta (${m} m)`, evac: (m: string) => `acima do nível de evacuação (${m} m)`, low: (m: string) => `em águas baixas (abaixo de ${m} m)` },
@@ -338,10 +338,10 @@ export function hazardNotification(h: HazardPush, lang: Lang, now = Date.now()):
   };
 }
 
-/** Alerta oficial (SMN, DMC, INUMET, SENAMHI de Bolivia y Perú) que manda el servidor. ⚠ Mismo tipo que `official` en server/src/push.ts. */
+/** Alerta oficial (SMN, DMC, INUMET, INMET de Brasil, SENAMHI de Bolivia y Perú) que manda el servidor. ⚠ Mismo tipo que `official` en server/src/push.ts. */
 export interface OfficialPush {
   key: string;
-  source: 'SMN' | 'DMC' | 'INUMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
+  source: 'SMN' | 'DMC' | 'INUMET' | 'INMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
   senderName: string;
   event: string;
   headline: string;

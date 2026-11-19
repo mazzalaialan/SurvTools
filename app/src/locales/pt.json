@@ -994,7 +994,16 @@
    "pyKids": {
     "name": "Fono Ayuda (infância)",
     "desc": "147: infância e adolescência"
-   }
+   },
+      "brPolice": { "name": "Polícia Militar", "desc": "190: emergências policiais. O 112 (apenas de celular) também chega à Polícia Militar" },
+      "brSamu": { "name": "Ambulância (SAMU)", "desc": "192: Serviço de Atendimento Móvel de Urgência, do Ministério da Saúde" },
+      "brFire": { "name": "Bombeiros", "desc": "193: incêndios e resgates" },
+      "brCivilDefense": { "name": "Defesa Civil", "desc": "199: desastres naturais, inundações, deslizamentos e outros riscos" },
+      "brRoadPolice": { "name": "Polícia Rodoviária Federal", "desc": "191: acidentes e emergências nas rodovias federais" },
+      "brCivilPolice": { "name": "Polícia Civil", "desc": "197: denúncias (não é para emergências que não podem esperar)" },
+      "brPoison": { "name": "Intoxicações (Disque-Intoxicação)", "desc": "Anvisa, rede de centros de informação toxicológica: orientação em casos de intoxicação" },
+      "brMentalHealth": { "name": "CVV (apoio emocional)", "desc": "188: Centro de Valorização da Vida, apoio emocional e prevenção do suicídio, gratuito" },
+      "brWomen": { "name": "Central de Atendimento à Mulher", "desc": "180: denúncias e orientação sobre violência contra a mulher" }
   },
   "localNoteAR": "Alguns números mudam conforme a província ou o município: salve também os da sua região em \"Meus contatos\".",
   "localNoteCL": "No Chile não há um número único: 131 ambulância, 132 bombeiros, 133 Carabineros. Salve também os da sua comuna em \"Meus contatos\".",
@@ -1419,7 +1428,8 @@
    "UY": "No Uruguai a permissão é concedida pela URSEC; o Radio Club Uruguayo (CX1AA) e os radioclubes do interior dão os cursos.",
    "BO": "Na Bolívia a licença é concedida pela ATT (Autoridad de Regulación y Fiscalización de Telecomunicaciones y Transportes); o Radio Club de Bolivia e os radioclubes departamentais dão os cursos.",
    "PE": "No Peru a licença é concedida pelo MTC; o Radio Club Peruano (OA4O) dá os cursos. Sua rede de emergências (RENER) usa 146.520 MHz em simplex.",
-   "PY": "No Paraguai as licenças de radioamador são concedidas pela CONATEL (Comisión Nacional de Telecomunicaciones); consulte os radioclubes da sua cidade sobre os cursos e as redes de emergência."
+   "PY": "No Paraguai as licenças de radioamador são concedidas pela CONATEL (Comisión Nacional de Telecomunicaciones); consulte os radioclubes da sua cidade sobre os cursos e as redes de emergência.",
+      "BR": "No Brasil, as licenças de radioamador são concedidas pela Anatel (Agência Nacional de Telecomunicações); a LABRE (Liga de Amadores Brasileiros de Rádio Emissão) e os radioclubes oferecem os cursos."
   },
   "securityNote": "As frequências de guarda-parques, CONAF e do Radio Club de Carabineros são somente para pedir socorro com a vida em perigo: diante de um perigo de vida, pode-se pedir ajuda por qualquer meio. Não são incluídas as da Gendarmería nem da polícia: não são públicas e muitas são criptografadas. Escutar comunicações de forças ou serviços sem autorização pode ser crime (na Argentina, Código Penal, art. 153)."
  },
@@ -3770,11 +3780,14 @@
   "BO": "Bolívia",
   "PE": "Peru",
   "PY": "Paraguai",
+    "BR": "Brasil",
   "hint": "Define os números de emergência, o centro de toxicologia e o guia de primeiros socorros. Também se altera em Contatos de emergência e no guia."
  },
  "legal": {
   "smn": "De acordo com o marco normativo vigente, a emissão de alertas meteorológicos e avisos oficiais à população no território argentino é competência exclusiva do Serviço Meteorológico Nacional (SMN). O VikArg usa dados e produtos meteorológicos somente como informação orientativa: não substitui, não emite nem se sobrepõe ao Sistema de Alerta Precoce (SAT) nem às funções oficiais de vigilância do SMN. Os avisos de chuva e raios do app são informativos, não alertas oficiais.",
-  "smnLink": "Ver os alertas oficiais do SMN"
+  "smnLink": "Ver os alertas oficiais do SMN",
+    "br": "No Brasil, os alertas meteorológicos e os avisos oficiais à população são emitidos pelo Instituto Nacional de Meteorologia (INMET) e pela Defesa Civil. O VikArg usa dados e produtos meteorológicos apenas como informação orientativa: não substitui nem se sobrepõe a esses alertas. Os avisos de chuva, raios e os alertas do INMET exibidos no app são informativos, não alertas oficiais.",
+    "brLink": "Ver os alertas oficiais do INMET"
  },
  "about": {
   "youtube": "Canal do YouTube",
@@ -4313,7 +4326,8 @@
    "UY": "O Uruguai não tem um calendário oficial de horta familiar: usa-se o da zona argentina de clima parecido ({{zone}}).",
    "BO": "A Bolívia não tem um calendário de horta oficial publicado por cultivo e mês (o INIAF não o publica). Há duas zonas estimadas: “Vales da Bolívia (Tarija)”, montada com o manual de uma ONG, e “Trópico e Yungas da Bolívia”, de um quadro de um projeto de cooperação (12 cultivos); no altiplano, escolha manualmente a que mais se parecer e tome os meses como referência.",
    "PE": "O Peru não tem um calendário de horta oficial publicado por cultivo e mês (o INIA não o publica abertamente): o clima da costa, da serra e da selva não se parece com nenhuma zona argentina. Há uma zona estimada “Serra do Peru” (7 cultivos andinos, do calendário da serra do INIA); para a costa e a selva, escolha manualmente a que mais se parecer (a de “Vales da Bolívia” é de clima temperado de vale) e tome os meses como referência.",
-   "PY": "O Paraguai não tem um calendário de horta oficial publicado por cultivo e mês: usa-se o da zona argentina de clima parecido ({{zone}}: subtropical, geadas leves e verão muito quente e úmido). Tome como orientação."
+   "PY": "O Paraguai não tem um calendário de horta oficial publicado por cultivo e mês: usa-se o da zona argentina de clima parecido ({{zone}}: subtropical, geadas leves e verão muito quente e úmido). Tome como orientação.",
+      "BR": "O Brasil não tem um calendário oficial publicado para hortaliças de horta doméstica (o ZARC do Ministério da Agricultura cobre apenas culturas comerciais): não há zona sugerida; escolha manualmente a mais parecida e use os meses como referência."
   },
   "zoneEstimatedValles": "Esta zona vem de um manual de uma ONG para o Vale Central de Tarija (2016), não de uma fonte oficial: os meses foram lidos de quadros gráficos e podem estar deslocados em um mês. Serve para vales de clima temperado; no altiplano ou no trópico os meses mudam. Tome como orientação e veja o que fazem na sua zona.",
   "zoneEstimatedTropico": "Esta zona vem de um quadro de semeadura de um projeto de cooperação para o trópico de Cochabamba e os Yungas de La Paz (Jatun Sacha, com apoio da UNODC): uma única fonte, não oficial e não validada pelo INIAF. Não distingue semeadura direta de sementeira nem os Yungas do trópico, e traz apenas 12 cultivos. Tome como orientação e veja o que fazem na sua zona.",

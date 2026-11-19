@@ -87,8 +87,8 @@ export async function prefetchCountry(country: Country): Promise<void> {
     quiet(loadOfficialRepeaters(country)),
     // Áreas protegidas de Chile (CONAF): también con Argentina, por la cordillera.
     country === 'AR' || country === 'CL' ? quiet(loadParksCL()) : undefined,
-    // Bolivia, Perú y Paraguay: las suyas (SERNAP, SERNANP, OpenStreetMap).
-    country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY' ? quiet(loadParksFile(country)) : undefined,
+    // Bolivia, Perú, Paraguay, Uruguay y Brasil: las suyas (SERNAP, SERNANP, CNUC, OpenStreetMap).
+    country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY' || country === 'BR' ? quiet(loadParksFile(country)) : undefined,
   ]);
 }
 

@@ -52,6 +52,8 @@ export const CALLS: Record<Country, Partial<Record<CallKey, string>>> = {
   PE: { emergency: '105', same: '106', fire: '116', poison: '+51 1 328 7700' },
   // Paraguay: el 911 atiende emergencias y policía; el SEME (141) es la ambulancia del Ministerio de Salud; el teléfono del CNTox no está confirmado en fuente oficial (ver emergency/national.ts).
   PY: { emergency: '911', same: '141', fire: '132' },
+  // Brasil: 190 Policía Militar, 192 SAMU (ambulancia), 193 Bomberos; Disque-Intoxicação de la Anvisa (lista de la Anatel, 2026-11-19).
+  BR: { emergency: '190', same: '192', fire: '193', poison: '0800 722 6001' },
 };
 
 /** Nombre del centro toxicológico de cada país, para el texto de la guía. */
@@ -62,6 +64,7 @@ const POISON_NAME: Record<Country, L> = {
   BO: { es: 'el centro toxicológico de tu departamento (CIATOX)', en: 'your department’s poison center (CIATOX)' },
   PE: { es: 'CICOTOX (centro toxicológico de la Universidad de San Marcos)', en: 'CICOTOX (San Marcos University poison center)' },
   PY: { es: 'el Centro Nacional de Toxicología (CNTox, Ministerio de Salud)', en: 'the National Toxicology Center (CNTox, Ministry of Health)' },
+  BR: { es: 'el Disque-Intoxicação (Anvisa, red de centros de información toxicológica)', en: 'Disque-Intoxicação (Anvisa, network of poison information centers)' },
 };
 
 /**

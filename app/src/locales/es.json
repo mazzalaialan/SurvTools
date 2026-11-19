@@ -489,7 +489,16 @@
       "pyPoison": {"name": "Intoxicaciones (CNTox)", "desc": "Centro Nacional de Toxicología, Asunción: también mordeduras y picaduras"},
       "pyMentalHealth": {"name": "Salud mental (línea 155)", "desc": "Ministerio de Salud, gratuita, las 24 horas: crisis y prevención del suicidio"},
       "pyGender": {"name": "SOS Mujer", "desc": "137: violencia contra la mujer"},
-      "pyKids": {"name": "Fono Ayuda (niñez)", "desc": "147: niñez y adolescencia"}
+      "pyKids": {"name": "Fono Ayuda (niñez)", "desc": "147: niñez y adolescencia"},
+      "brPolice": { "name": "Policía Militar", "desc": "190: emergencias policiales. El 112 (solo desde celular) también llega a la Policía Militar" },
+      "brSamu": { "name": "Ambulancia (SAMU)", "desc": "192: Servicio de Atención Móvil de Urgencia, del Ministerio de Salud" },
+      "brFire": { "name": "Bomberos", "desc": "193: incendios y rescates" },
+      "brCivilDefense": { "name": "Defensa Civil", "desc": "199: desastres naturales, inundaciones, deslizamientos y otros riesgos" },
+      "brRoadPolice": { "name": "Policía Rodoviaria Federal", "desc": "191: accidentes y emergencias en las rutas federales" },
+      "brCivilPolice": { "name": "Policía Civil", "desc": "197: denuncias (no es para emergencias que no pueden esperar)" },
+      "brPoison": { "name": "Intoxicaciones (Disque-Intoxicação)", "desc": "Anvisa, red de centros de información toxicológica: orientación ante intoxicaciones" },
+      "brMentalHealth": { "name": "CVV (apoyo emocional)", "desc": "188: Centro de Valoración de la Vida, apoyo emocional y prevención del suicidio, gratuito" },
+      "brWomen": { "name": "Atención a la Mujer", "desc": "180: denuncias y orientación por violencia contra la mujer" }
     },
     "localNoteAR": "Algunos números cambian según la provincia o el municipio: guardá también los de tu zona en \"Mis contactos\".",
     "localNoteCL": "En Chile no hay un número único: 131 ambulancia, 132 bomberos, 133 Carabineros. Guardá también los de tu comuna en \"Mis contactos\".",
@@ -796,7 +805,8 @@
       "UY": "En Uruguay el permiso lo da URSEC; el Radio Club Uruguayo (CX1AA) y los radioclubes del interior dan los cursos.",
       "BO": "En Bolivia la licencia la da la ATT (Autoridad de Regulación y Fiscalización de Telecomunicaciones y Transportes); el Radio Club de Bolivia y los radioclubes departamentales dan los cursos.",
       "PE": "En Perú la licencia la da el MTC; el Radio Club Peruano (OA4O) da los cursos. Su red de emergencias (RENER) usa 146.520 MHz en simplex.",
-      "PY": "En Paraguay las licencias de radioaficionado las da la CONATEL (Comisión Nacional de Telecomunicaciones); consultá con los radioclubes de tu ciudad por los cursos y las redes de emergencia."
+      "PY": "En Paraguay las licencias de radioaficionado las da la CONATEL (Comisión Nacional de Telecomunicaciones); consultá con los radioclubes de tu ciudad por los cursos y las redes de emergencia.",
+      "BR": "En Brasil las licencias de radioaficionado las da la Anatel (Agencia Nacional de Telecomunicaciones); la LABRE (Liga de Amadores Brasileños de Radio Emisión) y los radioclubes dan los cursos."
     },
     "securityNote": "Las frecuencias de guardaparques, CONAF y el Radio Club de Carabineros están solo para pedir auxilio con la vida en peligro: ante un peligro de vida se puede pedir ayuda por cualquier medio. No se incluyen las de Gendarmería ni policía: no son públicas y muchas están cifradas. Escuchar comunicaciones de fuerzas o servicios sin autorización puede ser delito (en Argentina, Código Penal, art. 153)."
   },
@@ -2442,11 +2452,14 @@
     "BO": "Bolivia",
     "PE": "Perú",
     "PY": "Paraguay",
+    "BR": "Brasil",
     "hint": "Define los números de emergencia, el centro toxicológico y la guía de primeros auxilios. También se cambia en Contactos de emergencia y en la guía."
   },
   "legal": {
     "smn": "De acuerdo con el marco normativo vigente, la emisión de alertas meteorológicas y avisos oficiales a la población en el territorio argentino es competencia exclusiva del Servicio Meteorológico Nacional (SMN). VikArg usa datos y productos meteorológicos solo como información orientativa: no sustituye, no emite ni se superpone con el Sistema de Alerta Temprana (SAT) ni con las funciones oficiales de vigilancia del SMN. Los avisos de lluvia y rayos de la app son informativos, no alertas oficiales.",
-    "smnLink": "Ver las alertas oficiales del SMN"
+    "smnLink": "Ver las alertas oficiales del SMN",
+    "br": "En Brasil, las alertas meteorológicas y los avisos oficiales a la población los emiten el Instituto Nacional de Meteorología (INMET) y la Defesa Civil. VikArg usa datos y productos meteorológicos solo como información orientativa: no sustituye ni se superpone con esas alertas. Los avisos de lluvia, rayos y las alertas del INMET que muestra la app son informativos, no alertas oficiales.",
+    "brLink": "Ver las alertas oficiales del INMET"
   },
   "about": {
     "youtube": "Canal de YouTube",
@@ -2890,7 +2903,8 @@
       "UY": "Uruguay no tiene un calendario oficial de huerta familiar: se usa el de la zona argentina de clima parecido ({{zone}}).",
       "BO": "Bolivia no tiene un calendario de huerta oficial publicado por cultivo y mes (el INIAF no lo publica). Hay dos zonas estimadas: \"Valles de Bolivia (Tarija)\", armada con el manual de una ONG, y \"Trópico y Yungas de Bolivia\", de un cuadro de un proyecto de cooperación (12 cultivos); en el altiplano elegí a mano la que más se parezca y tomá los meses como referencia.",
       "PE": "Perú no tiene un calendario de huerta oficial publicado por cultivo y mes (el INIA no lo publica abierto): el clima de la costa, la sierra y la selva no se parece a ninguna zona argentina. Hay una zona estimada \"Sierra de Perú\" (7 cultivos andinos, del calendario de la sierra del INIA); para la costa y la selva elegí a mano la que más se parezca (la de \"Valles de Bolivia\" es de clima templado de valle) y tomá los meses como referencia.",
-      "PY": "Paraguay no tiene un calendario de huerta oficial publicado por cultivo y mes: se usa el de la zona argentina de clima parecido ({{zone}}: subtropical, heladas suaves y verano muy caluroso y húmedo). Tomalo como orientación."
+      "PY": "Paraguay no tiene un calendario de huerta oficial publicado por cultivo y mes: se usa el de la zona argentina de clima parecido ({{zone}}: subtropical, heladas suaves y verano muy caluroso y húmedo). Tomalo como orientación.",
+      "BR": "Brasil no tiene un calendario de huerta oficial publicado para hortalizas de huerta (el ZARC del Ministerio de Agricultura cubre solo cultivos comerciales): no hay zona sugerida; elegí a mano la que más se parezca y tomá los meses como referencia."
     },
     "zoneEstimatedValles": "Esta zona sale de un manual de una ONG para el Valle Central de Tarija (2016), no de una fuente oficial: los meses se leyeron de cuadros gráficos y pueden estar corridos un mes. Sirve para valles de clima templado; en el altiplano o el trópico los meses cambian. Tomalo como orientación y fijate qué hacen en tu zona.",
     "zoneEstimatedTropico": "Esta zona sale de un cuadro de siembra de un proyecto de cooperación para el trópico de Cochabamba y los Yungas de La Paz (Jatun Sacha, con apoyo de UNODC): una sola fuente, no oficial y sin validar por el INIAF. No distingue siembra directa de almácigo ni los Yungas del trópico, y trae solo 12 cultivos. Tomalo como orientación y fijate qué hacen en tu zona.",

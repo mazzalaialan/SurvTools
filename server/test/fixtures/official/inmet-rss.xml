@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+<title>Avisos</title>
+<link>https://avisos.inmet.gov.br</link>
+<description>Avisos atuais na América do Sul</description>
+<!-- About Copyright: Licenca de Uso: O conteudo deste site, podera ser reproduzido desde que citada a fonte, excetuando os casos especificados em contrario e os conteudos replicados de outras fontes. O INMET nao se responsabiliza por eventuais danos que o conteudo hospedado por terceiros possa causar, sejam estes morais ou materiais. -->
+<copyright>public domain</copyright>
+<language>pt-BR</language>
+<pubDate>Thu, 19 Nov 2026 18:13:34 +0000</pubDate>
+<item>
+<title>Aviso de Tempestade. Severidade Grau: Perigo Potencial</title>
+<link>https://apiprevmet3.inmet.gov.br/avisos/rss/56459</link>
+<description><![CDATA[<table border="0" cellspacing="0" cellpadding="3"><tr><th align="left">Status</th><td>Alert</td></tr><tr><th align="left">Evento</th><td>Tempestade</td></tr><tr><th align="left">Severidade</th><td>Perigo Potencial</td></tr><tr><th align="left">Início</th><td>2026-11-22 09:33:00.0</td></tr><tr><th align="left">Fim</th><td>2026-11-22 23:59:00.0</td></tr><tr><th align="left">Descrição</th><td>INMET publica aviso iniciando em: 22/11/2026 09:33. Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.</td></tr><tr><th align="left">Área</th><td>Aviso para as Áreas: Centro Goiano, Triângulo Mineiro/Alto Paranaíba, Leste Goiano, Central Mineira, Centro Sul Baiano, Norte Pioneiro Paranaense</td></tr><tr><th align="left">Link Gráfico</th><td><a href='https://avisos.inmet.gov.br/56459'>https://avisos.inmet.gov.br/56459</a></td></tr></table>]]></description>
+<pubDate>Sun, 22 Nov 2026 09:33:00 +0000</pubDate>
+<guid>https://apiprevmet3.inmet.gov.br/avisos/rss/56459</guid>
+</item>
+<item>
+<title>Aviso de Tempestade. Severidade Grau: Perigo Potencial</title>
+<link>https://apiprevmet3.inmet.gov.br/avisos/rss/56458</link>
+<description><![CDATA[<table border="0" cellspacing="0" cellpadding="3"><tr><th align="left">Status</th><td>Alert</td></tr><tr><th align="left">Evento</th><td>Tempestade</td></tr><tr><th align="left">Severidade</th><td>Perigo Potencial</td></tr><tr><th align="left">Início</th><td>2026-11-21 09:25:00.0</td></tr><tr><th align="left">Fim</th><td>2026-11-21 23:59:00.0</td></tr><tr><th align="left">Descrição</th><td>INMET publica aviso iniciando em: 21/11/2026 09:25. Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.</td></tr><tr><th align="left">Área</th><td>Aviso para as Áreas: Centro Goiano, Triângulo Mineiro/Alto Paranaíba, Leste Goiano, Central Mineira, Centro Sul Baiano, Norte Pioneiro Paranaense</td></tr><tr><th align="left">Link Gráfico</th><td><a href='https://avisos.inmet.gov.br/56458'>https://avisos.inmet.gov.br/56458</a></td></tr></table>]]></description>
+<pubDate>Sat, 21 Nov 2026 09:25:00 +0000</pubDate>
+<guid>https://apiprevmet3.inmet.gov.br/avisos/rss/56458</guid>
+</item>
+<item>
+<title>Aviso de Tempestade. Severidade Grau: Perigo</title>
+<link>https://apiprevmet3.inmet.gov.br/avisos/rss/56457</link>
+<description><![CDATA[<table border="0" cellspacing="0" cellpadding="3"><tr><th align="left">Status</th><td>Alert</td></tr><tr><th align="left">Evento</th><td>Tempestade</td></tr><tr><th align="left">Severidade</th><td>Perigo</td></tr><tr><th align="left">Início</th><td>2026-11-20 09:16:00.0</td></tr><tr><th align="left">Fim</th><td>2026-11-20 23:59:00.0</td></tr><tr><th align="left">Descrição</th><td>INMET publica aviso iniciando em: 20/11/2026 09:16. Chuva entre 30 e 60 mm/h ou 50 e 100 mm/dia, ventos intensos (60-100 km/h), e queda de granizo. Risco de corte de energia elétrica, estragos em plantações,  queda de árvores e de alagamentos.</td></tr><tr><th align="left">Área</th><td>Aviso para as Áreas: Norte Pioneiro Paranaense, Serrana, Oeste Catarinense, Metropolitana de Curitiba, Vale do Itajaí, Noroeste Rio-grandense</td></tr><tr><th align="left">Link Gráfico</th><td><a href='https://avisos.inmet.gov.br/56457'>https://avisos.inmet.gov.br/56457</a></td></tr></table>]]></description>
+<pubDate>Fri, 20 Nov 2026 09:16:00 +0000</pubDate>
+<guid>https://apiprevmet3.inmet.gov.br/avisos/rss/56457</guid>
+</item>
+<item>
+<title>Aviso de Declínio de Temperatura. Severidade Grau: Perigo Potencial</title>
+<link>https://apiprevmet3.inmet.gov.br/avisos/rss/56320</link>
+<description><![CDATA[<table border="0" cellspacing="0" cellpadding="3"><tr><th align="left">Status</th><td>Alert</td></tr><tr><th align="left">Evento</th><td>Declínio de Temperatura</td></tr><tr><th align="left">Severidade</th><td>Perigo Potencial</td></tr><tr><th align="left">Início</th><td>2026-11-09 00:00:00.0</td></tr><tr><th align="left">Fim</th><td>2026-11-09 23:59:00.0</td></tr><tr><th align="left">Descrição</th><td>INMET publica aviso iniciando em: 09/11/2026 00:00. Leve risco à saúde. Declínio entre 3ºC e 5ºC.</td></tr><tr><th align="left">Área</th><td>Aviso para as Áreas: Triângulo Mineiro/Alto Paranaíba, Central Mineira, Zona da Mata, Sul Goiano, Vale do Rio Doce, Central Espírito-santense</td></tr><tr><th align="left">Link Gráfico</th><td><a href='https://avisos.inmet.gov.br/56320'>https://avisos.inmet.gov.br/56320</a></td></tr></table>]]></description>
+<pubDate>Mon, 09 Nov 2026 00:00:00 +0000</pubDate>
+<guid>https://apiprevmet3.inmet.gov.br/avisos/rss/56320</guid>
+</item>
+</channel>
+</rss>

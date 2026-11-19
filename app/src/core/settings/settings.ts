@@ -168,8 +168,8 @@ export interface Settings {
 export type GardenZone = 'pampeana' | 'nea' | 'noa' | 'cuyo' | 'patagoniaNorte' | 'patagoniaSur' | 'vallesBolivia' | 'tropicoBolivia' | 'sierraPeru';
 
 export type FirstAidEnv = 'city' | 'wild';
-export type Country = 'AR' | 'CL' | 'UY' | 'BO' | 'PE' | 'PY';
-export const COUNTRIES: Country[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
+export type Country = 'AR' | 'CL' | 'UY' | 'BO' | 'PE' | 'PY' | 'BR';
+export const COUNTRIES: Country[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY', 'BR'];
 
 /**
  * Los países agrupados por continente, para mostrarlos en marcos separados en Ajustes. Hoy solo hay América del Sur; para sumar otro continente
@@ -178,7 +178,13 @@ export const COUNTRIES: Country[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
  */
 export const CONTINENTS: { id: 'southAmerica'; countries: Country[] }[] = [{ id: 'southAmerica', countries: COUNTRIES }];
 
-/** Por la zona horaria del dispositivo (Chile, Uruguay, Bolivia, Perú y Paraguay tienen la suya); si no, Argentina. */
+/**
+ * Por la zona horaria del dispositivo (Chile, Uruguay, Bolivia, Perú, Paraguay y Brasil tienen la suya); si no, Argentina. Brasil se detecta por el
+ * NOMBRE de la zona y no por el desfase: `America/Sao_Paulo` tiene el mismo desfase que Argentina y Uruguay, y `America/Rio_Branco` el mismo que Perú.
+ */
+const BRAZIL_ZONES =
+  /^America\/(Sao_Paulo|Bahia|Belem|Fortaleza|Recife|Maceio|Araguaina|Santarem|Cuiaba|Campo_Grande|Manaus|Porto_Velho|Boa_Vista|Rio_Branco|Eirunepe|Noronha)$/;
+
 export function detectCountry(): Country {
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
   if (/^America\/(Santiago|Punta_Arenas)$|^Pacific\/Easter$/.test(zone)) return 'CL';
@@ -186,6 +192,7 @@ export function detectCountry(): Country {
   if (zone === 'America/La_Paz') return 'BO';
   if (zone === 'America/Lima') return 'PE';
   if (zone === 'America/Asuncion') return 'PY';
+  if (BRAZIL_ZONES.test(zone)) return 'BR';
   return 'AR';
 }
 

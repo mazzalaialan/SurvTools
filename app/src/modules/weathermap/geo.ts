@@ -1,8 +1,8 @@
 /** Mapa base incluido en la app (tools/geo-data/build.mjs). Se carga aparte para no pesar en el inicio. */
 
 /** Países con provincias (o regiones, departamentos) en el mapa base. */
-export type GeoCountry = 'AR' | 'CL' | 'UY' | 'BO' | 'PE' | 'PY';
-export const GEO_COUNTRIES: GeoCountry[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
+export type GeoCountry = 'AR' | 'CL' | 'UY' | 'BO' | 'PE' | 'PY' | 'BR';
+export const GEO_COUNTRIES: GeoCountry[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY', 'BR'];
 
 export interface GeoRegion {
   id: string;

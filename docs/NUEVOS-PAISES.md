@@ -83,6 +83,18 @@ Qué hay que mirar de cada uno antes de elegir: bucket o servicio, formato (NetC
 
 Cuando se decida el primer continente nuevo, lanzar una investigación con el agente investigador sobre este punto, igual que las de los países.
 
+## Estado de Brasil (2026-11-19, sin publicar)
+
+Se empezó por Brasil, con la **interfaz en portugués** y la **base del país** para **Sul + Mato Grosso do Sul** (RS, SC, PR y MS):
+
+- **Código:** `BR` en `Country`/`COUNTRIES`, detección por el **nombre** de la zona horaria (`America/Sao_Paulo`, `Manaus`, `Cuiaba`, `Campo_Grande`, `Rio_Branco`, etc.; no por el desfase), `GeoCountry`, vista inicial del mapa del clima, números de emergencia (190, 192, 193, 199, 191, 197, 188, 180 y Disque-Intoxicação 0800 722 6001, lista de la Anatel), guía de primeros auxilios, huerta **sin zona sugerida** (no se inventa; el ZARC solo cubre cultivos comerciales), textos legales propios («INMET y Defesa Civil») y textos en es/en/pt.
+- **Mapa base:** 27 estados con nombre oficial en portugués, frontera y capitales (`node tools/geo-data/build.mjs --solo-brasil`, tolerancia 0,03°, +73 KB); contorno para detectar el país en `borders-data.json` (+32 KB).
+- **Datos (2,87 MB en 12 archivos, todos en `app/public/data/*-BR.json` y `BR.json`):** servicios de OpenStreetMap solo de Sul y MS (extracto de Geofabrik del 2026-11-18; recorte con las fronteras de OSM de los cuatro estados: `tools/osm-index/brazil.sh`): surtidores 5.959, farmacias 4.222, talleres 2.737, cajeros 1.601, agua 1.270, gomerías 671, náutica 590, veterinarias 407, refugios 200, desfibriladores 11; `BR.json` con 1.311 localidades (GeoNames), 437 bomberos, 1.617 policía y 4.805 centros de salud, **sin radios** (no hay fuente pública verificada). **Parques:** CNUC (CC BY), 208 áreas (todos los parques nacionales con polígono, 75 de 77, más las unidades federales y estaduales de RS, SC, PR y MS), 735 KB; 18 estaduales del PR sin polígono van con un cuadrado de ±2 km marcado `areaApprox`.
+- **Servidor:** alertas CAP del **INMET** (`/avisos/rss` y `/avisos/rss/{id}`, «public domain» citando la fuente): se reproducen como informativas; el polígono del aviso es una envolvente de todas las zonas (puede dar falsos positivos cerca del borde; hacerlo por municipio pediría una tabla IBGE de 5.571 centroides).
+- **Pruebas:** vitest app 1068, servidor 268; e2e **sin correr todavía** (hay que correr la completa antes de publicar).
+
+**Falta de Brasil:** (1) **revisión humana del portugués** (ver `docs/TRADUCCION-PT-BR.md`) y el contenido largo en portugués (nudos, primeros auxilios, huerta, semillas); (2) **más sectores** (Sudeste, Nordeste, Norte, resto del Centro-Oeste): decidir si se parte Brasil por macrorregiones del IBGE con descarga por sector (cada uno ~3 MB como el actual) y cambiar `countryDownload` y la pantalla de países; (3) **ríos** (ANA telemetría + umbrales del SGB para la cuenca del Uruguay, por servidor); (4) **focos de calor del INPE**; (5) servidor: sumar `BR` a `DATA_FILES` y a `update-data.sh` si se quiere la regeneración mensual (hoy los paquetes de Brasil van solo con la app); (6) ANP y CNES (ya aceptados con crédito; comprobar antes que no dupliquen OSM); (7) la geología (Macrostrat) y las ecorregiones del país; (8) pedidos formales.
+
 ## Orden recomendado
 
 1. **Colombia** (alertas CAP del IDEAM, RUNAP, volcanes, teléfonos, ríos con aviso de atraso).

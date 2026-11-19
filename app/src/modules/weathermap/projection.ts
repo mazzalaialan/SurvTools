@@ -44,6 +44,8 @@ export const COUNTRY_BOUNDS: Record<string, typeof REGION_BOUNDS> = {
   BO: { west: -70, east: -57.4, south: -23, north: -9.6 },
   PE: { west: -81.5, east: -68.5, south: -18.5, north: 0 },
   PY: { west: -63, east: -53.5, south: -28, north: -19 },
+  // Brasil entero (con la costa del Atlántico y el sur de Roraima): el país es enorme, a la altura de toda América del Sur.
+  BR: { west: -74, east: -34, south: -34, north: 5.5 },
 };
 export const homeBounds = (country: string) => COUNTRY_BOUNDS[country] ?? REGION_BOUNDS;
 /** Toda América del Sur, América Central y la Península Antártica: hasta donde se puede alejar el mapa. */

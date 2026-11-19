@@ -71,6 +71,17 @@ Investigado el 7 de noviembre de 2026; segunda pasada el mismo día. Ninguno de 
 
 **Mapas sin conexión:** los límites pasaron de -76,-56,-53,-17.4 a -81.5,-56,-53,0 (se agregaron Perú, Bolivia y Ecuador); el relieve pasó de ~4,4 a ~7,3 GB y el vector de ~1,5 a ~2,5 GB (estimación); el mapa del tiempo necesita departamentos de BO y PE como regiones y Ecuador y Colombia como vecinos. Se reconstruyó con `~/vikarg/deploy/maps/build-bope.sh` (registros `build-bope-*.log`). Todos los países de Sudamérica van con su nombre, con las fronteras de países en un color y las de provincias en otro.
 
+## Brasil, INMET: alertas oficiales (2026-11-19)
+
+- **Fuente:** Instituto Nacional de Meteorologia (INMET). Lista: `https://apiprevmet3.inmet.gov.br/avisos/rss` (RSS 2.0, 73 ítems el 19/11, 145 KB); un CAP 1.2 por aviso: `https://apiprevmet3.inmet.gov.br/avisos/rss/{id}` (60 a 120 KB cada uno). También existe `.../avisos/ativos` (JSON de 737 KB con `hoje`/`futuro`), que no se usa.
+- **Licencia declarada:** el RSS dice `<copyright>public domain</copyright>` y, en un comentario, que el contenido «podera ser reproduzido desde que citada a fonte». Se reproduce citando al INMET.
+- **Acceso:** sin clave, sin Cloudflare ni captcha (200 con `User-Agent: VikArg (servidor propio; alertas oficiales)`). Mandan cookies de sesión que no hace falta guardar. `alertas2.inmet.gov.br` y `robots.txt` no se probaron de nuevo.
+- **Qué trae el CAP (real):** `sender` info.aviso@inmet.gov.br; un solo `<info>` en portugués (`pt-BR`), `senderName` «Instituto Nacional de Meteorologia», `event` («Tempestade»), `severity` (Moderate = amarillo, ver `ColorRisk`), `onset`/`expires` con zona -03:00, `description`, `instruction` (Defesa Civil 199, Bombeiros 193), `web` (`https://avisos.inmet.gov.br/{id}`). Un único `<polygon>` por aviso (45 a 142 puntos, envolvente de todas las zonas del aviso) y `areaDesc` con la lista de mesorregiones. Los municipios exactos vienen solo como texto (`parameter Municipios`: «Nombre - UF (código IBGE)», hasta 3.850) sin coordenadas.
+- **Cómo se decide si toca un lugar:** igual que SMN/DMC/INUMET, punto dentro del polígono (`covers`). Es una envolvente: puede incluir lugares de municipios que el aviso no nombra (verificado con capitales: las de estados del aviso caen adentro, Fortaleza, Salvador y Recife afuera). Resolver municipio por municipio pediría una tabla IBGE de 5.571 centroides; no se cargó.
+- **Detalles del RSS:** los ítems son todos «Alert» e incluyen avisos de días atrás: el servidor se salta los que ya terminaron (`Fim` de la descripción) para no bajar CAP de más. Un `Cancel` (ej. id 56400) no da alerta. Los avisos futuros (ej. 22/11) llegan con su `onset`.
+- **Qué se probó:** RSS y 2 CAP reales (56459 vigente, 56400 cancelado) guardados recortados en `server/test/fixtures/official/inmet-*`; pruebas en `server/test/official-inmet.test.ts`.
+- **Atribución en la app:** «INMET»; texto de los avisos tal cual lo publica el INMET. VikArg los muestra como **informativos, no oficiales** (igual que las demás fuentes).
+
 ## Calendarios de huerta de Bolivia y Perú
 
 No existe un calendario oficial abierto de siembra por cultivo y mes:

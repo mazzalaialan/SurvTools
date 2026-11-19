@@ -489,7 +489,16 @@
       "pyPoison": {"name": "Poisoning (CNTox)", "desc": "National Toxicology Center, Asunción: also bites and stings"},
       "pyMentalHealth": {"name": "Mental health (line 155)", "desc": "Ministry of Health, free, 24 hours: crisis and suicide prevention"},
       "pyGender": {"name": "SOS Mujer", "desc": "137: violence against women"},
-      "pyKids": {"name": "Fono Ayuda (children)", "desc": "147: children and adolescents"}
+      "pyKids": {"name": "Fono Ayuda (children)", "desc": "147: children and adolescents"},
+      "brPolice": { "name": "Military Police", "desc": "190: police emergencies. 112 (mobile phones only) also reaches the Military Police" },
+      "brSamu": { "name": "Ambulance (SAMU)", "desc": "192: Mobile Emergency Care Service, Ministry of Health" },
+      "brFire": { "name": "Fire brigade", "desc": "193: fires and rescues" },
+      "brCivilDefense": { "name": "Civil defense", "desc": "199: natural disasters, floods, landslides and other hazards" },
+      "brRoadPolice": { "name": "Federal Highway Police", "desc": "191: accidents and emergencies on federal highways" },
+      "brCivilPolice": { "name": "Civil Police", "desc": "197: reports (not for emergencies that cannot wait)" },
+      "brPoison": { "name": "Poisoning (Disque-Intoxicação)", "desc": "Anvisa, network of poison information centers: guidance for poisonings" },
+      "brMentalHealth": { "name": "CVV (emotional support)", "desc": "188: Life Appreciation Center, emotional support and suicide prevention, free" },
+      "brWomen": { "name": "Women’s helpline", "desc": "180: reports and guidance on violence against women" }
     },
     "localNoteAR": "Some numbers change by province or municipality: save your local ones in \"My contacts\" too.",
     "localNoteCL": "Chile has no single number: 131 ambulance, 132 fire, 133 Carabineros (police). Save your local ones in \"My contacts\" too.",
@@ -796,7 +805,8 @@
       "UY": "In Uruguay the permit is issued by URSEC; Radio Club Uruguayo (CX1AA) and local clubs run the courses.",
       "BO": "In Bolivia the license is issued by ATT (the telecom and transport regulator); Radio Club de Bolivia and departmental clubs run the courses.",
       "PE": "In Peru the license is issued by MTC; Radio Club Peruano (OA4O) runs the courses. Its emergency network (RENER) uses 146.520 MHz simplex.",
-      "PY": "In Paraguay amateur radio licenses are issued by CONATEL (the National Telecommunications Commission); ask the radio clubs in your city about courses and emergency networks."
+      "PY": "In Paraguay amateur radio licenses are issued by CONATEL (the National Telecommunications Commission); ask the radio clubs in your city about courses and emergency networks.",
+      "BR": "In Brazil amateur radio licenses are issued by Anatel (the National Telecommunications Agency); LABRE (the Brazilian Amateur Radio League) and local radio clubs offer the courses."
     },
     "securityNote": "The park ranger, CONAF and Radio Club de Carabineros frequencies are only for calling for help when a life is in danger: with a life at risk you may ask for help by any means. Gendarmerie and police frequencies aren't included: they aren't public and many are encrypted. Listening to forces or services without authorization may be a crime (in Argentina, Penal Code, art. 153)."
   },
@@ -2443,11 +2453,14 @@
     "BO": "Bolivia",
     "PE": "Peru",
     "PY": "Paraguay",
+    "BR": "Brazil",
     "hint": "Sets the emergency numbers, poison center and first aid guide. It can also be changed in Emergency contacts and in the guide."
   },
   "legal": {
     "smn": "Under current regulations, issuing weather alerts and official warnings to the public in Argentina is the exclusive responsibility of the National Weather Service (Servicio Meteorológico Nacional, SMN). VikArg uses weather data and products only as guidance: it does not replace, issue or overlap with the Early Warning System (SAT) or the SMN's official monitoring. The app's rain and lightning notices are informational, not official alerts.",
-    "smnLink": "See the official SMN alerts"
+    "smnLink": "See the official SMN alerts",
+    "br": "In Brazil, weather alerts and official warnings to the public are issued by the National Institute of Meteorology (INMET) and the Civil Defense (Defesa Civil). VikArg uses weather data and products as guidance only: it does not replace or override those alerts. The rain and lightning notices and the INMET alerts shown in the app are informational, not official alerts.",
+    "brLink": "See the official INMET alerts"
   },
   "about": {
     "youtube": "YouTube channel",
@@ -2891,7 +2904,8 @@
       "UY": "Uruguay has no official home-garden calendar: the Argentine zone with a similar climate is used ({{zone}}).",
       "BO": "Bolivia has no official garden calendar by crop and month (INIAF does not publish one). There are two estimated zones: \"Bolivian valleys (Tarija)\", built from an NGO manual, and \"Bolivian tropics and Yungas\", from a table of a cooperation project (12 crops); on the altiplano pick the closest one by hand and treat the months as a reference.",
       "PE": "Peru has no official garden calendar by crop and month (INIA does not publish an open one): the climate of the coast, highlands and jungle matches no Argentine zone. There is an estimated \"Peruvian highlands\" zone (7 Andean crops, from the INIA highlands calendar); for the coast and jungle pick the closest by hand (\"Bolivian valleys\" is a temperate valley climate) and treat the months as a reference.",
-      "PY": "Paraguay has no official garden calendar by crop and month: the one for the Argentine zone with a similar climate is used ({{zone}}: subtropical, mild frosts and a very hot, humid summer). Use it as a guide."
+      "PY": "Paraguay has no official garden calendar by crop and month: the one for the Argentine zone with a similar climate is used ({{zone}}: subtropical, mild frosts and a very hot, humid summer). Use it as a guide.",
+      "BR": "Brazil has no official published planting calendar for home-garden vegetables (the Ministry of Agriculture’s ZARC covers commercial crops only): there is no suggested zone; pick the closest one by hand and treat the months as a reference."
     },
     "zoneEstimatedValles": "This zone comes from an NGO manual for the Central Tarija Valley (2016), not an official source: months were read from graphic tables and may be off by a month. It suits temperate valleys; on the altiplano or in the tropics the months change. Use it as guidance and check what is done locally.",
     "zoneEstimatedSierraPeru": "This zone comes from the INIA Peru \"Highlands agricultural calendar\" (September to November; copied by hand from its publication, without the document at hand) and has only 7 Andean crops, rainfed. Harvest months were computed from each crop's cycle and change with altitude and variety (the higher, the longer the cycle). Use it as guidance and ask your local agricultural agency.",

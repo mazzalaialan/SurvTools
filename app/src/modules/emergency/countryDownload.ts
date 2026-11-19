@@ -24,7 +24,7 @@ export function countryFiles(country: Country): string[] {
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).
   if (country === 'AR' || country === 'CL') files.push('parks-CL.json', 'repeaters-CL.json');
-  if (country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY') files.push(`parks-${country}.json`);
+  if (country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY' || country === 'BR') files.push(`parks-${country}.json`);
   return files;
 }
 

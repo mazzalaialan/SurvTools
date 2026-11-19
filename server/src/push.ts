@@ -42,7 +42,7 @@ export interface PushPayload {
    */
   official?: {
     key: string;
-    source: 'SMN' | 'DMC' | 'INUMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
+    source: 'SMN' | 'DMC' | 'INUMET' | 'INMET' | 'SENAMHI_BO' | 'SENAMHI_PE' | 'SIGMET';
     senderName: string;
     event: string;
     headline: string;

@@ -441,7 +441,8 @@ export function monthPlan(zone: Zone, month: number): MonthPlan {
  * calendarios (INIAF, INIA); se elige a mano.
  */
 export function zoneFor(lat: number, lon: number, country: Country): Zone | null {
-  if (country === 'BO' || country === 'PE') return null;
+  // Brasil: el ZARC oficial cubre cultivos comerciales, no las hortalizas de huerta: sin zona sugerida (no se inventa), se elige a mano.
+  if (country === 'BO' || country === 'PE' || country === 'BR') return null;
   if (country === 'UY') return 'pampeana';
   // Paraguay: subtropical, parecido al NEA argentino (heladas suaves, verano muy caluroso y húmedo); sin calendario propio publicado.
   if (country === 'PY') return 'nea';

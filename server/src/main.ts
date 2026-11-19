@@ -283,7 +283,7 @@ async function riverTick() {
 }
 const riverTimer = setInterval(() => void riverTick(), RIVER_EVERY_MS);
 
-// Alertas oficiales (SMN, DMC, INUMET): cada 10 minutos, para el mapa y para avisar. Se bajan solo los CAP nuevos.
+// Alertas oficiales (SMN, DMC, INUMET, INMET): cada 10 minutos, para el mapa y para avisar. Se bajan solo los CAP nuevos.
 let officialBusy = false;
 let volcanoesAt = 0;
 async function officialTick() {
@@ -293,7 +293,7 @@ async function officialTick() {
     const all: OfficialAlert[] = [];
     const failed: string[] = [];
     for (const source of Object.keys(FEEDS) as CapSource[]) {
-      const label = { SMN: 'Las alertas del SMN', DMC: 'Las alertas de la Dirección Meteorológica de Chile', INUMET: 'Las alertas de INUMET (Uruguay)' }[source];
+      const label = { SMN: 'Las alertas del SMN', DMC: 'Las alertas de la Dirección Meteorológica de Chile', INUMET: 'Las alertas de INUMET (Uruguay)', INMET: 'Las alertas del INMET (Brasil)' }[source];
       try {
         all.push(...(await fetchOfficial(source, officialCache)));
         await monitor.ok(source, label);

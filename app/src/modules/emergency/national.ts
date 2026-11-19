@@ -23,6 +23,11 @@ import type { Country } from '@/core/settings/settings';
  *   tuvo fallas técnicas en 2025: ver la nota del país); el de la SEN (Defensa Civil) de sen.gov.py/contacto. Sin confirmar en fuente oficial:
  *   CNTox (solo una nota de prensa), la línea 155 de salud mental (prensa y la Agencia IP), el 137 (violencia) y el 147 (niñez).
  *
+ * - Brasil (consultado el 2026-11-19): los números salen de la lista de la Anatel (190 Policía Militar, 191 Policía Rodoviária Federal, 192 SAMU,
+ *   193 Bomberos, 197 Policía Civil, 199 Defensa Civil, 188 CVV, 180 Atención a la Mujer); el 112 es solo celular y llega a la Policía Militar.
+ *   Toxicología: Disque-Intoxicação 0800 722 6001 (Anvisa; las notas se contradicen sobre cuántas unidades tiene la red). Cruz Vermelha Brasileira:
+ *   sin teléfono nacional vigente, no se carga.
+ *
  * Los `unconfirmed` se muestran con esa aclaración y un enlace para avisar si no andan.
  */
 export interface NationalNumber {
@@ -92,6 +97,17 @@ export const NATIONAL_NUMBERS: Record<Country, NationalNumber[]> = {
     { id: 'pyMentalHealth', number: '155', kind: 'medical', unconfirmed: true },
     { id: 'pyGender', number: '137', kind: 'other', unconfirmed: true },
     { id: 'pyKids', number: '147', kind: 'other', unconfirmed: true },
+  ],
+  BR: [
+    { id: 'brPolice', number: '190', kind: 'police' },
+    { id: 'brSamu', number: '192', kind: 'medical' },
+    { id: 'brFire', number: '193', kind: 'fire' },
+    { id: 'brCivilDefense', number: '199', kind: 'civilDefense' },
+    { id: 'brRoadPolice', number: '191', kind: 'police' },
+    { id: 'brCivilPolice', number: '197', kind: 'police' },
+    { id: 'brPoison', number: '0800 722 6001', kind: 'medical' },
+    { id: 'brMentalHealth', number: '188', kind: 'other' },
+    { id: 'brWomen', number: '180', kind: 'other' },
   ],
 };
 
