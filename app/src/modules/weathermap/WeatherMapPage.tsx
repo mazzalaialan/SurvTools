@@ -23,7 +23,7 @@ import { RiverForecastLine } from './RiverForecastLine';
 import { TideGaugeLine } from './TideGaugeLine';
 import { boThreatLine } from '@/modules/navigation/bolivia';
 import { tideExtremes, tideLevelAt } from '@/modules/navigation/tides';
-import { fitBounds, fromMercator, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
+import { clampView, fitBounds, fromMercator, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
 import { Notice } from '@/ui/Notice';
 import {
   alertCovers,
@@ -156,7 +156,8 @@ export function WeatherMapPage() {
   }, []);
 
   const handleView = useCallback((v: View, s: Size) => {
-    setView(v);
+    // No se puede arrastrar más allá de donde hay mapa.
+    setView(clampView(v, s));
     setSize(s);
   }, []);
 
@@ -516,7 +517,7 @@ export function WeatherMapPage() {
 
   const timeFmt = new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' });
   const setLayer = (key: keyof WeatherMapLayers, on: boolean) => void update({ weatherMapLayers: { ...layers, [key]: on } });
-  const zoom = (factor: number) => view && size && setView(zoomAt(view, size, factor));
+  const zoom = (factor: number) => view && size && setView(clampView(zoomAt(view, size, factor), size));
   const animated = !saver && frameCount > 1 && (layers.satellite || layers.radar || sinaLen > 1);
   /** Hora de la imagen de radar argentino que se está viendo (la más nueva entre los radares de este cuadro). */
   const sinaTime = sinaRadars.reduce<Date | undefined>((t, r) => {

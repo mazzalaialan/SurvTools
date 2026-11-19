@@ -49,6 +49,24 @@ export const homeBounds = (country: string) => COUNTRY_BOUNDS[country] ?? REGION
 /** Toda América del Sur, América Central y la Península Antártica: hasta donde se puede alejar el mapa. */
 export const CONTINENT_BOUNDS = { west: -95, east: -34, south: -75, north: 19 };
 
+/** Hasta dónde llega el mapa dibujado (contornos de todo el mundo y el sector de la Antártida): no se puede arrastrar más allá. */
+export const MAP_EXTENT = { west: -180, east: 180, south: -80, north: 83.6 };
+
+/**
+ * Mantiene la vista dentro del mapa: el borde de la pantalla no pasa del borde del mapa. Si el mapa es más chico que la pantalla en un
+ * sentido (muy alejado), queda centrado en ese sentido.
+ */
+export function clampView(view: View, size: Size, extent = MAP_EXTENT): View {
+  const sw = toMercator(extent.west, extent.south);
+  const ne = toMercator(extent.east, extent.north);
+  const halfW = size.width / 2 / view.scale;
+  const halfH = size.height / 2 / view.scale;
+  const fit = (c: number, min: number, max: number, half: number) => (max - min <= half * 2 ? (min + max) / 2 : Math.max(min + half, Math.min(max - half, c)));
+  const cx = fit(view.cx, sw.x, ne.x, halfW);
+  const cy = fit(view.cy, sw.y, ne.y, halfH);
+  return cx === view.cx && cy === view.cy ? view : { ...view, cx, cy };
+}
+
 export function fitBounds(b: typeof REGION_BOUNDS, size: Size, padding = 8): View {
   const sw = toMercator(b.west, b.south);
   const ne = toMercator(b.east, b.north);
