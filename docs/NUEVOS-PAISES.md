@@ -17,7 +17,7 @@ Están en `CLAUDE.md`:
 2. **«Creative Commons» sin aclarar cuál: se asume CC BY** (Atribución).
    - **MapBiomas: se toma como CC BY** (el usuario lo decidió el 2026-11-19; Earth Engine declara CC BY 4.0 y el propio MapBiomas dijo CC BY-SA en 2024, contradicción que se resuelve a favor de CC BY). Se usa con atribución completa. Si MapBiomas publicara una condición share-alike explícita, volver a revisar.
 3. **No comercial:** se usa mientras la app sea gratuita y sin publicidad, con interruptor para apagarlo en una copia paga.
-4. **«Derechos reservados» o que prohíba redistribuir: no, salvo autorización.** (Pendiente de confirmar con el usuario si «sin licencia declarada» y «derechos reservados» se tratan distinto; hoy se tratan distinto.)
+4. **«Derechos reservados» declarado de forma explícita, o que prohíba redistribuir: no, salvo autorización.** Si los derechos reservados **no están declarados**, se trata como CC BY (decidido el 2026-11-19: «derechos reservados, si no son declarados, es BY para nosotros»). Efecto: lo que no declara nada se usa con crédito; lo que dice «Todos los Derechos Reservados» o lo prohíbe expresamente (por ejemplo el pie del INAMEH de Venezuela y Agritempo de Brasil) sigue pidiendo autorización.
 5. **Share-alike (CC BY-SA, ODbL fuera de OSM): caso por caso.** Aceptado **solo** para los datos hidrológicos de Colombia (IDEAM, datos.gov.co), como conjunto separado y con atribución completa. Falta validación de un abogado (ver la lista del informe legal).
 6. Sigue valiendo: no saltear Cloudflare, captchas, claves ni límites; las alertas son «informativas», nunca oficiales; solo `contacto.vikarg@gmail.com`.
 
@@ -72,7 +72,6 @@ Cada país empieza igual: tipos y detección (`Country`, `COUNTRIES`, zona horar
 ## Decisiones que quedan para quien dirige el proyecto
 
 - Guayana Esequiba en el mapa de Venezuela (¿contorno de Natural Earth o con la reclamación?).
-- Si «derechos reservados» se trata distinto de «sin licencia declarada» (hoy sí: se pide autorización).
 - **CC BY-ND 3.0** (ANP, CNES): ¿se acepta? No hay derivadas: cualquier normalización o recorte podría ser una adaptación.
 - Cualquier dato share-alike fuera de los ríos de Colombia (por ejemplo, si apareciera una condición CC BY-SA en otra fuente).
 - Brasil: ¿se suma por regiones y con qué región primero? ¿Quién revisa la traducción de textos de seguridad?
