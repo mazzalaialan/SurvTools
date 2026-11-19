@@ -61,6 +61,10 @@ Están en `CLAUDE.md`:
 - **Alertas oficiales por servidor** (patrón existente en Bolivia y Perú, con «último bueno»): candidatos claros son IDEAM (CAP) e INMET (CAP/RSS).
 - **Contexto de riesgo reportado por los informes** (de prensa, sin verificar): Ecuador en alerta roja nacional por El Niño; Venezuela con terremotos de 24-jun-2026 (USGS: M7,5 y M7,2; cifras de muertos contradictorias, no usar ninguna); Colombia con un terremoto del 10-ago-2026 en el Eje Cafetero. Antes de sumar cualquier país, revisar si hay estados de excepción o restricciones de acceso vigentes.
 
+## Revisión pendiente: que la ANP no duplique lo que ya viene de OSM
+
+Antes de implementar la ANP (combustible, Brasil), **comprobar qué agrega frente a OpenStreetMap**: OSM ya trae los surtidores de las ciudades medidas (Foz do Iguaçu 48, Florianópolis 89, Curitiba 254). La ANP tiene 45.846 estaciones oficiales, pero sin coordenadas. Pasos: (1) cruzar una región de prueba (por ejemplo Foz do Iguaçu y Florianópolis) por dirección y nombre y contar cuántas estaciones de la ANP no están en OSM; (2) ver si agrega algo que OSM no tiene (razón social, bandera, estado de la autorización, tipos de combustible); (3) si no suma o suma poco, **no cargarla** y quedarse con OSM; (4) si se usa, que el dato de la ANP no duplique el pin de OSM en el mapa (una sola entrada por estación). Lo mismo vale para el CNES frente a los hospitales y farmacias de OSM.
+
 ## Orden recomendado
 
 1. **Colombia** (alertas CAP del IDEAM, RUNAP, volcanes, teléfonos, ríos con aviso de atraso).
