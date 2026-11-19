@@ -722,3 +722,54 @@ test('mapa de tiempo: el radar de lluvia suma los radares argentinos (SINARAME) 
   await expect(page.getByTestId('sinarame-attribution')).toHaveCount(0);
   await expect(page.getByTestId('map-times').first()).not.toContainText('Radar');
 });
+
+test('mapa de tiempo en pantalla completa: menú de capas y tabla de referencia rápida que se puede ocultar', async ({ page }, testInfo) => {
+  await mockSources(page);
+  await setup(page);
+  await page.goto('/#/weather');
+  await page.getByRole('link', { name: /Mapa de alertas y clima/ }).click();
+  await expect(page.getByTestId('weather-map')).toBeVisible();
+  // Fuera de pantalla completa no están estos controles.
+  await expect(page.getByTestId('wmap-fs-tools')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Pantalla completa' }).click();
+  const quick = page.getByTestId('quick-ref');
+  // La tabla explica lo que está prendido (sismos, alertas, satélite y lluvia estimada vienen prendidos).
+  await expect(quick).toBeVisible();
+  for (const layer of ['satellite', 'satRain', 'official', 'earthquakes']) await expect(page.getByTestId(`quick-row-${layer}`)).toBeVisible();
+  await expect(page.getByTestId('quick-row-fires')).toHaveCount(0);
+  await expect(page.getByTestId('quick-row-radar')).toHaveCount(0);
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-103-wmap-fs-referencia.png` });
+
+  // Se oculta con su cruz y vuelve con el botón «Referencia».
+  await page.getByTestId('quick-ref-close').click();
+  await expect(quick).toHaveCount(0);
+  await page.getByTestId('wmap-fs-quick-btn').click();
+  await expect(quick).toBeVisible();
+  await page.getByTestId('wmap-fs-quick-btn').click();
+  await expect(quick).toHaveCount(0);
+  await page.getByTestId('wmap-fs-quick-btn').click();
+  await expect(quick).toBeVisible();
+
+  // El menú de capas prende y apaga la información sin salir de pantalla completa, y la tabla acompaña.
+  await page.getByTestId('wmap-fs-layers-btn').click();
+  await expect(page.getByTestId('wmap-fs-layer-earthquakes')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('wmap-fs-layer-earthquakes').click();
+  await expect(page.getByTestId('wmap-fs-layer-earthquakes')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByTestId('quick-row-earthquakes')).toHaveCount(0);
+  await page.getByTestId('wmap-fs-layer-fires').click();
+  await expect(page.getByTestId('quick-row-fires')).toBeVisible();
+  await page.getByTestId('wmap-fs-layer-radar').click();
+  await expect(page.getByTestId('quick-row-radar')).toBeVisible();
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-104-wmap-fs-capas.png` });
+
+  // La elección de ocultar la tabla se recuerda al volver a entrar.
+  await page.getByTestId('quick-ref-close').click();
+  await page.getByRole('button', { name: 'Salir de pantalla completa' }).click();
+  await page.getByRole('button', { name: 'Pantalla completa' }).click();
+  await expect(page.getByTestId('wmap-fs-tools')).toBeVisible();
+  await expect(page.getByTestId('quick-ref')).toHaveCount(0);
+  // Y las capas que se cambiaron en pantalla completa quedan cambiadas afuera.
+  await page.getByRole('button', { name: 'Salir de pantalla completa' }).click();
+  await expect(page.getByRole('button', { name: 'Radar de lluvia' })).toHaveAttribute('aria-pressed', 'true');
+});

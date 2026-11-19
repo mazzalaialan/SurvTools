@@ -10,6 +10,7 @@ import { useCurrentCountry } from '@/modules/emergency/currentCountry';
 import { useUnits } from '@/modules/weather/parts';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { FullscreenStage } from '@/ui/FullscreenStage';
+import { FsMapTools } from './FsMapTools';
 import { loadGeoData, type GeoData } from './geo';
 import { imageSettled, preload } from './images';
 import { MapCanvas, type MapFeature, type Overlay } from './MapCanvas';
@@ -79,6 +80,7 @@ type SourceKey = 'satellite' | 'radar' | 'zoneWeather' | 'earthquakes' | 'hazard
 export function WeatherMapPage() {
   const { t, i18n } = useTranslation();
   const layers = useSettings((s) => s.settings.weatherMapLayers);
+  const quickRef = useSettings((s) => s.settings.weatherMapQuickRef);
   const zoneValue = useSettings((s) => s.settings.weatherMapValue);
   const fireHighOnly = useSettings((s) => s.settings.fireHighOnly);
   const base = useSettings((s) => s.settings.weatherUrl);
@@ -549,6 +551,21 @@ export function WeatherMapPage() {
 
       <FullscreenStage
         className="wmap"
+        fullOnly={
+          <FsMapTools
+            layers={layers}
+            effective={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial, waves: layers.waves && sourceEnabled('open-meteo') }}
+            keys={LAYER_KEYS.filter((k) => k !== 'waves' || sourceEnabled('open-meteo'))}
+            noServer={(key) => (key === 'lightning' || key === 'satRain' || key === 'official') && !serverUrl}
+            setLayer={setLayer}
+            zoneValue={zoneValue}
+            values={VALUES}
+            setZoneValue={(v) => void update({ weatherMapValue: v })}
+            quickRef={quickRef}
+            setQuickRef={(on) => void update({ weatherMapQuickRef: on })}
+            options={{ zoneValue, windUnit: u.windUnit, firmsFires: layers.fires && !gibsFires, satNoaa: satSource === 'noaa' }}
+          />
+        }
         overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? (showSinarame && sinaTime ? sinaTime : radarTime) : undefined} fires={firesTime} fmt={timeFmt} />}
       >
         {geo ? (

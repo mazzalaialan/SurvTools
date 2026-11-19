@@ -6,6 +6,8 @@ import { pushBack } from './backStack';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   /** Datos superpuestos que se muestran solo en pantalla completa. */
   overlay?: ReactNode;
+  /** Controles propios que solo aparecen en pantalla completa (a diferencia de `overlay`, pueden recibir toques). */
+  fullOnly?: ReactNode;
   children: ReactNode;
 }
 
@@ -14,7 +16,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
  * API de pantalla completa del navegador; si no está o la rechaza, ocupa toda
  * la ventana de la app igual.
  */
-export function FullscreenStage({ overlay, children, className, ...rest }: Props) {
+export function FullscreenStage({ overlay, fullOnly, children, className, ...rest }: Props) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const [native, setNative] = useState(false);
@@ -70,6 +72,7 @@ export function FullscreenStage({ overlay, children, className, ...rest }: Props
     <div ref={ref} className={`${className ?? ''} fs-stage`} data-fullscreen={full} {...rest}>
       {children}
       {full && overlay && <div className="fs-overlay">{overlay}</div>}
+      {full && fullOnly}
       <button
         className="icon-btn fs-toggle"
         type="button"
