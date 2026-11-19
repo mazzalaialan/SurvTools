@@ -4,7 +4,7 @@ import { decodePng } from '../src/radar/pixels.ts';
 import { RADARS, createRadarStore, frameStamp, radarBounds, stateOf, type RadarSite } from '../src/radar/sinarame.ts';
 import { encodePng } from '../src/rain/map.ts';
 import type { RainOutlook } from '../src/rain/outlook.ts';
-import { echoWithin, keepRadarsFor, radarVerdict, radarsCovering, vetoRadiusKm, withRadarCheck } from '../src/rain/radarCheck.ts';
+import { echoWithin, radarVerdict, radarsCovering, vetoRadiusKm, withRadarCheck } from '../src/rain/radarCheck.ts';
 import type { RainSource } from '../src/rain/source.ts';
 
 const bahia = RADARS.find((r) => r.id === 'RMA10')!;
@@ -133,13 +133,6 @@ describe('doble chequeo de los avisos', () => {
       globalThis.fetch = original;
     }
   });
-
-  it('keepRadarsFor marca solo los radares que cubren los lugares, para que la tarea los mantenga al día', () => {
-    const store = createRadarStore();
-    assert.deepEqual(keepRadarsFor(store, [HERE, { lat: -25.3, lon: -57.6 }], NOW), ['RMA10']);
-    assert.equal(stateOf(store, 'RMA10').requestedAt, NOW);
-    assert.equal(store.radars.size, 1);
-  });
 });
 
 describe('GET /api/radar/check (la app abierta)', () => {
@@ -147,7 +140,7 @@ describe('GET /api/radar/check (la app abierta)', () => {
     const { default: Fastify } = await import('fastify');
     const { radarRoutes } = await import('../src/routes/radar.ts');
     const a = Fastify();
-    radarRoutes(a, store, () => undefined, enabled, { store, now: () => NOW });
+    radarRoutes(a, store, enabled, { store, now: () => NOW });
     return a;
   }
   const url = (state: string, extra = '') => `/api/radar/check?lat=${HERE.lat}&lon=${HERE.lon}&state=${state}${extra}`;

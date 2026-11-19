@@ -15,7 +15,7 @@ import { checkRadar, type RadarCheckDeps } from '../rain/radarCheck.ts';
  * con `?ids=RMA1,RMA10` además dice qué imágenes hay de esos y despierta la tarea que las busca (solo se le pregunta al servicio de radares
  * mientras alguien las mira). `GET /api/radar/:id/:stamp.png` es la imagen. Sin clave: son datos públicos (CC BY 4.0, con atribución).
  */
-export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (ids: string[]) => void, enabled = true, check?: RadarCheckDeps): void {
+export function radarRoutes(app: FastifyInstance, store: RadarStore, enabled = true, check?: RadarCheckDeps): void {
   app.get('/api/radar', async (req, reply) => {
     reply.header('cache-control', 'no-store');
     if (!enabled) return { enabled: false, attribution: RADAR_ATTRIBUTION, rangeKm: RADAR_RANGE_KM, radars: [] };
@@ -26,9 +26,6 @@ export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (id
         .filter((id) => RADARS.some((r) => r.id === id))
         .slice(0, 8),
     );
-    const now = Date.now();
-    for (const id of wanted) stateOf(store, id).requestedAt = now;
-    if (wanted.size) onWake([...wanted]);
     return {
       enabled: true,
       attribution: RADAR_ATTRIBUTION,
@@ -61,10 +58,7 @@ export function radarRoutes(app: FastifyInstance, store: RadarStore, onWake: (id
       return reply.code(400).send({ error: 'invalid-query' });
     }
     const outlook = q.state === 'raining' ? ({ state: 'raining', mm: 0, peakMmH: 0 } as const) : ({ state: 'soon', inMinutes: minutes, startsAt: '', mm: 0, peakMmH: 0 } as const);
-    const { verdict, radars } = checkRadar(check, lat, lon, outlook);
-    // Primera vez para ese radar: se despierta la tarea para que baje las imágenes (esta respuesta ya no las espera).
-    if (radars.some((id) => stateOf(store, id).frames.length === 0)) onWake(radars);
-    return { verdict };
+    return { verdict: checkRadar(check, lat, lon, outlook) };
   });
   app.get('/api/radar/:id/:file', async (req, reply) => {
     const { id, file } = req.params as { id: string; file: string };

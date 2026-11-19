@@ -10,10 +10,10 @@ import { createLightningStore, mapActive } from './lightning/store.ts';
 import { hasPlaces, LIGHTNING_DEFAULTS, runLightningWatch } from './lightning/watch.ts';
 import { checkObservedRain, createObservedRainStatus } from './rain/noaaWatch.ts';
 import { runRainWatch } from './rain/watch.ts';
-import { createRadarStore, radarTick } from './radar/sinarame.ts';
+import { RADAR_LAG_MS, createRadarStore, radarTick } from './radar/sinarame.ts';
 import { createRainMapStore, RAIN_MAP_ACTIVE_MS, updateRainMap } from './rain/map.ts';
 import { irObserver, withObservedRain } from './rain/observer.ts';
-import { keepRadarsFor, withRadarCheck } from './rain/radarCheck.ts';
+import { withRadarCheck } from './rain/radarCheck.ts';
 import { openMeteoSource } from './rain/source.ts';
 import { runScheduler } from './scheduler.ts';
 import { runOutingWatch } from './outings/watch.ts';
@@ -74,7 +74,7 @@ const app = await buildApp(
   undefined,
   officialStore,
   undefined,
-  { store: radarStore, wake: () => void radarTickRun() },
+  { store: radarStore },
 );
 
 async function tick() {
@@ -218,15 +218,12 @@ async function hazardTick() {
 let radarBusy = false;
 let radarImages = 0;
 
-/** Radares argentinos (SINARAME): solo los que alguien pidió hace poco, y de a uno por vez (ver radar/sinarame.ts). */
+/** Radares argentinos (SINARAME): los 19, siempre, una imagen nueva cada 10 minutos por radar y de a un pedido por vez (ver radar/sinarame.ts). */
 async function radarTickRun() {
   if (!config.radarSinarame || radarBusy) return;
   radarBusy = true;
   try {
-    // Los radares que cubren lugares con aviso de lluvia se mantienen al día siempre: validar un aviso lee la memoria, no consulta a SINARAME.
-    const watched = db.prepare('SELECT DISTINCT lat, lon FROM rain_places').all() as unknown as { lat: number; lon: number }[];
-    if (watched.length) keepRadarsFor(radarStore, watched);
-    const got = await radarTick(radarStore, { base: config.radarBaseUrl, pauseMs: config.radarPauseMs, refreshMs: config.radarRefreshMin * 60_000 });
+    const got = await radarTick(radarStore, { base: config.radarBaseUrl, pauseMs: config.radarPauseMs, refreshMs: config.radarRefreshMin * 60_000, lagMs: RADAR_LAG_MS });
     if (got) {
       radarImages += got;
       app.log.info({ imagenes: got, total: radarImages, bytes: radarStore.bytes }, 'imágenes de radar bajadas');

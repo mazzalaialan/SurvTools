@@ -102,28 +102,36 @@ describe('radares argentinos (SINARAME)', () => {
     assert.equal(store.backoffUntil, NOW + 6 * 60_000 + 10 * 60_000);
   });
 
-  it('la tarea solo actualiza los radares que alguien pidió hace poco y no más seguido que lo configurado', async () => {
+  it('la tarea actualiza siempre los 19 radares (sin que nadie los pida) y no más seguido que lo configurado', async () => {
     const asked = new Set<string>();
     const fetchFn = (async (url: string) => {
       asked.add(/cache\/(RMA\d+)\//.exec(url)![1]!);
       return new Response(new Uint8Array(png), { status: 200 });
     }) as typeof fetch;
     const store = createRadarStore();
-    stateOf(store, 'RMA1').requestedAt = NOW;
-    stateOf(store, 'RMA2').requestedAt = NOW - 60 * 60_000; // lo pidieron hace una hora: ya no
     await radarTick(store, { fetchFn, now: () => NOW, pauseMs: 0 });
-    assert.deepEqual([...asked], ['RMA1']);
+    assert.equal(asked.size, 19);
     asked.clear();
     // Cinco minutos después, con refresco de 10: no pregunta de nuevo.
     await radarTick(store, { fetchFn, now: () => NOW + 5 * 60_000, pauseMs: 0, refreshMs: 10 * 60_000 });
     assert.equal(asked.size, 0);
   });
 
+  it('con atraso configurado no busca la imagen que todavía no puede existir', async () => {
+    const urls: string[] = [];
+    const fetchFn = (async (url: string) => {
+      urls.push(url);
+      return new Response('', { status: 404 });
+    }) as typeof fetch;
+    await refreshRadar(createRadarStore(), bahia, { fetchFn, now: () => NOW, pauseMs: 0, lagMs: 15 * 60_000 });
+    // NOW = 10:10 (hora argentina): sin atraso empezaría en 10:10; con 15 minutos de atraso, en 09:50.
+    assert.match(urls[0]!, /20261119095000\.png$/);
+  });
+
   it('las rutas listan los radares, piden las imágenes de los elegidos y sirven cada PNG', async () => {
     const store = createRadarStore();
-    const woken: string[][] = [];
     const app = Fastify();
-    radarRoutes(app, store, (ids) => woken.push(ids));
+    radarRoutes(app, store);
     const state = stateOf(store, 'RMA10');
     state.frames.push({ stamp: '20261119101000', at: NOW, png });
 
@@ -131,14 +139,11 @@ describe('radares argentinos (SINARAME)', () => {
     assert.equal(all.enabled, true);
     assert.equal(all.radars.length, 19);
     assert.match(all.attribution, /SINARAME/);
-    assert.ok(all.radars.every((r) => r.frames.length === 0), 'sin ids no hay imágenes ni se despierta nada');
-    assert.equal(woken.length, 0);
+    assert.ok(all.radars.every((r) => r.frames.length === 0), 'sin ids no se listan imágenes');
 
     const one = (await app.inject('/api/radar?ids=rma10,RMA999')).json() as typeof all;
-    assert.deepEqual(woken, [['RMA10']]);
     const r = one.radars.find((x) => x.id === 'RMA10')! as { frames: { at: string; url: string }[] };
     assert.deepEqual(r.frames, [{ at: new Date(NOW).toISOString(), url: '/api/radar/RMA10/20261119101000.png' }]);
-    assert.ok(state.requestedAt > 0);
 
     const img = await app.inject('/api/radar/RMA10/20261119101000.png');
     assert.equal(img.statusCode, 200);
@@ -154,7 +159,7 @@ describe('radares argentinos (SINARAME)', () => {
     const store = createRadarStore();
     stateOf(store, 'RMA10').frames.push({ stamp: '20261119101000', at: NOW, png });
     const app = Fastify();
-    radarRoutes(app, store, () => undefined, false);
+    radarRoutes(app, store, false);
     assert.equal(((await app.inject('/api/radar?ids=RMA10')).json() as { enabled: boolean }).enabled, false);
     assert.equal((await app.inject('/api/radar/RMA10/20261119101000.png')).statusCode, 404);
     await app.close();

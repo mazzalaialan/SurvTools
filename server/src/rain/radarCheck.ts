@@ -1,5 +1,5 @@
 import { decodePng, type Rgba } from '../radar/pixels.ts';
-import { RADARS, RADAR_RANGE_KM, radarBounds, stateOf, type RadarSite, type RadarStore } from '../radar/sinarame.ts';
+import { RADARS, RADAR_RANGE_KM, radarBounds, type RadarSite, type RadarStore } from '../radar/sinarame.ts';
 import type { RainOutlook } from './outlook.ts';
 import type { RainSource } from './source.ts';
 
@@ -104,24 +104,10 @@ export interface RadarCheckDeps {
   now?: () => number;
 }
 
-/**
- * Marca como «pedidos» los radares que cubren estos lugares, para que la tarea de radares (main.ts, cada minuto) los mantenga al día en
- * segundo plano. No sale a la red: validar un aviso lee solo las imágenes que el servidor ya tiene en memoria, nunca consulta a SINARAME
- * en ese momento.
- */
-export function keepRadarsFor(store: RadarStore, points: { lat: number; lon: number }[], now = Date.now()): string[] {
-  const ids = [...new Set(points.flatMap((p) => radarsCovering(p.lat, p.lon).map((r) => r.id)))];
-  for (const id of ids) stateOf(store, id).requestedAt = now;
-  return ids;
-}
-
-/** Lo que dice el radar sobre un aviso de un lugar, trayendo antes las imágenes que falten. Sirve a la app abierta (`GET /api/radar/check`). */
-export function checkRadar(deps: RadarCheckDeps, lat: number, lon: number, outlook: RainOutlook): { verdict: RadarVerdict; radars: string[] } {
-  const now = (deps.now ?? Date.now)();
-  // Si todavía no hay imágenes de ese radar (nadie lo pidió antes), la tarea las baja y la próxima consulta ya las encuentra.
-  const radars = keepRadarsFor(deps.store, [{ lat, lon }], now);
+/** Lo que dice el radar sobre un aviso de un lugar, con las imágenes que el servidor ya tiene. Sirve a la app abierta (`GET /api/radar/check`). */
+export function checkRadar(deps: RadarCheckDeps, lat: number, lon: number, outlook: RainOutlook): RadarVerdict {
   const radius = vetoRadiusKm(outlook);
-  return { verdict: radius === null ? 'unknown' : radarVerdict(deps.store, lat, lon, radius, now), radars };
+  return radius === null ? 'unknown' : radarVerdict(deps.store, lat, lon, radius, (deps.now ?? Date.now)());
 }
 
 export interface RadarCheckedSource extends RainSource {
@@ -131,7 +117,7 @@ export interface RadarCheckedSource extends RainSource {
 
 /**
  * Envuelve una fuente de lluvia: lo que dice «llueve» o «va a llover» se verifica con el radar y se convierte en «seco» si el radar, con
- * cobertura e imágenes recientes, no ve nada cerca. Solo lee las imágenes que ya están en memoria (las mantiene la tarea de radares).
+ * cobertura e imágenes recientes, no ve nada cerca. Solo lee las imágenes que ya están en memoria (las mantiene al día la tarea de radares, siempre).
  */
 export function withRadarCheck(source: RainSource, deps: RadarCheckDeps): RadarCheckedSource {
   let vetoed = 0;

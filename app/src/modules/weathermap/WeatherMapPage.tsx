@@ -357,7 +357,7 @@ export function WeatherMapPage() {
     return sinaSites.filter((r) => radarTouchesView(r.bounds, view)).map((r) => r.id).join(',');
   }, [sinaSites, request]);
 
-  // Las imágenes de esos radares: el servidor las busca recién cuando alguien las pide, así que la primera vez tardan; se vuelve a pedir
+  // Las imágenes de esos radares: el servidor las baja siempre, cada 10 minutos, así que normalmente ya están; si recién arrancó y todavía no las tiene, se vuelve a pedir
   // enseguida y después cada 5 minutos (sale una imagen nueva cada 10).
   useEffect(() => {
     if (!showSinarame || !online || !sinaIds) return;

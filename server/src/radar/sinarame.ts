@@ -94,8 +94,6 @@ export interface RadarState {
   frames: RadarFrame[];
   /** Última vez que se buscaron imágenes nuevas (ms). */
   checkedAt: number;
-  /** Última vez que alguien pidió este radar (ms). */
-  requestedAt: number;
 }
 
 export interface RadarStore {
@@ -111,13 +109,13 @@ export const createRadarStore = (): RadarStore => ({ radars: new Map(), backoffU
 
 /** Cada cuánto se buscan imágenes nuevas de un radar que alguien está mirando (sale una imagen cada 10 minutos: no hace falta más seguido). Se cambia con `RADAR_REFRESH_MIN`. */
 export const RADAR_REFRESH_MS = 10 * 60_000;
-/** Un radar que nadie pidió en este tiempo deja de actualizarse. */
-export const RADAR_ACTIVE_MS = 15 * 60_000;
+/** Las imágenes tardan ~20 minutos en aparecer: no se busca la que todavía no puede existir (se evitan pedidos que dan 404). */
+export const RADAR_LAG_MS = 15 * 60_000;
 
 export function stateOf(store: RadarStore, id: string): RadarState {
   let s = store.radars.get(id);
   if (!s) {
-    s = { frames: [], checkedAt: 0, requestedAt: 0 };
+    s = { frames: [], checkedAt: 0 };
     store.radars.set(id, s);
   }
   return s;
@@ -141,6 +139,8 @@ export interface RadarFetchOptions {
   /** Cada cuánto se busca de nuevo en un radar mirado (ms). */
   refreshMs?: number;
   sleep?: (ms: number) => Promise<void>;
+  /** Cuánto se descuenta al reloj antes de buscar imágenes (el servicio publica con atraso); 0 por defecto. */
+  lagMs?: number;
 }
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -169,7 +169,7 @@ export async function refreshRadar(store: RadarStore, radar: RadarSite, opts: Ra
   const newest = state.frames.at(-1)?.stamp ?? null;
   let downloaded = 0;
   for (let i = 0; i < RADAR_LOOKBACK_STEPS; i++) {
-    const stamp = frameStamp(now - i * RADAR_STEP_MS);
+    const stamp = frameStamp(now - (opts.lagMs ?? 0) - i * RADAR_STEP_MS);
     // Ya se tiene esta (o una más nueva): lo anterior ya se miró en una vuelta anterior.
     if (have.has(stamp) || (newest !== null && stamp < newest)) break;
     const at = stampToUtcMs(stamp);
@@ -204,13 +204,17 @@ export async function refreshRadar(store: RadarStore, radar: RadarSite, opts: Ra
   return downloaded;
 }
 
-/** Vuelta de la tarea: actualiza los radares que alguien pidió hace poco y cuya última búsqueda ya es vieja. Devuelve las imágenes bajadas. */
+/**
+ * Vuelta de la tarea: actualiza SIEMPRE los radares cuya última búsqueda ya es vieja (cada 10 minutos), los pida alguien o no: el servidor
+ * tiene las imágenes al día para el mapa y para el doble chequeo de los avisos de lluvia. Cada radar baja solo la imagen nueva; el historial
+ * (las últimas 12) se completa radar por radar cuando falta, por ejemplo al arrancar. Devuelve las imágenes bajadas.
+ */
 export async function radarTick(store: RadarStore, opts: RadarFetchOptions = {}): Promise<number> {
   const now = (opts.now ?? Date.now)();
   let total = 0;
   for (const radar of RADARS) {
     const s = store.radars.get(radar.id);
-    if (!s || now - s.requestedAt > RADAR_ACTIVE_MS || now - s.checkedAt < (opts.refreshMs ?? RADAR_REFRESH_MS)) continue;
+    if (s && now - s.checkedAt < (opts.refreshMs ?? RADAR_REFRESH_MS)) continue;
     total += await refreshRadar(store, radar, opts);
   }
   return total;

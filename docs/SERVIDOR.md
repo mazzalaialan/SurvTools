@@ -77,8 +77,8 @@ La app queda servida en `https://TU_DOMINIO/` y se puede instalar desde ahí.
 | `RAIN_HERE_MAX_AGE_HOURS` | `24` | Hasta qué antigüedad usa la última ubicación conocida para "donde estoy" (lluvia y rayos) |
 | `HAZARDS_ENABLED` | `true` | Avisos de peligros naturales cerca (sismos de USGS y eventos de GDACS). |
 | `RAIN_OBSERVED` | `true` | Lluvia estimada con el infrarrojo del GOES-19 en los avisos (además del pronóstico) |
-| `RADAR_SINARAME` | `true` | Imágenes de los 19 radares argentinos (SINARAME) para el mapa, solo mientras alguien las mira (`/api/radar`) y doble chequeo de avisos de lluvia (con imágenes ya guardadas; los radares que cubren lugares con aviso se mantienen al día), que descarta avisos sin eco cerca (`rain/radarCheck.ts`, `/api/radar/check`) |
-| `RADAR_REFRESH_MIN` | `10` | Cada cuántos minutos se busca una imagen nueva de un radar que alguien mira (sale una cada 10; mínimo 5) |
+| `RADAR_SINARAME` | `true` | Imágenes de los 19 radares argentinos (SINARAME) para el mapa (`/api/radar`) y para el doble chequeo de avisos de lluvia; **siempre**, sin esperar a que alguien las pida: una imagen nueva por radar cada 10 minutos (~0,5 MB por vuelta con los 19), que descarta avisos sin eco cerca (`rain/radarCheck.ts`, `/api/radar/check`) |
+| `RADAR_REFRESH_MIN` | `10` | Cada cuántos minutos se busca una imagen nueva de cada radar (sale una cada 10; mínimo 5) |
 | `RADAR_PAUSE_MS` | `300` | Pausa entre pedidos al servicio de radares, en milisegundos (cortesía con un servicio público) |
 | `RADAR_BASE_URL` | `https://radares.hidricosargentina.gob.ar` | Dirección del visor de radares |
 | `RATE_RADAR_PER_MIN` | `120` | Tope de pedidos por minuto y por IP a `/api/radar` |

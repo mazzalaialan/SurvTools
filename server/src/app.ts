@@ -46,7 +46,7 @@ export async function buildApp(
   maps: MapsService = createMapsService(config.mapsDir),
   official: OfficialStore = createOfficialStore(),
   osmIndex: AroundIndex | null = openAroundIndex(config.osmIndexPath),
-  radar: { store: RadarStore; wake: (ids: string[]) => void } = { store: createRadarStore(), wake: () => undefined },
+  radar: { store: RadarStore } = { store: createRadarStore() },
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger, trustProxy: true });
   // Límite de pedidos por IP en los endpoints públicos que cuestan (rateLimit.ts).
@@ -71,7 +71,7 @@ export async function buildApp(
   liveSessionRoutes(app, db, config);
   lightningRoutes(app, lightning.store, lightning.wake);
   rainMapRoutes(app, rainMap.store, rainMap.wake);
-  radarRoutes(app, radar.store, radar.wake, config.radarSinarame, { store: radar.store });
+  radarRoutes(app, radar.store, config.radarSinarame, { store: radar.store });
   mapRoutes(app, maps, config);
   libraryRoutes(app, config);
   dataRoutes(app, config);
