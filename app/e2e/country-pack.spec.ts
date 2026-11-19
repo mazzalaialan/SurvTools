@@ -286,14 +286,27 @@ test('Ajustes: se puede borrar el paquete de un país bajado, pero no el del pa�
 test('Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con su estado', async ({ page }) => {
   await start(page);
   await page.goto('/#/settings');
+  // Los sectores aparecen al tocar Brasil (y se esconden al volver a tocarlo, siendo ya el país elegido).
+  await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+  await expect(page.getByTestId('country-sectors-BR')).toHaveCount(0);
+  await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' }).click();
   const frame = page.getByTestId('country-sectors-BR');
   await expect(frame).toBeVisible({ timeout: 15_000 });
+  // Verlos no cambia tu país (Argentina sigue siendo el principal): para eso hay un botón aparte.
+  await expect(page.getByTestId('country-pack-AR').getByRole('button', { name: 'Argentina', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' })).toHaveAttribute('aria-pressed', 'false');
   for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
     await expect(page.getByTestId(`country-sector-${id}`)).toHaveAttribute('data-state', 'missing');
   }
   await expect(frame).toContainText('Sul (PR, SC, RS)');
   // Brasil no tiene un ícono de descarga propio: se baja sector por sector.
   await expect(page.getByTestId('country-pack-get-BR')).toHaveCount(0);
+  // Usar Brasil como país desde la lista; tocar Brasil de nuevo esconde los sectores.
+  await page.getByTestId('country-sector-use-BR').click();
+  await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('country-sector-use-BR')).toHaveCount(0);
+  await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' }).click();
+  await expect(frame).toHaveCount(0);
 });
 
 test('Mapa de países: Brasil se divide en sus cinco sectores y se baja (o se borra) el que se toca', async ({ page }, testInfo) => {

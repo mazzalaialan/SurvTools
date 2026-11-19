@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, Loader2, Map as MapIcon, RefreshCw, Trash2 } from 'lucide-react';
+import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Loader2, Map as MapIcon, RefreshCw, Trash2 } from 'lucide-react';
 import { CONTINENTS, useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { confirmAction } from '@/ui/confirm';
 import { filesToDelete } from './countryDelete';
@@ -21,6 +21,8 @@ export function CountryPackPicker() {
   const update = useSettings((s) => s.update);
   const { packs, sectors, busy, busySector, download, downloadSector, remove, removeSector } = useCountryPacks();
   const [mapOpen, setMapOpen] = useState(false);
+  /** Los sectores de Brasil se muestran al tocar Brasil (y se esconden al volver a tocarlo). */
+  const [brOpen, setBrOpen] = useState(false);
 
   /** Borrar con confirmación: dice cuánto se libera y que se puede volver a bajar. */
   async function askRemove(name: string, bytes: number, run: () => Promise<void>) {
@@ -72,12 +74,21 @@ export function CountryPackPicker() {
                       type="button"
                       className="country-pack-select"
                       aria-pressed={country === c}
+                      aria-expanded={c === 'BR' ? brOpen : undefined}
+                      aria-controls={c === 'BR' ? 'country-sectors-BR' : undefined}
                       onClick={() => {
+                        if (c === 'BR') {
+                          // Brasil se baja por sectores: tocarlo muestra (o esconde) sus sectores, sin cambiar tu país (podés querer bajar el sector
+                          // pegado a donde vas). Para usarlo como país hay un botón dentro de la lista.
+                          setBrOpen(!brOpen);
+                          return;
+                        }
                         void update({ country: c });
-                        if (c !== 'BR' && state !== 'ready') void download(c);
+                        if (state !== 'ready') void download(c);
                       }}
                     >
                       {name}
+                      {c === 'BR' ? brOpen ? <ChevronUp size={14} aria-hidden style={{ marginLeft: 4 }} /> : <ChevronDown size={14} aria-hidden style={{ marginLeft: 4 }} /> : null}
                     </button>
                     {c === 'BR' ? null : busy === c ? (
                       <span className="country-pack-icon" role="img" aria-label={t('country.pack.downloading', { country: name })} title={t('country.pack.downloading', { country: name })}>
@@ -109,11 +120,18 @@ export function CountryPackPicker() {
                 );
               })}
           </div>
-          {continent.countries.includes('BR') && (
-            <div className="country-sectors" data-testid="country-sectors-BR">
+          {continent.countries.includes('BR') && brOpen && (
+            <div className="country-sectors" id="country-sectors-BR" data-testid="country-sectors-BR">
               <p className="hint" style={{ margin: '8px 0 4px' }}>
                 {t('country.sector.hint')}
               </p>
+              {country !== 'BR' && (
+                <div style={{ margin: '0 0 8px' }}>
+                  <button className="btn" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
+                    {t('country.map.use', { country: t('country.BR') })}
+                  </button>
+                </div>
+              )}
               <div className="country-pack" role="group" aria-label={t('country.sector.title')}>
                 {BR_SECTORS.map(({ id }) => {
                   const sp = sectors[id];

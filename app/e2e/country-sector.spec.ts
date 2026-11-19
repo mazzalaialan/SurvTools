@@ -43,6 +43,8 @@ test('estás en Brasil sin Wi-Fi seguro: pregunta por el sector donde estás (Su
 
   // En Ajustes: solo el sector Sul figura bajado y se puede borrar; el borrado no se vuelve a bajar solo al volver a mirar el lugar.
   await page.goto('/#/settings');
+  // Los sectores se ven al tocar Brasil.
+  await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' }).click();
   await expect(page.getByTestId('country-sector-sul')).toHaveAttribute('data-state', 'ready', { timeout: 15_000 });
   await expect(page.getByTestId('country-sector-sudeste')).toHaveAttribute('data-state', 'missing');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-102-sector-ready.png` });
