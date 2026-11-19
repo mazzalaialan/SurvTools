@@ -102,6 +102,23 @@ function WebUpdatePrompt({ visible }: { visible: boolean }) {
     setStarted(true);
     channelRef.current?.postMessage({ type: 'UPDATE_START' });
   };
+  /**
+   * Activa la versión nueva y recarga la página. La recarga automática de la librería (`updateServiceWorker(true)`) depende de un evento que, cuando
+   * el aviso aparece con la app YA abierta, a veces no llega: la versión nueva se activaba pero la pantalla seguía igual y parecía que el botón no
+   * hacía nada (visto en un Motorola). Por eso se recarga también al cambiar el service worker que controla la página y, por si ese evento tampoco
+   * llega, unos segundos después de pedir el cambio; una sola vez.
+   */
+  const activate = () => {
+    let done = false;
+    const reload = () => {
+      if (done) return;
+      done = true;
+      window.location.reload();
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', reload, { once: true });
+    window.setTimeout(reload, 4000);
+    void updateServiceWorker(true);
+  };
   const size = (b: number) => formatBytes(b, i18n.language);
   const asking = !needRefresh && pending && !started;
   const cellular = networkInfo().kind === 'cellular';
@@ -128,7 +145,7 @@ function WebUpdatePrompt({ visible }: { visible: boolean }) {
         <span>{t('pwa.downloading')}</span>
       )}
       {needRefresh && (
-        <button className="btn btn-primary" type="button" onClick={() => void updateServiceWorker(true)}>
+        <button className="btn btn-primary" type="button" onClick={activate}>
           {t('pwa.update')}
         </button>
       )}
