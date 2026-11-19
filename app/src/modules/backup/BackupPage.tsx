@@ -7,7 +7,7 @@ import { TransferError, formatTransferCode, transferLink, uploadTransfer, type T
 import { useSettings } from '@/core/settings/settings';
 import { useVault } from '@/core/security/useVault';
 import { MIN_PASSWORD_LENGTH } from '@/core/security/vault';
-import { isNativePlatform } from '@/core/platform';
+import { currentPlatform, isAndroid } from '@/core/platform';
 import { deliverFile, saveFile } from '@/ui/files';
 import { QrCode } from '@/ui/QrCode';
 import { daysBetween, today } from '@/modules/inventory/domain/dates';
@@ -106,9 +106,10 @@ export function BackupPage() {
             <button className="btn btn-primary" type="button" onClick={handleExport} disabled={busy || !passwordOk}>
               <Download size={20} /> {busy ? t('backup.exporting') : t('backup.export')}
             </button>
-            {isNativePlatform() && (
+            {isAndroid() && (
               <button className="btn" type="button" onClick={handleSave} disabled={busy || !passwordOk} data-testid="backup-save-here">
                 <Download size={20} /> {t('backup.saveHere')}
+            {currentPlatform() === 'ios' && <p className="hint" data-testid="backup-ios-hint">{t('backup.iosHint')}</p>}
               </button>
             )}
           </section>

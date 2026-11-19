@@ -2640,7 +2640,7 @@
     }
   },
   "backup": {
-    "saveHere": "Save on this phone",
+    "saveHere": "Save on this phone", "iosHint": "On iPhone the backup is saved with “Export backup”: choose “Save to Files” (preferably iCloud Drive) or email it to yourself. A copy inside the app would be deleted if you uninstall it, so there is no automatic copy.",
     "savedTo": "Backup saved in {{where}}. Copy it somewhere safe (another device, the cloud): if you lose the phone, it is lost with it.",
     "saveFailed": "The backup could not be saved on the phone. Try «Export» and choose where to send it.",
     "openPasswordTitle": "Backup password",

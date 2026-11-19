@@ -2640,7 +2640,7 @@
     }
   },
   "backup": {
-    "saveHere": "Guardar en el teléfono",
+    "saveHere": "Guardar en el teléfono", "iosHint": "En iPhone el backup se guarda con «Exportar backup»: elegí «Guardar en Archivos» (mejor en iCloud Drive) o mandátelo por mail. Una copia dentro de la app se borraría al desinstalarla, por eso no hay copia automática.",
     "savedTo": "Backup guardado en {{where}}. Copialo a un lugar seguro (otro equipo, la nube) porque si perdés el teléfono se pierde con él.",
     "saveFailed": "No se pudo guardar el backup en el teléfono. Probá con «Exportar» y elegí dónde enviarlo.",
     "openPasswordTitle": "Contraseña del backup",
