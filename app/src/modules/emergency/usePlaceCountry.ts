@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Country } from '@/core/settings/settings';
 import { loadBorders, type BordersData } from './borders';
-import { useCurrentCountry } from './currentCountry';
+import { useCountry } from './currentCountry';
 import { detectCountries } from './countryDetector';
 
 export { NEAR_BORDER_M } from './countryDetector';
@@ -10,11 +10,11 @@ export { NEAR_BORDER_M } from './countryDetector';
  * País del lugar elegido (GPS o a mano), por las fronteras, y los países vecinos a menos de 50 km de su frontera.
  * Las emisoras, los parques y las repetidoras tienen que ser las de ahí y no las del país de Ajustes (con Argentina en Ajustes y
  * un lugar en Perú, salían las radios argentinas); y cerca de una frontera, las de los dos lados (como las frecuencias de montaña).
- * Si el lugar no cae en ningún país que la app conozca, o todavía no cargaron las fronteras, vale el país donde estás (el detectado
- * con la última ubicación o, si no hay, el de Ajustes).
+ * Si el lugar no cae en ningún país que la app conozca, o todavía no cargaron las fronteras, vale el país elegido en Ajustes.
  */
 export function usePlaceCountries(place: { lat: number; lon: number } | null): { country: Country; near: Country[] } {
-  const { here } = useCurrentCountry();
+  // Sin lugar (o fuera de los países que la app conoce), vale el país elegido en Ajustes.
+  const here = useCountry();
   const [borders, setBorders] = useState<BordersData | null>(null);
   useEffect(() => {
     void loadBorders().then(setBorders, () => undefined);

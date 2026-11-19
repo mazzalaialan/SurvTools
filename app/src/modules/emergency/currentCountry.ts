@@ -1,14 +1,13 @@
 import { useSettings, type Country } from '@/core/settings/settings';
 
 /**
- * El país donde estás (el que se detectó con la última ubicación, ver countryAutomation.ts) y el de Ajustes. Los números de
- * emergencia, la guía de primeros auxilios y los datos sin conexión usan el de donde estás; el de Ajustes queda de respaldo
- * (todavía no se detectó nada) y para mostrarlo aparte cuando son distintos.
+ * El país que usa la app: el elegido en Ajustes (el «país actual»). De él salen los números de emergencia, la guía de primeros auxilios, la tarjeta
+ * de emergencia, la radio, los paquetes que se bajan para usar sin conexión y la vista inicial del mapa del clima. NO se mira el GPS ni la última
+ * ubicación conocida: ese dato puede tardar en actualizarse o ser incorrecto. Si el GPS detecta que estás en otro país, la app pregunta si querés
+ * cambiarlo (ver `countryAutomation.ts`) y, si decís que sí, lo cambia y baja su paquete.
+ *
+ * Lo que tiene un lugar para elegir (GPS o waypoint: lugares cercanos, clima, navegación, huerta…) usa el país de ESE lugar (`usePlaceCountries`).
  */
-export function useCurrentCountry(): { here: Country; home: Country; differs: boolean; near: Country[] } {
-  const home = useSettings((s) => s.settings.country);
-  const detected = useSettings((s) => s.settings.detectedCountry);
-  const near = useSettings((s) => s.settings.detectedNear);
-  const here = detected ?? home;
-  return { here, home, differs: here !== home, near };
+export function useCountry(): Country {
+  return useSettings((s) => s.settings.country);
 }

@@ -7,7 +7,7 @@ import { Ambulance, Flame, MapPinPlus, MessageSquare, Phone, RefreshCw, Share2, 
 import { bearingDeg, cardinalOf, distanceMeters, formatDms } from '@/core/geo/geo';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { countryAt, loadBorders } from './borders';
-import { useCurrentCountry } from './currentCountry';
+import { useCountry } from './currentCountry';
 import type { Country } from '@/core/settings/settings';
 import { speak, stopSpeaking, useSpeechVoice } from '@/core/speech/speech';
 import { CALLS } from '@/modules/firstAid/guides/types';
@@ -33,8 +33,9 @@ export function MyLocationPage() {
     };
   }, [fix?.lat, fix?.lon]);
   // El número general de emergencias del país (en Chile, Carabineros).
-  const { here: settingsCountry } = useCurrentCountry();
-  // Los números son los del país donde uno está (por la ubicación); sin ubicación, los del país elegido.
+  const settingsCountry = useCountry();
+  // Acá, a propósito, los números son los del país donde uno está según la ubicación EN VIVO de esta pantalla (la que se está leyendo ahora, no la última
+  // conocida): es la pantalla para dictarle el lugar a quien atiende la emergencia. Sin ubicación, los del país elegido en Ajustes.
   const [here, setHere] = useState<Country | null>(null);
   const callCountry = here ?? settingsCountry;
   const calls = CALLS[callCountry];

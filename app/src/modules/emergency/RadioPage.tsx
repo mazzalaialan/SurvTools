@@ -6,7 +6,7 @@ import { distanceMeters } from '@/core/geo/geo';
 import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
 import type { Country } from '@/core/settings/settings';
 import { loadCountryData } from './country';
-import { useCurrentCountry } from './currentCountry';
+import { useCountry } from './currentCountry';
 import { usePlaceCountries } from './usePlaceCountry';
 import { distanceToPark, loadParks, nearestRadio, parkCountry, type EmergencyData, type ParksData } from './data';
 import { CopyButton, formatDistance, MapLink, ParkRadioList, PhoneActions } from './parts';
@@ -313,7 +313,7 @@ function HamSection({ country }: { country: string }) {
 
 function RenerSection({ place }: { place: { lat: number; lon: number } | null }) {
   const { t } = useTranslation();
-  const { here: country } = useCurrentCountry();
+  const country = useCountry();
   const [borders, setBorders] = useState<BordersData | null>(null);
   useEffect(() => {
     void loadBorders().then(setBorders);

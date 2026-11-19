@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Building2, LocateFixed, Trees } from 'lucide-react';
 import { currentPosition } from '@/core/geo/useGeolocation';
 import { useSettings, type FirstAidEnv } from '@/core/settings/settings';
-import { useCurrentCountry } from '@/modules/emergency/currentCountry';
+import { useCountry } from '@/modules/emergency/currentCountry';
 import { estimateHelp, WILD_MINUTES, type HelpEstimate } from './detect';
 
 /** Idioma del contenido de la guía. */
@@ -19,7 +19,7 @@ export function useLang(): 'es' | 'en' {
 export function EnvSwitch() {
   const { t, i18n } = useTranslation();
   const env = useSettings((s) => s.settings.firstAidEnv);
-  const { here: country } = useCurrentCountry();
+  const country = useCountry();
   const update = useSettings((s) => s.update);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<HelpEstimate | null>(null);

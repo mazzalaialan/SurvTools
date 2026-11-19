@@ -319,6 +319,8 @@ Hoy «Buscar cercanos» solo trae combustible de ruta (`amenity=fuel`). Se quier
 - Sin fuente hoy: nivel en metros de los ríos de Chile, estado de puertos, nivel del mar en vivo de Uruguay, Perú (solo alertas por color; DHN con anti-bot, no se esquiva).
 - Chile: SHOA (captcha de AWS) y SITPORT inaccesibles; Uruguay: DINAGUA con 11 a 18 h de atraso (mostrar siempre la fecha, no usar para alertas).
 
+> **REEMPLAZADO el 2026-11-19 (decisión de quien dirige):** esta sección describe el criterio de 2026-11-13, que **ya no rige**. Ahora la app usa siempre el país elegido en Ajustes para los números de emergencia, la guía, la tarjeta de emergencia, la radio, el mapa del clima y los paquetes, **sin mirar el GPS ni la última ubicación** (puede tardar en actualizarse o ser incorrecta). Si el GPS detecta otro país, solo **pregunta** si querés cambiarlo y, si aceptás, cambia y baja el paquete; **no baja nada de un país que no elegiste** (tampoco con Wi-Fi). Los lugares con selector (cercanos, clima, navegación, huerta) siguen usando el país del lugar. Ver `docs/COLABORAR.md` («País elegido (Ajustes) y lugar elegido»). Del texto de abajo siguen vigentes el detector, los eventos de ubicación y la regla de Wi-Fi/datos móviles (hoy solo para el sector de Brasil); ya no existen el hook `useCurrentCountry`, los números del lugar «arriba» y los de Ajustes «debajo», ni el aviso de la guía.
+
 ## Priorizar el país donde estás (HECHO el 2026-11-13, publicado en la 0.63.0; antes «PRIMERO PARA REVISAR»)
 
 Se hizo la noche del 13/11 con las decisiones de quien dirige (ver abajo). Commiteado y probado, **sin publicar**.

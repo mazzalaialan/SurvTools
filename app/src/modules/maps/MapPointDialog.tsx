@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { FeatureCollection } from 'geojson';
 import { formatDms, type LatLon } from '@/core/geo/geo';
 import { useSettings } from '@/core/settings/settings';
-import { useCurrentCountry } from '@/modules/emergency/currentCountry';
+import { useCountry } from '@/modules/emergency/currentCountry';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { homeBounds } from '@/modules/weathermap/projection';
 import { Dialog } from '@/ui/Dialog';
@@ -20,7 +20,7 @@ const NONE: never[] = [];
 export function MapPointDialog({ initial, onPick, onClose }: { initial: LatLon | null; onPick: (p: LatLon) => void; onClose: () => void }) {
   const { t } = useTranslation();
   const layers = useSettings((s) => s.settings.mapLayers);
-  const { here: country } = useCurrentCountry();
+  const country = useCountry();
   const [picked, setPicked] = useState<LatLon | null>(initial);
   const [outline, setOutline] = useState<FeatureCollection | null>(null);
   const [start] = useState<ViewState>(() => {

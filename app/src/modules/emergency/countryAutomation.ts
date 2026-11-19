@@ -5,8 +5,7 @@ import { useSettings, type BrSector, type Country } from '@/core/settings/settin
 import { distanceMeters } from '@/core/geo/geo';
 import { useMapZones } from '@/modules/maps/store';
 import { loadBorders } from './borders';
-import { prefetchCountry } from './country';
-import { countryFiles, downloadsSilently, missingDownload, networkInfo, sectorPackState } from './countryDownload';
+import { countryFiles, downloadsSilently, networkInfo, sectorPackState } from './countryDownload';
 import { downloadSector } from './countryDelete';
 import { sectorAt } from './sectors';
 import { refreshStored } from './dataFile';
@@ -14,9 +13,11 @@ import { createCountryDetector, type DetectedCountries } from './countryDetector
 
 /**
  * Qué pasa cuando se detecta que estás en otro país (ver `countryDetector.ts`):
- *  1. se guarda el país detectado y los vecinos a menos de 50 km (lo usan las pantallas: números de emergencia, radio, cercanos);
- *  2. se ofrece cambiar el país de la app («Estás en Perú: ¿usar Perú en la app?»); «No, gracias» se recuerda por país;
- *  3. se bajan los datos del país y de los vecinos: con Wi-Fi sin avisar; con datos móviles o conexión desconocida, preguntando antes.
+ *  1. se guarda el país detectado y los vecinos a menos de 50 km (solo para saber si hay que preguntar: NINGUNA pantalla usa el país detectado, todas
+ *     usan el país elegido en Ajustes; el GPS puede tardar en actualizarse o ser incorrecto);
+ *  2. se ofrece cambiar el país de la app («Estás en Perú: ¿usar Perú en la app?»); «No, gracias» se recuerda por país. Si se acepta, el país se
+ *     cambia y se baja su paquete (`useCountryPrefetch`; en Brasil, el sector donde estás, ver `downloadSectorFor`);
+ *  3. NO se baja nada de un país que no elegiste. En Brasil, ya elegido, se baja el sector donde estás parado.
  * Solo reacciona a eventos de ubicación (un punto del GPS, un lugar elegido): no pide el GPS ni corre en segundo plano.
  */
 
@@ -62,18 +63,6 @@ export function mapOfferFor(
   return { country: detected, lat: at.lat, lon: at.lon };
 }
 
-/** Baja los datos de los países detectados que falten, o pregunta antes si no hay Wi-Fi seguro. */
-export async function downloadFor(d: DetectedCountries): Promise<void> {
-  if (!navigator.onLine) return;
-  const countries = [d.country, ...d.near];
-  const missing = await missingDownload(countries);
-  if (missing.files.length > 0) {
-    if (downloadsSilently(networkInfo())) await Promise.all(countries.map(prefetchCountry));
-    else if (!declined.has(countries.join(','))) useCountryNotices.setState({ ask: { countries, bytes: missing.bytes } });
-  }
-  await updateStored(countries);
-}
-
 /**
  * ¿Hay que bajar el sector de Brasil donde estás? Si todavía no lo tenés, no lo borraste a mano (en ese caso no se vuelve a bajar solo) y no
  * dijiste «Ahora no» en esta sesión.
@@ -116,18 +105,21 @@ async function onDetected(d: DetectedCountries, at: { lat: number; lon: number }
   refreshOffer();
   const s = useSettings.getState().settings;
   useCountryNotices.setState({ mapOffer: mapOfferFor(d.country, s.country, s.mapOfferDismissed, useMapZones.getState().zones, at, navigator.onLine) });
-  await downloadFor(d);
-  // En Brasil el paquete se baja por sector: el de donde estás.
-  if (d.country === 'BR') await downloadSectorFor(at).catch(() => undefined);
+  lastDetectedAt = at;
+  // Brasil se baja por sector: con Brasil elegido, el de donde estás. (Si todavía no lo elegiste, se pregunta si querés cambiar y el sector se baja al aceptar.)
+  if (d.country === 'BR' && s.country === 'BR') await downloadSectorFor(at).catch(() => undefined);
 }
+
+/** La última ubicación con la que se detectó el país (para bajar el sector de Brasil al aceptar el cambio de país). */
+let lastDetectedAt: { lat: number; lon: number } | null = null;
+export const lastDetectedLocation = (): { lat: number; lon: number } | null => lastDetectedAt;
 
 /** Se monta una vez en la app: engancha la detección a los eventos de ubicación. */
 export function useCountryAutomation(): void {
   useEffect(() => {
     refreshOffer();
-    // Al abrir la app: lo guardado del país de la app y del detectado se actualiza si cambió (solo Wi-Fi, una vez cada 12 horas).
-    const s = useSettings.getState().settings;
-    void updateStored([...new Set([s.country, ...(s.detectedCountry ? [s.detectedCountry, ...s.detectedNear] : [])])]).catch(() => undefined);
+    // Al abrir la app: lo guardado del país elegido se actualiza si cambió (solo Wi-Fi, una vez cada 12 horas).
+    void updateStored([useSettings.getState().settings.country]).catch(() => undefined);
     const detector = createCountryDetector({
       load: loadBorders,
       current: () => {

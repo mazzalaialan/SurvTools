@@ -5,7 +5,7 @@ import { Download, Map as MapIcon, MapPin } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { prefetchCountry } from './country';
 import { downloadSector } from './countryDelete';
-import { declineDownload, refreshOffer, useCountryNotices } from './countryAutomation';
+import { declineDownload, downloadSectorFor, lastDetectedLocation, refreshOffer, useCountryNotices } from './countryAutomation';
 import { formatBytes } from './countryDownload';
 
 /**
@@ -37,7 +37,12 @@ export function CountryNotices() {
             className="btn btn-primary"
             type="button"
             onClick={() => {
-              void update({ country: offer }).then(refreshOffer);
+              // Cambiar el país baja su paquete (useCountryPrefetch); Brasil se baja por sector: el de donde estás.
+              void update({ country: offer }).then(() => {
+                refreshOffer();
+                const at = lastDetectedLocation();
+                if (offer === 'BR' && at) void downloadSectorFor(at).catch(() => undefined);
+              });
             }}
             data-testid="country-offer-change"
           >

@@ -438,9 +438,7 @@
     "openOtherTitle": "Open in the map app you choose (Waze, OsmAnd, Maps…)",
     "newContact": "New contact",
     "editContact": "Edit {{name}}",
-    "hereCountry": "You are in {{country}}: these are its emergency numbers.",
-    "homeCountry": "Current country in Settings: {{country}}",
-    "countrySwitchHint": "App country (Settings): used when we do not know where you are yet.",
+    "countrySwitchHint": "App country (the same as in Settings): the numbers, guide and radio come from it. If GPS detects another country, we ask whether you want to switch.",
     "nationalTitle": "National numbers (Argentina)",
     "national": {
       "emergencies": { "name": "Emergencies · Police", "desc": "911: police and, in many provinces, ambulances too" },
@@ -1394,7 +1392,7 @@
   },
   "countryOffer": {
     "title": "You are in {{country}}: use {{country}} in the app?",
-    "hint": "We already show its emergency numbers and data. If you change, {{country}} becomes the app country (now {{current}}). You can change it anytime in Settings.",
+    "hint": "If you switch, {{country}} becomes the current country (now it is {{current}}): its emergency numbers, guide and radio will be the ones used, and its offline package is downloaded. You can change it any time in Settings.",
     "change": "Change",
     "no": "No, thanks"
   },
@@ -2528,7 +2526,6 @@
     "mercadopago": "Contribute via Mercado Pago"
   },
   "guides": {
-    "hereCountry": "The guide numbers are those of {{country}}, the country you are in. The current country in Settings is {{home}}.",
     "voice": "Read the steps aloud",
     "voiceRepeat": "Repeat aloud",
     "optionsSpoken": "Options: {{options}}.",

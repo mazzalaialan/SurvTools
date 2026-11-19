@@ -438,9 +438,7 @@
     "openOtherTitle": "Abrir en la app de mapas que elijas (Waze, OsmAnd, Maps…)",
     "newContact": "Nuevo contacto",
     "editContact": "Editar {{name}}",
-    "hereCountry": "Estás en {{country}}: estos son sus números de emergencia.",
-    "homeCountry": "País actual en Ajustes: {{country}}",
-    "countrySwitchHint": "País de la app (Ajustes): se usa cuando todavía no sabemos dónde estás.",
+    "countrySwitchHint": "País de la app (el mismo de Ajustes): de él salen los números, la guía y la radio. Si el GPS detecta otro país, te preguntamos si querés cambiarlo.",
     "nationalTitle": "Números nacionales",
     "national": {
       "emergencies": { "name": "Emergencias · Policía", "desc": "911: policía y, en muchas provincias, también ambulancias" },
@@ -1394,7 +1392,7 @@
   },
   "countryOffer": {
     "title": "Estás en {{country}}: ¿usar {{country}} en la app?",
-    "hint": "Ya te mostramos sus números de emergencia y sus datos. Si cambiás, {{country}} pasa a ser el país de la app (ahora es {{current}}). Podés cambiarlo cuando quieras en Ajustes.",
+    "hint": "Si cambiás, {{country}} pasa a ser el país actual (ahora es {{current}}): sus números de emergencia, la guía y la radio serán los de ahí, y se baja su paquete para usar sin conexión. Podés cambiarlo cuando quieras en Ajustes.",
     "change": "Cambiar",
     "no": "No, gracias"
   },
@@ -2527,7 +2525,6 @@
     "mercadopago": "Aportar por Mercado Pago"
   },
   "guides": {
-    "hereCountry": "Los números de la guía son los de {{country}}, el país donde estás. El país actual en Ajustes es {{home}}.",
     "voice": "Leer los pasos en voz alta",
     "voiceRepeat": "Repetir en voz alta",
     "optionsSpoken": "Opciones: {{options}}.",

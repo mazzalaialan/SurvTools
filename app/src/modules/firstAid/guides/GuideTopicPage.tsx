@@ -4,7 +4,7 @@ import { useEffect, useRef, type MouseEvent } from 'react';
 import { Ban, LocateFixed, Repeat, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { speak, stopSpeaking, useSpeechVoice } from '@/core/speech/speech';
 import { useSettings } from '@/core/settings/settings';
-import { useCurrentCountry } from '@/modules/emergency/currentCountry';
+import { useCountry } from '@/modules/emergency/currentCountry';
 import { PhoneActions } from '@/modules/emergency/parts';
 import { resolveNext, TOPIC_BY_ID } from './content';
 import { EnvSwitch, useLang } from './parts';
@@ -19,7 +19,7 @@ export function GuideTopicPage() {
   const { t } = useTranslation();
   const lang = useLang();
   const env = useSettings((s) => s.settings.firstAidEnv);
-  const { here: country } = useCurrentCountry();
+  const country = useCountry();
   const voiceOn = useSettings((s) => s.settings.guideVoice);
   const update = useSettings((s) => s.update);
   const voice = useSpeechVoice(lang);

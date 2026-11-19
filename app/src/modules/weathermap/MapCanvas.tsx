@@ -1,5 +1,5 @@
 import { i18n } from '@/core/i18n/i18n';
-import { useCurrentCountry } from '@/modules/emergency/currentCountry';
+import { useCountry } from '@/modules/emergency/currentCountry';
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { WeatherMapValue } from '@/core/settings/settings';
 import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels';
@@ -254,7 +254,7 @@ export function quakeAge(time: number, now: number): ScaleColor {
 
 export function MapCanvas(props: Props) {
   // El país actual de Ajustes (no el de donde estás parado): es el que el mapa muestra al abrirse.
-  const { home: country } = useCurrentCountry();
+  const country = useCountry();
   const { view, onView, onSelect } = props;
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);

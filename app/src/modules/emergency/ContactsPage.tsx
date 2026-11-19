@@ -8,7 +8,7 @@ import { doctorLabel, doctorUses, fichaContacts, insurancePhones, medScheduleTex
 import { today } from '@/modules/inventory/domain/dates';
 import type { Country } from '@/core/settings/settings';
 import { CountrySwitch } from './CountrySwitch';
-import { useCurrentCountry } from './currentCountry';
+import { useCountry } from './currentCountry';
 import { NATIONAL_NUMBERS } from './national';
 import { KindIcon, MapLink, PhoneActions } from './parts';
 import { useContacts } from './store';
@@ -34,7 +34,7 @@ export function ContactsPage() {
   // Médicos compartidos: en qué fichas están ("Pediatra de Tomi").
   const profiles = useMedical((s) => s.profiles);
   const uses = useMemo(() => doctorUses(profiles, t), [profiles, t]);
-  const { here, home, differs } = useCurrentCountry();
+  const country = useCountry();
 
   return (
     <div className="stack">
@@ -46,19 +46,8 @@ export function ContactsPage() {
 
       <section className="card stack" aria-labelledby="national-title">
         <h2 id="national-title" className="section-title" style={{ margin: 0 }}>{t('emergency.nationalTitle')}</h2>
-        {/* Los números son los del país donde estás (por la última ubicación); el selector cambia el país de la app (Ajustes). */}
-        {differs && (
-          <p className="hint here-country" style={{ margin: 0 }} data-testid="national-here">
-            {t('emergency.hereCountry', { country: t(`country.${here}`) })}
-          </p>
-        )}
-        <NationalList country={here} />
-        {differs && (
-          <div className="stack home-numbers" data-testid="national-home">
-            <h3 className="contact-group-title">{t('emergency.homeCountry', { country: t(`country.${home}`) })}</h3>
-            <NationalList country={home} home />
-          </div>
-        )}
+        {/* Los números son los del país elegido (el selector de acá abajo es el mismo de Ajustes). Si el GPS detecta otro país, la app pregunta si querés cambiarlo. */}
+        <NationalList country={country} />
         <p className="hint" style={{ margin: 0 }}>{t('emergency.countrySwitchHint')}</p>
         <CountrySwitch />
       </section>

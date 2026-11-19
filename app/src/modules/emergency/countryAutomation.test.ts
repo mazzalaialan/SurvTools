@@ -44,71 +44,22 @@ describe('qué hacer al detectar otro país', () => {
     expect(mapOfferFor('PE', 'AR', [], [{ lat: -13.5, lon: -72, radiusKm: 10 }], at, true)).not.toBeNull();
   });
 
-  it('con Wi-Fi baja solo los datos del país y de los vecinos, sin preguntar', async () => {
-    const { downloadFor, useCountryNotices } = await load();
-    setNetwork('wifi');
-    useCountryNotices.setState({ ask: null });
-    await downloadFor({ country: 'PE', near: ['BO'] });
-    expect(prefetchCountry.mock.calls.map((c) => c[0]).sort()).toEqual(['BO', 'PE']);
-    expect(useCountryNotices.getState().ask).toBeNull();
-  });
-
-  it('con datos móviles o conexión desconocida pregunta antes, con el peso, y no baja nada', async () => {
-    const { downloadFor, useCountryNotices } = await load();
-    for (const type of ['cellular', undefined]) {
-      setNetwork(type);
-      useCountryNotices.setState({ ask: null });
-      await downloadFor({ country: 'PE', near: [] });
-      expect(prefetchCountry).not.toHaveBeenCalled();
-      const ask = useCountryNotices.getState().ask;
-      expect(ask?.countries).toEqual(['PE']);
-      // Perú pesa varios MB (el paquete más servicios y parques).
-      expect(ask!.bytes).toBeGreaterThan(3_000_000);
-    }
-  });
-
-  it('con el ahorro de datos prendido también pregunta, aunque haya Wi-Fi', async () => {
-    const { downloadFor, useCountryNotices } = await load();
-    setNetwork('wifi', true);
-    useCountryNotices.setState({ ask: null });
-    await downloadFor({ country: 'BO', near: [] });
+  it('detectar otro país NO baja nada de ese país: solo se pregunta si querés cambiar (el paquete se baja al aceptar)', async () => {
+    const mod = await load();
+    // Ya no existe la bajada automática de los países detectados.
+    expect('downloadFor' in mod).toBe(false);
     expect(prefetchCountry).not.toHaveBeenCalled();
-    expect(useCountryNotices.getState().ask?.countries).toEqual(['BO']);
+    expect(mod.offerFor('PE', 'AR', [])).toBe('PE');
   });
 
-  it('«Ahora no» no insiste con la misma descarga en la sesión', async () => {
-    const { downloadFor, declineDownload, useCountryNotices } = await load();
-    setNetwork('cellular');
-    useCountryNotices.setState({ ask: null });
-    declineDownload(['UY']);
-    await downloadFor({ country: 'UY', near: [] });
-    expect(useCountryNotices.getState().ask).toBeNull();
-  });
-
-  it('si ya está todo guardado o no hay conexión, no hace nada', async () => {
-    const { downloadFor, useCountryNotices } = await load();
-    const { countryFiles } = await import('./countryDownload');
-    setNetwork('cellular');
-    useCountryNotices.setState({ ask: null });
-    stored = new Set(countryFiles('CL'));
-    await downloadFor({ country: 'CL', near: [] });
-    expect(useCountryNotices.getState().ask).toBeNull();
-    expect(prefetchCountry).not.toHaveBeenCalled();
-    stored = new Set();
-    Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
-    await downloadFor({ country: 'PE', near: [] });
-    expect(useCountryNotices.getState().ask).toBeNull();
-  });
-
-  it('lo ya guardado se actualiza solo con Wi-Fi, con los archivos del país y de los vecinos', async () => {
-    const { downloadFor, updateStored } = await load();
+  it('lo ya guardado se actualiza solo con Wi-Fi, y solo los archivos de los países que se piden', async () => {
+    const { updateStored } = await load();
     const { countryFiles } = await import('./countryDownload');
     setNetwork('wifi');
     stored = new Set([...countryFiles('CL'), ...countryFiles('AR')]);
-    await downloadFor({ country: 'CL', near: ['AR'] });
+    await updateStored(['CL']);
     expect(refreshStored).toHaveBeenCalledTimes(1);
     expect(refreshStored.mock.calls[0]![0]).toEqual(expect.arrayContaining(countryFiles('CL')));
-    expect(refreshStored.mock.calls[0]![0]).toEqual(expect.arrayContaining(countryFiles('AR')));
     // Sin Wi-Fi seguro (datos móviles, iPhone, ahorro de datos) no actualiza a escondidas.
     refreshStored.mockClear();
     for (const type of ['cellular', undefined]) {
@@ -118,5 +69,12 @@ describe('qué hacer al detectar otro país', () => {
     setNetwork('wifi', true);
     await updateStored(['CL']);
     expect(refreshStored).not.toHaveBeenCalled();
+  });
+
+  it('«Ahora no» a un sector de Brasil no insiste en la sesión', async () => {
+    const { declineDownload, sectorToDownload } = await load();
+    declineDownload(['BR'], 'sul');
+    expect(sectorToDownload('sul', [], [])).toBeNull();
+    expect(sectorToDownload('sudeste', [], [])).toBe('sudeste');
   });
 });

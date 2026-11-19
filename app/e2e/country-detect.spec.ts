@@ -24,67 +24,61 @@ const setConnection = (page: Page, type: string | null) =>
     Object.defineProperty(navigator, 'connection', { value: t === null ? undefined : { type: t, saveData: false }, configurable: true });
   }, type);
 
-test('estás en otro país: se ofrece cambiar, se pregunta antes de bajar los datos (conexión desconocida) y los números son los del lugar', async ({ page }, testInfo) => {
+test('estás en otro país: se pregunta si querés cambiarlo, sin bajar nada de ese país y con los números del país elegido', async ({ page }, testInfo) => {
   await setConnection(page, null);
   await start(page);
-  // Cualquier pantalla con ubicación sirve: acá, Radio (el lugar sale del GPS).
-  await page.goto('/#/first-aid/radio');
+  // Una pantalla que lee el GPS pero no carga datos de ningún país por lugar: Mi ubicación (la de Radio, Cercanos, Clima y Navegación sí usan el país del lugar).
+  await page.goto('/#/first-aid/location');
   const offer = page.getByTestId('country-offer');
   await expect(offer).toContainText('Estás en Perú: ¿usar Perú en la app?', { timeout: 15_000 });
-  await expect(offer).toContainText('ahora es Argentina');
-  // Sin Wi-Fi seguro: pregunta, con el peso, y todavía no bajó nada de Perú.
-  const ask = page.getByTestId('country-download-ask');
-  await expect(ask).toContainText('Para usar la app sin conexión en Perú hay que bajar');
-  // Lo que falta (la pantalla de Radio ya bajó el paquete que necesitaba para funcionar): servicios y parques.
-  await expect(ask).toContainText(/\d+(,\d)? (MB|KB)/);
-  await expect(ask).toContainText('Los mapas sin conexión de otros países se bajan aparte');
-  expect(await stored(page)).not.toContain('fuel-PE.json');
+  await expect(offer).toContainText('país actual (ahora es Argentina)');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-95-country-offer.png` });
+  // Solo se pregunta: no se baja nada de Perú ni se pide confirmar ninguna descarga.
+  await expect(page.getByTestId('country-download-ask')).toHaveCount(0);
+  await page.waitForTimeout(1_500);
+  expect(await stored(page)).not.toContain('PE.json');
+  expect(await stored(page)).not.toContain('fuel-PE.json');
 
-  // Bajar ahora: queda guardado el paquete de Perú y se cierra la pregunta.
-  await page.getByTestId('country-download-yes').click();
-  await expect(ask).toHaveCount(0, { timeout: 30_000 });
-  expect(await stored(page)).toEqual(expect.arrayContaining(['PE.json', 'parks-PE.json', 'fuel-PE.json']));
-
-  // Los números de emergencia: primero los del lugar (Perú) y, debajo y aparte, los de Ajustes (Argentina).
+  // Los números de emergencia son los del país elegido (Argentina), aunque el GPS diga Perú.
   await page.goto('/#/first-aid/contacts');
-  await expect(page.getByTestId('national-here')).toContainText('Estás en Perú');
-  await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
-  await expect(page.getByTestId('national-home')).toContainText('País actual en Ajustes: Argentina');
-  await expect(page.getByTestId('national-numbers-home')).toBeVisible();
-  // El aviso de «usar Perú» sigue ahí (no se contestó); «No, gracias» lo saca y no vuelve a preguntar por Perú.
+  await expect(page.getByTestId('national-numbers')).not.toContainText('Policía Nacional');
+  await expect(page.getByTestId('national-numbers')).toBeVisible();
+  await expect(page.getByTestId('national-here')).toHaveCount(0);
+  await expect(page.getByTestId('national-home')).toHaveCount(0);
+  // «No, gracias» saca la pregunta y no vuelve a preguntar por Perú (tampoco al reabrir la app).
   await page.getByTestId('country-offer-no').click();
   await expect(page.getByTestId('country-offer')).toHaveCount(0);
   await page.reload();
   await page.getByLabel('Contraseña').fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
-  await expect(page.getByTestId('national-here')).toContainText('Estás en Perú');
+  await expect(page.getByTestId('national-numbers')).toBeVisible();
   await expect(page.getByTestId('country-offer')).toHaveCount(0);
-  // Los números del lugar siguen aunque no se haya cambiado el país de la app.
-  await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
+  await expect(page.getByTestId('national-numbers')).not.toContainText('Policía Nacional');
+  expect(await stored(page)).not.toContain('PE.json');
 });
 
-test('«Cambiar» pasa a Perú como país de la app: ya no se separan los números', async ({ page }) => {
+test('aceptar el cambio pasa a Perú como país elegido y baja su paquete; los números pasan a ser los de Perú', async ({ page }) => {
   await setConnection(page, null);
   await start(page);
-  await page.goto('/#/first-aid/radio');
+  await page.goto('/#/first-aid/location');
   await expect(page.getByTestId('country-offer')).toBeVisible({ timeout: 15_000 });
-  await page.getByTestId('country-download-no').click();
   await page.getByTestId('country-offer-change').click();
   await expect(page.getByTestId('country-offer')).toHaveCount(0);
+  // El país elegido cambió y se baja su paquete.
+  await expect.poll(async () => (await stored(page)).includes('PE.json'), { timeout: 60_000 }).toBe(true);
+  expect(await stored(page)).toEqual(expect.arrayContaining(['PE.json', 'parks-PE.json', 'fuel-PE.json']));
   await page.goto('/#/first-aid/contacts');
   await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
-  await expect(page.getByTestId('national-home')).toHaveCount(0);
-  await expect(page.getByTestId('national-here')).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('con Wi-Fi baja los datos del país solo, sin preguntar', async ({ page }) => {
+test('con Wi-Fi tampoco se baja nada de un país que no elegiste', async ({ page }) => {
   await setConnection(page, 'wifi');
   await start(page);
-  await page.goto('/#/first-aid/radio');
+  await page.goto('/#/first-aid/location');
   await expect(page.getByTestId('country-offer')).toBeVisible({ timeout: 15_000 });
-  await expect.poll(async () => (await stored(page)).includes('PE.json'), { timeout: 30_000 }).toBe(true);
+  await page.waitForTimeout(2_000);
+  expect(await stored(page)).not.toContain('PE.json');
   await expect(page.getByTestId('country-download-ask')).toHaveCount(0);
 });
 
