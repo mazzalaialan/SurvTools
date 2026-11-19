@@ -27,6 +27,8 @@ import { tidesRoutes } from './routes/tides.ts';
 import { iocRoutes } from './routes/ioc.ts';
 import { firesRoutes } from './routes/fires.ts';
 import { rainMapRoutes } from './routes/rainMap.ts';
+import { radarRoutes } from './routes/radar.ts';
+import { createRadarStore, type RadarStore } from './radar/sinarame.ts';
 import { liveSessionRoutes } from './routes/liveSessions.ts';
 import { sharedOutingRoutes } from './routes/sharedOutings.ts';
 import { transferRoutes } from './routes/transfers.ts';
@@ -44,6 +46,7 @@ export async function buildApp(
   maps: MapsService = createMapsService(config.mapsDir),
   official: OfficialStore = createOfficialStore(),
   osmIndex: AroundIndex | null = openAroundIndex(config.osmIndexPath),
+  radar: { store: RadarStore; wake: (ids: string[]) => void } = { store: createRadarStore(), wake: () => undefined },
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger, trustProxy: true });
   // Límite de pedidos por IP en los endpoints públicos que cuestan (rateLimit.ts).
@@ -68,6 +71,7 @@ export async function buildApp(
   liveSessionRoutes(app, db, config);
   lightningRoutes(app, lightning.store, lightning.wake);
   rainMapRoutes(app, rainMap.store, rainMap.wake);
+  radarRoutes(app, radar.store, radar.wake, config.radarSinarame);
   mapRoutes(app, maps, config);
   libraryRoutes(app, config);
   dataRoutes(app, config);

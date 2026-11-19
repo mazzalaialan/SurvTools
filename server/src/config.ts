@@ -46,6 +46,14 @@ export interface Config {
   lightningApproachKm: number;
   /** Lluvia estimada con el infrarrojo del GOES-19 para los avisos (además del pronóstico). */
   rainObserved: boolean;
+  /** Imágenes de los radares argentinos (SINARAME), solo mientras alguien las mira. */
+  radarSinarame: boolean;
+  /** Cada cuántos minutos se busca una imagen nueva de un radar que alguien mira (sale una cada 10). */
+  radarRefreshMin: number;
+  /** Pausa entre pedidos al servicio de radares, en milisegundos. */
+  radarPauseMs: number;
+  /** Dirección del visor de radares (cambiarla solo si se publica en otra). */
+  radarBaseUrl: string;
   /** Avisos de peligros naturales (sismos de USGS y eventos de GDACS). */
   hazardsEnabled: boolean;
   /** Carpeta con vector.pmtiles y elevation.pmtiles (mapas offline); sin archivos, la app usa las fuentes públicas. */
@@ -77,6 +85,7 @@ export interface Config {
   rateOmPerMin: number;
   rateAddressPerMin: number;
   rateOsmPerMin: number;
+  rateRadarPerMin: number;
   /** Subidas de backups de transferencia por hora y por IP (0 = sin límite) y tope de lo que el servidor guarda de ellas en total. */
   rateTransferUploadsPerHour: number;
   transferStoreMaxBytes: number;
@@ -114,6 +123,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     lightningNotifyEveryMin: Number(env.LIGHTNING_NOTIFY_EVERY_MIN ?? 30),
     lightningApproachKm: Number(env.LIGHTNING_APPROACH_KM ?? 10),
     rainObserved: (env.RAIN_OBSERVED ?? 'true') !== 'false',
+    radarSinarame: (env.RADAR_SINARAME ?? 'true') !== 'false',
+    radarRefreshMin: Math.max(5, Number(env.RADAR_REFRESH_MIN ?? 10)),
+    radarPauseMs: Math.max(0, Number(env.RADAR_PAUSE_MS ?? 300)),
+    radarBaseUrl: env.RADAR_BASE_URL?.trim() || 'https://radares.hidricosargentina.gob.ar',
     hazardsEnabled: (env.HAZARDS_ENABLED ?? 'true') !== 'false',
     osmIndexPath: env.OSM_INDEX === '' ? null : (env.OSM_INDEX ?? `${env.DATA_DIR ?? './data'}/osm/around.sqlite`),
     mapsDir: env.MAPS_DIR === '' ? null : (env.MAPS_DIR ?? `${env.DATA_DIR ?? './data'}/maps`),
@@ -128,6 +141,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     rateOmPerMin: Number(env.RATE_OM_PER_MIN ?? 300),
     rateAddressPerMin: Number(env.RATE_ADDRESS_PER_MIN ?? 60),
     rateOsmPerMin: Number(env.RATE_OSM_PER_MIN ?? 300),
+    rateRadarPerMin: Number(env.RATE_RADAR_PER_MIN ?? 120),
     rateTransferUploadsPerHour: Number(env.RATE_TRANSFER_UPLOADS_PER_HOUR ?? 4),
     transferStoreMaxBytes: Number(env.TRANSFER_STORE_MAX_MB ?? 1024) * 1024 * 1024,
     deviceFailuresPer10Min: Number(env.DEVICE_FAILURES_PER_10MIN ?? 30),

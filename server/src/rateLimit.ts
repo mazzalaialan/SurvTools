@@ -19,6 +19,7 @@ export function rulesFor(config: Config): Rule[] {
   return [
     { name: 'om', match: (_m, p) => p.startsWith('/api/om/'), limit: config.rateOmPerMin, windowMs: MIN },
     { name: 'address', match: (_m, p) => p.startsWith('/api/address/'), limit: config.rateAddressPerMin, windowMs: MIN },
+    { name: 'radar', match: (_m, p) => p.startsWith('/api/radar'), limit: config.rateRadarPerMin, windowMs: MIN },
     { name: 'osm', match: (_m, p) => p.startsWith('/api/osm/'), limit: config.rateOsmPerMin, windowMs: MIN },
     { name: 'transfer-upload', match: (m, p) => m === 'POST' && p === '/api/transfers', limit: config.rateTransferUploadsPerHour, windowMs: 60 * MIN },
   ];

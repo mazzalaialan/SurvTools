@@ -10,6 +10,7 @@ import { createLightningStore, mapActive } from './lightning/store.ts';
 import { hasPlaces, LIGHTNING_DEFAULTS, runLightningWatch } from './lightning/watch.ts';
 import { checkObservedRain, createObservedRainStatus } from './rain/noaaWatch.ts';
 import { runRainWatch } from './rain/watch.ts';
+import { createRadarStore, radarTick } from './radar/sinarame.ts';
 import { createRainMapStore, RAIN_MAP_ACTIVE_MS, updateRainMap } from './rain/map.ts';
 import { irObserver, withObservedRain } from './rain/observer.ts';
 import { openMeteoSource } from './rain/source.ts';
@@ -57,6 +58,7 @@ const lightningStore = createLightningStore();
 // `lightningTick` se define más abajo; la ruta solo lo despierta.
 const observedRain = createObservedRainStatus();
 const rainMapStore = createRainMapStore();
+const radarStore = createRadarStore();
 const officialStore = createOfficialStore();
 const officialCache = createOfficialCache();
 const senamhiPeCache = createPeCache();
@@ -70,6 +72,8 @@ const app = await buildApp(
   { store: rainMapStore, wake: () => void rainMapTick() },
   undefined,
   officialStore,
+  undefined,
+  { store: radarStore, wake: () => void radarTickRun() },
 );
 
 async function tick() {
@@ -203,6 +207,28 @@ async function hazardTick() {
     app.log.error(err, 'fallaron los avisos de peligros naturales');
   }
 }
+let radarBusy = false;
+let radarImages = 0;
+
+/** Radares argentinos (SINARAME): solo los que alguien pidió hace poco, y de a uno por vez (ver radar/sinarame.ts). */
+async function radarTickRun() {
+  if (!config.radarSinarame || radarBusy) return;
+  radarBusy = true;
+  try {
+    const got = await radarTick(radarStore, { base: config.radarBaseUrl, pauseMs: config.radarPauseMs, refreshMs: config.radarRefreshMin * 60_000 });
+    if (got) {
+      radarImages += got;
+      app.log.info({ imagenes: got, total: radarImages, bytes: radarStore.bytes }, 'imágenes de radar bajadas');
+    }
+    if (radarStore.backoffUntil > Date.now()) app.log.warn({ hasta: new Date(radarStore.backoffUntil).toISOString() }, 'el servicio de radares falló: se espera antes de volver a pedir');
+  } catch (err) {
+    app.log.error(err, 'falló la tarea de radares');
+  } finally {
+    radarBusy = false;
+  }
+}
+setInterval(() => void radarTickRun(), 60_000);
+
 const hazardTimer = setInterval(() => void hazardTick(), 5 * 60_000);
 
 // Niveles de los ríos de Argentina (INA): cada media hora, solo de las estaciones que tienen un lugar guardado a menos de 5 km.
