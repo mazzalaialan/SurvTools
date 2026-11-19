@@ -182,7 +182,7 @@ describe('servidor', () => {
     await app.inject({ method: 'POST', url: '/api/devices', payload: { subscription, ...prefs, updates: false } });
     const a = { version: '0.23.0', title: { es: 'VikArg 0.23', en: 'VikArg 0.23' }, body: { es: 'Novedades', en: 'News' } };
 
-    assert.deepEqual(await announce(db, push, a, { dryRun: true }), { devices: 1, delivered: 0, removed: 0, failed: 0, already: false });
+    assert.deepEqual(await announce(db, push, a, { dryRun: true }), { devices: 1, delivered: 0, removed: 0, failed: 0, errors: [], already: false });
     assert.equal(push.sent.length, 0);
     const r = await announce(db, push, a);
     assert.equal(r.delivered, 1);
@@ -196,6 +196,24 @@ describe('servidor', () => {
     push.gone = true;
     assert.equal((await announce(db, push, { ...a, version: '0.24.0' })).removed, 1);
     assert.equal(db.prepare('SELECT 1 FROM devices WHERE id = ?').get(on.deviceId), undefined);
+  });
+
+  it('al anunciar, un dispositivo que falla deja el motivo y no corta a los demás', async () => {
+    await register();
+    await register();
+    const a = { version: '0.25.0', title: { es: 'VikArg 0.25', en: 'VikArg 0.25' }, body: { es: 'Novedades', en: 'News' } };
+    let n = 0;
+    const flaky = {
+      ...push,
+      async send() {
+        if (n++ === 0) throw new Error('fcm-not-configured');
+        return true;
+      },
+    };
+    const r = await announce(db, flaky as unknown as typeof push, a);
+    assert.equal(r.delivered, 1);
+    assert.equal(r.failed, 1);
+    assert.deepEqual(r.errors, ['fcm-not-configured']);
   });
 
   it('valida los argumentos del anuncio', () => {

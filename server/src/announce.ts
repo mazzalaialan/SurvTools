@@ -26,6 +26,8 @@ export interface AnnounceResult {
   /** Suscripciones que ya no existen (se borran). */
   removed: number;
   failed: number;
+  /** Por qué falló cada dispositivo con error (sin datos del dispositivo): sin esto, un fallo no dejaba rastro. */
+  errors: string[];
   /** Ya se había anunciado esa versión (no se manda de nuevo sin `force`). */
   already: boolean;
 }
@@ -33,7 +35,7 @@ export interface AnnounceResult {
 export async function announce(db: Db, push: PushSender, a: Announcement, options: { dryRun?: boolean; force?: boolean } = {}): Promise<AnnounceResult> {
   const rows = db.prepare('SELECT id, subscription FROM devices WHERE updates = 1').all() as { id: string; subscription: string }[];
   const already = !!db.prepare('SELECT 1 FROM announcements WHERE version = ?').get(a.version);
-  const result: AnnounceResult = { devices: rows.length, delivered: 0, removed: 0, failed: 0, already };
+  const result: AnnounceResult = { devices: rows.length, delivered: 0, removed: 0, failed: 0, errors: [], already };
   if (options.dryRun || (already && !options.force)) return result;
   const payload: PushPayload = { type: 'update', update: a };
   const removeDevice = db.prepare('DELETE FROM devices WHERE id = ?');
@@ -44,8 +46,9 @@ export async function announce(db: Db, push: PushSender, a: Announcement, option
         removeDevice.run(row.id);
         result.removed++;
       }
-    } catch {
+    } catch (err) {
       result.failed++;
+      result.errors.push((err as Error).message ?? String(err));
     }
   }
   db.prepare('INSERT OR REPLACE INTO announcements (version, sent_at, devices, delivered) VALUES (?, ?, ?, ?)').run(
@@ -96,14 +99,20 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { loadConfig } = await import('./config.ts');
   const { openDb } = await import('./db.ts');
   const { createPushSender } = await import('./push.ts');
+  const { createFcmSender, readServiceAccount } = await import('./fcm.ts');
   try {
     const { announcement, dryRun, force } = parseAnnouncement(process.argv.slice(2));
     const config = loadConfig();
     const db = openDb(config.dataDir);
-    const r = await announce(db, createPushSender(db, config.vapidSubject), announcement, { dryRun, force });
+    // Igual que el servidor: los dispositivos de la app nativa reciben por Firebase. Sin esto, el comando los daba siempre por fallidos
+    // («fcm-not-configured») aunque el servidor sí tuviera Firebase (se vio al anunciar la 0.92: llegó a 1 de 2 dispositivos).
+    let fcm: ReturnType<typeof createFcmSender> | null = null;
+    if (config.fcmServiceAccountFile) fcm = createFcmSender(readServiceAccount(config.fcmServiceAccountFile));
+    const r = await announce(db, createPushSender(db, config.vapidSubject, fcm), announcement, { dryRun, force });
     if (r.already && !force) console.log(`La versión ${announcement.version} ya se anunció. Para mandarla de nuevo: --force.`);
     else if (dryRun) console.log(`Prueba: se mandaría a ${r.devices} dispositivos.`);
     else console.log(`Enviado a ${r.devices} dispositivos: ${r.delivered} entregados, ${r.removed} ya no existen (borrados), ${r.failed} con error.`);
+    for (const message of r.errors ?? []) console.log(`  - error: ${message}`);
     db.close();
   } catch (err) {
     console.error((err as Error).message);
