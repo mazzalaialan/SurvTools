@@ -2,10 +2,12 @@
  * Focos de calor (anomalías térmicas) de NASA FIRMS: las listas públicas de las últimas 24 horas de los satélites VIIRS NOAA-20 y
  * NOAA-21 para América del Sur, sin clave (https://firms.modaps.eosdis.nasa.gov/active_fire/). Cada detección trae su confianza
  * (baja, nominal, alta), su potencia radiativa (FRP, MW) y la hora de la pasada. El servidor baja los últimos 7 días (≈10 MB), muestra
- * solo las últimas 24 horas de la región de la app, agrupadas en celdas de 0,1° (~11 km) para que lleguen livianas al teléfono
+ * solo las últimas 24 horas de América del Sur (Brasil incluido; ver `FIRE_REGION`), agrupadas en celdas de 0,1° (~11 km) para que lleguen livianas al teléfono
  * (`GET /api/fires`, routes/fires.ts), y usa los 7 días para reconocer las fuentes fijas: antorchas de gas, industria.
- * Datos abiertos de la NASA (hay que citar a NASA FIRMS). Una anomalía térmica no es siempre un incendio.
+ * En Brasil se enriquecen con riesgo, días sin lluvia, bioma y municipio del INPE (inpe.ts). Datos abiertos de la NASA (hay que citar a NASA FIRMS). Una anomalía térmica no es siempre un incendio.
  */
+import { buildInpeCells, cellKey, fetchInpeRows, type InpeCell, type InpeRow } from './inpe.ts';
+
 export type FireConfidence = 0 | 1 | 2; // baja, nominal, alta
 
 /** Una celda de 0,1°: [lat, lon (centro), detecciones, de alta confianza, nominales, FRP total (MW), minutos desde la más reciente]. */
@@ -21,10 +23,15 @@ export interface FiresData {
   hidden: number;
   sources: string[];
   cells: FireCell[];
+  /** Solo Brasil: por celda («lat,lon» del centro) lo que aporta el INPE y FIRMS no (ver inpe.ts). Opcional: si el INPE no responde, no viene. */
+  inpe?: Record<string, InpeCell>;
 }
 
-/** La región que importa a la app (Argentina, Chile, Uruguay, Bolivia y Perú, con un poco de vecinos): [oeste, sur, este, norte]. */
-export const FIRE_REGION: [number, number, number, number] = [-83, -57, -52, 0.5];
+/** La región original de la app (Argentina, Chile, Uruguay, Bolivia y Perú, con un poco de vecinos): [oeste, sur, este, norte]. Ahí todo sigue igual. */
+export const FIRE_REGION_CORE: [number, number, number, number] = [-83, -57, -52, 0.5];
+/** Toda América del Sur continental (incluye todo Brasil: la costa del noreste, Roraima y Amapá): [oeste, sur, este, norte]. */
+export const FIRE_REGION: [number, number, number, number] = [-83, -57, -33, 13];
+const inCore = (lat: number, lon: number) => lon >= FIRE_REGION_CORE[0] && lon <= FIRE_REGION_CORE[2] && lat >= FIRE_REGION_CORE[1] && lat <= FIRE_REGION_CORE[3];
 
 const BASE = 'https://firms.modaps.eosdis.nasa.gov/data/active_fire';
 /** Los últimos 7 días de cada satélite: 24 h para mostrar y 7 días para reconocer lo que se repite en el mismo lugar. */
@@ -41,6 +48,12 @@ export const WINDOW_MS = 24 * 3_600_000;
  * detecciones de confianza baja y nominal; las de alta confianza se muestran siempre, así un incendio largo no se esconde.
  */
 export const FIXED_DAYS = 6;
+/**
+ * Fuera de la región original (Brasil, Venezuela, Guayanas) se pide repetirse en las 8 fechas. Con 6 se ocultaban quemas agrícolas y de pastura
+ * que duran días en el mismo lugar (Amapá, Marajó, Xingú: decenas de «sitios fijos» en 0,5°, medido el 2026-11-19: 401 de 4.352 detecciones no
+ * altas cerca de focos brasileños); con 8 se siguen ocultando las antorchas, que no faltan ningún día, y bajan a 116.
+ */
+export const FIXED_DAYS_OUTSIDE = 8;
 
 export interface Detection {
   lat: number;
@@ -76,7 +89,7 @@ export function parseCsv(text: string): Detection[] {
 }
 
 /** Lugares (cuadros de 0,01° ≈ 1 km, con sus 8 vecinos) con detecciones en `minDays` fechas distintas o más. */
-export function fixedSites(detections: Detection[], region = FIRE_REGION, minDays = FIXED_DAYS): Set<string> {
+export function fixedSites(detections: Detection[], region = FIRE_REGION, minDays = FIXED_DAYS, minDaysOutside = FIXED_DAYS_OUTSIDE): Set<string> {
   const [w, s, e, n] = region;
   const days = new Map<string, Set<string>>();
   for (const d of detections) {
@@ -91,7 +104,7 @@ export function fixedSites(detections: Detection[], region = FIRE_REGION, minDay
     const [la, lo] = key.split(',').map(Number) as [number, number];
     const union = new Set<string>();
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const day of days.get(`${la! + dy},${lo! + dx}`) ?? []) union.add(day);
-    if (union.size >= minDays) fixed.add(key);
+    if (union.size >= (inCore(la! / 100, lo! / 100) ? minDays : Math.max(minDays, minDaysOutside))) fixed.add(key);
   }
   return fixed;
 }
@@ -136,7 +149,7 @@ export function buildCells(detections: Detection[], now: number, region = FIRE_R
 const UA = 'VikArg-Survival-Tools/1.0';
 
 /** Baja las listas de los satélites (los que fallen se omiten) y arma las celdas; falla si no se pudo bajar ninguna. */
-export async function fetchFires(now = Date.now(), fetcher: typeof fetch = fetch): Promise<FiresData> {
+export async function fetchFires(now = Date.now(), fetcher: typeof fetch = fetch, inpe: (now: number) => Promise<InpeRow[]> = (n) => fetchInpeRows(n, fetcher)): Promise<FiresData> {
   const all: Detection[] = [];
   const sources: string[] = [];
   await Promise.all(
@@ -154,5 +167,14 @@ export async function fetchFires(now = Date.now(), fetcher: typeof fetch = fetch
   );
   if (!sources.length) throw new Error('FIRMS no respondió o cambió de formato');
   const { cells, total, hidden, newestAt } = buildCells(all, now);
-  return { fetchedAt: now, newestAt, total, hidden, sources: sources.sort(), cells };
+  const out: FiresData = { fetchedAt: now, newestAt, total, hidden, sources: sources.sort(), cells };
+  // El INPE es un complemento: si no responde (o falla algo), la capa sigue con FIRMS solo.
+  try {
+    const only = new Set(cells.map((c) => cellKey(c[0], c[1])));
+    const enriched = buildInpeCells(await inpe(now), only);
+    if (Object.keys(enriched).length) out.inpe = enriched;
+  } catch {
+    /* sin INPE */
+  }
+  return out;
 }

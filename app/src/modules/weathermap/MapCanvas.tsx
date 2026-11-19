@@ -6,7 +6,7 @@ import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels'
 import type { GeoData, Volcano, WorldBorders } from './geo';
 import type { NavState, RiverPoint, TidePoint } from './navLayers';
 import { seaState, type SeaState } from '@/modules/navigation/waves';
-import { clusterFires, fireCellDegrees, fireLevel, type FireCell } from './fires';
+import { clusterFires, fireCellDegrees, fireLevel, type FireCell, type FireInpe, type InpeCell } from './fires';
 import { waveSegments, type WaveSpot } from './waveGrid';
 import { fitBounds, homeBounds, pan, project, unproject, zoomAt, type Size, type View } from './projection';
 import { readyImage } from './images';
@@ -39,6 +39,8 @@ export interface FireSpot {
   low?: number;
   frp?: number;
   newestMin?: number;
+  /** Brasil: riesgo de fuego, días sin lluvia, bioma y municipio del INPE, si el servidor los trae. */
+  inpe?: FireInpe;
 }
 
 export type MapFeature =
@@ -52,6 +54,12 @@ export type MapFeature =
   | { kind: 'fire'; item: FireSpot }
   | { kind: 'zone'; item: ZoneWeather }
   | { kind: 'waypoint'; item: MapWaypoint };
+
+/** El centro de la vista como «lon,lat» (para las pruebas: dice a qué país está mirando el mapa). */
+function centerLabel(view: View, size: Size): string {
+  const c = unproject(size.width / 2, size.height / 2, view, size);
+  return `${c.lon.toFixed(1)},${c.lat.toFixed(1)}`;
+}
 
 interface Props {
   geo: GeoData;
@@ -76,6 +84,8 @@ interface Props {
   waves?: WaveSpot[] | null;
   /** Focos de calor de FIRMS (celdas de 0,1° con su confianza): llama solo para alta confianza. Si no hay, se usa la imagen de la NASA. */
   fires?: FireCell[] | null;
+  /** Lo que el INPE suma a las celdas de Brasil (riesgo, días sin lluvia, bioma, municipio), por «lat,lon» de la celda; se muestra al tocar un grupo. */
+  fireInfo?: Record<string, InpeCell> | null;
   /** Nivel de alerta técnica (OAVV): el volcán se pinta de amarillo, naranja o rojo, más grande. */
   volcanoAlerts?: VolcanoAlert[] | null;
   waypoints: MapWaypoint[] | null;
@@ -243,7 +253,8 @@ export function quakeAge(time: number, now: number): ScaleColor {
 }
 
 export function MapCanvas(props: Props) {
-  const { here: country } = useCurrentCountry();
+  // El país actual de Ajustes (no el de donde estás parado): es el que el mapa muestra al abrirse.
+  const { home: country } = useCurrentCountry();
   const { view, onView, onSelect } = props;
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -337,6 +348,8 @@ export function MapCanvas(props: Props) {
       <canvas
         ref={canvas}
         data-testid="weather-map"
+        // Centro de la vista (lon,lat), para las pruebas: dice a qué país está mirando el mapa.
+        data-center={view && size ? centerLabel(view, size) : ''}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -366,14 +379,14 @@ function hitTest(x: number, y: number, size: Size, view: View, p: Props): MapFea
       const q = project(lon, lat, view, size);
       return q.x >= -FIRE_CLUSTER_PX && q.y >= -FIRE_CLUSTER_PX && q.x <= size.width + FIRE_CLUSTER_PX && q.y <= size.height + FIRE_CLUSTER_PX;
     };
-    for (const g of clusterFires(p.fires, fireCellDegrees(view.scale * M_PER_DEGREE, FIRE_CLUSTER_PX), onScreen)) {
+    for (const g of clusterFires(p.fires, fireCellDegrees(view.scale * M_PER_DEGREE, FIRE_CLUSTER_PX), onScreen, p.fireInfo)) {
       const s = project(g.lon, g.lat, view, size);
       const d = Math.hypot(s.x - x, s.y - y);
       if (d <= HIT_PX && (!nearest || d < nearest.d)) nearest = { d, g };
     }
     if (nearest && (!best || nearest.d < (best as { d: number }).d)) {
       const g = nearest.g;
-      best = { d: nearest.d, f: { kind: 'fire', item: { lon: g.lon, lat: g.lat, detections: g.n, high: g.high, nominal: g.nominal, low: g.low, frp: g.frp, newestMin: g.newestMin } } };
+      best = { d: nearest.d, f: { kind: 'fire', item: { lon: g.lon, lat: g.lat, detections: g.n, high: g.high, nominal: g.nominal, low: g.low, frp: g.frp, newestMin: g.newestMin, inpe: g.inpe } } };
     }
   }
   // Focos de calor de la imagen de la NASA: se toca el grupo (la llama o el punto); vale la cantidad estimada de detecciones de las dos pasadas (ayer y hoy).

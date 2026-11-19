@@ -16,7 +16,7 @@ import { loadGeoData, loadWorldBorders, type GeoData, type WorldBorders } from '
 import { imageSettled, preload } from './images';
 import { MapCanvas, type MapFeature, type Overlay } from './MapCanvas';
 import { useNavLayers } from './navLayers';
-import { onlyHigh, useFires } from './fires';
+import { inpeSummary, onlyHigh, useFires } from './fires';
 import { sourceEnabled } from '@/modules/navigation/sources';
 import { compass8, seaState } from '@/modules/navigation/waves';
 import { RiverForecastLine } from './RiverForecastLine';
@@ -88,7 +88,8 @@ export function WeatherMapPage() {
   const serverUrl = useSettings((s) => s.settings.serverUrl);
   const system = useSettings((s) => s.settings.units);
   const update = useSettings((s) => s.update);
-  const { here: country } = useCurrentCountry();
+  // El país actual de Ajustes (no el de donde estás parado): es el que el mapa muestra al abrirse y al tocar «volver a la vista inicial».
+  const { home: country } = useCurrentCountry();
   const saver = useBatterySaver();
   const u = useUnits(system, i18n.language);
   const waypointMap = useWaypoints((s) => s.waypoints);
@@ -591,6 +592,7 @@ export function WeatherMapPage() {
             tidePoints={nav.tidePoints}
             waves={nav.waves?.spots ?? null}
             fires={firesShown}
+            fireInfo={fires.data?.inpe}
             volcanoAlerts={showOfficial ? (official?.volcanoes ?? null) : null}
             waypoints={waypoints}
             here={here}
@@ -921,12 +923,16 @@ function FeatureCard({
           (f.low ?? 0) > 0 && t('weatherMap.fireLow', { count: f.low }),
         ].filter(Boolean);
         const latestAt = f.newestMin !== undefined && firesFetchedAt ? new Date(firesFetchedAt - f.newestMin * 60_000).toLocaleString(i18n.language, { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        const inpe = f.inpe;
+        const inpeLine = inpe ? inpeSummary(inpe, t as (key: string, opts?: Record<string, unknown>) => string) : '';
         const ageH = f.newestMin !== undefined ? Math.max(0, Math.round((now - (firesFetchedAt ?? now) + f.newestMin * 60_000) / 3_600_000)) : null;
         lines = [
           t('weatherMap.fireTotal', { count: f.detections }) + (parts.length ? `: ${parts.join(', ')}` : ''),
           ageH !== null ? t('weatherMap.fireLatest', { count: ageH, when: latestAt || '—' }) : '',
           f.frp ? t('weatherMap.fireFrp', { mw: Math.round(f.frp) }) : '',
+          inpeLine,
           t('weatherMap.fireNoteFirms'),
+          inpeLine ? t('weatherMap.fireCreditInpe') : '',
         ].filter(Boolean);
       } else lines = [t('weatherMap.fireCount', { count: f.detections }), t('weatherMap.fireNote')];
       break;

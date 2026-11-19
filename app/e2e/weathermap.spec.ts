@@ -786,3 +786,38 @@ test('mapa de tiempo en pantalla completa: menú de capas y tabla de referencia 
   await page.getByRole('button', { name: 'Salir de pantalla completa' }).click();
   await expect(page.getByRole('button', { name: 'Radar de lluvia' })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('el mapa se abre mirando al país actual de Ajustes, aunque estés parado en otro (la ubicación de las pruebas es Buenos Aires)', async ({ page }) => {
+  await mockSources(page);
+  await setup(page);
+  const center = async () => {
+    await page.goto('/#/weather/map');
+    const map = page.getByTestId('weather-map');
+    await expect(map).toHaveAttribute('data-center', /\d/, { timeout: 20_000 });
+    const [lon, lat] = ((await map.getAttribute('data-center')) ?? '').split(',').map(Number);
+    return { lon: lon!, lat: lat! };
+  };
+  // Argentina (el país por defecto): el Cono Sur.
+  let c = await center();
+  expect(c.lon).toBeGreaterThan(-70);
+  expect(c.lon).toBeLessThan(-58);
+  expect(c.lat).toBeLessThan(-30);
+
+  // Brasil como país actual: el mapa se centra en Brasil (lon cerca de -54, lat de -14), aunque la ubicación sea la de Buenos Aires.
+  await page.goto('/#/settings');
+  await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' }).click();
+  await page.getByTestId('country-sector-use-BR').click();
+  await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' })).toHaveAttribute('aria-pressed', 'true');
+  c = await center();
+  expect(c.lon).toBeGreaterThan(-60);
+  expect(c.lon).toBeLessThan(-48);
+  expect(c.lat).toBeGreaterThan(-22);
+  expect(c.lat).toBeLessThan(-6);
+
+  // Chile: su franja larga y angosta, no el Cono Sur de Argentina.
+  await page.goto('/#/settings');
+  await page.getByTestId('country-pack-CL').getByRole('button', { name: 'Chile', exact: true }).click();
+  c = await center();
+  expect(c.lon).toBeGreaterThan(-75);
+  expect(c.lon).toBeLessThan(-67);
+});

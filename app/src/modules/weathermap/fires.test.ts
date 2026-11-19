@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { clusterFires, fetchFires, fireLevel, type FireCell } from './fires';
+import { clusterFires, fetchFires, fireLevel, fireRiskLevel, inpeSummary, type FireCell, type InpeCell } from './fires';
+import es from '../../locales/es.json';
 
 import { FIRE_CELL_DEGREES, fireCellDegrees } from './fires';
 
@@ -72,3 +73,46 @@ describe('focos de calor de FIRMS en el mapa', () => {
     await expect(fetchFires('https://srv.test', (async () => new Response('{}')) as unknown as typeof fetch)).rejects.toThrow();
   });
 });
+
+describe('focos de calor en Brasil: datos del INPE en el detalle', () => {
+  const cells: FireCell[] = [
+    [-19.45, -57.05, 3, 1, 2, 12, 120],
+    [-19.35, -57.05, 1, 0, 1, 4, 30],
+    [-19.25, -56.95, 1, 0, 1, 2, 60],
+  ];
+  const inpe: Record<string, InpeCell> = {
+    '-19.45,-57.05': [0.98, 12, 'Pantanal', 'Corumbá-MS'],
+    '-19.35,-57.05': [0.6, 4, 'Pantanal', 'Corumbá-MS'],
+    '-19.25,-56.95': [null, null, 'Pantanal', 'Ladário-MS'],
+  };
+
+  it('el grupo toma el riesgo y los días sin lluvia máximos, y el bioma y el municipio de más detecciones', () => {
+    const [g] = clusterFires(cells, 1.6, undefined, inpe);
+    expect(g!.n).toBe(5);
+    expect(g!.inpe).toEqual({ risk: 0.98, dry: 12, biome: 'Pantanal', place: 'Corumbá-MS', places: 2 });
+  });
+
+  it('sin datos del INPE (otro país, o servidor viejo) el grupo queda como antes', () => {
+    expect(clusterFires(cells, 1.6)[0]!.inpe).toBeUndefined();
+    expect(clusterFires(cells, 1.6, undefined, {})[0]!.inpe).toBeUndefined();
+    expect(clusterFires(cells, 1.6, undefined, null)[0]!.inpe).toBeUndefined();
+  });
+
+  it('la escala del riesgo es la del INPE: mínimo < 0,15, bajo hasta 0,40, medio hasta 0,70, alto hasta 0,95, crítico por encima', () => {
+    expect(['0', '0.14', '0.15', '0.4', '0.41', '0.7', '0.71', '0.95', '0.96', '1'].map((r) => fireRiskLevel(Number(r)))).toEqual(['min', 'min', 'low', 'low', 'medium', 'medium', 'high', 'high', 'critical', 'critical']);
+  });
+
+  it('el texto del detalle junta riesgo, días sin lluvia, bioma y lugar, y omite lo que falta', () => {
+    const t = (key: string, o?: Record<string, unknown>) => {
+      const w = es.weatherMap as unknown as Record<string, string>;
+      const raw = o && 'count' in o ? w[key.replace('weatherMap.', '') + (o.count === 1 ? '_one' : '_other')]! : w[key.replace('weatherMap.', '')]!;
+      return raw.replace(/\{\{(\w+)\}\}/g, (_, k) => String(o?.[k]));
+    };
+    expect(inpeSummary({ risk: 0.98, dry: 12, biome: 'Cerrado', place: 'Corumbá-MS', places: 1 }, t)).toBe('Riesgo de fuego: crítico · 12 días sin lluvia · Cerrado · Corumbá-MS');
+    expect(inpeSummary({ risk: 0.5, dry: 1, biome: 'Pantanal', place: 'Corumbá-MS', places: 3 }, t)).toBe('Riesgo de fuego: medio · 1 día sin lluvia · Pantanal · Corumbá-MS y otros');
+    expect(inpeSummary({ risk: null, dry: null, biome: 'Amazônia', place: 'Calçoene-AP', places: 1 }, t)).toBe('Amazônia · Calçoene-AP');
+    expect(es.weatherMap.fireCreditInpe).toContain('NASA FIRMS');
+    expect(es.weatherMap.fireCreditInpe).toContain('INPE (Programa Queimadas)');
+  });
+});
+
