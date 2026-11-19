@@ -344,6 +344,22 @@ Como `ufw` no filtra los puertos que publica Docker (van por `FORWARD`), la defe
 Aplicado el 2026-11-18: `cerrar-puertos.sh`. Se verificó que 9999 y 11434 dejaron de responder por la IP pública y que nomad y VikArg siguen andando. Pendiente de confirmar desde afuera (datos del celular). fail2ban tiene activa la jaula `sshd` (5 intentos, ban de 1 h, LAN exenta). Regla general: **un servicio nuevo en este equipo se publica en `127.0.0.1` o desde la LAN, nunca abierto, salvo 80/443.**
 
 
+
+### Opción: alojarlo en un VPS (por ejemplo, Hostinger KVM) — anotada el 2026-11-18, sin decidir
+
+Alternativa a seguir en el equipo de casa. Ventajas: sin la DMZ del proveedor de internet (el servidor queda aislado de la red de casa), IP fija (se acaba el DDNS gratuito que hay que confirmar cada 30 días), siempre encendido y más ancho de banda. Planes KVM de Hostinger (especificaciones coincidentes en varias fuentes, [página oficial](https://www.hostinger.com/pricing/vps-hosting); **los precios no se confirmaron**: los de lanzamiento valen solo el primer período y la renovación es bastante más cara):
+
+| Plan | vCPU | Memoria | Disco | Transferencia |
+|---|---|---|---|---|
+| KVM 1 | 1 | 4 GB | 50 GB | 4 TB |
+| KVM 2 | 2 | 8 GB | 100 GB | 8 TB |
+| KVM 4 | 4 | 16 GB | 200 GB | 16 TB |
+| KVM 8 | 8 | 32 GB | 400 GB | 32 TB |
+
+Qué plan: el núcleo del servidor (avisos, transferencias, rayos, biblioteca) pesa menos de 1 GB de datos + ~1,5 GB de imágenes de Docker, así que **KVM 1** alcanza para eso solo. **KVM 2** para sumar los mapas (16 GB) y las calles (1,3 GB). **KVM 4** para tener además el clima propio (45 GB, crece 5–10 GB por año) y poder reconstruir los mapas (unos 7 GB de memoria y 30 GB de disco temporal durante ~3 horas de procesador). Las partes pesadas son opcionales: sin ellas la app usa las fuentes públicas.
+
+Para mudarlo: seguir «Si hubiera que pasar el servidor a otro equipo» (abajo). Conviene **conservar el mismo nombre de dominio** (`valhallarust2.ddns.net`) y solo repuntarlo a la IP nueva: así ningún dispositivo tiene que reconfigurarse. Lo único irrecuperable sigue siendo el volumen `vikarg-data` (claves VAPID), el `.env` y el `Caddyfile`. Repetir la seguridad (`deploy/seguridad/`) y las tareas programadas. **Sin verificar:** las condiciones de uso de Hostinger para este tipo de servicio y qué centros de datos ofrece (uno cercano, como São Paulo, bajaría la latencia).
+
 ## Mudar el servidor a otro equipo
 
 **Cuánto disco hace falta** (medido el 2026-11-18): unos **65 GB** de datos, y conviene tener **100 GB libres**.
