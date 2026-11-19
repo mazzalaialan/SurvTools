@@ -54,7 +54,7 @@ const DRAG_PX = 8;
 /**
  * Mapa de los países para bajar sus datos sin conexión: cada país pintado según su estado (verde con tilde si está al día, ámbar con ↻ si hay una
  * versión nueva, gris con ⬇ si falta), igual que el selector de Ajustes. Se toca en tres pasos: el primer toque marca el país, el segundo lo baja
- * o lo actualiza si hace falta y el siguiente lo pone como tu país. Se puede acercar (pellizco, rueda o los botones + y −) y arrastrar para
+ * o lo actualiza si hace falta y el siguiente lo pone como país actual. Se puede acercar (pellizco, rueda o los botones + y −) y arrastrar para
  * moverse. Usa el mapa base que ya trae la app (el del mapa del clima): funciona sin conexión.
  */
 export function CountryPackMap({ onClose }: { onClose: () => void }) {
@@ -63,7 +63,7 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   const update = useSettings((s) => s.update);
   const { packs, sectors, busy, busySector, download, downloadSector, removeSector } = useCountryPacks();
   const [geo, setGeo] = useState<GeoData | null>(null);
-  /** La zona marcada con el primer toque (`null`: todavía ninguna; el panel muestra tu país o, si es Brasil, tu primer sector). */
+  /** La zona marcada con el primer toque (`null`: todavía ninguna; el panel muestra el país actual o, si es Brasil, su primer sector). */
   const [marked, setMarked] = useState<Zone | null>(null);
   const brSectors = useSettings((s) => s.settings.brSectors);
   const selected: Zone = marked ?? (current === 'BR' ? (`BR-${brSectors[0] ?? 'sul'}` as Zone) : (current as Zone));
@@ -337,7 +337,7 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
                 </g>
               );
             })}
-          {/* Tu país: un halo del color de acento alrededor del contorno, en una capa por ENCIMA de todos los países (si no, los vecinos lo tapan);
+          {/* País actual: un halo del color de acento alrededor del contorno, en una capa por ENCIMA de todos los países (si no, los vecinos lo tapan);
               el color de adentro dice si los datos están al día. */}
           {paths?.own[current] && (
             <path d={paths.own[current]} className="country-map-halo" data-testid="country-map-halo" data-country={current} vectorEffect="non-scaling-stroke" />

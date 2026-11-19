@@ -50,7 +50,7 @@ test('estás en otro país: se ofrece cambiar, se pregunta antes de bajar los da
   await page.goto('/#/first-aid/contacts');
   await expect(page.getByTestId('national-here')).toContainText('Estás en Perú');
   await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
-  await expect(page.getByTestId('national-home')).toContainText('Tu país en Ajustes: Argentina');
+  await expect(page.getByTestId('national-home')).toContainText('País actual en Ajustes: Argentina');
   await expect(page.getByTestId('national-numbers-home')).toBeVisible();
   // El aviso de «usar Perú» sigue ahí (no se contestó); «No, gracias» lo saca y no vuelve a preguntar por Perú.
   await page.getByTestId('country-offer-no').click();

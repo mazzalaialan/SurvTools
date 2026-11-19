@@ -78,8 +78,8 @@ export function CountryPackPicker() {
                       aria-controls={c === 'BR' ? 'country-sectors-BR' : undefined}
                       onClick={() => {
                         if (c === 'BR') {
-                          // Brasil se baja por sectores: tocarlo muestra (o esconde) sus sectores, sin cambiar tu país (podés querer bajar el sector
-                          // pegado a donde vas). Para usarlo como país hay un botón dentro de la lista.
+                          // Brasil se baja por sectores: tocarlo muestra (o esconde) sus sectores, sin cambiar el país actual (podés querer bajar el sector
+                          // pegado a donde vas). Para usarlo como país actual hay un botón dentro de la lista.
                           setBrOpen(!brOpen);
                           return;
                         }

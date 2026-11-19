@@ -803,7 +803,7 @@
   "newContact": "Novo contato",
   "editContact": "Editar {{name}}",
   "hereCountry": "Você está em {{country}}: estes são os números de emergência de lá.",
-  "homeCountry": "Seu país em Configurações: {{country}}",
+  "homeCountry": "País atual em Configurações: {{country}}",
   "countrySwitchHint": "País do app (Configurações): é usado enquanto ainda não sabemos onde você está.",
   "nationalTitle": "Números nacionais",
   "national": {
@@ -3739,16 +3739,16 @@
   },
   "label": "País",
   "map": {
-   "legendMain": "Seu país (o principal)",
-   "mainShort": "seu país",
+   "legendMain": "País atual",
+   "mainShort": "país atual",
    "open": "Ver no mapa",
    "title": "Países no mapa",
    "hint": {
     "mark": "Toque em um país do mapa para marcá-lo.",
     "download": "Toque de novo no país no mapa para baixar seus dados.",
     "update": "Toque de novo no país no mapa para atualizar seus dados.",
-    "use": "Toque de novo no país no mapa para usá-lo como seu país.",
-    "done": "É o seu país e os dados dele estão em dia.", "sectorDone": "Este setor já está baixado e atualizado. Aproxime o mapa para ver os estados que o formam.",
+    "use": "Toque de novo no país no mapa para usá-lo como país atual.",
+    "done": "É o país atual e os dados dele estão em dia.", "sectorDone": "Este setor já está baixado e atualizado. Aproxime o mapa para ver os estados que o formam.",
     "busy": "Baixando os dados…"
    },
    "legend": "Legenda",
@@ -3761,8 +3761,8 @@
    },
    "download": "Baixar {{country}}",
    "update": "Atualizar {{country}}",
-   "use": "Usar {{country}} como meu país",
-   "hintTap": "Toque em um país para marcá-lo; toque de novo para baixar ou atualizar seus dados, e mais uma vez para usá-lo como seu país. Faça pinça com dois dedos ou use + e − para aproximar, e arraste para se mover.",
+   "use": "Usar {{country}} como país atual",
+   "hintTap": "Toque em um país para marcá-lo; toque de novo para baixar ou atualizar seus dados, e mais uma vez para usá-lo como país atual. Faça pinça com dois dedos ou use + e − para aproximar, e arraste para se mover.",
    "zoom": "Aproximar e afastar",
    "zoomIn": "Aproximar",
    "zoomOut": "Afastar",
@@ -3848,7 +3848,7 @@
   "mercadopago": "Contribuir pelo Mercado Pago"
  },
  "guides": {
-  "hereCountry": "Os números do guia são os de {{country}}, o país onde você está. Seu país em Configurações é {{home}}.",
+  "hereCountry": "Os números do guia são os de {{country}}, o país onde você está. O país atual em Configurações é {{home}}.",
   "voice": "Ler os passos em voz alta",
   "voiceRepeat": "Repetir em voz alta",
   "optionsSpoken": "Opções: {{options}}.",

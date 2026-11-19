@@ -63,7 +63,7 @@ test('Ajustes: el mapa de países muestra el estado de cada uno y baja el que se
   await expect(page.getByTestId('country-map-get')).toHaveCount(0);
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-99-country-map-ready.png` });
 
-  // Bajarlo no cambió el país de la app; «Usar como mi país» sí.
+  // Bajarlo no cambió el país de la app; «Usar como país actual» sí.
   await expect(page.getByTestId('country-map-use')).toBeVisible();
   await page.getByTestId('country-map-use').click();
   await page.keyboard.press('Escape');
@@ -133,14 +133,14 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   // 2.º toque: lo baja.
   await map.click();
   await expect(map).toHaveAttribute('data-state', 'ready', { timeout: 60_000 });
-  await expect(page.getByTestId('country-map-next')).toContainText('usarlo como tu país');
+  await expect(page.getByTestId('country-map-next')).toContainText('usarlo como país actual');
   // El país activo sigue siendo Argentina.
   await expect(page.getByTestId('country-pack-AR').getByRole('button', { name: 'Argentina', exact: true })).toHaveAttribute('aria-pressed', 'true');
 
   // 3.er toque: lo pone como país activo.
   await map.click();
   await expect(page.getByTestId('country-pack-PY').getByRole('button', { name: 'Paraguay', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('country-map-next')).toContainText('Es tu país');
+  await expect(page.getByTestId('country-map-next')).toContainText('Es el país actual');
   // El halo y la ★ pasaron a Paraguay.
   await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'true');
   await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'false');
@@ -292,7 +292,7 @@ test('Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con 
   await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' }).click();
   const frame = page.getByTestId('country-sectors-BR');
   await expect(frame).toBeVisible({ timeout: 15_000 });
-  // Verlos no cambia tu país (Argentina sigue siendo el principal): para eso hay un botón aparte.
+  // Verlos no cambia el país actual (Argentina sigue siendo el principal): para eso hay un botón aparte.
   await expect(page.getByTestId('country-pack-AR').getByRole('button', { name: 'Argentina', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' })).toHaveAttribute('aria-pressed', 'false');
   for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
@@ -339,7 +339,7 @@ test('Mapa de países: Brasil se divide en sus cinco sectores y se baja (o se bo
   await expect(page.getByTestId('country-map-BR-sudeste')).toHaveAttribute('data-state', 'missing');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-104-country-map-brazil-sul.png` });
 
-  // Usar Brasil como tu país desde un sector: todo Brasil queda como país principal (los cinco sectores y el halo alrededor del país entero).
+  // Usar Brasil como país actual desde un sector: todo Brasil queda como país principal (los cinco sectores y el halo alrededor del país entero).
   await page.getByTestId('country-map-use').click();
   for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
     await expect(page.getByTestId(`country-map-BR-${id}`)).toHaveAttribute('data-current', 'true');

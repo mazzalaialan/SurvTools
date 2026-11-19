@@ -439,7 +439,7 @@
     "newContact": "New contact",
     "editContact": "Edit {{name}}",
     "hereCountry": "You are in {{country}}: these are its emergency numbers.",
-    "homeCountry": "Your country in Settings: {{country}}",
+    "homeCountry": "Current country in Settings: {{country}}",
     "countrySwitchHint": "App country (Settings): used when we do not know where you are yet.",
     "nationalTitle": "National numbers (Argentina)",
     "national": {
@@ -2440,7 +2440,7 @@
   },
   "country": {
     "continent": { "southAmerica": "South America" },
-    "label": "Country", "map": { "legendMain": "Your country (the main one)", "mainShort": "your country","open": "See on the map", "title": "Countries on the map", "hint": {"mark": "Tap a country on the map to select it.", "download": "Tap the country on the map again to download its data.", "update": "Tap the country on the map again to update its data.", "use": "Tap the country on the map again to use it as your country.", "done": "It is your country and its data is up to date.", "sectorDone": "This sector is already downloaded and up to date. Zoom in to see the states it includes.", "busy": "Downloading the data…"}, "legend": "Key", "state": {"ready": "Downloaded and up to date", "outdated": "A newer version is available", "missing": "Not downloaded", "busy": "Downloading…", "unknown": "Checking…"}, "download": "Download {{country}}", "update": "Update {{country}}", "use": "Use {{country}} as my country", "hintTap": "Tap a country to select it; tap again to download or update its data, and once more to use it as your country. Pinch or use + and − to zoom, and drag to move around.", "zoom": "Zoom", "zoomIn": "Zoom in", "zoomOut": "Zoom out", "zoomAll": "Show the whole map",
+    "label": "Country", "map": { "legendMain": "Current country", "mainShort": "current country","open": "See on the map", "title": "Countries on the map", "hint": {"mark": "Tap a country on the map to select it.", "download": "Tap the country on the map again to download its data.", "update": "Tap the country on the map again to update its data.", "use": "Tap the country on the map again to use it as the current country.", "done": "It is the current country and its data is up to date.", "sectorDone": "This sector is already downloaded and up to date. Zoom in to see the states it includes.", "busy": "Downloading the data…"}, "legend": "Key", "state": {"ready": "Downloaded and up to date", "outdated": "A newer version is available", "missing": "Not downloaded", "busy": "Downloading…", "unknown": "Checking…"}, "download": "Download {{country}}", "update": "Update {{country}}", "use": "Use {{country}} as current country", "hintTap": "Tap a country to select it; tap again to download or update its data, and once more to use it as the current country. Pinch or use + and − to zoom, and drag to move around.", "zoom": "Zoom", "zoomIn": "Zoom in", "zoomOut": "Zoom out", "zoomAll": "Show the whole map",
       "delete": "Delete this sector",
       "bySectors": "Brazil is downloaded by sector, from Settings → Country",
       "sectorsHint": "Brazil is downloaded by sector: choose which ones in the Settings → Country list."},
@@ -2517,7 +2517,7 @@
     "mercadopago": "Contribute via Mercado Pago"
   },
   "guides": {
-    "hereCountry": "The guide numbers are those of {{country}}, the country you are in. Your country in Settings is {{home}}.",
+    "hereCountry": "The guide numbers are those of {{country}}, the country you are in. The current country in Settings is {{home}}.",
     "voice": "Read the steps aloud",
     "voiceRepeat": "Repeat aloud",
     "optionsSpoken": "Options: {{options}}.",

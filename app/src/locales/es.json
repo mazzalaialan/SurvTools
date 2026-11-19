@@ -439,7 +439,7 @@
     "newContact": "Nuevo contacto",
     "editContact": "Editar {{name}}",
     "hereCountry": "Estás en {{country}}: estos son sus números de emergencia.",
-    "homeCountry": "Tu país en Ajustes: {{country}}",
+    "homeCountry": "País actual en Ajustes: {{country}}",
     "countrySwitchHint": "País de la app (Ajustes): se usa cuando todavía no sabemos dónde estás.",
     "nationalTitle": "Números nacionales",
     "national": {
@@ -2439,7 +2439,7 @@
   },
   "country": {
     "continent": { "southAmerica": "América del Sur" },
-    "label": "País", "map": { "legendMain": "Tu país (el principal)", "mainShort": "tu país","open": "Ver en el mapa", "title": "Países en el mapa", "hint": {"mark": "Tocá un país del mapa para marcarlo.", "download": "Tocá de nuevo el país en el mapa para bajar sus datos.", "update": "Tocá de nuevo el país en el mapa para actualizar sus datos.", "use": "Tocá de nuevo el país en el mapa para usarlo como tu país.", "done": "Es tu país y sus datos están al día.", "sectorDone": "Este sector ya está bajado y al día. Para ver los estados que lo forman, acercá el mapa.", "busy": "Bajando los datos…"}, "legend": "Referencias", "state": {"ready": "Bajado y al día", "outdated": "Hay una versión nueva", "missing": "Sin bajar", "busy": "Bajando…", "unknown": "Revisando…"}, "download": "Bajar {{country}}", "update": "Actualizar {{country}}", "use": "Usar {{country}} como mi país", "hintTap": "Tocá un país para marcarlo; tocá de nuevo para bajar o actualizar sus datos, y una vez más para usarlo como tu país. Pellizcá o usá + y − para acercar, y arrastrá para moverte.", "zoom": "Acercar y alejar", "zoomIn": "Acercar", "zoomOut": "Alejar", "zoomAll": "Ver todo el mapa",
+    "label": "País", "map": { "legendMain": "País actual", "mainShort": "país actual","open": "Ver en el mapa", "title": "Países en el mapa", "hint": {"mark": "Tocá un país del mapa para marcarlo.", "download": "Tocá de nuevo el país en el mapa para bajar sus datos.", "update": "Tocá de nuevo el país en el mapa para actualizar sus datos.", "use": "Tocá de nuevo el país en el mapa para usarlo como país actual.", "done": "Es el país actual y sus datos están al día.", "sectorDone": "Este sector ya está bajado y al día. Para ver los estados que lo forman, acercá el mapa.", "busy": "Bajando los datos…"}, "legend": "Referencias", "state": {"ready": "Bajado y al día", "outdated": "Hay una versión nueva", "missing": "Sin bajar", "busy": "Bajando…", "unknown": "Revisando…"}, "download": "Bajar {{country}}", "update": "Actualizar {{country}}", "use": "Usar {{country}} como país actual", "hintTap": "Tocá un país para marcarlo; tocá de nuevo para bajar o actualizar sus datos, y una vez más para usarlo como país actual. Pellizcá o usá + y − para acercar, y arrastrá para moverte.", "zoom": "Acercar y alejar", "zoomIn": "Acercar", "zoomOut": "Alejar", "zoomAll": "Ver todo el mapa",
       "delete": "Borrar este sector",
       "bySectors": "Brasil se baja por sectores, desde Ajustes → País",
       "sectorsHint": "Brasil se baja por sectores: elegí cuáles en la lista de Ajustes → País."},
@@ -2516,7 +2516,7 @@
     "mercadopago": "Aportar por Mercado Pago"
   },
   "guides": {
-    "hereCountry": "Los números de la guía son los de {{country}}, el país donde estás. Tu país en Ajustes es {{home}}.",
+    "hereCountry": "Los números de la guía son los de {{country}}, el país donde estás. El país actual en Ajustes es {{home}}.",
     "voice": "Leer los pasos en voz alta",
     "voiceRepeat": "Repetir en voz alta",
     "optionsSpoken": "Opciones: {{options}}.",
