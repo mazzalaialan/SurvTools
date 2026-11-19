@@ -2,7 +2,8 @@ import { normalizeServerUrl } from '@/core/notifications/notifications';
 import { isNativePlatform } from '@/core/platform';
 
 /** Dónde vive la web pública de la app: en la nativa la página es `https://localhost/` (el WebView), que no sirve en otro teléfono. */
-export const PUBLIC_APP_URL = 'https://mazzalaialan.github.io/SurvTools/';
+import { PUBLIC_APP_URL } from '@/core/appUrl';
+export { PUBLIC_APP_URL };
 
 /** La dirección que lleva el enlace: la de la página en el navegador y la web pública en la app nativa. */
 export const defaultLinkBase = (): string => (isNativePlatform() ? PUBLIC_APP_URL : `${location.origin}${location.pathname}`);

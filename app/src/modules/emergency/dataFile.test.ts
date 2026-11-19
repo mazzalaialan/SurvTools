@@ -140,3 +140,72 @@ describe('actualización incremental de los paquetes guardados', () => {
     expect(await fileStates(['CL.json', 'UY.json'])).toEqual({ 'CL.json': 'ok', 'UY.json': 'missing' });
   });
 });
+
+describe('app nativa: los datos de otros países no vienen en el APK', () => {
+  const WEB = 'https://mazzalaialan.github.io/SurvTools/data/';
+  beforeEach(() => {
+    vi.resetModules();
+    const mem = new Map<string, string>();
+    vi.stubGlobal('localStorage', { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => void mem.set(k, v), removeItem: (k: string) => void mem.delete(k) });
+    vi.stubGlobal('location', { href: 'https://localhost/' });
+    Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
+  });
+
+  it('si el archivo no está dentro de la app (Capacitor contesta con la página de inicio), lo pide a la web publicada y lo guarda', async () => {
+    vi.stubGlobal('Capacitor', { isNativePlatform: () => true, getPlatform: () => 'android' });
+    const store = fakeCaches();
+    const asked: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        asked.push(url);
+        if (url === `${WEB}CL.json`) return new Response(JSON.stringify({ generatedAt: '2026-11-19', country: 'CL' }));
+        // El WebView de Capacitor devuelve index.html para lo que no existe.
+        if (url === base('CL.json')) return new Response('<!doctype html><html></html>');
+        return new Response('no', { status: 404 });
+      }),
+    );
+    const { loadDataFile } = await import('./dataFile');
+    expect(await loadDataFile<{ country: string }>('CL.json')).toMatchObject({ country: 'CL' });
+    expect(asked).toContain(`${WEB}CL.json`);
+    expect(store.has(base('CL.json'))).toBe(true);
+  });
+
+  it('si el archivo está dentro de la app (Argentina), no sale a la web', async () => {
+    vi.stubGlobal('Capacitor', { isNativePlatform: () => true, getPlatform: () => 'android' });
+    fakeCaches();
+    const asked = fakeNet({ [base('fuel-AR.json')]: { generatedAt: '2026-11-01', places: [] } });
+    const { loadDataFile } = await import('./dataFile');
+    await loadDataFile('fuel-AR.json');
+    expect(asked.some((u) => u.startsWith(WEB))).toBe(false);
+  });
+
+  it('en el navegador nunca se usa la copia de la web publicada (la app ya es esa web)', async () => {
+    vi.stubGlobal('Capacitor', undefined);
+    fakeCaches();
+    const asked = fakeNet({});
+    const { loadDataFile } = await import('./dataFile');
+    await expect(loadDataFile('CL.json')).rejects.toThrow('country-data-unavailable');
+    expect(asked.some((u) => u.startsWith(WEB))).toBe(false);
+  });
+
+  it('un archivo nuevo en la web se baja al actualizar, aunque el APK no lo traiga', async () => {
+    vi.stubGlobal('Capacitor', { isNativePlatform: () => true, getPlatform: () => 'android' });
+    const store = fakeCaches();
+    store.set(base('CL.json'), JSON.stringify({ generatedAt: '2026-10-01', n: 1 }));
+    const asked = fakeNet({ [base('index.json')]: idx({ 'CL.json': '2026-11-19' }), [`${WEB}CL.json`]: { generatedAt: '2026-11-19', n: 2 } });
+    const { refreshStored } = await import('./dataFile');
+    expect(await refreshStored(['CL.json'], true)).toBe(1);
+    expect(asked).toContain(`${WEB}CL.json`);
+    expect(JSON.parse(store.get(base('CL.json'))!).n).toBe(2);
+  });
+});
+
+describe('poda de datos de la app nativa', () => {
+  it('quedan el índice, Argentina y lo compartido; se sacan los demás países y los sectores de Brasil', async () => {
+    // @ts-expect-error el script es un .mjs sin tipos
+    const { keepInNativeApp } = (await import('../../../scripts/prune-native-data.mjs')) as { keepInNativeApp: (f: string) => boolean };
+    for (const f of ['index.json', 'fuel-AR.json', 'geology-AR.json', 'rivers-AR.json', 'ecoregions.json', 'tides.json', 'tides-official.json', 'ioc-stations.json', 'parks-CL.json', 'repeaters-CL.json']) expect(keepInNativeApp(f), f).toBe(true);
+    for (const f of ['CL.json', 'PY.json', 'fuel-CL.json', 'rivers-BO.json', 'vegetation-CL.json', 'BR-sul.json', 'fuel-BR-sudeste.json', 'parks-BR-norte.json', 'geology-PE.json']) expect(keepInNativeApp(f), f).toBe(false);
+  });
+});

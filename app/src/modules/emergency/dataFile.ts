@@ -1,4 +1,6 @@
 import { useSettings } from '@/core/settings/settings';
+import { PUBLIC_APP_URL } from '@/core/appUrl';
+import { isNativePlatform } from '@/core/platform';
 /** Cache Storage de los archivos de `public/data/` (paquetes por país, repetidoras oficiales). */
 export const DATA_CACHE = 'vikarg-country';
 
@@ -18,6 +20,28 @@ async function fetchText(url: string): Promise<string | null> {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
     return res.ok ? await res.text() : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * El archivo tal como viene con la app. La app nativa (APK) solo trae los datos de Argentina: los de los demás países, si no están dentro, se
+ * piden a la web publicada (https://mazzalaialan.github.io/SurvTools/data/…, que tiene todos). Capacitor puede contestar con la página de
+ * inicio a un archivo que no existe: eso no cuenta como copia.
+ */
+async function fetchAppText(file: string): Promise<string | null> {
+  const local = await fetchText(keyUrl(file));
+  if (local !== null && /^[[{]/.test(local.trimStart().slice(0, 1))) return local;
+  if (!isNativePlatform()) return local;
+  const web = await fetchText(`${PUBLIC_APP_URL}data/${file}`);
+  return web !== null && /^[[{]/.test(web.trimStart().slice(0, 1)) ? web : null;
+}
+
+async function fetchAppJson(file: string): Promise<unknown | null> {
+  const text = await fetchAppText(file);
+  try {
+    return text === null ? null : (JSON.parse(text) as unknown);
   } catch {
     return null;
   }
@@ -81,7 +105,7 @@ function legacyDue(file: string): boolean {
 async function refreshLegacy(file: string, current: unknown, cache: Cache): Promise<boolean> {
   if (!legacyDue(file)) return false;
   const server = serverBase();
-  const [fromApp, fromServer] = await Promise.all([fetchJson(keyUrl(file)), server ? fetchJson(`${server}/api/data/${file}`) : null]);
+  const [fromApp, fromServer] = await Promise.all([fetchAppJson(file), server ? fetchJson(`${server}/api/data/${file}`) : null]);
   let best = current;
   // La de la app reemplaza si es más nueva o si ninguna tiene fecha (archivos viejos, como antes).
   if (fromApp && (dateOf(fromApp) > dateOf(best) || (!dateOf(fromApp) && !dateOf(best)))) best = fromApp;
@@ -106,7 +130,7 @@ async function refresh(file: string, current: unknown, cache: Cache | null): Pro
   if (!known || !storedDate || (!idx.app?.files[file]?.date && !idx.server?.files[file]?.date)) return refreshLegacy(file, current, cache);
   const from = newerSource(file, storedDate, idx);
   if (!from) return false;
-  const fresh = await fetchJson(from === 'server' ? `${serverBase()}/api/data/${file}` : keyUrl(file));
+  const fresh = await (from === 'server' ? fetchJson(`${serverBase()}/api/data/${file}`) : fetchAppJson(file));
   if (!fresh || dateOf(fresh) <= storedDate) return false;
   await cache.put(keyUrl(file), new Response(JSON.stringify(fresh), { headers: { 'content-type': 'application/json' } }));
   return true;
@@ -154,7 +178,7 @@ export async function loadDataFile<T>(file: string): Promise<T> {
     return data;
   }
   // El texto de la app se guarda tal cual (sin volver a serializar: los archivos grandes, como la geología, tardaban en el hilo principal).
-  const fromApp = await fetchText(url);
+  const fromApp = await fetchAppText(file);
   let data: unknown = null;
   try {
     data = fromApp === null ? null : (JSON.parse(fromApp) as unknown);
