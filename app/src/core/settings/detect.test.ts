@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { detectCountry, detectLanguage } from './settings';
+import { detectCountry, languageFrom } from './settings';
 
 function withZone(zone: string): Country {
   vi.spyOn(Intl, 'DateTimeFormat').mockImplementation((() => ({ resolvedOptions: () => ({ timeZone: zone }) })) as unknown as typeof Intl.DateTimeFormat);
@@ -30,12 +30,12 @@ describe('detección del país por la zona horaria', () => {
 
 describe('detección del idioma por el navegador', () => {
   it('español, portugués (pt-BR y pt-PT) o inglés para cualquier otro', () => {
-    expect(detectLanguage('es-AR')).toBe('es');
-    expect(detectLanguage('pt-BR')).toBe('pt');
-    expect(detectLanguage('pt')).toBe('pt');
-    expect(detectLanguage('PT-pt')).toBe('pt');
-    expect(detectLanguage('en-US')).toBe('en');
-    expect(detectLanguage('fr-FR')).toBe('en');
-    expect(detectLanguage(undefined)).toBe('es');
+    expect(languageFrom('es-AR')).toBe('es');
+    expect(languageFrom('pt-BR')).toBe('pt');
+    expect(languageFrom('pt')).toBe('pt');
+    expect(languageFrom('PT-pt')).toBe('pt');
+    expect(languageFrom('en-US')).toBe('en');
+    expect(languageFrom('fr-FR')).toBe('en');
+    expect(languageFrom(undefined)).toBe('es');
   });
 });

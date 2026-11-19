@@ -268,12 +268,15 @@ export const THEMES: Theme[] = ['dark', 'light', 'red', 'saver'];
 export const AUTO_LOCK_OPTIONS = [1, 5, 15, 30, 60];
 
 /** Por el idioma del navegador: español, portugués (de Brasil) o, para cualquier otro, inglés. */
-export function detectLanguage(lang: string | undefined = globalThis.navigator?.language): Language {
+export const languageFrom = (lang: string | null | undefined): Language => {
   const l = (lang ?? 'es').toLowerCase();
   if (l.startsWith('es')) return 'es';
   if (l.startsWith('pt')) return 'pt';
   return 'en';
-}
+};
+
+/** El idioma del navegador de este dispositivo. */
+export const detectLanguage = (): Language => languageFrom(globalThis.navigator?.language);
 
 /** Servidor VikArg que viene cargado (se puede cambiar o vaciar en Ajustes). */
 export const DEFAULT_SERVER_URL = 'https://valhallarust2.ddns.net';
