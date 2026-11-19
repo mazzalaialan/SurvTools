@@ -94,7 +94,8 @@ test('Ajustes: un país con datos viejos se ve en ámbar con «Actualizar» y vu
   await page.getByTestId('country-pack-map-open').click();
   const map = page.getByTestId('country-map-PY');
   await expect(map).toHaveAttribute('data-state', 'outdated');
-  await expect(map).toContainText('↻');
+  // Los íconos de estado y los nombres van en una capa de etiquetas por encima de las zonas.
+  await expect(page.getByTestId('country-map-label-PY')).toContainText('↻');
   await map.click();
   await expect(page.getByTestId('country-map-state')).toContainText('Hay una versión nueva');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-100-country-map-outdated.png` });
@@ -117,7 +118,7 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   // El país principal (Argentina) se distingue en el mapa con un halo y una ★.
   await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'true');
   await expect(page.getByTestId('country-map-halo')).toHaveAttribute('data-country', 'AR');
-  await expect(page.getByTestId('country-map-AR')).toContainText('★');
+  await expect(page.getByTestId('country-map-label-AR')).toContainText('★');
   await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'false');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-102-country-map-main.png` });
 
@@ -143,7 +144,7 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
   // El halo y la ★ pasaron a Paraguay.
   await expect(page.getByTestId('country-map-PY')).toHaveAttribute('data-current', 'true');
   await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'false');
-  await expect(page.getByTestId('country-map-AR')).not.toContainText('★');
+  await expect(page.getByTestId('country-map-label-AR')).not.toContainText('★');
   await expect(page.getByTestId('country-map-halo')).toHaveAttribute('data-country', 'PY');
 });
 
@@ -330,7 +331,7 @@ test('Mapa de países: Brasil se divide en sus cinco sectores y se baja (o se bo
   for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
     await expect(page.getByTestId(`country-map-BR-${id}`)).toHaveAttribute('data-current', 'true');
   }
-  await expect(page.getByTestId('country-map-BR-norte')).toContainText('★');
+  await expect(page.getByTestId('country-map-label-BR-norte')).toContainText('★ Brasil Norte');
   await expect(page.getByTestId('country-map-halo')).toHaveAttribute('data-country', 'BR');
   await expect(page.getByTestId('country-map-use')).toHaveCount(0);
   await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'false');

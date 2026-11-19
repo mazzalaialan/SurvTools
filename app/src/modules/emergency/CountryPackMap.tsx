@@ -109,7 +109,8 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   /** Nombre corto para escribir sobre el mapa. */
   const shortName = (z: Zone) => {
     const s = zoneSector(z);
-    return s ? t(`country.sectorShort.${s}`) : t(`country.${z}`);
+    // Sobre el mapa un sector dice «Brasil Norte», para saber a qué país pertenece.
+    return s ? `${t('country.BR')} ${t(`country.sectorShort.${s}`)}` : t(`country.${z}`);
   };
   const busyZone = (z: Zone) => {
     const s = zoneSector(z);
@@ -281,8 +282,6 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
             [...MAP_COUNTRIES, ...SECTOR_ZONES].map((c) => {
               const state = stateOf(c);
               const sectorShape = zoneSector(c) ? paths.sectors[c] : null;
-              const lab = sectorShape ? { label: sectorShape.label } : paths.labels[c];
-              const at = lab ? toMercator(lab.label[0], lab.label[1]) : null;
               const home = isHome(c);
               return (
                 <g
@@ -302,19 +301,39 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
                   {sectorShape?.states.map((d, i) => (
                     <path key={i} d={d} className="country-map-state-line" vectorEffect="non-scaling-stroke" />
                   ))}
-                  {at && (
-                    <g transform={`translate(${at.x} ${-at.y}) scale(${labelScale})`}>
-                      <text y={-30} fontSize={46} textAnchor="middle" className="country-map-name">
-                        {home ? `★ ${shortName(c)}` : shortName(c)}
-                      </text>
-                      <g transform="translate(0 22)" className="country-map-badge">
-                        <circle r={34} />
-                        <text fontSize={46} textAnchor="middle" dominantBaseline="central">
-                          {state === 'busy' ? '…' : state === 'unknown' ? '' : GLYPH[state]}
-                        </text>
-                      </g>
-                    </g>
-                  )}
+                </g>
+              );
+            })}
+          {/* Los nombres y los íconos de estado van en una capa por ENCIMA de todas las zonas (si no, la zona de al lado tapa el final del nombre);
+              no reciben toques: el toque llega a la zona de abajo. */}
+          {paths &&
+            [...MAP_COUNTRIES, ...SECTOR_ZONES].map((c) => {
+              const state = stateOf(c);
+              const sectorShape = zoneSector(c) ? paths.sectors[c] : null;
+              const lab = sectorShape ? { label: sectorShape.label } : paths.labels[c];
+              const at = lab ? toMercator(lab.label[0], lab.label[1]) : null;
+              const home = isHome(c);
+              if (!at) return null;
+              return (
+                <g
+                  key={`label-${c}`}
+                  className="country-map-country country-map-label"
+                  data-current={home ? 'true' : 'false'}
+                  data-state={state}
+                  data-testid={`country-map-label-${c}`}
+                  pointerEvents="none"
+                  aria-hidden
+                  transform={`translate(${at.x} ${-at.y}) scale(${labelScale})`}
+                >
+                  <text y={-30} fontSize={46} textAnchor="middle" className="country-map-name">
+                    {home ? `★ ${shortName(c)}` : shortName(c)}
+                  </text>
+                  <g transform="translate(0 22)" className="country-map-badge">
+                    <circle r={34} />
+                    <text fontSize={46} textAnchor="middle" dominantBaseline="central">
+                      {state === 'busy' ? '…' : state === 'unknown' ? '' : GLYPH[state]}
+                    </text>
+                  </g>
                 </g>
               );
             })}
