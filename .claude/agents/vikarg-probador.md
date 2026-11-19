@@ -26,6 +26,7 @@ Si no te aclaran qué, corré unitarias de la app + tipos + servidor.
 - Las capturas de las e2e quedan en `app/e2e-results/screens/`. Si te piden revisar una captura, abrila con Read y describí lo que ves.
 - Una prueba que falla de verdad se informa tal cual, con el error: no la relativices ni la saltees.
 - Nunca imprimas contenido de archivos `.env` ni claves.
+- **Memoria: `/tmp` es RAM en esta máquina.** Las copias del repositorio para la prueba en contenedor (`git archive` + `npm ci` en `node:22-alpine`) pesan ~600 MB cada una, y un contenedor las deja con dueño `root`. Varias tandas seguidas llenaron la memoria y el sistema cerró la sesión del escritorio (2026-11-19). Por eso: (1) hacé UNA sola copia por tanda; (2) al terminar, antes de devolver el control, borrala: `docker run --rm -v <carpeta-padre>:/work alpine:3 rm -rf /work/<copia>` (con `rm` común no alcanza, hay archivos de root); (3) dejá los logs (son chicos) y borrá solo lo que creaste vos; (4) si `free -h` muestra menos de 3 GB disponibles o el swap casi lleno, avisá antes de arrancar la e2e.
 
 ## Antes de devolver el control
 
