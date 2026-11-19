@@ -12,6 +12,7 @@ Este archivo se carga solo al abrir el proyecto. Lo largo está en `docs/COLABOR
 - **Migraciones del servidor** (`server/src/db.ts`): siempre al final de la lista, jamás en el medio. Rompió producción una vez (v0.41.0).
 - **No saltees protecciones de terceros** (Cloudflare, desafíos anti-bot, límites de uso) aunque el dato sea público. Se pide autorización o acceso formal.
 - **No copies datos ni textos con licencia dudosa.** Anotá fuente, licencia y fecha de cada dato que cargues.
+- **Datos sin licencia declarada: se usan con retribución** (crédito visible a la fuente en la app y en `docs/FUENTES-DE-DATOS.md`: organismo, enlace y fecha del dato). Licencia no comercial: se usa mientras la app sea gratuita y sin publicidad, con interruptor para apagarla en una copia paga. «Derechos reservados» o que prohíba redistribuir: no, salvo autorización. Share-alike (CC BY-SA, ODbL fuera de OSM): decisión caso por caso; hoy solo está aceptada para los datos hidrológicos de Colombia (IDEAM), como conjunto separado y con atribución completa.
 - **Las alertas son «informativas»**, nunca oficiales (aclaración exigida por el SMN: `legal.smn`).
 
 ## Cómo se trabaja
