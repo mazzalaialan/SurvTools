@@ -150,6 +150,17 @@ test('mapa de tiempo: capas, animación, tocar un sismo o una alerta, y sin cone
   await expect(page.getByRole('slider', { name: 'Momento' })).not.toHaveValue('12');
   await page.getByRole('button', { name: 'Pausar' }).click();
 
+  // Velocidad de la animación: 1× por defecto; el botón recorre 2×, 4×, 0,5× y vuelve a 1×, y se recuerda.
+  const speed = page.getByTestId('wmap-speed');
+  await expect(speed).toHaveText('1×');
+  await expect(speed).toHaveAttribute('aria-label', 'Velocidad de la animación: 1×');
+  for (const next of ['2×', '4×', '0,5×', '1×']) {
+    await speed.click();
+    await expect(speed).toHaveText(next);
+  }
+  await speed.click();
+  await expect(speed).toHaveText('2×');
+
   // Radar: se suma su hora y se bajan los 13 cuadros (2 horas), con pocas teselas cada uno.
   const radarTiles = new Map<string, Set<string>>();
   page.on('request', (r) => {
@@ -734,6 +745,8 @@ test('mapa de tiempo en pantalla completa: menú de capas y tabla de referencia 
 
   await page.getByRole('button', { name: 'Pantalla completa' }).click();
   const quick = page.getByTestId('quick-ref');
+  // La línea de tiempo con su botón de velocidad también está en pantalla completa.
+  await expect(page.getByTestId('wmap-speed')).toBeVisible();
   // La tabla explica lo que está prendido (sismos, alertas, satélite y lluvia estimada vienen prendidos).
   await expect(quick).toBeVisible();
   for (const layer of ['satellite', 'satRain', 'official', 'earthquakes']) await expect(page.getByTestId(`quick-row-${layer}`)).toBeVisible();

@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// Estas pruebas leen paquetes de datos enormes: con toda la batería corriendo a la vez pueden pasar de los 5 s que da vitest por defecto.
+vi.setConfig({ testTimeout: 30_000 });
 import base from '../../../public/data/geology-AR.json';
 import { geologyAlong, geologyAt, geologyGeoJSON, boxedFrom, inGeologyCoverage, unitAge, unitColor, type GeologyData, type GeologyIndex } from './geology';
 import { periodColor } from './periods';

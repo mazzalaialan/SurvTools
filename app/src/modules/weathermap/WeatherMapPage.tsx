@@ -11,6 +11,7 @@ import { useUnits } from '@/modules/weather/parts';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { FullscreenStage } from '@/ui/FullscreenStage';
 import { FsMapTools } from './FsMapTools';
+import { frameMs, nextSpeed, speedLabel } from './animationSpeed';
 import { loadGeoData, type GeoData } from './geo';
 import { imageSettled, preload } from './images';
 import { MapCanvas, type MapFeature, type Overlay } from './MapCanvas';
@@ -63,7 +64,6 @@ import {
 
 /** Las capas con datos de internet se renuevan si tienen más de esto. */
 const STALE_MS = 10 * 60_000;
-const FRAME_MS = 700;
 /** Se piden las imágenes de satélite cuando la vista deja de moverse. */
 const SETTLE_MS = 500;
 /** Teselas de radar por cuadro (si hacen falta más, se usa un zoom menor). */
@@ -81,6 +81,7 @@ export function WeatherMapPage() {
   const { t, i18n } = useTranslation();
   const layers = useSettings((s) => s.settings.weatherMapLayers);
   const quickRef = useSettings((s) => s.settings.weatherMapQuickRef);
+  const speed = useSettings((s) => s.settings.weatherMapSpeed);
   const zoneValue = useSettings((s) => s.settings.weatherMapValue);
   const fireHighOnly = useSettings((s) => s.settings.fireHighOnly);
   const base = useSettings((s) => s.settings.weatherUrl);
@@ -486,10 +487,10 @@ export function WeatherMapPage() {
           }
           return f;
         }),
-      FRAME_MS,
+      frameMs(speed),
     );
     return () => clearInterval(timer);
-  }, [playing, frameCount]);
+  }, [playing, frameCount, speed]);
 
   const overlays: Overlay[] = frameOverlays(frame);
   if (showSatRain && rainMap?.image) {
@@ -626,6 +627,16 @@ export function WeatherMapPage() {
           <div className="wmap-timeline">
             <button className="icon-btn" type="button" onClick={() => setPlaying((p) => !p)} aria-label={playing ? t('weatherMap.pause') : t('weatherMap.play')}>
               {playing ? <Pause size={20} /> : <Play size={20} />}
+            </button>
+            <button
+              className="wmap-speed"
+              type="button"
+              onClick={() => void update({ weatherMapSpeed: nextSpeed(speed) })}
+              aria-label={t('weatherMap.speed', { speed: speedLabel(speed, i18n.language) })}
+              title={t('weatherMap.speedHint')}
+              data-testid="wmap-speed"
+            >
+              {speedLabel(speed, i18n.language)}
             </button>
             <input
               type="range"

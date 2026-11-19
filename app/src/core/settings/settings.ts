@@ -84,6 +84,8 @@ export interface Settings {
   weatherMapValue: WeatherMapValue;
   /** Mapa del clima en pantalla completa: la tabla de referencia rápida a la vista (se puede ocultar). */
   weatherMapQuickRef: boolean;
+  /** Mapa del clima: velocidad de la animación de las últimas 2 horas (0,5×, 1×, 2× o 4×). */
+  weatherMapSpeed: number;
   /** Focos de calor: mostrar solo las detecciones de alta confianza (la llama), sin las nominales ni las de baja confianza. */
   fireHighOnly: boolean;
   /**
@@ -284,6 +286,7 @@ export const DEFAULT_SETTINGS: Settings = {
   weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false, waves: false },
   weatherMapValue: 'temp',
   weatherMapQuickRef: true,
+  weatherMapSpeed: 1,
   fireHighOnly: false,
   mapSource: 'auto',
   mapLayers: { hillshade: true, contours: true, mine: true, tracks: true, slope: false, windLoad: true, cornices: true, terrain3d: false, ecoregions: false, geology: false },

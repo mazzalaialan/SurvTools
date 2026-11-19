@@ -5362,3 +5362,19 @@ button.country-pack-icon {
   border-radius: 3px;
   border: 1px solid var(--border);
 }
+
+/* Velocidad de la animación del mapa del clima. */
+.wmap-speed {
+  flex: none;
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
