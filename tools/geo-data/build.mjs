@@ -16,6 +16,7 @@
  *   estación de nivel (INA, SENAMHI Bolivia) aparezca, los cursos de OpenStreetMap (ODbL, © OpenStreetMap contributors)
  *   a menos de 12 km de una estación, como el Paraná de las Palmas, que Natural Earth no trae.
  * - `node build.mjs --solo-paraguay` suma Paraguay (departamentos, frontera, capitales) al archivo ya generado.
+ * - `node build.mjs --solo-mundo` genera aparte `world-borders.json`: el contorno de todos los países del mundo (Natural Earth 1:50m) para el mapa del clima.
  * - `node build.mjs --solo-contornos` suma al archivo ya generado el contorno de América Central y de la Antártida (sector de la Península).
  *   `node build.mjs --solo-rios` reemplaza solo los ríos en el archivo ya generado (sin volver a bajar volcanos ni provincias).
  *
@@ -232,6 +233,41 @@ if (process.argv.includes('--solo-paraguay')) {
   data.capitals = [...data.capitals.filter((c) => c.country !== 'PY'), ...capitals].sort((a, b) => a.name.localeCompare(b.name));
   await writeFile(OUT, JSON.stringify(data));
   console.log(`Paraguay: ${regions.length} departamentos, ${capitals.length} capitales → ${OUT} (${JSON.stringify(data).length} bytes)`);
+  process.exit(0);
+}
+
+if (process.argv.includes('--solo-mundo')) {
+  // Contorno de todos los países del mundo (Natural Earth 1:50m, dominio público) para el mapa del clima, en un archivo aparte que se carga recién
+  // cuando se abre ese mapa. Salen los que ya están en geo-data.json (con más detalle), las Malvinas y las Georgias del Sur (ya van con la Argentina),
+  // la Antártida (no entra en Mercator; su sector de la Península ya está) y la Guayana Francesa, que NE trae dentro del polígono de Francia.
+  const WORLD_OUT = fileURLToPath(new URL('../../app/src/modules/weathermap/world-borders.json', import.meta.url));
+  const WORLD_TOLERANCE = 0.1;
+  const WORLD_MIN_AREA = 0.02;
+  const base = JSON.parse(await readFile(OUT, 'utf8'));
+  const skip = new Set(['AQ', 'FK', 'GS', ...base.neighbors.map((n) => n.code), ...base.regions.map((r) => r.country), ...base.borders.map((b) => b.code)]);
+  const admin0 = await get(`${NE}/ne_50m_admin_0_countries.geojson`);
+  const inGuiana = (ring) => {
+    const lon = ring.reduce((t, [x]) => t + x, 0) / ring.length;
+    const lat = ring.reduce((t, [, y]) => t + y, 0) / ring.length;
+    return lon > -55 && lon < -51 && lat > 2 && lat < 6;
+  };
+  const countries = [];
+  for (const f of admin0.features) {
+    const code = f.properties.ISO_A2_EH;
+    if (f.properties.ADM0_A3 === 'ATA' || skip.has(code)) continue;
+    const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    const rs = polys
+      .map((poly) => poly[0])
+      .filter((ring) => !(code === 'FR' && inGuiana(ring)) && area(ring) >= WORLD_MIN_AREA)
+      .map((ring) => simplify(ring, WORLD_TOLERANCE))
+      .filter((ring) => ring.length >= 4)
+      .map((ring) => ring.flatMap(([lon, lat]) => [Math.round(lon * 100) / 100, Math.round(lat * 100) / 100]));
+    if (rs.length) countries.push({ code, rings: rs });
+  }
+  countries.sort((a, b) => a.code.localeCompare(b.code));
+  const out = { source: 'Natural Earth 1:50m (dominio público), simplificado a ~10 km', countries };
+  await writeFile(WORLD_OUT, JSON.stringify(out));
+  console.log(`mundo: ${countries.length} países → ${WORLD_OUT} (${JSON.stringify(out).length} bytes)`);
   process.exit(0);
 }
 

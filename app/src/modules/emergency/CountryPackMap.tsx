@@ -9,8 +9,8 @@ import { formatBytes, type PackState } from './countryDownload';
 import { FULL_VIEW, MAX_ZOOM, MIN_ZOOM, panView, tapAction, viewForPinch, viewRect, zoomAround, type View } from './countryMapView';
 import { useCountryPacks } from './useCountryPacks';
 
-/** Lo que se ve del mapa: de la costa del Pacífico al Atlántico y de Perú a Tierra del Fuego. */
-const BOUNDS = { west: -82, east: -50, south: -57, north: 1 };
+/** Lo que se ve del mapa: toda América del Sur, de la costa del Pacífico al cabo Branco (Brasil), y de La Guajira (Colombia) a Tierra del Fuego. */
+const BOUNDS = { west: -82, east: -34, south: -57, north: 13 };
 
 /** Anillos `[lon, lat, lon, lat, …]` → trazado SVG en metros Mercator (con el eje y invertido, como pide SVG). */
 export function ringsPath(rings: number[][]): string {

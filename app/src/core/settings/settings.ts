@@ -171,6 +171,13 @@ export type FirstAidEnv = 'city' | 'wild';
 export type Country = 'AR' | 'CL' | 'UY' | 'BO' | 'PE' | 'PY';
 export const COUNTRIES: Country[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY'];
 
+/**
+ * Los países agrupados por continente, para mostrarlos en marcos separados en Ajustes. Hoy solo hay América del Sur; para sumar otro continente
+ * se agrega un grupo acá y su nombre en `country.continent.<id>` de los idiomas. Dentro de cada marco los países van en orden alfabético
+ * (ver `CountryPackPicker`).
+ */
+export const CONTINENTS: { id: 'southAmerica'; countries: Country[] }[] = [{ id: 'southAmerica', countries: COUNTRIES }];
+
 /** Por la zona horaria del dispositivo (Chile, Uruguay, Bolivia, Perú y Paraguay tienen la suya); si no, Argentina. */
 export function detectCountry(): Country {
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';

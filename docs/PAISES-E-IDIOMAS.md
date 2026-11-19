@@ -138,3 +138,5 @@ Teléfono de la Cruz Roja Paraguaya, ANDE en fuente oficial, si el 132 ya se arr
 - **Selector de país:** con más de siete países conviene pasarlo a una lista agrupada por región en lugar de botones en fila.
 
 > Investigación de fuentes para Ecuador, Colombia, Venezuela y Brasil (2026-11-19): `docs/NUEVOS-PAISES.md` y `docs/investigaciones/`.
+
+> **Ajustes → País (2026-11-19):** los países se muestran en un marco por continente (`CONTINENTS` en `app/src/core/settings/settings.ts`, nombre en `country.continent.<id>` de los idiomas), ordenados alfabéticamente por su nombre en el idioma de la app. Hoy solo hay `southAmerica`; para sumar otro continente se agrega un grupo ahí y su texto. El mapa de selección (`CountryPackMap.tsx`) cubre toda América del Sur (`BOUNDS`). El mapa del clima dibuja además el contorno de todos los países del mundo (`world-borders.json`, 192 KB, 72 KB comprimido, se carga aparte; se regenera con `node tools/geo-data/build.mjs --solo-mundo` y saca los países que ya están en `geo-data.json`): al sumar un país nuevo a `geo-data.json`, volver a generar `world-borders.json` para que no se dibuje dos veces.

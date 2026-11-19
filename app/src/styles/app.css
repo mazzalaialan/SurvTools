@@ -4646,6 +4646,22 @@ a.module-card:hover {
   color: #d33;
 }
 
+/* Marco de un continente en el selector de país: los países van dentro, ordenados alfabéticamente. */
+.country-continent {
+  margin: 10px 0 0;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  min-inline-size: 0;
+}
+
+.country-continent > legend {
+  padding: 0 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted, inherit);
+}
+
 /* Selector de país de Ajustes con el estado del paquete de datos de cada uno (bajado y al día, desactualizado o sin bajar). */
 .country-pack {
   display: flex;

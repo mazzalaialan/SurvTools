@@ -48,6 +48,19 @@ export interface GeoData {
   rivers: { name: string; rank: number; lines: number[][] }[];
 }
 
+/** Contorno de todos los países del mundo que no están en `GeoData` (tools/geo-data/build.mjs --solo-mundo). Se carga aparte: ~190 KB. */
+export interface WorldBorders {
+  source: string;
+  countries: { code: string; rings: number[][] }[];
+}
+
+let pendingWorld: Promise<WorldBorders> | null = null;
+
+export function loadWorldBorders(): Promise<WorldBorders> {
+  pendingWorld ??= import('./world-borders.json').then((m) => m.default as WorldBorders);
+  return pendingWorld;
+}
+
 let pending: Promise<GeoData> | null = null;
 
 export function loadGeoData(): Promise<GeoData> {

@@ -3,7 +3,7 @@ import { useCurrentCountry } from '@/modules/emergency/currentCountry';
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { WeatherMapValue } from '@/core/settings/settings';
 import { tempLevel, windLevel, type ScaleColor } from '@/modules/weather/levels';
-import type { GeoData, Volcano } from './geo';
+import type { GeoData, Volcano, WorldBorders } from './geo';
 import type { NavState, RiverPoint, TidePoint } from './navLayers';
 import { seaState, type SeaState } from '@/modules/navigation/waves';
 import { clusterFires, fireCellDegrees, fireLevel, type FireCell } from './fires';
@@ -55,6 +55,8 @@ export type MapFeature =
 
 interface Props {
   geo: GeoData;
+  /** Contorno del resto de los países del mundo (opcional: llega después, el mapa se dibuja igual sin él). */
+  world?: WorldBorders | null;
   view: View | null;
   onView: (view: View, size: Size) => void;
   overlays: Overlay[];
@@ -448,6 +450,10 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
   ctx.fillStyle = c.bg!;
   ctx.fillRect(0, 0, size.width, size.height);
   ctx.fillStyle = c.surface2!;
+  for (const w of p.world?.countries ?? []) {
+    path(w.rings);
+    ctx.fill();
+  }
   for (const n of p.geo.neighbors) {
     path(n.rings);
     ctx.fill();
@@ -486,6 +492,15 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
   for (const b of [...p.geo.borders, ...p.geo.neighbors]) {
     path(b.rings);
     ctx.stroke();
+  }
+  // El resto del mundo, más fino y más tenue: es referencia, no el foco del mapa.
+  if (p.world) {
+    ctx.globalAlpha = 0.6;
+    ctx.lineWidth = 0.9;
+    for (const w of p.world.countries) {
+      path(w.rings);
+      ctx.stroke();
+    }
   }
   ctx.globalAlpha = 1;
 

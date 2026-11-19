@@ -12,7 +12,7 @@ import { useWaypoints } from '@/modules/waypoints/store';
 import { FullscreenStage } from '@/ui/FullscreenStage';
 import { FsMapTools } from './FsMapTools';
 import { frameMs, nextSpeed, speedLabel } from './animationSpeed';
-import { loadGeoData, type GeoData } from './geo';
+import { loadGeoData, loadWorldBorders, type GeoData, type WorldBorders } from './geo';
 import { imageSettled, preload } from './images';
 import { MapCanvas, type MapFeature, type Overlay } from './MapCanvas';
 import { useNavLayers } from './navLayers';
@@ -94,6 +94,7 @@ export function WeatherMapPage() {
   const waypointMap = useWaypoints((s) => s.waypoints);
 
   const [geo, setGeo] = useState<GeoData | null>(null);
+  const [world, setWorld] = useState<WorldBorders | null>(null);
   const [view, setView] = useState<View | null>(null);
   const [size, setSize] = useState<Size | null>(null);
   /** Vista con la que se piden las imágenes (la última quieta). */
@@ -135,6 +136,8 @@ export function WeatherMapPage() {
 
   useEffect(() => {
     void loadGeoData().then(setGeo);
+    // El contorno del resto del mundo llega aparte y después: el mapa ya se ve sin él.
+    void loadWorldBorders().then(setWorld).catch(() => undefined);
     void readMapCache().then((cache) => {
       if (cache.quakes) setQuakes(cache.quakes);
       if (cache.hazards) setHazards(cache.hazards);
@@ -572,6 +575,7 @@ export function WeatherMapPage() {
         {geo ? (
           <MapCanvas
             geo={geo}
+            world={world}
             view={view}
             onView={handleView}
             overlays={overlays}

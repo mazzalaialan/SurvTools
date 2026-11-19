@@ -211,9 +211,10 @@ test.describe('Mapa de países: pellizco con dos dedos', () => {
     const under = (x: number, y: number) =>
       page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.closest('[data-testid^=country-map-]')?.getAttribute('data-testid') ?? null, [x, y]);
 
-    // Dedos sobre Argentina (el centro del dibujo, un poco abajo).
-    const cx = box.x + box.width * 0.52;
-    const cy = box.y + box.height * 0.5;
+    // Dedos sobre Argentina (el centro de su caja: el mapa cubre toda América del Sur, así que su lugar en la pantalla depende del encuadre).
+    const ar = (await page.getByTestId('country-map-AR').boundingBox())!;
+    const cx = ar.x + ar.width * 0.5;
+    const cy = ar.y + ar.height * 0.5;
     const antes = await under(cx, cy);
     expect(antes).toBe('country-map-AR');
 
@@ -237,4 +238,15 @@ test.describe('Mapa de países: pellizco con dos dedos', () => {
     await touch('touchEnd', []);
     expect(await zoom()).toBeLessThan(acercado / 2);
   });
+});
+
+test('Ajustes: los países van en un marco por continente (América del Sur) y en orden alfabético', async ({ page }, testInfo) => {
+  await start(page);
+  await page.goto('/#/settings');
+  const frame = page.getByTestId('country-continent-southAmerica');
+  await expect(frame).toBeVisible({ timeout: 15_000 });
+  await expect(frame.getByText('América del Sur', { exact: true })).toBeVisible();
+  const names = await frame.locator('.country-pack-select').allTextContents();
+  expect(names).toEqual(['Argentina', 'Bolivia', 'Chile', 'Paraguay', 'Perú', 'Uruguay']);
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-99-country-continent.png` });
 });
