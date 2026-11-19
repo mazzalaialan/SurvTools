@@ -65,6 +65,24 @@ Están en `CLAUDE.md`:
 
 Antes de implementar la ANP (combustible, Brasil), **comprobar qué agrega frente a OpenStreetMap**: OSM ya trae los surtidores de las ciudades medidas (Foz do Iguaçu 48, Florianópolis 89, Curitiba 254). La ANP tiene 45.846 estaciones oficiales, pero sin coordenadas. Pasos: (1) cruzar una región de prueba (por ejemplo Foz do Iguaçu y Florianópolis) por dirección y nombre y contar cuántas estaciones de la ANP no están en OSM; (2) ver si agrega algo que OSM no tiene (razón social, bandera, estado de la autorización, tipos de combustible); (3) si no suma o suma poco, **no cargarla** y quedarse con OSM; (4) si se usa, que el dato de la ANP no duplique el pin de OSM en el mapa (una sola entrada por estación). Lo mismo vale para el CNES frente a los hospitales y farmacias de OSM.
 
+## Para cuando se sumen otros continentes: satélite infrarrojo equivalente a GOES-19
+
+Hoy el servidor usa **solo GOES-19** (banda 13, infrarrojo; `server/src/rain/observer.ts`, `goesIr.ts`, `noaaWatch.ts`) para estimar la lluvia en los lugares con aviso y para parte del mapa del clima. GOES-19 cubre todos los países soportados y los que se investigaron (Ecuador, Colombia, Venezuela, Brasil); **no hace falta otro satélite mientras el proyecto siga en América**. GOES-18 (Pacífico oriental) está en el mismo bucket de NOAA, pero no se usa.
+
+Al sumar otro continente hay que **investigar y verificar** un equivalente (lo siguiente es lo que se sabe en general, **sin verificar al 2026-11-19**: formato, licencia y exigencia de registro de cada uno están por confirmar):
+
+| Zona | Satélite candidato | Cómo se obtendría (a verificar) |
+|---|---|---|
+| Asia y Oceanía | Himawari-9 (Japón) | Bucket abierto de NOAA en AWS, parecido al de GOES: el que más fácil encajaría con lo que ya se hace |
+| Europa y África | Meteosat de EUMETSAT (uno sobre el meridiano 0, otro sobre el Índico) | Data Store de EUMETSAT; suele pedir registro gratuito |
+| Corea, China, India | GK-2A, FY-4, INSAT | Portales de cada agencia, con registro; no se sabe si hay copia abierta sin cuenta |
+| Pacífico oriental | GOES-18 | Mismo bucket de NOAA que GOES-19 |
+| Imagen global (solo visual) | NASA GIBS | Teselas ya armadas de varios geoestacionarios; sirve para mostrar nubes, no para leer valores |
+
+Qué hay que mirar de cada uno antes de elegir: bucket o servicio, formato (NetCDF u otro), licencia y atribución (aplica la política de `CLAUDE.md`), frecuencia, si exige registro (no se saltea), y sobre todo **si se puede leer solo la franja de filas que cubre cada lugar** (como se hace con GOES: ~400 KB por franja de 50 km) en vez de bajar el disco completo. Limitaciones conocidas: la estimación de lluvia por infrarrojo pierde precisión hacia el borde del disco de cada satélite, y el servidor hoy asume la geometría y el nombre de archivo de GOES (`goesIr.ts`), que habría que generalizar por satélite.
+
+Cuando se decida el primer continente nuevo, lanzar una investigación con el agente investigador sobre este punto, igual que las de los países.
+
 ## Orden recomendado
 
 1. **Colombia** (alertas CAP del IDEAM, RUNAP, volcanes, teléfonos, ríos con aviso de atraso).
