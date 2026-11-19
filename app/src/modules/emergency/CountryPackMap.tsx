@@ -79,10 +79,12 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   const stateText = (c: Country) => (busy === c ? t('country.map.state.busy') : packs[c] ? t(`country.map.state.${packs[c]!.state}`) : t('country.map.state.unknown'));
   const sizeOf = (c: Country) => (packs[c]?.bytes ? formatBytes(packs[c]!.bytes, i18n.language) : '');
   const sel = packs[selected];
+  /** Brasil se baja por sectores desde la lista de Ajustes: en el mapa solo se marca y se usa como país. */
+  const bySectors = selected === 'BR';
 
   /** Lo que pasa al tocar un país: marcarlo, bajarlo o actualizarlo, o ponerlo como el país activo. */
   function tap(c: Country) {
-    const action = tapAction({ marked, tapped: c, state: packs[c]?.state, isCurrent: current === c, busy: busy !== null });
+    const action = tapAction({ marked, tapped: c, state: c === 'BR' ? 'ready' : packs[c]?.state, isCurrent: current === c, busy: busy !== null });
     if (action === 'mark') setMarked(c);
     else if (action === 'download' || action === 'update') void download(c);
     else if (action === 'use') void update({ country: c });
@@ -184,7 +186,8 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   const nextHint = (() => {
     if (busy === selected) return t('country.map.hint.busy');
     if (marked !== selected) return t('country.map.hint.mark');
-    const a = tapAction({ marked, tapped: selected, state: sel?.state, isCurrent: current === selected, busy: busy !== null });
+    const a = tapAction({ marked, tapped: selected, state: bySectors ? 'ready' : sel?.state, isCurrent: current === selected, busy: busy !== null });
+    if (bySectors && a === 'none') return t('country.map.sectorsHint');
     return a === 'download' ? t('country.map.hint.download') : a === 'update' ? t('country.map.hint.update') : a === 'use' ? t('country.map.hint.use') : t('country.map.hint.done');
   })();
 
@@ -284,8 +287,8 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
       <div className="card stack country-map-panel" data-testid="country-map-panel" aria-live="polite">
         <strong>{current === selected ? `★ ${nameOf(selected)}` : nameOf(selected)}</strong>
         <p style={{ margin: 0 }} data-testid="country-map-state">
-          {stateText(selected)}
-          {sel && sel.state !== 'ready' && sizeOf(selected) ? ` · ${sizeOf(selected)}` : ''}
+          {bySectors ? t('country.map.bySectors') : stateText(selected)}
+          {!bySectors && sel && sel.state !== 'ready' && sizeOf(selected) ? ` · ${sizeOf(selected)}` : ''}
         </p>
         <p className="hint" style={{ margin: 0 }} data-testid="country-map-next">{nextHint}</p>
         <div className="row-end">
@@ -296,7 +299,7 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
               data-testid="country-map-use"
               onClick={() => {
                 void update({ country: selected });
-                if (sel?.state !== 'ready') void download(selected);
+                if (!bySectors && sel?.state !== 'ready') void download(selected);
               }}
             >
               {t('country.map.use', { country: nameOf(selected) })}
@@ -304,7 +307,7 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
           )}
           {busy === selected ? (
             <span className="hint"><Loader2 size={16} className="spin" aria-hidden /> {t('country.map.state.busy')}</span>
-          ) : sel?.state === 'ready' ? (
+          ) : bySectors ? null : sel?.state === 'ready' ? (
             <span className="country-pack-ready"><Check size={16} aria-hidden /> {t('country.map.state.ready')}</span>
           ) : sel ? (
             <button className="btn btn-primary" type="button" data-testid="country-map-get" onClick={() => void download(selected)}>

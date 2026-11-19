@@ -1,7 +1,8 @@
 import type { ContactKind } from '@/core/model/types';
 import { distanceMeters } from '@/core/geo/geo';
 import type { Country } from '@/core/settings/settings';
-import { loadDataFile, preferNewer } from './dataFile';
+import { CountryDataError, loadDataFile, preferNewer } from './dataFile';
+import { useSettings } from '@/core/settings/settings';
 
 /**
  * Datos de emergencia incluidos en la app (tools/emergency-data/build.mjs):
@@ -120,7 +121,7 @@ export interface ParksData {
 
 let parksAR: Promise<ParksData> | null = null;
 let parksCL: Promise<ParksData> | null = null;
-const parksOther = new Map<'BO' | 'PE' | 'PY' | 'UY' | 'BR', Promise<ParksData>>();
+const parksOther = new Map<string, Promise<ParksData>>();
 
 // Argentina viene con la app; si el servidor propio la regeneró (cada mes), se usa la copia más nueva.
 const loadParksAR = () => (parksAR ??= import('./parks-data.json').then((m) => preferNewer('parks-AR.json', m.default as unknown as ParksData)));
@@ -134,14 +135,39 @@ export function loadParksCL(): Promise<ParksData> {
 
 /** Bolivia (SERNAP, de OpenStreetMap), Perú (SERNANP), Paraguay y Uruguay (SNAP; de OpenStreetMap) y Brasil (CNUC, Ministerio de Medio Ambiente): archivos aparte, se bajan una vez y quedan guardados, como el de Chile. */
 export function loadParksFile(country: 'BO' | 'PE' | 'PY' | 'UY' | 'BR'): Promise<ParksData> {
-  let p = parksOther.get(country);
+  // Brasil: los parques de los sectores elegidos juntos (la clave lleva los sectores, así al cambiar la elección se vuelve a armar).
+  const ids = country === 'BR' ? useSettings.getState().settings.brSectors : [];
+  if (country === 'BR' && ids.length === 0) return Promise.reject(new CountryDataError());
+  const key = country === 'BR' ? `BR:${ids.join(',')}` : country;
+  let p = parksOther.get(key);
   if (!p) {
-    p = loadDataFile<ParksData>(`parks-${country}.json`);
-    parksOther.set(country, p);
+    p = country === 'BR' ? Promise.all(ids.map((id) => loadDataFile<ParksData>(`parks-BR-${id}.json`))).then(mergeParks) : loadDataFile<ParksData>(`parks-${country}.json`);
+    parksOther.set(key, p);
     // Si falla (sin conexión y sin bajar), se reintenta la próxima vez.
-    p.catch(() => parksOther.delete(country));
+    p.catch(() => parksOther.delete(key));
   }
   return p;
+}
+
+/** Olvida lo que quedó en memoria de los parques de un país (después de borrarlos del dispositivo). */
+export function forgetLoadedParks(country: Country): void {
+  parksOther.delete(country);
+  if (country === 'CL') parksCL = null;
+}
+
+/** Junta los parques de varios sectores; un parque que cruza de un sector a otro está en los dos archivos y queda una sola vez (por código CNUC). */
+export function mergeParks(parts: ParksData[]): ParksData {
+  const seen = new Set<string>();
+  const parks: Park[] = [];
+  for (const part of parts) {
+    for (const park of part.parks) {
+      const id = (park as Park & { cnuc?: string }).cnuc ?? `${park.name}|${park.lat}|${park.lon}`;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      parks.push(park);
+    }
+  }
+  return { source: [...new Set(parts.map((d) => d.source).filter(Boolean))].join(' '), parks };
 }
 
 /** Países cuyos parques se muestran junto con los de cada uno (en la cordillera se está a pocos km de la frontera). */

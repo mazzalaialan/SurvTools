@@ -1,4 +1,5 @@
-import type { Country } from '@/core/settings/settings';
+import { COUNTRIES, useSettings, type BrSector, type Country } from '@/core/settings/settings';
+import { sectorFiles } from './sectors';
 import { fileStates, hasDataFile } from './dataFile';
 import { SERVICE_CATEGORIES } from './services';
 import sizes from './data-sizes.json';
@@ -13,6 +14,8 @@ import { availablePacks, geologyFile } from '@/modules/layers/geology';
 export function countryFiles(country: Country): string[] {
   // Ecorregiones: un solo archivo para todos los países (se baja una vez; ver modules/ecoregions).
   const files: string[] = ['ecoregions.json'];
+  // Brasil se baja por sectores: sus archivos son los de los sectores que se eligieron (ver sectors.ts).
+  if (country === 'BR') return [...files, ...useSettings.getState().settings.brSectors.flatMap(sectorFiles)];
   if (country !== 'AR') files.push(`${country}.json`);
   // Geología del país (base nacional de la capa de geología del mapa sin conexión), si hay paquete y esta copia puede usarlo.
   const geology = geologyFile(country);
@@ -24,7 +27,7 @@ export function countryFiles(country: Country): string[] {
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).
   if (country === 'AR' || country === 'CL') files.push('parks-CL.json', 'repeaters-CL.json');
-  if (country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY' || country === 'BR') files.push(`parks-${country}.json`);
+  if (country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY') files.push(`parks-${country}.json`);
   return files;
 }
 
@@ -79,4 +82,29 @@ export async function countryPackState(country: Country, force = false): Promise
   const stale = Object.keys(states).filter((f) => states[f] === 'stale');
   const files = [...missing, ...stale];
   return { state: missing.length ? 'missing' : stale.length ? 'outdated' : 'ready', files, bytes: files.reduce((n, f) => n + fileBytes(f), 0) };
+}
+
+/** Cómo está un sector de Brasil en este dispositivo (igual que `countryPackState`, pero solo de ese sector). */
+export async function sectorPackState(id: BrSector, force = false): Promise<{ state: PackState; files: string[]; bytes: number; total: number }> {
+  const all = sectorFiles(id);
+  const states = await fileStates(all, force);
+  const missing = Object.keys(states).filter((f) => states[f] === 'missing');
+  const stale = Object.keys(states).filter((f) => states[f] === 'stale');
+  const files = [...missing, ...stale];
+  return {
+    state: missing.length ? 'missing' : stale.length ? 'outdated' : 'ready',
+    files,
+    bytes: files.reduce((n, f) => n + fileBytes(f), 0),
+    // Lo que pesa el sector entero (para mostrarlo antes de bajarlo, y cuánto se libera al borrarlo).
+    total: all.reduce((n, f) => n + fileBytes(f), 0),
+  };
+}
+
+/**
+ * Los archivos que se pueden borrar al quitar un país: los suyos menos los que usa otro país (las ecorregiones, que son de todos, y los parques y
+ * repetidoras de Chile, que también usa Argentina). Brasil se borra por sector (`sectorFiles`).
+ */
+export function deletableFiles(country: Country): string[] {
+  const others = COUNTRIES.filter((c) => c !== country).flatMap(countryFiles);
+  return countryFiles(country).filter((f) => !others.includes(f));
 }

@@ -3766,13 +3766,26 @@
    "zoom": "Aproximar e afastar",
    "zoomIn": "Aproximar",
    "zoomOut": "Afastar",
-   "zoomAll": "Ver todo o mapa"
+   "zoomAll": "Ver todo o mapa",
+      "bySectors": "O Brasil é baixado por setor, em Configurações → País",
+      "sectorsHint": "O Brasil é baixado por setor: escolha quais na lista de Configurações → País."
   },
-  "pack": {
+  "sector": {
+      "title": "Setores do Brasil",
+      "hint": "O Brasil é enorme: os dados offline são baixados por setor (macrorregião do IBGE). Baixe o seu e os que você for visitar.",
+      "sul": "Sul (PR, SC, RS)",
+      "sudeste": "Sudeste (SP, RJ, MG, ES)",
+      "centro-oeste": "Centro-Oeste (MT, MS, GO, DF)",
+      "nordeste": "Nordeste (MA, PI, CE, RN, PB, PE, AL, SE, BA)",
+      "norte": "Norte (AC, AM, AP, PA, RO, RR, TO)"
+    },
+    "pack": {
    "ready": "{{country}}: dados offline baixados e em dia",
    "download": "Baixar os dados offline de {{country}}",
    "update": "Atualizar os dados offline de {{country}}",
-   "downloading": "Baixando os dados de {{country}}…"
+   "downloading": "Baixando os dados de {{country}}…",
+      "delete": "Apagar os dados offline de {{country}}",
+      "confirmDelete": "Apagar os dados offline de {{country}}{{size}}? Eles serão removidos do dispositivo e você poderá baixá-los de novo quando quiser."
   },
   "AR": "Argentina",
   "CL": "Chile",

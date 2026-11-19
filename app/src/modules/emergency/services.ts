@@ -1,7 +1,8 @@
 import type { ContactKind } from '@/core/model/types';
 import { distanceMeters } from '@/core/geo/geo';
 import type { Country } from '@/core/settings/settings';
-import { forgetDataFile, hasDataFile, loadDataFile } from './dataFile';
+import { CountryDataError, forgetDataFile, hasDataFile, loadDataFile } from './dataFile';
+import { useSettings } from '@/core/settings/settings';
 import type { NearbyPlace, Place } from './data';
 
 /**
@@ -46,9 +47,42 @@ export interface ServiceData {
 const fileName = (category: ServiceCategory, country: Country) => `${category}-${country}.json`;
 const loaded = new Map<string, Promise<ServiceData>>();
 
+/** Junta los archivos de varios sectores de Brasil de una categoría en uno solo. */
+export function mergeServiceData(category: ServiceCategory, parts: ServiceData[]): ServiceData {
+  return {
+    country: 'BR',
+    category,
+    generatedAt: parts.map((d) => d.generatedAt).sort().at(-1) ?? '',
+    ...(parts.length > 0 && parts.every((d) => d.osm) ? { osm: true } : {}),
+    source: [...new Set(parts.map((d) => d.source).filter(Boolean))].join(' '),
+    places: parts.flatMap((d) => d.places),
+  };
+}
+
+/** Brasil: los de los sectores elegidos juntos. La clave lleva los sectores, así que al cambiar la elección se vuelve a armar. */
+function loadBrazilService(category: ServiceCategory): Promise<ServiceData> {
+  const ids = useSettings.getState().settings.brSectors;
+  if (ids.length === 0) return Promise.reject(new CountryDataError());
+  const key = `BR:${ids.join(',')}:${category}`;
+  let p = loaded.get(key);
+  if (!p) {
+    p = Promise.all(ids.map((id) => loadServiceFile(`${category}-BR-${id}.json`))).then((parts) => mergeServiceData(category, parts));
+    loaded.set(key, p);
+    p.catch(() => loaded.delete(key));
+  }
+  return p;
+}
+
 /** Los de una categoría y país (una sola carga por sesión; si falla, se reintenta la próxima vez). */
 export function loadService(category: ServiceCategory, country: Country): Promise<ServiceData> {
-  const file = fileName(category, country);
+  if (country === 'BR') return loadBrazilService(category);
+  return loadServiceFile(fileName(category, country));
+}
+
+/** Olvida lo que quedó en memoria de un archivo (después de borrarlo del dispositivo). */
+export const forgetLoadedService = (file: string): void => void loaded.delete(file);
+
+function loadServiceFile(file: string): Promise<ServiceData> {
   let p = loaded.get(file);
   if (!p) {
     p = loadDataFile<ServiceData>(file).then(async (d) => {
@@ -70,6 +104,11 @@ export function loadService(category: ServiceCategory, country: Country): Promis
  * Los que ya están guardados no se leen (se actualizan cuando se usan).
  */
 export async function prefetchServices(country: Country): Promise<void> {
+  if (country === 'BR') {
+    // Los sectores elegidos: los archivos que falten se bajan al armarlos.
+    for (const category of SERVICE_CATEGORIES) await loadService(category, 'BR').catch(() => undefined);
+    return;
+  }
   for (const category of SERVICE_CATEGORIES) {
     if (!(await hasDataFile(fileName(category, country)))) await loadService(category, country).catch(() => undefined);
   }

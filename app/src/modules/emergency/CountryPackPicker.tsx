@@ -1,22 +1,47 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, Loader2, Map as MapIcon, RefreshCw } from 'lucide-react';
-import { CONTINENTS, useSettings } from '@/core/settings/settings';
-import { formatBytes } from './countryDownload';
+import { ArrowDownToLine, Check, Loader2, Map as MapIcon, RefreshCw, Trash2 } from 'lucide-react';
+import { CONTINENTS, useSettings, type BrSector, type Country } from '@/core/settings/settings';
+import { confirmAction } from '@/ui/confirm';
+import { filesToDelete } from './countryDelete';
+import { formatBytes, fileBytes } from './countryDownload';
 import { CountryPackMap } from './CountryPackMap';
+import { BR_SECTORS } from './sectors';
 import { useCountryPacks } from './useCountryPacks';
 
 /**
  * Selector de país de Ajustes: a cada país le agrega el estado de su paquete de datos sin conexión (tilde verde si está bajado y al
- * día, ícono de actualización si hay una copia más nueva, ícono de descarga si falta) con un botón para bajarlo sin elegirlo. Elegir
- * el país también lo baja (ver `useCountryPrefetch`).
+ * día, ícono de actualización si hay una copia más nueva, ícono de descarga si falta) con un botón para bajarlo sin elegirlo y otro para
+ * borrarlo (no el del país activo). Elegir el país también lo baja (ver `useCountryPrefetch`). Brasil es enorme: se baja y se borra por
+ * SECTOR (las cinco macrorregiones del IBGE), con una lista debajo.
  */
 export function CountryPackPicker() {
   const { t, i18n } = useTranslation();
   const country = useSettings((s) => s.settings.country);
   const update = useSettings((s) => s.update);
-  const { packs, busy, download } = useCountryPacks();
+  const { packs, sectors, busy, busySector, download, downloadSector, remove, removeSector } = useCountryPacks();
   const [mapOpen, setMapOpen] = useState(false);
+
+  /** Borrar con confirmación: dice cuánto se libera y que se puede volver a bajar. */
+  async function askRemove(name: string, bytes: number, run: () => Promise<void>) {
+    const size = bytes ? ` (${formatBytes(bytes, i18n.language)})` : '';
+    if (await confirmAction(t('country.pack.confirmDelete', { country: name, size }))) await run();
+  }
+
+  const deleteButton = (name: string, bytes: number, run: () => Promise<void>, testId: string) => (
+    <button
+      type="button"
+      className="country-pack-icon country-pack-del"
+      data-testid={testId}
+      aria-label={t('country.pack.delete', { country: name })}
+      title={t('country.pack.delete', { country: name })}
+      onClick={() => void askRemove(name, bytes, run)}
+    >
+      <Trash2 size={16} aria-hidden />
+    </button>
+  );
+
+  const sectorName = (id: BrSector) => t(`country.sector.${id}`);
 
   return (
     <div className="field">
@@ -32,54 +57,108 @@ export function CountryPackPicker() {
           <div className="country-pack" role="group" aria-label={t(`country.continent.${continent.id}`)}>
             {[...continent.countries]
               .sort((a, b) => t(`country.${a}`).localeCompare(t(`country.${b}`), i18n.language))
-              .map((c) => {
-              const pack = packs[c];
-              const state = pack?.state;
-              const sizeText = pack && pack.bytes ? formatBytes(pack.bytes, i18n.language) : '';
-              const size = sizeText ? ` (${sizeText})` : '';
-              const name = t(`country.${c}`);
-              return (
-                <div key={c} className="country-pack-item" data-testid={`country-pack-${c}`} data-state={state ?? 'unknown'}>
-                  <button
-                    type="button"
-                    className="country-pack-select"
-                    aria-pressed={country === c}
-                    onClick={() => {
-                      void update({ country: c });
-                      if (state !== 'ready') void download(c);
-                    }}
-                  >
-                    {name}
-                  </button>
-                  {busy === c ? (
-                    <span className="country-pack-icon" role="img" aria-label={t('country.pack.downloading', { country: name })} title={t('country.pack.downloading', { country: name })}>
-                      <Loader2 size={16} className="spin" aria-hidden />
-                    </span>
-                  ) : state === 'ready' ? (
-                    <span className="country-pack-icon country-pack-ready" role="img" aria-label={t('country.pack.ready', { country: name })} title={t('country.pack.ready', { country: name })}>
-                      <Check size={16} aria-hidden />
-                    </span>
-                  ) : state ? (
+              .map((c: Country) => {
+                const pack = packs[c];
+                const state = pack?.state;
+                const sizeText = pack && pack.bytes ? formatBytes(pack.bytes, i18n.language) : '';
+                const size = sizeText ? ` (${sizeText})` : '';
+                const name = t(`country.${c}`);
+                const bytesToFree = filesToDelete(c).reduce((n, f) => n + fileBytes(f), 0);
+                // Brasil se baja por sectores (abajo); el país activo no se borra (se volvería a bajar solo).
+                const canDelete = c !== 'BR' && c !== country && state !== undefined && state !== 'missing' && bytesToFree > 0;
+                return (
+                  <div key={c} className="country-pack-item" data-testid={`country-pack-${c}`} data-state={state ?? 'unknown'}>
                     <button
                       type="button"
-                      className="country-pack-icon country-pack-get"
-                      data-testid={`country-pack-get-${c}`}
-                      aria-label={t(state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: name }) + size}
-                      title={t(state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: name }) + size}
-                      onClick={() => void download(c)}
+                      className="country-pack-select"
+                      aria-pressed={country === c}
+                      onClick={() => {
+                        void update({ country: c });
+                        if (c !== 'BR' && state !== 'ready') void download(c);
+                      }}
                     >
-                      {state === 'outdated' ? <RefreshCw size={16} aria-hidden /> : <ArrowDownToLine size={16} aria-hidden />}
-                      {sizeText && (
-                        <span className="country-pack-size" data-testid={`country-pack-size-${c}`}>
-                          {sizeText}
-                        </span>
-                      )}
+                      {name}
                     </button>
-                  ) : null}
-                </div>
-              );
-            })}
+                    {c === 'BR' ? null : busy === c ? (
+                      <span className="country-pack-icon" role="img" aria-label={t('country.pack.downloading', { country: name })} title={t('country.pack.downloading', { country: name })}>
+                        <Loader2 size={16} className="spin" aria-hidden />
+                      </span>
+                    ) : state === 'ready' ? (
+                      <span className="country-pack-icon country-pack-ready" role="img" aria-label={t('country.pack.ready', { country: name })} title={t('country.pack.ready', { country: name })}>
+                        <Check size={16} aria-hidden />
+                      </span>
+                    ) : state ? (
+                      <button
+                        type="button"
+                        className="country-pack-icon country-pack-get"
+                        data-testid={`country-pack-get-${c}`}
+                        aria-label={t(state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: name }) + size}
+                        title={t(state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: name }) + size}
+                        onClick={() => void download(c)}
+                      >
+                        {state === 'outdated' ? <RefreshCw size={16} aria-hidden /> : <ArrowDownToLine size={16} aria-hidden />}
+                        {sizeText && (
+                          <span className="country-pack-size" data-testid={`country-pack-size-${c}`}>
+                            {sizeText}
+                          </span>
+                        )}
+                      </button>
+                    ) : null}
+                    {canDelete && busy !== c ? deleteButton(name, bytesToFree, () => remove(c), `country-pack-del-${c}`) : null}
+                  </div>
+                );
+              })}
           </div>
+          {continent.countries.includes('BR') && (
+            <div className="country-sectors" data-testid="country-sectors-BR">
+              <p className="hint" style={{ margin: '8px 0 4px' }}>
+                {t('country.sector.hint')}
+              </p>
+              <div className="country-pack" role="group" aria-label={t('country.sector.title')}>
+                {BR_SECTORS.map(({ id }) => {
+                  const sp = sectors[id];
+                  const state = sp?.state;
+                  const name = sectorName(id);
+                  const label = `${t('country.BR')} · ${name}`;
+                  const totalText = sp?.total ? formatBytes(sp.total, i18n.language) : '';
+                  const size = totalText ? ` (${totalText})` : '';
+                  return (
+                    <div key={id} className="country-pack-item" data-testid={`country-sector-${id}`} data-state={state ?? 'unknown'}>
+                      <span className="country-pack-select" style={{ cursor: 'default' }}>
+                        {name}
+                      </span>
+                      {busySector === id ? (
+                        <span className="country-pack-icon" role="img" aria-label={t('country.pack.downloading', { country: label })}>
+                          <Loader2 size={16} className="spin" aria-hidden />
+                        </span>
+                      ) : state === 'ready' ? (
+                        <span className="country-pack-icon country-pack-ready" role="img" aria-label={t('country.pack.ready', { country: label })} title={t('country.pack.ready', { country: label })}>
+                          <Check size={16} aria-hidden />
+                        </span>
+                      ) : state ? (
+                        <button
+                          type="button"
+                          className="country-pack-icon country-pack-get"
+                          data-testid={`country-sector-get-${id}`}
+                          aria-label={t(state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: label }) + size}
+                          title={t(state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: label }) + size}
+                          onClick={() => void downloadSector(id)}
+                        >
+                          {state === 'outdated' ? <RefreshCw size={16} aria-hidden /> : <ArrowDownToLine size={16} aria-hidden />}
+                          {totalText && (
+                            <span className="country-pack-size" data-testid={`country-sector-size-${id}`}>
+                              {totalText}
+                            </span>
+                          )}
+                        </button>
+                      ) : null}
+                      {busySector !== id && state && state !== 'missing' ? deleteButton(label, sp?.total ?? 0, () => removeSector(id), `country-sector-del-${id}`) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </fieldset>
       ))}
       {mapOpen && <CountryPackMap onClose={() => setMapOpen(false)} />}

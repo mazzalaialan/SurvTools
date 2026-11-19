@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Download, Map as MapIcon, MapPin } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { prefetchCountry } from './country';
+import { downloadSector } from './countryDelete';
 import { declineDownload, refreshOffer, useCountryNotices } from './countryAutomation';
 import { formatBytes } from './countryDownload';
 
@@ -90,7 +91,10 @@ export function CountryNotices() {
           <Download size={20} aria-hidden />
           <span className="update-text">
             <strong>
-              {t('countryDownload.title', { countries: ask.countries.map(name).join(', '), size: formatBytes(ask.bytes, i18n.language) })}
+              {t('countryDownload.title', {
+                countries: ask.sector ? `${name('BR')} · ${t(`country.sector.${ask.sector}`)}` : ask.countries.map(name).join(', '),
+                size: formatBytes(ask.bytes, i18n.language),
+              })}
             </strong>
             <span className="hint">{t('countryDownload.hint')}</span>
           </span>
@@ -100,7 +104,7 @@ export function CountryNotices() {
             disabled={busy}
             onClick={() => {
               setBusy(true);
-              void Promise.all(ask.countries.map(prefetchCountry)).finally(() => {
+              void (ask.sector ? downloadSector(ask.sector) : Promise.all(ask.countries.map(prefetchCountry))).finally(() => {
                 setBusy(false);
                 useCountryNotices.setState({ ask: null });
               });
@@ -114,7 +118,7 @@ export function CountryNotices() {
             type="button"
             disabled={busy}
             onClick={() => {
-              declineDownload(ask.countries);
+              declineDownload(ask.countries, ask.sector);
               useCountryNotices.setState({ ask: null });
             }}
             data-testid="country-download-no"

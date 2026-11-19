@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import { onLocation } from '@/core/geo/locationEvents';
-import { useSettings, type Country } from '@/core/settings/settings';
+import { useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { distanceMeters } from '@/core/geo/geo';
 import { useMapZones } from '@/modules/maps/store';
 import { loadBorders } from './borders';
 import { prefetchCountry } from './country';
-import { countryFiles, downloadsSilently, missingDownload, networkInfo } from './countryDownload';
+import { countryFiles, downloadsSilently, missingDownload, networkInfo, sectorPackState } from './countryDownload';
+import { downloadSector } from './countryDelete';
+import { sectorAt } from './sectors';
 import { refreshStored } from './dataFile';
 import { createCountryDetector, type DetectedCountries } from './countryDetector';
 
@@ -22,7 +24,7 @@ interface NoticesState {
   /** País que se ofrece usar en la app. */
   offer: Country | null;
   /** Descarga pendiente de confirmar (datos móviles o conexión desconocida). */
-  ask: { countries: Country[]; bytes: number } | null;
+  ask: { countries: Country[]; bytes: number; /** Brasil: el sector que se ofrece bajar (el de donde estás). */ sector?: BrSector } | null;
   /** Oferta de bajar mapas sin conexión del lugar donde llegaste. */
   mapOffer: { country: Country; lat: number; lon: number } | null;
 }
@@ -31,7 +33,7 @@ export const useCountryNotices = create<NoticesState>(() => ({ offer: null, ask:
 
 /** Las descargas que se dijo «Ahora no» en esta sesión (para no insistir con la misma). */
 const declined = new Set<string>();
-export const declineDownload = (countries: Country[]) => declined.add(countries.join(','));
+export const declineDownload = (countries: Country[], sector?: BrSector) => declined.add(sector ? `BR:${sector}` : countries.join(','));
 
 /** ¿Hay que ofrecer cambiar el país? Si el detectado es otro, no se dijo «No, gracias» y todavía no es el de la app. */
 export function offerFor(detected: Country | null, home: Country, dismissed: Country[]): Country | null {
@@ -73,6 +75,33 @@ export async function downloadFor(d: DetectedCountries): Promise<void> {
 }
 
 /**
+ * ¿Hay que bajar el sector de Brasil donde estás? Si todavía no lo tenés, no lo borraste a mano (en ese caso no se vuelve a bajar solo) y no
+ * dijiste «Ahora no» en esta sesión.
+ */
+export function sectorToDownload(sector: BrSector | null, selected: BrSector[], deleted: BrSector[], declinedNow: Set<string> = declined): BrSector | null {
+  if (!sector || selected.includes(sector) || deleted.includes(sector) || declinedNow.has(`BR:${sector}`)) return null;
+  return sector;
+}
+
+/**
+ * Estás en Brasil: baja el sector donde estás parado (las cinco macrorregiones del IBGE). Con Wi-Fi sin avisar; con datos móviles o conexión
+ * desconocida, preguntando antes (igual que con los países). Los estados salen del mapa base, que viene con la app.
+ */
+export async function downloadSectorFor(at: { lat: number; lon: number }): Promise<void> {
+  if (!navigator.onLine) return;
+  const geo = await import('@/modules/weathermap/geo').then((m) => m.loadGeoData());
+  const s = useSettings.getState().settings;
+  const sector = sectorToDownload(sectorAt(geo.regions, at.lat, at.lon), s.brSectors, s.brSectorsDeclined);
+  if (!sector) return;
+  if (downloadsSilently(networkInfo())) {
+    await downloadSector(sector);
+    return;
+  }
+  const info = await sectorPackState(sector);
+  useCountryNotices.setState({ ask: { countries: ['BR'], bytes: info.total, sector } });
+}
+
+/**
  * Actualiza lo que ya está guardado de estos países: baja solo los archivos que cambiaron (compara los índices, ver `refreshStored`),
  * como mucho cada 12 horas. Con Wi-Fi sin avisar; con datos móviles o conexión desconocida no baja a escondidas (los archivos que se
  * usan igual se actualizan al abrirlos, con la misma comparación).
@@ -88,6 +117,8 @@ async function onDetected(d: DetectedCountries, at: { lat: number; lon: number }
   const s = useSettings.getState().settings;
   useCountryNotices.setState({ mapOffer: mapOfferFor(d.country, s.country, s.mapOfferDismissed, useMapZones.getState().zones, at, navigator.onLine) });
   await downloadFor(d);
+  // En Brasil el paquete se baja por sector: el de donde estás.
+  if (d.country === 'BR') await downloadSectorFor(at).catch(() => undefined);
 }
 
 /** Se monta una vez en la app: engancha la detección a los eventos de ubicación. */

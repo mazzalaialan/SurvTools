@@ -246,7 +246,51 @@ test('Ajustes: los países van en un marco por continente (América del Sur) y e
   const frame = page.getByTestId('country-continent-southAmerica');
   await expect(frame).toBeVisible({ timeout: 15_000 });
   await expect(frame.getByText('América del Sur', { exact: true })).toBeVisible();
-  const names = await frame.locator('.country-pack-select').allTextContents();
-  expect(names).toEqual(['Argentina', 'Bolivia', 'Chile', 'Paraguay', 'Perú', 'Uruguay']);
+  // Solo los países (la lista de sectores de Brasil va debajo, en otro grupo).
+  const names = await frame.locator('.country-pack').first().locator('.country-pack-select').allTextContents();
+  expect(names).toEqual(['Argentina', 'Bolivia', 'Brasil', 'Chile', 'Paraguay', 'Perú', 'Uruguay']);
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-99-country-continent.png` });
+});
+
+test('Ajustes: se puede borrar el paquete de un país bajado, pero no el del país activo', async ({ page }, testInfo) => {
+  await start(page);
+  await page.goto('/#/settings');
+  const py = page.getByTestId('country-pack-PY');
+  await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+  // Sin bajar no hay nada que borrar, y el país activo (Argentina) no ofrece borrarse.
+  await expect(page.getByTestId('country-pack-del-PY')).toHaveCount(0);
+  await expect(page.getByTestId('country-pack-del-AR')).toHaveCount(0);
+
+  await page.getByTestId('country-pack-get-PY').click();
+  await expect(py).toHaveAttribute('data-state', 'ready', { timeout: 60_000 });
+  expect(await stored(page)).toEqual(expect.arrayContaining(['PY.json']));
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-100-country-delete.png` });
+
+  // Borrar pide confirmación; al cancelar queda todo como estaba.
+  await page.getByTestId('country-pack-del-PY').click();
+  await expect(page.getByTestId('confirm-message')).toContainText('Paraguay');
+  await page.getByTestId('confirm-cancel').click();
+  await expect(py).toHaveAttribute('data-state', 'ready');
+
+  await page.getByTestId('country-pack-del-PY').click();
+  await page.getByTestId('confirm-ok').click();
+  await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+  const left = await stored(page);
+  expect(left).not.toContain('PY.json');
+  expect(left).not.toContain('parks-PY.json');
+  // Lo que usan los demás países no se borra (las ecorregiones son de todos).
+  expect(left).toContain('ecoregions.json');
+});
+
+test('Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con su estado', async ({ page }) => {
+  await start(page);
+  await page.goto('/#/settings');
+  const frame = page.getByTestId('country-sectors-BR');
+  await expect(frame).toBeVisible({ timeout: 15_000 });
+  for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
+    await expect(page.getByTestId(`country-sector-${id}`)).toHaveAttribute('data-state', 'missing');
+  }
+  await expect(frame).toContainText('Sul (PR, SC, RS)');
+  // Brasil no tiene un ícono de descarga propio: se baja sector por sector.
+  await expect(page.getByTestId('country-pack-get-BR')).toHaveCount(0);
 });

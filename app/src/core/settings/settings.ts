@@ -143,6 +143,10 @@ export interface Settings {
   detectedNear: Country[];
   /** Países para los que dijiste «No, gracias» al aviso «Estás en X: ¿usar X en la app?» (no se vuelve a preguntar). */
   countryOfferDismissed: Country[];
+  /** Sectores de Brasil (macrorregiones del IBGE) que se quieren tener sin conexión; Brasil se baja por sectores (ver `modules/emergency/sectors.ts`). */
+  brSectors: BrSector[];
+  /** Sectores de Brasil que la persona borró a mano: la detección por ubicación no los vuelve a bajar sola. */
+  brSectorsDeclined: BrSector[];
   /** Países para los que dijiste «No, gracias» a la oferta de bajar mapas sin conexión al llegar. */
   mapOfferDismissed: Country[];
   /** Última actividad elegida en Entrenamiento. */
@@ -168,6 +172,8 @@ export interface Settings {
 export type GardenZone = 'pampeana' | 'nea' | 'noa' | 'cuyo' | 'patagoniaNorte' | 'patagoniaSur' | 'vallesBolivia' | 'tropicoBolivia' | 'sierraPeru';
 
 export type FirstAidEnv = 'city' | 'wild';
+/** Sectores de Brasil: las cinco macrorregiones del IBGE. */
+export type BrSector = 'sul' | 'sudeste' | 'centro-oeste' | 'nordeste' | 'norte';
 export type Country = 'AR' | 'CL' | 'UY' | 'BO' | 'PE' | 'PY' | 'BR';
 export const COUNTRIES: Country[] = ['AR', 'CL', 'UY', 'BO', 'PE', 'PY', 'BR'];
 
@@ -331,6 +337,8 @@ export const DEFAULT_SETTINGS: Settings = {
   detectedCountry: null,
   detectedNear: [],
   countryOfferDismissed: [],
+  brSectors: [],
+  brSectorsDeclined: [],
   mapOfferDismissed: [],
   trainingKind: 'walk',
   recordChoice: '',

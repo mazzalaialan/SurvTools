@@ -2439,12 +2439,25 @@
   },
   "country": {
     "continent": { "southAmerica": "América del Sur" },
-    "label": "País", "map": { "legendMain": "Tu país (el principal)", "mainShort": "tu país","open": "Ver en el mapa", "title": "Países en el mapa", "hint": {"mark": "Tocá un país del mapa para marcarlo.", "download": "Tocá de nuevo el país en el mapa para bajar sus datos.", "update": "Tocá de nuevo el país en el mapa para actualizar sus datos.", "use": "Tocá de nuevo el país en el mapa para usarlo como tu país.", "done": "Es tu país y sus datos están al día.", "busy": "Bajando los datos…"}, "legend": "Referencias", "state": {"ready": "Bajado y al día", "outdated": "Hay una versión nueva", "missing": "Sin bajar", "busy": "Bajando…", "unknown": "Revisando…"}, "download": "Bajar {{country}}", "update": "Actualizar {{country}}", "use": "Usar {{country}} como mi país", "hintTap": "Tocá un país para marcarlo; tocá de nuevo para bajar o actualizar sus datos, y una vez más para usarlo como tu país. Pellizcá o usá + y − para acercar, y arrastrá para moverte.", "zoom": "Acercar y alejar", "zoomIn": "Acercar", "zoomOut": "Alejar", "zoomAll": "Ver todo el mapa"},
+    "label": "País", "map": { "legendMain": "Tu país (el principal)", "mainShort": "tu país","open": "Ver en el mapa", "title": "Países en el mapa", "hint": {"mark": "Tocá un país del mapa para marcarlo.", "download": "Tocá de nuevo el país en el mapa para bajar sus datos.", "update": "Tocá de nuevo el país en el mapa para actualizar sus datos.", "use": "Tocá de nuevo el país en el mapa para usarlo como tu país.", "done": "Es tu país y sus datos están al día.", "busy": "Bajando los datos…"}, "legend": "Referencias", "state": {"ready": "Bajado y al día", "outdated": "Hay una versión nueva", "missing": "Sin bajar", "busy": "Bajando…", "unknown": "Revisando…"}, "download": "Bajar {{country}}", "update": "Actualizar {{country}}", "use": "Usar {{country}} como mi país", "hintTap": "Tocá un país para marcarlo; tocá de nuevo para bajar o actualizar sus datos, y una vez más para usarlo como tu país. Pellizcá o usá + y − para acercar, y arrastrá para moverte.", "zoom": "Acercar y alejar", "zoomIn": "Acercar", "zoomOut": "Alejar", "zoomAll": "Ver todo el mapa",
+      "bySectors": "Brasil se baja por sectores, desde Ajustes → País",
+      "sectorsHint": "Brasil se baja por sectores: elegí cuáles en la lista de Ajustes → País."},
+    "sector": {
+      "title": "Sectores de Brasil",
+      "hint": "Brasil es muy grande: sus datos sin conexión se bajan por sector (macrorregión del IBGE). Bajá el tuyo y los que vayas a visitar.",
+      "sul": "Sul (PR, SC, RS)",
+      "sudeste": "Sudeste (SP, RJ, MG, ES)",
+      "centro-oeste": "Centro-Oeste (MT, MS, GO, DF)",
+      "nordeste": "Nordeste (MA, PI, CE, RN, PB, PE, AL, SE, BA)",
+      "norte": "Norte (AC, AM, AP, PA, RO, RR, TO)"
+    },
     "pack": {
       "ready": "{{country}}: datos sin conexión bajados y al día",
       "download": "Bajar los datos sin conexión de {{country}}",
       "update": "Actualizar los datos sin conexión de {{country}}",
-      "downloading": "Bajando los datos de {{country}}…"
+      "downloading": "Bajando los datos de {{country}}…",
+      "delete": "Borrar los datos sin conexión de {{country}}",
+      "confirmDelete": "¿Borrar los datos sin conexión de {{country}}{{size}}? Se liberan del dispositivo y podés volver a bajarlos cuando quieras."
     },
         "AR": "Argentina",
     "CL": "Chile",

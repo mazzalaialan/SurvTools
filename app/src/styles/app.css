@@ -4721,6 +4721,14 @@ button.country-pack-icon {
   color: var(--ok);
 }
 
+.country-sectors {
+  margin-top: 4px;
+}
+
+button.country-pack-del {
+  color: var(--danger, #c0392b);
+}
+
 .country-pack-item[data-state='outdated'] .country-pack-get {
   color: var(--warn);
 }
