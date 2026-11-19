@@ -56,7 +56,7 @@ export function CountryPackPicker() {
       {CONTINENTS.map((continent) => (
         <fieldset key={continent.id} className="country-continent" data-testid={`country-continent-${continent.id}`}>
           <legend>{t(`country.continent.${continent.id}`)}</legend>
-          <div className="country-pack" role="group" aria-label={t(`country.continent.${continent.id}`)}>
+          <div className="country-pack" role="group" aria-label={`${t('country.label')} · ${t(`country.continent.${continent.id}`)}`}>
             {[...continent.countries]
               .sort((a, b) => t(`country.${a}`).localeCompare(t(`country.${b}`), i18n.language))
               .map((c: Country) => {
