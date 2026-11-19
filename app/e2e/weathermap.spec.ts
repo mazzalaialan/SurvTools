@@ -661,7 +661,7 @@ test('comparación de pronósticos: resumen con grilla por modelo y, en otra sol
 });
 
 
-test('mapa de tiempo: el radar argentino (SINARAME) pide solo los radares que se ven, anima las imágenes y muestra la atribución', async ({ page, context }) => {
+test('mapa de tiempo: el radar de lluvia suma los radares argentinos (SINARAME) con el servidor propio: pide solo los que se ven, muestra la hora y la atribución', async ({ page, context }) => {
   await mockSources(page);
   await setup(page);
   // Un radar de Bahía Blanca con tres imágenes (la más vieja a la más nueva) y otro en Salta.
@@ -702,12 +702,15 @@ test('mapa de tiempo: el radar argentino (SINARAME) pide solo los radares que se
   await page.getByRole('link', { name: /Mapa de alertas y clima/ }).click();
   await expect(page.getByTestId('weather-map')).toBeVisible();
 
-  // La capa está prendida por defecto, la hora aparece y se muestra la atribución.
-  await expect(page.getByRole('button', { name: 'Radar argentino' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('map-times').first()).toContainText(/Radar argentino \d\d:\d\d/, { timeout: 20_000 });
+  // Es la misma capa «Radar de lluvia» (apagada por defecto): al prenderla aparecen la hora y la atribución.
+  await expect(page.getByRole('button', { name: 'Radar de lluvia' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Radar argentino' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Radar de lluvia' }).click();
+  await expect(page.getByRole('button', { name: 'Radar de lluvia' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('map-times').first()).toContainText(/Radar \d\d:\d\d/, { timeout: 20_000 });
   await expect(page.getByTestId('sinarame-attribution')).toContainText('SINARAME');
   await expect(page.getByTestId('sinarame-attribution')).toContainText('orientativos');
-  await expect(page.getByText(/Radares meteorológicos argentinos \(SINARAME y SMN\)/)).toBeVisible();
+  await expect(page.getByText(/Radar de lluvia: lo que llovió en las últimas 2 horas/)).toBeVisible();
   // Se pidió primero la lista (sin radares elegidos) y después las imágenes de los que se ven en el país entero (los dos).
   expect(asked[0]).toBe('');
   await expect.poll(() => asked.some((a) => a.includes('RMA10'))).toBe(true);
@@ -715,7 +718,7 @@ test('mapa de tiempo: el radar argentino (SINARAME) pide solo los radares que se
   await expect.poll(() => imageRequests.some((u) => u.includes('/RMA10/'))).toBe(true);
 
   // Apagarla saca la hora y la atribución.
-  await page.getByRole('button', { name: 'Radar argentino' }).click();
+  await page.getByRole('button', { name: 'Radar de lluvia' }).click();
   await expect(page.getByTestId('sinarame-attribution')).toHaveCount(0);
-  await expect(page.getByTestId('map-times').first()).not.toContainText('Radar argentino');
+  await expect(page.getByTestId('map-times').first()).not.toContainText('Radar');
 });

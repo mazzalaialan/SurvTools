@@ -212,8 +212,6 @@ export interface WeatherMapLayers {
   waypoints: boolean;
   /** Lluvia estimada por el servidor propio con el infrarrojo del GOES-19 (toda la región, cada 10 min). */
   satRain: boolean;
-  /** Radares meteorológicos argentinos (SINARAME y SMN): las últimas 2 horas de eco de lluvia, desde el servidor propio. */
-  sinarame: boolean;
   /** Rayos de los últimos minutos (GOES-19, desde el servidor propio) y anillos de 10, 20 y 30 km alrededor mío. */
   lightning: boolean;
   /** Alertas oficiales de los servicios meteorológicos (SMN, DMC, INUMET), desde el servidor propio. */
@@ -281,7 +279,7 @@ export const DEFAULT_SETTINGS: Settings = {
   duskPlace: null,
   starmapRed: true,
   starmapLayers: { constellationLines: true, constellationNames: true, starNames: true, planets: true, guide: true, grid: true },
-  weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, sinarame: true, lightning: true, rivers: false, tides: false, waves: false },
+  weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false, waves: false },
   weatherMapValue: 'temp',
   fireHighOnly: false,
   mapSource: 'auto',

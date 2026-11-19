@@ -68,7 +68,7 @@ const SETTLE_MS = 500;
 /** Teselas de radar por cuadro (si hacen falta más, se usa un zoom menor). */
 const RADAR_TILES_MAX = 16;
 const PRELOAD_PARALLEL = 4;
-const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'sinarame', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waves', 'waypoints'];
+const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waves', 'waypoints'];
 /** Cada cuánto se piden los rayos (el satélite saca un archivo cada 20 s). */
 const LIGHTNING_MS = 20_000;
 /** La lluvia estimada sale cada 10 minutos. */
@@ -125,7 +125,8 @@ export function WeatherMapPage() {
   const [rainMap, setRainMap] = useState<RainMap | null>(null);
   const showSatRain = layers.satRain && !!serverUrl;
   // Radares argentinos (SINARAME): primero la lista de radares con su ubicación; después las imágenes de los que tocan lo que se ve.
-  const showSinarame = layers.sinarame && !!serverUrl;
+  // Es la misma capa «Radar de lluvia»: con servidor propio suma los radares argentinos (más precisos donde hay) a los de RainViewer.
+  const showSinarame = layers.radar && !!serverUrl;
   const [sinaSites, setSinaSites] = useState<SinarameRadar[] | null>(null);
   const [sinarame, setSinarame] = useState<SinarameData | null>(null);
 
@@ -548,7 +549,7 @@ export function WeatherMapPage() {
 
       <FullscreenStage
         className="wmap"
-        overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} sina={showSinarame ? sinaTime : undefined} fires={firesTime} fmt={timeFmt} />}
+        overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? (showSinarame && sinaTime ? sinaTime : radarTime) : undefined} fires={firesTime} fmt={timeFmt} />}
       >
         {geo ? (
           <MapCanvas
@@ -629,7 +630,7 @@ export function WeatherMapPage() {
         )}
       </FullscreenStage>
 
-      <MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? radarTime : undefined} sina={showSinarame ? sinaTime : undefined} fires={firesTime} fmt={timeFmt} />
+      <MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? (showSinarame && sinaTime ? sinaTime : radarTime) : undefined} fires={firesTime} fmt={timeFmt} />
 
       {selected && <FeatureCard feature={selected} u={u} now={now} volcanoAlerts={showOfficial ? official?.volcanoes : undefined} firesFetchedAt={fires.data?.fetchedAt} onClose={() => setSelected(null)} />}
       {showOfficial && official && <AlertsHere alerts={activeAlerts} here={here} waypoints={waypointMap} onSelect={(a) => setSelected({ kind: 'official', item: a })} />}
@@ -639,7 +640,7 @@ export function WeatherMapPage() {
         <div className="chips" role="group" aria-label={t('weatherMap.layers')}>
           {LAYER_KEYS.filter((k) => k !== 'waves' || sourceEnabled('open-meteo')).map((key) => {
             // Los rayos los junta el servidor propio: sin servidor, no hay.
-            const noServer = (key === 'lightning' || key === 'satRain' || key === 'sinarame' || key === 'official') && !serverUrl;
+            const noServer = (key === 'lightning' || key === 'satRain' || key === 'official') && !serverUrl;
             return (
               <button
                 key={key}
@@ -671,7 +672,7 @@ export function WeatherMapPage() {
             ))}
           </div>
         )}
-        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, sinarame: showSinarame, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} firesHidden={fires.data?.hidden ?? 0} satNoaa={satSource === 'noaa'} />
+        <Legend layers={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial }} zoneValue={zoneValue} windUnit={u.windUnit} firmsFires={layers.fires && !gibsFires} firesHidden={fires.data?.hidden ?? 0} satNoaa={satSource === 'noaa'} />
         {showSinarame && sinarame?.attribution && (
           <p className="hint" style={{ margin: 0 }} data-testid="sinarame-attribution">
             {t('weatherMap.sinarameCredit', { source: sinarame.attribution })}
@@ -692,9 +693,9 @@ export function WeatherMapPage() {
   );
 }
 
-function MapTimes({ sat, satNoaa, stale, rain, radar, sina, fires, fmt }: { sat: Date | undefined; sina?: Date; satNoaa?: boolean; stale?: boolean; rain?: Date; radar: Date | undefined; fires?: Date; fmt: Intl.DateTimeFormat }) {
+function MapTimes({ sat, satNoaa, stale, rain, radar, fires, fmt }: { sat: Date | undefined; satNoaa?: boolean; stale?: boolean; rain?: Date; radar: Date | undefined; fires?: Date; fmt: Intl.DateTimeFormat }) {
   const { t } = useTranslation();
-  if (!sat && !radar && !sina && !rain && !fires && !stale) return null;
+  if (!sat && !radar && !rain && !fires && !stale) return null;
   return (
     <p className="hint wmap-times" data-testid="map-times">
       {[
@@ -702,7 +703,6 @@ function MapTimes({ sat, satNoaa, stale, rain, radar, sina, fires, fmt }: { sat:
         stale && t('weatherMap.satelliteStaleShort'),
         rain && t('weatherMap.satRainAt', { time: fmt.format(rain) }),
         radar && t('weatherMap.radarAt', { time: fmt.format(radar) }),
-        sina && t('weatherMap.sinarameAt', { time: fmt.format(sina) }),
         fires && t('weatherMap.firesAt', { time: fmt.format(fires) }),
       ]
         .filter(Boolean)
@@ -718,7 +718,6 @@ function Legend({ layers, zoneValue, windUnit, firmsFires, firesHidden, satNoaa 
     [layers.regionWeather && zoneValue === 'wind', 'wind', t('weatherMap.legend.wind', { unit: windUnit })],
     [layers.satellite, 'satellite', t(satNoaa ? 'weatherMap.legend.satelliteNoaa' : 'weatherMap.legend.satellite')],
     [layers.satRain, 'satRain', t('weatherMap.legend.satRain')],
-    [layers.sinarame, 'sinarame', t('weatherMap.legend.sinarame')],
     [layers.radar, 'radar', t('weatherMap.legend.radar')],
     [layers.earthquakes, 'quake', t('weatherMap.legend.earthquakes')],
     [layers.hazards, 'hazard', t('weatherMap.legend.hazards')],
