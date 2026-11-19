@@ -27,6 +27,7 @@ Este archivo se carga solo al abrir el proyecto. Lo largo está en `docs/COLABOR
 - `CONTRIBUTING.md`: acuerdo de contribución (doble licencia) y mínimos para enviar un aporte.
 - `docs/COLABORAR.md`: cómo se trabaja, se publica y se prueba; entorno y servidor; agentes; decisiones que no conviene revertir.
 - `docs/PENDIENTES.md`: lo hecho y lo que falta. **Arriba de todo está la primera tarea** (revisión de nudos y datos de cultivos, a hacer apenas se reinicia el límite semanal el domingo).
+- `docs/NUEVOS-PAISES.md`: investigación (2026-11-19) de Ecuador, Colombia, Venezuela y Brasil: qué datos hay, decisiones de política, orden recomendado y pedidos formales pendientes. Informes completos en `docs/investigaciones/`. Nada implementado todavía.
 - `docs/PAISES-E-IDIOMAS.md`: qué hay que tocar para sumar un país o un idioma (lista completa de lugares del código y las herramientas) y los casos pendientes de Paraguay y portugués.
 - `docs/FUENTES-DE-DATOS.md`: lluvia, radar del SMN, alertas y teléfonos de Bolivia y Perú, calendarios de huerta: qué se probó y qué no sirve.
 - `docs/ENTRENAMIENTO.md`: requisitos originales de Entrenamiento.
