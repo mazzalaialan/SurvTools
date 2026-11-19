@@ -3748,7 +3748,7 @@
     "download": "Toque de novo no país no mapa para baixar seus dados.",
     "update": "Toque de novo no país no mapa para atualizar seus dados.",
     "use": "Toque de novo no país no mapa para usá-lo como seu país.",
-    "done": "É o seu país e os dados dele estão em dia.",
+    "done": "É o seu país e os dados dele estão em dia.", "sectorDone": "Este setor já está baixado e atualizado. Aproxime o mapa para ver os estados que o formam.",
     "busy": "Baixando os dados…"
    },
    "legend": "Legenda",
@@ -3767,10 +3767,12 @@
    "zoomIn": "Aproximar",
    "zoomOut": "Afastar",
    "zoomAll": "Ver todo o mapa",
+      "delete": "Apagar este setor",
       "bySectors": "O Brasil é baixado por setor, em Configurações → País",
       "sectorsHint": "O Brasil é baixado por setor: escolha quais na lista de Configurações → País."
   },
-  "sector": {
+  "sectorShort": {"sul": "Sul", "sudeste": "Sudeste", "centro-oeste": "Centro-Oeste", "nordeste": "Nordeste", "norte": "Norte"},
+    "sector": {
       "title": "Setores do Brasil",
       "hint": "O Brasil é enorme: os dados offline são baixados por setor (macrorregião do IBGE). Baixe o seu e os que você for visitar.",
       "sul": "Sul (PR, SC, RS)",

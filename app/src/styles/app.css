@@ -5173,6 +5173,15 @@ button.country-pack-del {
   --state-color: var(--text-muted);
 }
 
+/* Límites de los estados dentro de un sector de Brasil: finos y tenues, para reconocer dónde está cada uno al acercar. */
+.country-map-state-line {
+  fill: none;
+  stroke: var(--text);
+  stroke-opacity: 0.28;
+  stroke-width: 0.5;
+  pointer-events: none;
+}
+
 .country-map-country[data-state='ready'] { --state-color: var(--ok); }
 .country-map-country[data-state='outdated'] { --state-color: var(--warn); }
 .country-map-country[data-state='busy'] { --state-color: var(--accent); }

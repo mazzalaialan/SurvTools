@@ -294,3 +294,51 @@ test('Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con 
   // Brasil no tiene un ícono de descarga propio: se baja sector por sector.
   await expect(page.getByTestId('country-pack-get-BR')).toHaveCount(0);
 });
+
+test('Mapa de países: Brasil se divide en sus cinco sectores y se baja (o se borra) el que se toca', async ({ page }, testInfo) => {
+  await start(page);
+  await page.goto('/#/settings');
+  await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+  await page.getByTestId('country-pack-map-open').click();
+  await expect(page.getByTestId('country-map')).toBeVisible();
+  // Brasil ya no es una sola zona: son sus cinco sectores, cada uno con su estado.
+  await expect(page.getByTestId('country-map-BR')).toHaveCount(0);
+  for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
+    await expect(page.getByTestId(`country-map-BR-${id}`)).toHaveAttribute('data-state', 'missing');
+  }
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-103-country-map-brazil.png` });
+
+  // Tocar el Sul: lo marca y el panel dice cuál es, qué estados incluye y cuánto pesa.
+  await page.getByTestId('country-map-BR-sul').click();
+  await expect(page.getByTestId('country-map-panel')).toContainText('Brasil · Sul (PR, SC, RS)');
+  await expect(page.getByTestId('country-map-state')).toContainText('Sin bajar');
+  await expect(page.getByTestId('country-map-state')).toContainText(/\d+(,\d)? (MB|KB)/);
+  await expect(page.getByTestId('country-map-next')).toContainText('bajar');
+
+  // Bajarlo desde el panel: queda verde, guardado, y los demás sectores siguen sin bajar.
+  await page.getByTestId('country-map-get').click();
+  await expect(page.getByTestId('country-map-BR-sul')).toHaveAttribute('data-state', 'ready', { timeout: 60_000 });
+  const files = await stored(page);
+  expect(files).toEqual(expect.arrayContaining(['BR-sul.json', 'fuel-BR-sul.json', 'parks-BR-sul.json']));
+  expect(files).not.toContain('BR-sudeste.json');
+  await expect(page.getByTestId('country-map-BR-sudeste')).toHaveAttribute('data-state', 'missing');
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-104-country-map-brazil-sul.png` });
+
+  // Usar Brasil como tu país desde un sector: todo Brasil queda como país principal (los cinco sectores y el halo alrededor del país entero).
+  await page.getByTestId('country-map-use').click();
+  for (const id of ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte']) {
+    await expect(page.getByTestId(`country-map-BR-${id}`)).toHaveAttribute('data-current', 'true');
+  }
+  await expect(page.getByTestId('country-map-BR-norte')).toContainText('★');
+  await expect(page.getByTestId('country-map-halo')).toHaveAttribute('data-country', 'BR');
+  await expect(page.getByTestId('country-map-use')).toHaveCount(0);
+  await expect(page.getByTestId('country-map-AR')).toHaveAttribute('data-current', 'false');
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-105-country-map-brazil-main.png` });
+
+  // Se puede borrar desde el mismo panel (con confirmación).
+  await page.getByTestId('country-map-del').click();
+  await page.getByTestId('confirm-ok').click();
+  await expect(page.getByTestId('country-map-BR-sul')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
+  expect(await stored(page)).not.toContain('BR-sul.json');
+});

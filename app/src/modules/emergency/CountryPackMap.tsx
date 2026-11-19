@@ -1,13 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, Loader2, Minus, Plus, RefreshCw, Scan } from 'lucide-react';
-import { COUNTRIES, useSettings, type Country } from '@/core/settings/settings';
+import { ArrowDownToLine, Check, Loader2, Minus, Plus, RefreshCw, Scan, Trash2 } from 'lucide-react';
+import { COUNTRIES, useSettings, type BrSector, type Country } from '@/core/settings/settings';
+import { confirmAction } from '@/ui/confirm';
 import { Dialog } from '@/ui/Dialog';
 import { toMercator } from '@/modules/weathermap/projection';
 import { loadGeoData, type GeoData } from '@/modules/weathermap/geo';
 import { formatBytes, type PackState } from './countryDownload';
 import { FULL_VIEW, MAX_ZOOM, MIN_ZOOM, panView, tapAction, viewForPinch, viewRect, zoomAround, type View } from './countryMapView';
+import { BR_SECTORS, sectorOfState } from './sectors';
 import { useCountryPacks } from './useCountryPacks';
+
+/**
+ * Lo que se puede tocar en el mapa: cada país, salvo Brasil, que son sus cinco sectores (las macrorregiones del IBGE, `BR-sul`…): Brasil es enorme y
+ * se baja por sector, y el mapa ayuda a ver cuál es el que está pegado a donde vas.
+ */
+type Zone = Exclude<Country, 'BR'> | `BR-${BrSector}`;
+const SECTOR_ZONES: Zone[] = BR_SECTORS.map((s) => `BR-${s.id}` as Zone);
+const zoneSector = (z: Zone): BrSector | null => (z.startsWith('BR-') ? (z.slice(3) as BrSector) : null);
+const zoneCountry = (z: Zone): Country => (z.startsWith('BR-') ? 'BR' : (z as Country));
+const MAP_COUNTRIES = COUNTRIES.filter((c) => c !== 'BR') as Exclude<Country, 'BR'>[];
 
 /** Lo que se ve del mapa: toda América del Sur, de la costa del Pacífico al cabo Branco (Brasil), y de La Guajira (Colombia) a Tierra del Fuego. */
 const BOUNDS = { west: -82, east: -34, south: -57, north: 13 };
@@ -49,11 +61,14 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
   const { t, i18n } = useTranslation();
   const current = useSettings((s) => s.settings.country);
   const update = useSettings((s) => s.update);
-  const { packs, busy, download } = useCountryPacks();
+  const { packs, sectors, busy, busySector, download, downloadSector, removeSector } = useCountryPacks();
   const [geo, setGeo] = useState<GeoData | null>(null);
-  /** El país marcado con el primer toque (`null`: todavía ninguno; el panel muestra el país activo). */
-  const [marked, setMarked] = useState<Country | null>(null);
-  const selected = marked ?? current;
+  /** La zona marcada con el primer toque (`null`: todavía ninguna; el panel muestra tu país o, si es Brasil, tu primer sector). */
+  const [marked, setMarked] = useState<Zone | null>(null);
+  const brSectors = useSettings((s) => s.settings.brSectors);
+  const selected: Zone = marked ?? (current === 'BR' ? (`BR-${brSectors[0] ?? 'sul'}` as Zone) : (current as Zone));
+  const selectedSector = zoneSector(selected);
+  const isHome = (z: Zone) => zoneCountry(z) === current;
   const [view, setView] = useState<View>(() => FULL_VIEW(box));
   const viewRef = useRef(view);
   /** Cambia la vista y la deja anotada AL INSTANTE: los dos dedos mandan eventos seguidos, antes de que la pantalla se vuelva a dibujar. */
@@ -68,28 +83,68 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
 
   const paths = useMemo(() => {
     if (!geo) return null;
+    const own = Object.fromEntries(geo.borders.map((b) => [b.code, ringsPath(b.rings)])) as Record<string, string>;
+    const regions = geo.regions.filter((r) => r.country === 'BR');
+    // Cada sector de Brasil: los estados que lo forman (para dibujarlo y para ver sus límites) y dónde escribir su nombre (promedio de sus estados).
+    const sectorPaths = Object.fromEntries(
+      BR_SECTORS.map(({ id }) => {
+        const own = regions.filter((r) => sectorOfState(r.id) === id);
+        const at = own.reduce((a, r) => ({ x: a.x + r.label[0], y: a.y + r.label[1] }), { x: 0, y: 0 });
+        return [`BR-${id}`, { d: ringsPath(own.flatMap((r) => r.rings)), states: own.map((r) => ringsPath(r.rings)), label: [at.x / Math.max(1, own.length), at.y / Math.max(1, own.length)] as [number, number] }];
+      }),
+    ) as Record<string, { d: string; states: string[]; label: [number, number] }>;
     return {
       neighbors: geo.neighbors.map((n) => ({ code: n.code, d: ringsPath(n.rings) })),
-      own: Object.fromEntries(geo.borders.map((b) => [b.code, ringsPath(b.rings)])) as Record<string, string>,
+      own,
+      sectors: sectorPaths,
       labels: Object.fromEntries(geo.countries.map((c) => [c.code, { name: c.name, label: c.label }])),
     };
   }, [geo]);
 
-  const nameOf = (c: Country) => t(`country.${c}`);
-  const stateText = (c: Country) => (busy === c ? t('country.map.state.busy') : packs[c] ? t(`country.map.state.${packs[c]!.state}`) : t('country.map.state.unknown'));
-  const sizeOf = (c: Country) => (packs[c]?.bytes ? formatBytes(packs[c]!.bytes, i18n.language) : '');
-  const sel = packs[selected];
-  /** Brasil se baja por sectores desde la lista de Ajustes: en el mapa solo se marca y se usa como país. */
-  const bySectors = selected === 'BR';
+  /** Nombre de una zona: el país, o «Brasil · Sul (PR, SC, RS)». */
+  const nameOf = (z: Zone) => {
+    const s = zoneSector(z);
+    return s ? `${t('country.BR')} · ${t(`country.sector.${s}`)}` : t(`country.${z}`);
+  };
+  /** Nombre corto para escribir sobre el mapa. */
+  const shortName = (z: Zone) => {
+    const s = zoneSector(z);
+    return s ? t(`country.sectorShort.${s}`) : t(`country.${z}`);
+  };
+  const busyZone = (z: Zone) => {
+    const s = zoneSector(z);
+    return s ? busySector === s : busy === z;
+  };
+  const packOf = (z: Zone) => {
+    const s = zoneSector(z);
+    return s ? sectors[s] : packs[z as Country];
+  };
+  const stateOf = (z: Zone) => (busyZone(z) ? 'busy' : (packOf(z)?.state ?? 'unknown'));
+  const stateText = (z: Zone) => (busyZone(z) ? t('country.map.state.busy') : packOf(z) ? t(`country.map.state.${packOf(z)!.state}`) : t('country.map.state.unknown'));
+  /** Lo que falta bajar (país) o lo que pesa el sector entero. */
+  const sizeOf = (z: Zone) => {
+    const s = zoneSector(z);
+    const bytes = s ? (sectors[s]?.state === 'missing' ? (sectors[s]?.total ?? 0) : (sectors[s]?.bytes ?? 0)) : (packs[z as Country]?.bytes ?? 0);
+    return bytes ? formatBytes(bytes, i18n.language) : '';
+  };
+  const sel = packOf(selected);
+  const anyBusy = busy !== null || busySector !== null;
 
-  /** Lo que pasa al tocar un país: marcarlo, bajarlo o actualizarlo, o ponerlo como el país activo. */
-  function tap(c: Country) {
-    const action = tapAction({ marked, tapped: c, state: c === 'BR' ? 'ready' : packs[c]?.state, isCurrent: current === c, busy: busy !== null });
-    if (action === 'mark') setMarked(c);
-    else if (action === 'download' || action === 'update') void download(c);
-    else if (action === 'use') void update({ country: c });
+  /** Lo que pasa al tocar una zona: marcarla, bajarla o actualizarla, o (un país) ponerlo como el país activo. Un sector de Brasil no se «usa»: se usa Brasil desde el botón del panel. */
+  function tap(z: Zone) {
+    const s = zoneSector(z);
+    const action = tapAction({ marked, tapped: z, state: packOf(z)?.state, isCurrent: s !== null || current === z, busy: anyBusy });
+    if (action === 'mark') setMarked(z);
+    else if (action === 'download' || action === 'update') void (s ? downloadSector(s) : download(z as Country));
+    else if (action === 'use') void update({ country: z as Country });
   }
-  const onKey = (c: Country) => (e: KeyboardEvent) => {
+  /** Borrar el sector marcado, con confirmación. */
+  async function removeSelected() {
+    if (!selectedSector) return;
+    const size = sectors[selectedSector]?.total ? ` (${formatBytes(sectors[selectedSector]!.total, i18n.language)})` : '';
+    if (await confirmAction(t('country.pack.confirmDelete', { country: nameOf(selected), size }))) await removeSector(selectedSector);
+  }
+  const onKey = (c: Zone) => (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       tap(c);
@@ -184,10 +239,10 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
 
   /** Qué hace el próximo toque sobre el país marcado (para avisarlo en el panel). */
   const nextHint = (() => {
-    if (busy === selected) return t('country.map.hint.busy');
+    if (busyZone(selected)) return t('country.map.hint.busy');
     if (marked !== selected) return t('country.map.hint.mark');
-    const a = tapAction({ marked, tapped: selected, state: bySectors ? 'ready' : sel?.state, isCurrent: current === selected, busy: busy !== null });
-    if (bySectors && a === 'none') return t('country.map.sectorsHint');
+    const a = tapAction({ marked, tapped: selected, state: sel?.state, isCurrent: selectedSector !== null || isHome(selected), busy: anyBusy });
+    if (selectedSector && a === 'none') return t('country.map.hint.sectorDone');
     return a === 'download' ? t('country.map.hint.download') : a === 'update' ? t('country.map.hint.update') : a === 'use' ? t('country.map.hint.use') : t('country.map.hint.done');
   })();
 
@@ -223,29 +278,34 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
             <path key={n.code} d={n.d} className="country-map-neighbor" vectorEffect="non-scaling-stroke" />
           ))}
           {paths &&
-            COUNTRIES.map((c) => {
-              const state = busy === c ? 'busy' : (packs[c]?.state ?? 'unknown');
-              const lab = paths.labels[c];
+            [...MAP_COUNTRIES, ...SECTOR_ZONES].map((c) => {
+              const state = stateOf(c);
+              const sectorShape = zoneSector(c) ? paths.sectors[c] : null;
+              const lab = sectorShape ? { label: sectorShape.label } : paths.labels[c];
               const at = lab ? toMercator(lab.label[0], lab.label[1]) : null;
+              const home = isHome(c);
               return (
                 <g
                   key={c}
-                  className={`country-map-country${selected === c ? ' is-selected' : ''}${current === c ? ' is-current' : ''}`}
-                  data-current={current === c ? 'true' : 'false'}
+                  className={`country-map-country${selected === c ? ' is-selected' : ''}${home ? ' is-current' : ''}`}
+                  data-current={home ? 'true' : 'false'}
                   data-state={state}
                   data-testid={`country-map-${c}`}
                   role="button"
                   tabIndex={0}
                   aria-pressed={selected === c}
-                  aria-label={`${nameOf(c)}${current === c ? ` (${t('country.map.mainShort')})` : ''}: ${stateText(c)}`}
+                  aria-label={`${nameOf(c)}${home ? ` (${t('country.map.mainShort')})` : ''}: ${stateText(c)}`}
                   onClick={() => tap(c)}
                   onKeyDown={onKey(c)}
                 >
-                  <path d={paths.own[c] ?? ''} vectorEffect="non-scaling-stroke" />
+                  <path d={sectorShape ? sectorShape.d : (paths.own[c] ?? '')} vectorEffect="non-scaling-stroke" />
+                  {sectorShape?.states.map((d, i) => (
+                    <path key={i} d={d} className="country-map-state-line" vectorEffect="non-scaling-stroke" />
+                  ))}
                   {at && (
                     <g transform={`translate(${at.x} ${-at.y}) scale(${labelScale})`}>
                       <text y={-30} fontSize={46} textAnchor="middle" className="country-map-name">
-                        {current === c ? `★ ${nameOf(c)}` : nameOf(c)}
+                        {home ? `★ ${shortName(c)}` : shortName(c)}
                       </text>
                       <g transform="translate(0 22)" className="country-map-badge">
                         <circle r={34} />
@@ -285,36 +345,50 @@ export function CountryPackMap({ onClose }: { onClose: () => void }) {
       </ul>
 
       <div className="card stack country-map-panel" data-testid="country-map-panel" aria-live="polite">
-        <strong>{current === selected ? `★ ${nameOf(selected)}` : nameOf(selected)}</strong>
+        <strong>{isHome(selected) ? `★ ${nameOf(selected)}` : nameOf(selected)}</strong>
         <p style={{ margin: 0 }} data-testid="country-map-state">
-          {bySectors ? t('country.map.bySectors') : stateText(selected)}
-          {!bySectors && sel && sel.state !== 'ready' && sizeOf(selected) ? ` · ${sizeOf(selected)}` : ''}
+          {stateText(selected)}
+          {sel && sel.state !== 'ready' && sizeOf(selected) ? ` · ${sizeOf(selected)}` : ''}
         </p>
         <p className="hint" style={{ margin: 0 }} data-testid="country-map-next">{nextHint}</p>
         <div className="row-end">
-          {current !== selected && (
+          {!isHome(selected) && (
             <button
               className="btn"
               type="button"
               data-testid="country-map-use"
               onClick={() => {
-                void update({ country: selected });
-                if (!bySectors && sel?.state !== 'ready') void download(selected);
+                const country = zoneCountry(selected);
+                void update({ country });
+                // Un país se baja al elegirlo; Brasil se baja por sector (el sector marcado, si falta).
+                if (selectedSector) {
+                  if (sectors[selectedSector]?.state !== 'ready') void downloadSector(selectedSector);
+                } else if (sel?.state !== 'ready') void download(country);
               }}
             >
-              {t('country.map.use', { country: nameOf(selected) })}
+              {t('country.map.use', { country: t(`country.${zoneCountry(selected)}`) })}
             </button>
           )}
-          {busy === selected ? (
+          {busyZone(selected) ? (
             <span className="hint"><Loader2 size={16} className="spin" aria-hidden /> {t('country.map.state.busy')}</span>
-          ) : bySectors ? null : sel?.state === 'ready' ? (
+          ) : sel?.state === 'ready' ? (
             <span className="country-pack-ready"><Check size={16} aria-hidden /> {t('country.map.state.ready')}</span>
           ) : sel ? (
-            <button className="btn btn-primary" type="button" data-testid="country-map-get" onClick={() => void download(selected)}>
+            <button
+              className="btn btn-primary"
+              type="button"
+              data-testid="country-map-get"
+              onClick={() => void (selectedSector ? downloadSector(selectedSector) : download(selected as Country))}
+            >
               {sel.state === 'outdated' ? <RefreshCw size={18} aria-hidden /> : <ArrowDownToLine size={18} aria-hidden />}{' '}
               {t(sel.state === 'outdated' ? 'country.map.update' : 'country.map.download', { country: nameOf(selected) })}
             </button>
           ) : null}
+          {selectedSector && !busyZone(selected) && sel && sel.state !== 'missing' && (
+            <button className="btn" type="button" data-testid="country-map-del" onClick={() => void removeSelected()}>
+              <Trash2 size={18} aria-hidden /> {t('country.map.delete')}
+            </button>
+          )}
         </div>
       </div>
     </Dialog>
