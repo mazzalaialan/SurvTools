@@ -1,5 +1,5 @@
 import { ENTITY_TABLES, db } from '@/core/db/db';
-import { isNativePlatform } from '@/core/platform';
+import { isAndroid } from '@/core/platform';
 import { isOpenHeader, readStoredHeader } from '@/core/security/vault';
 import { useSettings } from '@/core/settings/settings';
 import { backupFileName, exportBackupStream } from './backup';
@@ -73,7 +73,8 @@ export function runAutoBackup(opts: { force?: boolean } = {}): Promise<AutoBacku
 }
 
 async function doBackup(force: boolean): Promise<AutoBackupResult> {
-  if (!isNativePlatform()) return 'unsupported';
+  // Solo Android: en iPhone la carpeta Documentos de la app se borra al desinstalarla, así que esta copia no cumpliría su fin.
+  if (!isAndroid()) return 'unsupported';
   if (!useSettings.getState().settings.autoBackup && !force) return 'disabled';
   try {
     const header = await readStoredHeader();

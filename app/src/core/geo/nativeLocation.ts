@@ -105,7 +105,8 @@ export const nativeLocation: RecordingLocationBackend = {
           requestPermissions: true,
           stale: false,
           distanceFilter: 0,
-          url: NO_DELIVERY_URL,
+          // Solo Android: en iPhone la `url` del plugin es de las geovallas y no hace falta para que siga con la app cerrada.
+          ...(Capacitor.getPlatform?.() === 'ios' ? {} : { url: NO_DELIVERY_URL }),
           locationLog: true,
           locationLogMaxEntries: 50_000,
         },

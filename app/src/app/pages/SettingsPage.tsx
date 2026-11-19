@@ -35,7 +35,7 @@ import { useMapZones } from '@/modules/maps/store';
 import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
 import { ArchivedVaults } from '../screens/ArchivedVaults';
-import { isNativePlatform } from '@/core/platform';
+import { isAndroid, isNativePlatform } from '@/core/platform';
 import { redBarColor, toHex } from '@/core/systemBars';
 import { BiometricTest } from '../screens/BiometricTest';
 import { BiometricUnlockSettings } from '../screens/BiometricUnlockSettings';
@@ -86,7 +86,7 @@ export function SettingsPage() {
             </span>
           </label>
         )}
-        {settings.theme === 'red' && settings.showStatusBar && isNativePlatform() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
+        {settings.theme === 'red' && settings.showStatusBar && isAndroid() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
         <Segmented
           label={t('settings.units')}
           value={settings.units}
@@ -153,7 +153,7 @@ export function SettingsPage() {
           </>
         )}
         {/* App nativa: ocultar la app en «recientes» y evitar capturas (ver core/systemBars.ts). */}
-        {isNativePlatform() && (
+        {isAndroid() && (
           <>
             <label className="check">
               <input type="checkbox" checked={settings.hideInRecents} onChange={(e) => void update({ hideInRecents: e.target.checked })} data-testid="hide-in-recents" />
@@ -304,7 +304,7 @@ function BackupSection() {
           <Archive size={18} /> {t('settings.backupOpen')}
         </Link>
       </div>
-      {isNativePlatform() && <AutoBackupField />}
+      {isAndroid() && <AutoBackupField />}
     </section>
   );
 }

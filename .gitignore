@@ -32,3 +32,14 @@ deploy/docker-compose.override.yml
 
 # APK de cada versión (se sube a la Release con app/scripts/publish-apk.sh)
 app/release/
+
+# App de iPhone: certificados, perfiles de aprovisionamiento, claves de APNs y la configuración de Firebase (secretos), y lo que genera Xcode.
+app/ios/App/App/GoogleService-Info.plist
+*.mobileprovision
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+app/ios/App/build/
+app/ios/DerivedData/
+app/build/ios/

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { isNativePlatform } from '@/core/platform';
+import { isAndroid } from '@/core/platform';
 
 /**
  * Aviso de versión nueva para el paquete portable (ARQUITECTURA §13). La
@@ -104,7 +104,8 @@ export const usePortableUpdate = create<PortableUpdateState>((set, get) => ({
   async init() {
     const stored = readStored();
     set({ latest: stored.latest, dismissed: stored.dismissed, checkedAt: stored.checkedAt });
-    if (isNativePlatform()) {
+    // Solo Android: es la app que se instala con un APK (en iPhone no hay APK).
+    if (isAndroid()) {
       set({ apk: true });
       // Al volver a la app (desde recientes o desde otra app) se vuelve a mirar.
       void import('@capacitor/app').then(({ App }) => App.addListener('appStateChange', (s) => s.isActive && void get().check()));

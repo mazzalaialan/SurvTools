@@ -18,3 +18,6 @@ export function currentPlatform(root: { Capacitor?: CapacitorGlobal } = globalTh
 }
 
 export const isNativePlatform = (): boolean => currentPlatform() !== 'web';
+
+/** Solo la app de Android: lo que depende de un plugin propio en Java, de un APK o de cómo Android guarda los archivos (en iPhone no existe o es distinto). */
+export const isAndroid = (): boolean => currentPlatform() === 'android';

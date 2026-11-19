@@ -54,6 +54,9 @@ export const nativeBackend: NotificationBackend = {
   refreshDaily: async () => void (await refreshNativeDaily().catch(logDailyError)),
   async subscribePush({ fcm }) {
     if (!fcm) return null; // el servidor no tiene Firebase configurado
+    // iPhone: el plugin entrega el token de APNs, no el de Firebase, y el servidor solo sabe mandar por Firebase. Sin avisos push hasta decidir
+    // cómo (ver docs/PENDIENTES.md, «iPhone»); los avisos locales y el aviso diario sí andan.
+    if (platformName() === 'ios') return null;
     return new Promise((resolve) => {
       const handles: { remove(): Promise<void> }[] = [];
       const done = (value: unknown) => {

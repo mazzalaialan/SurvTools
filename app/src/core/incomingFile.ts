@@ -60,6 +60,8 @@ export async function checkIncoming(plugin: IncomingPlugin = registerPlugin<Inco
 
 /** App nativa: revisa al arrancar y cada vez que la app vuelve al frente (un archivo abierto con la app ya andando llega por ahí). */
 export function startIncomingFiles(): void {
+  // Solo Android: el plugin `IncomingFile` es de Java. En iPhone los archivos llegan por otro camino (pendiente, ver docs/PENDIENTES.md).
+  if (Capacitor.getPlatform() !== 'android') return;
   const run = () => void checkIncoming().catch((e) => console.error('[archivos] no se pudo recibir el archivo', e));
   run();
   void App.addListener('appStateChange', (s) => {

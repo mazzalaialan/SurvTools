@@ -21,7 +21,8 @@
     "icons:android": "node scripts/generate-android-icons.mjs",
     "icons:android:release": "node scripts/generate-android-icons.mjs --release",
     "splash:android": "node scripts/generate-android-splash.mjs",
-    "android:debug:escuela": "ALLOW_BACKUP=true VITE_COMMERCIAL=1 npm run android:debug"
+    "android:debug:escuela": "ALLOW_BACKUP=true VITE_COMMERCIAL=1 npm run android:debug",
+    "assets:ios": "node scripts/generate-ios-assets.mjs"
   },
   "dependencies": {
     "@capacitor-community/file-opener": "8.0.1",
@@ -30,6 +31,7 @@
     "@capacitor/app": "8.1.2",
     "@capacitor/core": "8.6.2",
     "@capacitor/filesystem": "8.1.5",
+    "@capacitor/ios": "8.6.2",
     "@capacitor/local-notifications": "8.3.1",
     "@capacitor/push-notifications": "8.1.3",
     "@capacitor/share": "8.0.3",
