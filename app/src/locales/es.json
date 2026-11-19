@@ -439,7 +439,7 @@
     "newContact": "Nuevo contacto",
     "editContact": "Editar {{name}}",
     "countrySwitchHint": "País de la app (el mismo de Ajustes): de él salen los números, la guía y la radio. Si el GPS detecta otro país, te preguntamos si querés cambiarlo.",
-    "nationalTitle": "Números nacionales",
+    "nationalTitle": "Números nacionales de {{country}}",
     "national": {
       "emergencies": { "name": "Emergencias · Policía", "desc": "911: policía y, en muchas provincias, también ambulancias" },
       "same": { "name": "Emergencias médicas (SAME)", "desc": "107: ambulancias. En la Provincia de Buenos Aires las médicas van por el 911" },

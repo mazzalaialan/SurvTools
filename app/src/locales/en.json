@@ -439,7 +439,7 @@
     "newContact": "New contact",
     "editContact": "Edit {{name}}",
     "countrySwitchHint": "App country (the same as in Settings): the numbers, guide and radio come from it. If GPS detects another country, we ask whether you want to switch.",
-    "nationalTitle": "National numbers (Argentina)",
+    "nationalTitle": "National numbers for {{country}}",
     "national": {
       "emergencies": { "name": "Emergencies · Police", "desc": "911: police and, in many provinces, ambulances too" },
       "same": { "name": "Medical emergencies (SAME)", "desc": "107: ambulances. In Buenos Aires Province medical calls go through 911" },

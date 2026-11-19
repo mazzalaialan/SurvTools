@@ -803,7 +803,7 @@
   "newContact": "Novo contato",
   "editContact": "Editar {{name}}",
   "countrySwitchHint": "País do app (o mesmo das Configurações): dele vêm os números, o guia e o rádio. Se o GPS detectar outro país, perguntamos se você quer mudar.",
-  "nationalTitle": "Números nacionais",
+  "nationalTitle": "Números nacionais — {{country}}",
   "national": {
    "emergencies": {
     "name": "Emergências · Polícia",

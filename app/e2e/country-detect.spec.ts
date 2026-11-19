@@ -43,6 +43,8 @@ test('estás en otro país: se pregunta si querés cambiarlo, sin bajar nada de 
   await page.goto('/#/first-aid/contacts');
   await expect(page.getByTestId('national-numbers')).not.toContainText('Policía Nacional');
   await expect(page.getByTestId('national-numbers')).toBeVisible();
+  // El título dice a qué país corresponden los números.
+  await expect(page.locator('#national-title')).toHaveText('Números nacionales de Argentina');
   await expect(page.getByTestId('national-here')).toHaveCount(0);
   await expect(page.getByTestId('national-home')).toHaveCount(0);
   // «No, gracias» saca la pregunta y no vuelve a preguntar por Perú (tampoco al reabrir la app).
@@ -68,6 +70,7 @@ test('aceptar el cambio pasa a Perú como país elegido y baja su paquete; los n
   await expect.poll(async () => (await stored(page)).includes('PE.json'), { timeout: 60_000 }).toBe(true);
   expect(await stored(page)).toEqual(expect.arrayContaining(['PE.json', 'parks-PE.json', 'fuel-PE.json']));
   await page.goto('/#/first-aid/contacts');
+  await expect(page.locator('#national-title')).toHaveText('Números nacionales de Perú');
   await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
   await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });

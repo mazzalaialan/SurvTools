@@ -45,7 +45,7 @@ export function ContactsPage() {
       <MyDataSection />
 
       <section className="card stack" aria-labelledby="national-title">
-        <h2 id="national-title" className="section-title" style={{ margin: 0 }}>{t('emergency.nationalTitle')}</h2>
+        <h2 id="national-title" className="section-title" style={{ margin: 0 }}>{t('emergency.nationalTitle', { country: t(`country.${country}`) })}</h2>
         {/* Los números son los del país elegido (el selector de acá abajo es el mismo de Ajustes). Si el GPS detecta otro país, la app pregunta si querés cambiarlo. */}
         <NationalList country={country} />
         <p className="hint" style={{ margin: 0 }}>{t('emergency.countrySwitchHint')}</p>
