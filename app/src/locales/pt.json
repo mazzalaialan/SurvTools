@@ -3923,6 +3923,7 @@
   "step": "Passo {{n}}",
   "quick": "O mais urgente",
   "myLocation": "Minha localização (para o resgate)",
+  "ptPending": "Tradução pendente de revisão por uma pessoa.",
   "disclaimer": "Guia baseado nas recomendações de primeiros socorros do Conselho Europeu de Ressuscitação, da Cruz Vermelha e do Ministério da Saúde. Não substitui um curso: faça um de RCP e primeiros socorros. Na dúvida, ligue para o {{medical}}.",
   "env": {
    "label": "Onde você está",
@@ -3947,11 +3948,11 @@
    "title": "Primeiro",
    "protect": {
     "title": "Proteja-se.",
-    "text": "Verifique se o local é seguro antes de se aproximar (trânsito, fogo, fios, água, pedras)."
+    "text": "Verifique se o local é seguro antes de se aproximar."
    },
    "call": {
     "title": "Avise.",
-    "text": "Ligue para o {{medical}}. Em zona remota, peça resgate e informe suas coordenadas."
+    "text": "Ligue para o {{medical}}. Em zona remota, peça resgate com sua localização."
    },
    "responds": {
     "title": "Responde?",
@@ -3963,11 +3964,11 @@
    },
    "bleeding": {
     "title": "Sangra muito?",
-    "text": "Aperte forte sobre o ferimento; se for um braço ou uma perna e não parar, torniquete."
+    "text": "Aperte forte sobre o ferimento. Se não parar em um braço ou perna: torniquete."
    },
    "position": {
     "title": "Agasalhe e não mova",
-    "text": "exceto em caso de perigo. Se não responde mas respira, de lado (posição lateral de segurança)."
+    "text": "exceto em caso de perigo. Se não responde mas respira: de lado."
    }
   },
   "call": {

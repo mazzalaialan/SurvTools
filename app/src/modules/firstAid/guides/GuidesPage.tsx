@@ -106,6 +106,11 @@ export function GuidesPage() {
       <CountrySwitch />
 
       <Notice id="guides.disclaimer">{t('guides.disclaimer', { medical })}</Notice>
+      {lang === 'pt' && (
+        <p className="hint" data-testid="guide-pt-pending">
+          {t('guides.ptPending')}
+        </p>
+      )}
     </div>
   );
 }

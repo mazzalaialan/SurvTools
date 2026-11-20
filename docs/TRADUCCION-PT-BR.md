@@ -1,6 +1,6 @@
 # Portugués de Brasil (pt-BR): estado y dudas de traducción
 
-Estado (2026-11-19): la **interfaz está completa** (`app/src/locales/pt.json`, 3.577 textos, mismas claves que `es.json` y `en.json`; `locales.test.ts` exige la paridad y los marcadores `{{x}}`). Es un **borrador hecho con Claude por lotes (6 agentes) sin revisión de una persona de Brasil**: antes de publicar el portugués, y sobre todo en lo que toca seguridad (primeros auxilios, alertas, toxicología, nudos), **hace falta que lo revise alguien que hable portugués de Brasil**. El **contenido largo** (nudos, primeros auxilios, huerta, semillas, nombres de países) sigue en español/inglés: ver el final.
+Estado (2026-11-19): la **interfaz está completa** (`app/src/locales/pt.json`, 3.577 textos, mismas claves que `es.json` y `en.json`; `locales.test.ts` exige la paridad y los marcadores `{{x}}`). Es un **borrador hecho con Claude por lotes (6 agentes) sin revisión de una persona de Brasil**: antes de publicar el portugués, y sobre todo en lo que toca seguridad (primeros auxilios, alertas, toxicología, nudos), **hace falta que lo revise alguien que hable portugués de Brasil**. El **contenido largo** (nudos, huerta, semillas, nombres de países) sigue en español/inglés: ver el final. **La guía de primeros auxilios ya está traducida** (2026-11-20, ver abajo).
 
 - Glosario y reglas de traducción usados: `docs/glosario-pt-br.md`.
 - Validador de un archivo traducido contra el español: `node tools/i18n/validate-pt.mjs <pt.json> <es.json>` (claves, estructura y marcadores).
@@ -27,9 +27,18 @@ Términos y decisiones tomadas; cada una es un reemplazo global si se prefiere o
 ## Qué falta del portugués
 
 1. **Revisión humana** (obligatoria antes de publicar; ver arriba).
-2. **Contenido largo con tablas `{ es, en }` en el código** (nudos, anclajes, primeros auxilios, huerta, semillas, nombres de países en el mapa, estrellas): hoy un usuario en portugués lo ve en español. Hay que volver `pt` opcional (`pt?:`) en esos tipos y traducirlo por etapas.
+2. **Contenido largo con tablas `{ es, en }` en el código** (nudos, anclajes, huerta, semillas, nombres de países en el mapa, estrellas): hoy un usuario en portugués lo ve en español. Hay que volver `pt` opcional (`pt?:`) en esos tipos y traducirlo por etapas.
 3. **Mapa impreso** (`maps/print/*`): usa `es-AR` fijo para fecha, escala y textos «Escala» y «Hoja».
 4. **Textos del servidor** (`outings/watch.ts`, `liveSessions.ts`, `sharedOutings.ts`, avisos de `announce.ts`): el aviso de actualización ya acepta `--title-pt/--body-pt` (opcional; sin él, español).
 5. **Biblioteca** (`library-builder/books.yaml`): libros por idioma.
 6. **Manifiesto, `index.html`, ficha de las tiendas** y política de privacidad en portugués.
 7. **Notificaciones**: ya hay textos en portugués en `core/notifications/format.ts` (usan nombres genéricos de organismos); revisar con quien hable el idioma.
+
+## Guía de primeros auxilios en pt-BR: PENDIENTE DE REVISIÓN POR UNA PERSONA (2026-11-20)
+
+Es **contenido de seguridad** traducido por Claude **sin revisión humana**. Antes de publicar el portugués hay que hacer que lo lea alguien de Brasil con formación en primeros auxilios. Mientras tanto, la guía muestra en pt, siempre visible (no se puede ocultar), la frase «Tradução pendente de revisão por uma pessoa.» (`guides.ptPending`, `data-testid="guide-pt-pending"`, al pie de la lista y de cada pantalla).
+
+- Alcance: 22 guías, 66 pantallas, 524 textos (títulos, palabras clave de búsqueda, pasos, preguntas y opciones) más el resumen «Lo primero» y el aviso legal (`guides.*` de `pt.json`). El tipo `LG` (`types.ts`) hace obligatorio el `pt` en cada texto de la guía y `content.test.ts` exige que ninguno quede vacío ni igual al español.
+- Vocabulario: SAMU 192, Bombeiros 193, Polícia 190, Disque-Intoxicação 0800 722 6001; compresiones = «compressões torácicas»; torniquete = «torniquete»; DEA = «DEA»; zona agreste = «zona remota» (como el resto de la app); RCP = «RCP»; posición lateral de seguridad = «posição lateral de segurança».
+- A mirar con atención: dosis y tiempos (aspirina 300 mg, 15 minutos de azúcar, 20 minutos de agua en quemaduras), la manobra de Heimlich, «soro antiofídico», «insolação/golpe de calor», «pneumotórax hipertensivo», y el paso de serpientes (habla de Argentina; ver `docs/investigaciones/guia-primeros-auxilios-simplificada.md`, apartado 5).
+- Archivos: `app/src/modules/firstAid/guides/helpers.ts`, `topics-1.ts`, `topics-2.ts`, `topics-3.ts` (contenido), `types.ts` (`LG`, `GuideLang`, nombres del centro toxicológico en pt, `fillGuideText` con «ou»), `parts.tsx` (`useLang` devuelve `pt`), `GuidesPage.tsx` y `GuideTopicPage.tsx` (aviso), y `app/src/locales/pt.json` (claves `guides.first.*`, `guides.ptPending`).

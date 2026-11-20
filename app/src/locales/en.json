@@ -2566,6 +2566,7 @@
     "step": "Step {{n}}",
     "quick": "Most urgent",
     "myLocation": "My location (for rescuers)",
+    "ptPending": "Portuguese translation pending review by a person.",
     "disclaimer": "Guide based on the first aid recommendations of the European Resuscitation Council, the Red Cross and the Argentine Ministry of Health. It does not replace a course: take a CPR and first aid course. When in doubt, call {{medical}}.",
     "env": {
       "label": "Where you are",
@@ -2588,12 +2589,12 @@
     },
     "first": {
       "title": "First things first",
-      "protect": { "title": "Protect yourself.", "text": "Make sure the scene is safe before approaching (traffic, fire, wires, water, rocks)." },
-      "call": { "title": "Call.", "text": "Call {{medical}}. In the wilderness, ask for rescue and give your coordinates." },
+      "protect": { "title": "Protect yourself.", "text": "Make sure the scene is safe before approaching." },
+      "call": { "title": "Call.", "text": "Call {{medical}}. In the wilderness, ask for rescue and give your location." },
       "responds": { "title": "Do they respond?", "text": "Tap their shoulders and speak loudly." },
       "breathing": { "title": "Normal breathing?", "text": "If not breathing or only gasping: CPR now, 100 to 120 compressions per minute on the center of the chest." },
-      "bleeding": { "title": "Heavy bleeding?", "text": "Press hard on the wound; on an arm or leg, if it does not stop, tourniquet." },
-      "position": { "title": "Keep them warm and still", "text": "unless in danger. If unresponsive but breathing, on their side (recovery position)." }
+      "bleeding": { "title": "Heavy bleeding?", "text": "Press hard on the wound. If it does not stop on an arm or leg: tourniquet." },
+      "position": { "title": "Keep them warm and still", "text": "unless in danger. If unresponsive but breathing: on their side." }
     },
     "call": {
       "emergency": "Emergencies / Police",

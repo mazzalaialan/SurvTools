@@ -1,16 +1,25 @@
 import type { Country, FirstAidEnv } from '@/core/settings/settings';
 
-/** Texto en los dos idiomas de la app (la guía es contenido, no interfaz: vive junto). */
+/** Idioma del contenido de la guía. */
+export type GuideLang = 'es' | 'en' | 'pt';
+
+/** Texto en los idiomas de la app (la guía es contenido, no interfaz: vive junto). `pt` es opcional acá porque otros módulos (botiquines) todavía no lo tienen. */
 export interface L {
   es: string;
   en: string;
+  pt?: string;
+}
+
+/** Texto de la guía de primeros auxilios: los tres idiomas son obligatorios (el compilador avisa si falta alguno). */
+export interface LG extends L {
+  pt: string;
 }
 
 /** A quién llamar desde un paso (número en `CALLS`). */
 export type CallKey = 'emergency' | 'same' | 'fire' | 'poison' | 'poisonKids' | 'burns';
 
 export interface Step {
-  text: L;
+  text: LG;
   /** Solo en ese entorno; sin `env`, vale para los dos. */
   env?: FirstAidEnv;
   /** "No hacer": se muestra resaltado. */
@@ -18,7 +27,7 @@ export interface Step {
 }
 
 export interface Option {
-  label: L;
+  label: LG;
   /** Otro paso del mismo tema, `topic:<id>` para pasar a otra guía o `topic:<id>#<paso>` a un paso de otra. */
   next: string;
   /**
@@ -29,19 +38,19 @@ export interface Option {
 }
 
 export interface GuideNode {
-  title: L;
+  title: LG;
   steps: Step[];
   /** Botones para llamar (en zona agreste se suma "Mi ubicación" para dar las coordenadas). */
   calls?: CallKey[];
-  question?: L;
+  question?: LG;
   options?: Option[];
 }
 
 export interface Topic {
   id: string;
-  title: L;
+  title: LG;
   /** Para encontrarlo buscando ("yarará", "infarto"…). */
-  keywords: L;
+  keywords: LG;
   start: string;
   nodes: Record<string, GuideNode>;
 }
@@ -61,15 +70,18 @@ export const CALLS: Record<Country, Partial<Record<CallKey, string>>> = {
   BR: { emergency: '190', same: '192', fire: '193', poison: '0800 722 6001' },
 };
 
-/** Nombre del centro toxicológico de cada país, para el texto de la guía. */
-const POISON_NAME: Record<Country, L> = {
-  AR: { es: 'Centro Nacional de Intoxicaciones', en: 'the National Poison Center' },
-  CL: { es: 'CITUC (centro toxicológico)', en: 'CITUC (poison center)' },
-  UY: { es: 'CIAT (centro toxicológico)', en: 'CIAT (poison center)' },
-  BO: { es: 'el centro toxicológico de tu departamento (CIATOX)', en: 'your department’s poison center (CIATOX)' },
-  PE: { es: 'CICOTOX (centro toxicológico de la Universidad de San Marcos)', en: 'CICOTOX (San Marcos University poison center)' },
-  PY: { es: 'el Centro Nacional de Toxicología (CNTox, Ministerio de Salud)', en: 'the National Toxicology Center (CNTox, Ministry of Health)' },
-  BR: { es: 'el Disque-Intoxicação (Anvisa, red de centros de información toxicológica)', en: 'Disque-Intoxicação (Anvisa, network of poison information centers)' },
+/**
+ * Nombre del centro toxicológico de cada país, para el texto de la guía. Va con el artículo que pide la frase
+ * («Llamá al {poison}», «Call {poison}», «Ligue para {poison}»): en español sin «el» (el «al» ya lo trae), en inglés y portugués con él.
+ */
+const POISON_NAME: Record<Country, LG> = {
+  AR: { es: 'Centro Nacional de Intoxicaciones', en: 'the National Poison Center', pt: 'o Centro Nacional de Intoxicações' },
+  CL: { es: 'CITUC (centro toxicológico)', en: 'CITUC (poison center)', pt: 'o CITUC (centro toxicológico)' },
+  UY: { es: 'CIAT (centro toxicológico)', en: 'CIAT (poison center)', pt: 'o CIAT (centro toxicológico)' },
+  BO: { es: 'centro toxicológico de tu departamento (CIATOX)', en: 'your department’s poison center (CIATOX)', pt: 'o centro toxicológico do seu departamento (CIATOX)' },
+  PE: { es: 'CICOTOX (centro toxicológico de la Universidad de San Marcos)', en: 'CICOTOX (San Marcos University poison center)', pt: 'o CICOTOX (centro toxicológico da Universidade de San Marcos)' },
+  PY: { es: 'Centro Nacional de Toxicología (CNTox, Ministerio de Salud)', en: 'the National Toxicology Center (CNTox, Ministry of Health)', pt: 'o Centro Nacional de Toxicologia (CNTox, Ministério da Saúde)' },
+  BR: { es: 'Disque-Intoxicación (Anvisa, red de centros de información toxicológica)', en: 'Disque-Intoxicação (Anvisa, network of poison information centers)', pt: 'o Disque-Intoxicação (Anvisa, rede de centros de informação toxicológica)' },
 };
 
 /**
@@ -77,11 +89,11 @@ const POISON_NAME: Record<Country, L> = {
  * {emergency}, {fire}, {medical} ("107 o al 911", o uno solo si es el mismo) y
  * {poison} (nombre del centro toxicológico).
  */
-export function fillGuideText(text: string, country: Country, lang: 'es' | 'en'): string {
+export function fillGuideText(text: string, country: Country, lang: GuideLang): string {
   const calls = CALLS[country];
   const emergency = calls.emergency ?? '911';
   const same = calls.same ?? emergency;
-  const medical = same === emergency ? same : `${same} ${lang === 'es' ? 'o al' : 'or'} ${emergency}`;
+  const medical = same === emergency ? same : `${same} ${lang === 'es' ? 'o al' : lang === 'pt' ? 'ou' : 'or'} ${emergency}`;
   return text
     .replaceAll('{medical}', medical)
     .replaceAll('{same}', same)

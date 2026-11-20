@@ -1,13 +1,13 @@
 # Guía de primeros auxilios: propuesta de textos más cortos y hallazgos (2026-11-20)
 
-Estado: **propuesta para validar**. Nada de esto está aplicado a `app/src/modules/firstAid/guides/content.ts`. Lo que sí se aplicó fue solo interfaz (ver `docs/DISENO.md`, «Pantallas de uso bajo estrés»).
+Estado (2026-11-20): **las propuestas [forma] están aplicadas** en `app/src/modules/firstAid/guides/` (ver «Qué se aplicó» al final); las **[SENTIDO]** NO se tocaron y quedan en «Pendientes de validación clínica». Lo de interfaz se aplicó antes (`docs/DISENO.md`, «Pantallas de uso bajo estrés»).
 
 Criterio de la simplificación: una frase corta por paso (idealmente ≤ 12 palabras), verbo de acción al principio, sin jerga ni paréntesis, 3 a 5 pasos por pantalla. Cada propuesta lleva una marca:
 
 - **[forma]** solo acorta o reordena palabras; el sentido clínico es el mismo.
 - **[SENTIDO]** quita o cambia un dato o una condición: **requiere que lo valide una persona con formación médica**.
 
-Los textos en inglés siguen la misma lógica; se dejan los más importantes. El portugués **no tiene contenido propio**: la guía muestra el español (la interfaz sí está traducida). Pendiente de traducción (pt) completa, incluido todo lo de abajo una vez validado.
+Los textos en inglés siguen la misma lógica; se dejan los más importantes. El portugués (pt-BR) ya está traducido completo pero **sin revisión humana** (ver `docs/TRADUCCION-PT-BR.md`); si algo de abajo cambia tras la validación clínica, hay que cambiarlo también en pt.
 
 ## 1. Propuestas por tema y paso
 
@@ -109,3 +109,26 @@ No inventé contenido clínico para estos temas: harán falta fuentes (ERC, Cruz
 2. ¿Partimos `snakebite`, `march` y `WILD_RESCUE` en pantallas/frases más cortas?
 3. ¿Se quiere reordenar «¿Qué le pasó?» en dos niveles (cambio de árbol)?
 4. ¿Qué temas faltantes primero? (Sugerencia para montaña: rayo, congelamiento, deshidratación, torcedura.)
+
+## 4. Qué se aplicó (2026-11-20)
+
+- **[forma] aplicadas:** `safe` 2 (condición primero), `unsafe` 1-2, `responds`, `breathing` 1-4, `cpr start` 1, 4 y 5, `pressure` 3 («No levantes la gasa para mirar. Si se empapa…»), «Lo primero» (protegete, avisá, sangra, abrigala), etiquetas «Dejó de responder» (H6).
+- **Se conservó el texto original (ante la duda, como [SENTIDO]):** `safe` 1 (se mantienen humo, piedras que caen y animales), «con dos dedos» (`breathing` 2), «con gasa» y «todo tu peso» (`pressure` 2), la llamada «Llamá al {medical} (o que otro llame…)» de `pressure`, y la cifra «100 a 120 por minuto» en `cpr start` 5 y en «Lo primero» (por pedido expreso).
+- **Canción del ritmo de RCP:** «La Bamba» y «Stayin' Alive» se reemplazaron por «Another One Bites the Dust» (Queen, ≈110 pulsos por minuto) en es/en/pt; se mantiene «100 a 120 por minuto».
+- **Pasos partidos:** `snakebite` en 3 pantallas (`start` qué hacer ya, `splint` inmovilizar con los 5 «No hacer» uno por línea, `hospital`; «No hagas torniquete» también en la primera); `march`: `m` → `m` + `m2`, `after` → `after` + `after2`, y `intro` → `intro` + `about` (de dónde sale), más frases cortas en `a`, `r`, `c`, `h`.
+- **Pedido de rescate:** `WILD_RESCUE` pasó de 52 a ~18 palabras («Pedí rescate al {emergency} y pasá tu ubicación. Sin señal: subí a un punto alto o mandá un SMS.»); el detalle («si son varios, que alguien vaya a buscar ayuda con la ubicación anotada», Policía o rescate de montaña) está en la guía nueva `rescue` («Pedir rescate»), a la que se llega desde `unsafe` y `other` (opción «Cómo pedir rescate»), desde la lista y por búsqueda.
+- **«¿Qué le pasó?» en dos niveles** (`assess/what`): 8 opciones de primer nivel: «No responde o no respira» (va a `breathing`), «Sangrado grave» (va a la guía de sangrado) y «Se ahoga con algo (atragantamiento)» (va a la guía) quedan a un toque; «Ahogo, dolor de pecho o desmayo» (`heart`: pecho, ACV, anafilaxia, convulsión, diabético, casi ahogado, altura), «Golpe, caída o hueso roto» (`injury`: caída, fractura, MARCH), «Quemadura, frío o calor» (`temp`), «Veneno, picadura o mordedura» (`venom`: serpiente, picadura, intoxicación) y «Otra cosa o no sé» (`other`). Las 18 situaciones originales siguen con el mismo texto de botón en el segundo nivel. Cambian testids/nombres accesibles solo en esto: aparecen los 5 botones de categoría y 2 directos nuevos («No responde o no respira», «Sangrado grave»); en `march` aparecen «De dónde sale esta guía», «Seguir: torniquete y relleno» y «Seguir: dolor y anotaciones»; en `snakebite`, «Seguir: inmovilizar» y «Seguir: llevarla al hospital»; las etiquetas «No responde»/«Deja de responder» que volvían a `assess` ahora dicen «Dejó de responder».
+- **Orden de textos coherente con las llamadas arriba:** en `unsafe` la llamada pasó al segundo paso (después de «No te acerques»), y «Si podés sin riesgo, eliminá el peligro…» al final; en `other` la condición «Si empeora… llamá al {same}» pasó al primer paso.
+- Se corrigió «Llamá al el centro…» (Bolivia, Paraguay y Brasil) quitando el artículo de esos tres nombres en `POISON_NAME` (es).
+
+## 5. Pendientes de validación clínica
+
+Todo esto lo tiene que ver una persona con formación médica **antes** de aplicar (no se tocó el texto actual):
+
+1. **Torniquete: dos posturas distintas en la app.** (a) Guía de sangrado (`bleeding/tourniquet`): presión primero (10 minutos), torniquete solo si sigue saliendo en chorro, ingle/axila/cuello con gasa común, aclaración de que las fuentes difieren (Manual del Ministerio de Salud 2016 lo desaconseja en heridas comunes; TCCC 2026 y TECC 2024 lo recomiendan si no cede). (b) MARCH (`march/m` y `m2`): torniquete directo apenas la presión no frena un sangrado de miembro (sin los 10 minutos), gasa hemostática y 3 minutos de presión. Decidir cuál va en la ruta corta, o si se unifican.
+2. **[SENTIDO] del informe, no aplicadas:** `continue` 4 (quitar «rara vez alcanza»); cifra de compresiones fuera de «Lo primero»; H2 («sin pasarse de 6 cm»); H3 (si el orden de `unsafe`/`other` debe ser otro); H4 (pantalla propia «RCP en niños y bebés»: hoy sigue en la última línea de `continue`); quitar «con gasa» y «todo tu peso» de `pressure` 2; «Que otro llame al {medical} mientras vos apretás» (supone que hay otra persona); acortar `safe` 1 (humo, animales, piedras que caen); «una mano sobre la otra» ya reemplaza al «talón de una mano» en `cpr start` 4 (se aplicó como [forma]: confirmar que no pierde técnica).
+3. **Pantallas que siguen con más de 5 pasos numerados** (hay una prueba que lo exige salvo para esta lista): `cpr/start` (7), `unconscious/start`, `bleeding/tourniquet`, `anaphylaxis/start`, `fall/conscious`, `fracture/start` (7-8), `chest/start` (hasta 8), `stroke/start`, `hypothermia/start`, `heat/start`. Partirlas cambia el orden de lectura de pasos clínicos: validar cómo.
+4. **Serpientes y portugués:** el paso de especies dice «En Argentina…»; en pt se tradujo igual («Na Argentina, as perigosas são as jararacas (yarará), a cascavel e a coral»). Para Brasil hace falta un texto propio (jararaca, cascavel, coral-verdadeira; soro antiofídico) y los centros de toxicología de Brasil, validados por alguien de allí.
+5. **Los números de la guía en pt** salen de `CALLS` según el país elegido (Brasil: SAMU 192, Bombeiros 193, Polícia 190, Disque-Intoxicação 0800 722 6001).
+6. **Lectura en voz alta:** anteponer «No hacer:» en los «No hacer» (sigue pendiente de decisión).
+7. **Temas que faltan** (sección 2): sin contenido clínico escrito.

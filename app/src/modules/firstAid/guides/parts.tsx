@@ -13,6 +13,7 @@ import {
   Droplet,
   Flame,
   Heart,
+  LifeBuoy,
   HeartPulse,
   LocateFixed,
   Mountain,
@@ -29,17 +30,19 @@ import {
 import { currentPosition } from '@/core/geo/useGeolocation';
 import { useSettings, type FirstAidEnv } from '@/core/settings/settings';
 import { useCountry } from '@/modules/emergency/currentCountry';
+import type { GuideLang } from './types';
 import { estimateHelp, WILD_MINUTES, type HelpEstimate } from './detect';
 
-/** Idioma del contenido de la guía. */
-export function useLang(): 'es' | 'en' {
+/** Idioma del contenido de la guía (español, inglés o portugués de Brasil). */
+export function useLang(): GuideLang {
   const { i18n } = useTranslation();
-  return i18n.language.startsWith('en') ? 'en' : 'es';
+  return i18n.language.startsWith('en') ? 'en' : i18n.language.startsWith('pt') ? 'pt' : 'es';
 }
 
 /** Ícono de cada tema: ayuda a reconocer la opción de un vistazo (con guantes, de noche); siempre va junto al texto, nunca solo. */
 export const TOPIC_ICON: Record<string, LucideIcon> = {
   cpr: HeartPulse,
+  rescue: LifeBuoy,
   unconscious: Bed,
   bleeding: Droplet,
   march: ClipboardList,

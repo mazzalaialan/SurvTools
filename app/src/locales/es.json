@@ -2565,6 +2565,7 @@
     "step": "Paso {{n}}",
     "quick": "Lo más urgente",
     "myLocation": "Mi ubicación (para el rescate)",
+    "ptPending": "Traducción al portugués pendiente de revisión por una persona.",
     "disclaimer": "Guía basada en las recomendaciones de primeros auxilios del Consejo Europeo de Resucitación, la Cruz Roja y el Ministerio de Salud. No reemplaza un curso: hacé uno de RCP y primeros auxilios. Ante la duda, llamá al {{medical}}.",
     "env": {
       "label": "Dónde estás",
@@ -2587,12 +2588,12 @@
     },
     "first": {
       "title": "Lo primero",
-      "protect": { "title": "Protegete.", "text": "Mirá que el lugar sea seguro antes de acercarte (tránsito, fuego, cables, agua, piedras)." },
-      "call": { "title": "Avisá.", "text": "Llamá al {{medical}}. En zona agreste, pedí rescate y pasá tus coordenadas." },
+      "protect": { "title": "Protegete.", "text": "Mirá que el lugar sea seguro antes de acercarte." },
+      "call": { "title": "Avisá.", "text": "Llamá al {{medical}}. En zona agreste, pedí rescate con tu ubicación." },
       "responds": { "title": "¿Responde?", "text": "Tocale los hombros y hablale fuerte." },
       "breathing": { "title": "¿Respira normal?", "text": "Si no respira o solo da bocanadas: RCP ya, 100 a 120 compresiones por minuto en el centro del pecho." },
-      "bleeding": { "title": "¿Sangra mucho?", "text": "Apretá fuerte sobre la herida; si es un brazo o una pierna y no para, torniquete." },
-      "position": { "title": "Abrigala y no la muevas", "text": "salvo peligro. Si no responde pero respira, de costado (posición lateral de seguridad)." }
+      "bleeding": { "title": "¿Sangra mucho?", "text": "Apretá fuerte sobre la herida. Si no para en un brazo o pierna: torniquete." },
+      "position": { "title": "Abrigala y no la muevas", "text": "salvo peligro. Si no responde pero respira: de costado." }
     },
     "call": {
       "emergency": "Emergencias / Policía",

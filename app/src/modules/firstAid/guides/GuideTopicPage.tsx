@@ -208,6 +208,12 @@ export function GuideTopicPage() {
         </Link>
       </div>
       <Notice id="guides.disclaimer">{t('guides.disclaimer', { medical: fill('{medical}') })}</Notice>
+      {/* La traducción al portugués de la guía es contenido de seguridad sin revisión humana: el aviso no se puede ocultar. */}
+      {lang === 'pt' && (
+        <p className="hint" data-testid="guide-pt-pending">
+          {t('guides.ptPending')}
+        </p>
+      )}
     </div>
   );
 }

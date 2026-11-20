@@ -72,7 +72,76 @@ test('guía de primeros auxilios: lo primero, evaluación paso a paso y entorno'
   await page.getByRole('link', { name: 'Mordedura de serpiente' }).click();
   await expect(node).toContainText('No hagas torniquete');
   await expect(page.getByTestId('guide-calls').getByRole('link', { name: '0800-333-0160' })).toBeVisible();
+  // La mordedura va en tres pantallas cortas: qué hacer ya, inmovilizar (con todos los «No hacer») y llevarla al hospital.
+  await page.getByRole('button', { name: 'Seguir: inmovilizar' }).click();
+  await expect(node).toContainText('No cortes la herida');
+  await expect(node).toContainText('No chupes el veneno');
+  await expect(node).toContainText('No pongas hielo ni calor');
+  await expect(node).toContainText('No des alcohol ni remedios caseros');
+  await page.getByRole('button', { name: 'Seguir: llevarla al hospital' }).click();
   await expect(node).toContainText('camilla');
+  // Pedir rescate: una frase corta en cada pantalla y el detalle en su guía.
+  await page.goto('/#/first-aid/guides/rescue');
+  await expect(node).toContainText('Sin señal');
+  await expect(node).toContainText('que alguien vaya a buscar ayuda');
+});
+
+test('guía de primeros auxilios: «¿Qué le pasó?» en dos niveles, con lo más urgente a un toque', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  const node = page.getByTestId('guide-node');
+  await page.goto('/#/first-aid/guides/assess');
+  await page.getByRole('button', { name: 'Sí, es seguro' }).click();
+  await page.getByRole('button', { name: 'Sí', exact: true }).click();
+  await page.getByRole('button', { name: 'No', exact: true }).click();
+  await expect(node).toContainText('¿Qué le pasó?');
+  // Primer nivel: lo más urgente a un toque y categorías claras.
+  for (const name of ['No responde o no respira', 'Sangrado grave', 'Se ahoga con algo (atragantamiento)', 'Ahogo, dolor de pecho o desmayo', 'Golpe, caída o hueso roto', 'Quemadura, frío o calor', 'Veneno, picadura o mordedura', 'Otra cosa o no sé'])
+    await expect(page.getByRole('button', { name })).toBeVisible();
+  // Segundo nivel: la situación, con el mismo texto de botón de siempre.
+  await page.getByRole('button', { name: 'Veneno, picadura o mordedura' }).click();
+  await page.getByRole('button', { name: 'Mordedura de serpiente' }).click();
+  await expect(page.getByRole('heading', { level: 1 }).last()).toHaveText('Mordedura de serpiente');
+  // Un toque desde el primer nivel: atragantamiento.
+  await page.goBack();
+  await page.goBack();
+  await page.getByRole('button', { name: 'Se ahoga con algo (atragantamiento)' }).click();
+  await expect(page.getByRole('heading', { level: 1 }).last()).toHaveText('Atragantamiento');
+});
+
+test('guía de primeros auxilios en portugués: títulos, pasos, números de Brasil y aviso de traducción', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto('/');
+  // El idioma viene del navegador solo si es pt: se elige en la pantalla de la bóveda.
+  await page.getByRole('group', { name: 'Idioma' }).getByRole('button', { name: 'Português' }).click();
+  await page.getByLabel('Senha', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir senha').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Criar cofre' }).click();
+  await page.getByLabel('Já anotei em um lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Início' })).toBeVisible();
+
+  const node = page.getByTestId('guide-node');
+  await page.goto('/#/first-aid/guides');
+  await expect(page.getByTestId('guide-pt-pending')).toHaveText('Tradução pendente de revisão por uma pessoa.');
+  await expect(page.getByTestId('guide-first')).toContainText('RCP já');
+  await page.getByPlaceholder('Buscar: cobra, queimadura, infarto…').fill('jararaca');
+  await expect(page.getByTestId('guide-topics').locator('li')).toHaveCount(1);
+  await page.goto('/#/first-aid/guides/cpr');
+  await expect(page.getByRole('heading', { level: 1 }).last()).toHaveText('Não responde e não respira: RCP');
+  await expect(node).toContainText('Another One Bites the Dust');
+  await expect(node).toContainText('compressões torácicas');
+  await expect(page.getByTestId('guide-pt-pending')).toBeVisible();
+  // Brasil: ambulância 192 e polícia 190 (por el país elegido); acá el país de prueba es Argentina, con su 911 y 107.
+  await page.goto('/#/first-aid/guides/march');
+  await page.getByRole('button', { name: /Começar pelo M/ }).click();
+  await expect(node).toContainText('Hemorragia maciça');
 });
 
 test('guía de primeros auxilios: detectar ciudad o zona agreste con la ubicación, sin conexión', async ({ page, context }) => {
@@ -252,9 +321,12 @@ test('guías MARCH (trauma grave) y mal de altura: se recorren paso a paso y lle
   const node = page.getByTestId('guide-node');
   await page.goto('/#/first-aid/guides/march');
   await expect(node).toContainText('MARCH es un orden para atender');
+  await page.getByRole('button', { name: 'De dónde sale esta guía' }).click();
   await expect(node).toContainText('TCCC 2026');
+  await page.getByTestId('guide-back').click();
   await page.getByRole('button', { name: /Empezar por M/ }).click();
   await expect(node).toContainText('Hemorragia masiva');
+  await page.getByRole('button', { name: /Seguir: torniquete y relleno/ }).click();
   await expect(node).toContainText('5 a 7 cm');
   await expect(node).toContainText('al menos 3 minutos');
   // Las dos posturas sobre el torniquete, con sus fuentes y fechas.
@@ -267,6 +339,7 @@ test('guías MARCH (trauma grave) y mal de altura: se recorren paso a paso y lle
   await page.getByRole('button', { name: /Seguir con C/ }).click();
   await page.getByRole('button', { name: /Seguir con H/ }).click();
   await page.getByRole('button', { name: 'Después de MARCH' }).click();
+  await page.getByRole('button', { name: /Seguir: dolor y anotaciones/ }).click();
   await expect(node).toContainText('Repetí MARCH');
 
   // Mal de altura: lo leve se queda; con señales graves, bajar ya.
