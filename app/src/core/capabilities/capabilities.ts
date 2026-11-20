@@ -93,12 +93,12 @@ export async function detectCapabilities(): Promise<CapabilityMap> {
     // Los navegadores no exponen el barómetro: solo la app nativa lo lee (se pregunta directo al sensor, sin depender de que ya esté instalado).
     native ? import('./nativeBarometerProbe').then((m) => m.barometerAvailable()) : Promise.resolve(false),
     native ? import('@/core/security/nativeBiometric').then((m) => m.nativeAvailable()) : Promise.resolve(false),
-    // Permiso real de ubicación (no solo que la app sea nativa): se lee sin pedirlo.
+    // Permiso real de ubicación «todo el tiempo» (no solo que la app sea nativa): se lee sin pedirlo.
     native ? import('./nativeBackgroundLocationProbe').then((m) => m.backgroundLocationGranted()) : Promise.resolve(false),
   ]);
   return {
     geolocation: 'geolocation' in navigator,
-    // GPS en segundo plano (grabar con la pantalla apagada): solo la app nativa y con el permiso de ubicación dado (el servicio en primer plano no necesita el «todo el tiempo»). En el navegador la
+    // GPS en segundo plano (grabar con la pantalla apagada): solo la app nativa y con el permiso «todo el tiempo» dado. En el navegador la
     // ubicación se corta cuando la pestaña queda oculta.
     backgroundLocation: backgroundOk,
     orientation,

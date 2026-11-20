@@ -93,4 +93,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Ubicación «todo el tiempo»: la grabación de recorridos sigue con la pantalla apagada y el plugin de ubicación (servicio en primer plano) la pide al empezar una
+         grabación. Con este permiso Android puede reiniciar el servicio aunque la app no esté a la vista. Google Play pide declarar el uso (ver docs/PENDIENTES.md). -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 </manifest>

@@ -1,14 +1,14 @@
 import { BackgroundGeolocation } from '@capgo/background-geolocation';
 
 /**
- * ¿Puede la app grabar la ubicación con la pantalla apagada? La grabación nativa va con un servicio en primer plano de tipo ubicación (con su
- * notificación fija) y NO usa el permiso «todo el tiempo» de Android (`ACCESS_BACKGROUND_LOCATION` no está declarado en la app): alcanza con el
- * permiso de ubicación normal. Se lee sin mostrar ningún diálogo; si se lo negaron o no se puede leer, responde `false`.
+ * ¿Tiene la app el permiso de ubicación «todo el tiempo» (también con la pantalla apagada o la app fuera de la vista)? La grabación nativa lo declara
+ * (`ACCESS_BACKGROUND_LOCATION`) y el plugin lo pide al empezar una grabación. Se lee sin mostrar ningún diálogo. Con «solo mientras se usa la app»,
+ * sin permiso o si no se puede leer, responde `false`: es mejor mostrarlo que ocultarlo.
  */
 export async function backgroundLocationGranted(): Promise<boolean> {
   try {
     const s = await BackgroundGeolocation.checkPermissions();
-    return s.location === 'granted';
+    return s.location === 'granted' && (s.backgroundLocation === 'granted' || s.backgroundLocation === 'always');
   } catch {
     return false;
   }
