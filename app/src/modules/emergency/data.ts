@@ -23,6 +23,12 @@ export interface Place {
   fuels?: FuelType[];
   /** Aclaración (servicios: dónde está el desfibrilador, altura y capacidad de un refugio). */
   note?: string;
+  /** Brasil: código del establecimiento en el CNES (Ministério da Saúde). Un pin con este campo es del CNES (oficial, CC BY-ND): no se le completa nada con OpenStreetMap. */
+  cnes?: string;
+  /** CNES: atiende las 24 horas (`CO_TURNO_ATENDIMENTO` = 06). */
+  h24?: boolean;
+  /** CNES: atiende por el SUS (`CO_AMBULATORIAL_SUS` = SIM). */
+  sus?: boolean;
 }
 
 export interface RadioStation {
@@ -73,6 +79,10 @@ export interface NearbyPlace {
   radio?: ParkRadio[];
   /** Estaciones de servicio: combustibles que vende. */
   fuels?: FuelType[];
+  /** Brasil, salud: código del CNES, 24 horas y atención SUS (el lugar viene del CNES, no de OpenStreetMap). */
+  cnes?: string;
+  h24?: boolean;
+  sus?: boolean;
 }
 
 /** Combustibles de una estación de servicio: nafta (bencina, gasolina), gasoil, GNC (GNV) y GLP. */
@@ -279,7 +289,7 @@ export function withParks(places: NearbyPlace[], parks: ParksData, lat: number, 
 }
 
 /** Del dataset de salud: hospitales y guardias, por un lado; centros de atención primaria, por otro. */
-const healthKind = (type = ''): ContactKind => (/hospital|emergencias|u\.p\.a/i.test(type) ? 'hospital' : 'medical');
+const healthKind = (type = ''): ContactKind => (/hospital|emergencias|u\.p\.a|pronto|unidade mista/i.test(type) ? 'hospital' : 'medical');
 
 export function officialNearby(data: EmergencyData, lat: number, lon: number, radiusM: number): NearbyPlace[] {
   const here = { lat, lon };
@@ -296,8 +306,10 @@ export function officialNearby(data: EmergencyData, lat: number, lon: number, ra
       lat: p.lat,
       lon: p.lon,
       distance,
-      source: data.osm || p.osm ? 'osm' : 'official',
+      // Un pin del CNES (Brasil) es oficial aunque el resto del paquete sea de OpenStreetMap.
+      source: p.cnes ? 'official' : data.osm || p.osm ? 'osm' : 'official',
       detail: p.type ?? '',
+      ...(p.cnes ? { cnes: p.cnes, ...(p.h24 && { h24: true }), ...(p.sus && { sus: true }) } : {}),
     });
   };
   const key = data.osm ? 'pkg-' : '';
@@ -318,6 +330,8 @@ export function mergeNearby(official: NearbyPlace[], osm: NearbyPlace[]): Nearby
   for (const o of osm) {
     const twin = merged.find((m) => sameKind(m.kind, o.kind) && distanceMeters(m, o) < 150);
     if (twin) {
+      // El CNES (CC BY-ND) no se mezcla con OpenStreetMap: se muestra el pin del CNES tal cual y el de OSM se oculta, sin completarle nada.
+      if (twin.cnes) continue;
       twin.phone ||= o.phone;
       twin.address ||= o.address;
       if (!twin.fuels && o.fuels) twin.fuels = o.fuels;

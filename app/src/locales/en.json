@@ -592,6 +592,9 @@
     "save": "Save {{name}} to my contacts",
     "saved": "Saved to my contacts",
     "nearbySourcesPackage": "Sources: {{sources}}.",
+    "cnesH24": "Open 24 h",
+    "cnesSus": "SUS (public health system)",
+    "cnesCode": "CNES {{code}}",
     "serviceSource": "{{what}}: {{source}}.",
     "nearbySources": "Sources: fire stations from IGN and the National Council of Volunteer Firefighters; security and health buildings nationwide from IGN (with SISA); in Buenos Aires Province, the provincial police and health lists with phone and address (open data, CC BY 4.0); phones from OpenStreetMap included in the app (ODbL); and live OpenStreetMap when online. Phones may be outdated: confirm them when you can."
   },

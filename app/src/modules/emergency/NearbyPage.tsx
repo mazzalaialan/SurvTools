@@ -193,6 +193,8 @@ export function NearbyPage() {
 
   /** El tipo según la fuente: el de los datos oficiales y el de los servicios (bandera, red del cajero, clase de refugio). */
   const showDetail = (p: NearbyPlace) => !!p.detail && (p.source === 'official' || SERVICE_KINDS.has(p.kind));
+  /** Salud del CNES (Brasil): 24 h, atención SUS y código del establecimiento. */
+  const cnesTags = (p: NearbyPlace) => (p.cnes ? [p.h24 && t('emergency.cnesH24'), p.sus && t('emergency.cnesSus'), t('emergency.cnesCode', { code: p.cnes })].filter(Boolean).join(' · ') : '');
   const fuelList = (p: NearbyPlace) => (p.fuels ?? []).map((f) => t(`emergency.fuels.${f}`)).join(', ');
 
   async function handleSave(p: NearbyPlace) {
@@ -206,6 +208,7 @@ export function NearbyPage() {
       notes: [
         showDetail(p) ? p.detail : '',
         p.note ?? '',
+        cnesTags(p),
         ...(p.extraPhones ?? []).map((e) => `${e.label}: ${e.phone}`),
         ...(p.radio ?? []).map((r) => `${t('radio.vhf')} ${r.freq} (${r.label})`),
         p.fuels ? fuelList(p) : '',
@@ -314,6 +317,7 @@ export function NearbyPage() {
                   <span className={`source-badge source-${p.source}`}>{t(`emergency.source.${p.source}`)}</span>
                 </span>
                 {p.note && <span className="list-sub">{p.note}</span>}
+                {p.cnes && <span className="list-sub">{cnesTags(p)}</span>}
                 {p.fuels && <span className="list-sub">{fuelList(p)}</span>}
                 <MapLink address={p.address} lat={p.lat} lon={p.lon} />
                 {p.extraPhones?.map((e) => (

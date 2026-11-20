@@ -592,6 +592,9 @@
     "save": "Guardar {{name}} en mis contactos",
     "saved": "Guardado en mis contactos",
     "nearbySourcesPackage": "Fuentes: {{sources}}.",
+    "cnesH24": "Atiende las 24 h",
+    "cnesSus": "Atiende por el SUS",
+    "cnesCode": "CNES {{code}}",
     "serviceSource": "{{what}}: {{source}}.",
     "nearbySources": "Fuentes: cuarteles de bomberos del IGN y el Consejo Nacional de Bomberos Voluntarios; edificios de seguridad y de salud de todo el país del IGN (con SISA); en la Provincia de Buenos Aires, los listados provinciales de comisarías y salud, con teléfono y dirección (datos abiertos, CC BY 4.0); teléfonos de OpenStreetMap incluidos en la app (ODbL); y, con conexión, OpenStreetMap en vivo. Los teléfonos pueden estar desactualizados: confirmalos cuando puedas."
   },

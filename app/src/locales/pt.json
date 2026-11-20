@@ -1133,6 +1133,9 @@
   "save": "Salvar {{name}} nos meus contatos",
   "saved": "Salvo nos meus contatos",
   "nearbySourcesPackage": "Fontes: {{sources}}.",
+  "cnesH24": "Atende 24 h",
+  "cnesSus": "Atende pelo SUS",
+  "cnesCode": "CNES {{code}}",
   "serviceSource": "{{what}}: {{source}}.",
   "nearbySources": "Fontes: quartéis de bombeiros do IGN e do Conselho Nacional de Bombeiros Voluntários; edifícios de segurança e de saúde de todo o país do IGN (com SISA); na Província de Buenos Aires, as listas provinciais de delegacias e saúde, com telefone e endereço (dados abertos, CC BY 4.0); telefones do OpenStreetMap incluídos no app (ODbL); e, com conexão, OpenStreetMap ao vivo. Os telefones podem estar desatualizados: confirme-os quando puder."
  },
