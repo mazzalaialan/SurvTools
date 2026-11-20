@@ -68,12 +68,12 @@ function AlertSummary() {
   );
 }
 
-/** Lo que más se usa en el campo, a un toque desde el inicio. */
+/** Lo que más se usa en el campo, a un toque desde el inicio. Emergencia y servicios cercanos van en el color de emergencia (rojo). */
 function QuickActions() {
   const { t } = useTranslation();
   const items = [
     { to: '/first-aid/location', icon: Siren, label: t('home.quick.emergency'), danger: true },
-    { to: '/first-aid/contacts/nearby', icon: Hospital, label: t('home.quick.nearby') },
+    { to: '/first-aid/contacts/nearby', icon: Hospital, label: t('home.quick.nearby'), danger: true },
     { to: '/orientation/tracks', icon: Circle, label: t('home.quick.record') },
     { to: '/orientation/waypoints', icon: Navigation, label: t('home.quick.goTo') },
   ];
