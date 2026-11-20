@@ -5557,16 +5557,22 @@ button.country-pack-del {
   min-height: 52px;
   min-width: 96px;
   padding: 6px 14px;
-  border: 2px solid var(--accent);
+  /* Un solo tono para todo lo que llama (Contactos y Mi ubicación): el de peligro. */
+  border: 2px solid var(--danger);
   background: var(--surface-2);
   font-size: var(--fs-lg);
   font-weight: 700;
 }
 
 .content[data-area='emergency'] .btn-call svg {
-  color: var(--accent);
+  color: var(--danger);
   width: 18px;
   height: 18px;
+}
+
+/* Menú de abajo: dentro de Emergencias la solapa activa lleva el mismo tono de peligro que los botones de llamada y los íconos de la sección. */
+.bottomnav[data-area='emergency'] a.active {
+  color: var(--danger);
 }
 
 /* El de «Llamar al 911» (y los números del país): sólido en color de peligro, arriba de todo. */

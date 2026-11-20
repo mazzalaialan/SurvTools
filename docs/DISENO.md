@@ -55,3 +55,6 @@ Degradados violeta/azul, brillos, glassmorphism, neones, sombras largas y difusa
 - **Táctil:** en el inspector, alto y ancho ≥48 px (≥44 para secundarios) en un viewport de 390×844.
 - **Capturas:** spec temporal de Playwright con prefijo `_diseno_` (celular 390×844 y escritorio; temas claro, oscuro y rojo; `es` y `pt`), con `npm run e2e:full -- e2e/_diseno_x.spec.ts --project=desktop`; se borra al terminar. Imprimir pantalla completa deja el menú de abajo en el medio de la captura: es un artefacto, no un error.
 - **Sin romper:** `npx tsc --noEmit -p .`, `npx vitest run` y las e2e de las pantallas tocadas.
+
+## Un solo tono por función (2026-11-20)
+Dentro de Emergencias, **todo lo que llama, avisa o marca la sección usa `--danger`**: botones de llamada (Contactos y Mi ubicación), íconos de la grilla y la solapa activa del menú de abajo (`.bottomnav[data-area='emergency'] a.active`). `--accent` (cobre) queda para enlaces, acciones comunes y la solapa activa en el resto de la app. No mezclar los dos tonos para la misma función: se nota como inconsistencia.

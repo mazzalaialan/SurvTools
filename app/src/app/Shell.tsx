@@ -69,7 +69,7 @@ export function Shell() {
 
   return (
     <div className="shell">
-      <nav className="bottomnav" aria-label={t('nav.main')}>
+      <nav className="bottomnav" aria-label={t('nav.main')} data-area={pathname.startsWith('/first-aid') ? 'emergency' : undefined}>
         {NAV.map(({ to, key, icon: Icon }) => (
           <NavLink key={to} to={to} end={to === '/'}>
             <Icon size={24} aria-hidden />
