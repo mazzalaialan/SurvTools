@@ -8,6 +8,8 @@
 
 **Pendiente de probar en el teléfono (no se pudo desde la computadora):** que la línea «GPS / ubicación en segundo plano» coincida con el permiso que Android muestra para la app (con ubicación permitida, también «solo mientras se usa» = tilde; sin permiso = cruz); que el botón de actualización de la web ande con una versión nueva publicada.
 
+**En cola (pedido del usuario, 2026-11-20), a hacer cuando termine la extensión del diseño a toda la app:** revisar con el agente `vikarg-disenador` la **guía de primeros auxilios** (`app/src/modules/firstAid/*`, `/first-aid/guides`) para que sea **muy práctica y fácil de entender para alguien con mucho estrés**: simplificar lo más posible (una decisión por pantalla, frases cortas, lo vital arriba y grande, sin jerga), y agregar un botón **«Volver al paso anterior»** (además de «Volver a evaluar») por si se equivocó al elegir una respuesta. Verificar con las e2e de guías y revisar el contenido en pt/en. Sin cambiar el contenido médico sin avisar: cualquier cambio de texto clínico lo valida el usuario.
+
 **Abierto, en orden de importancia:**
 1. **CENVUL (volcanes de Perú):** causa hallada 2026-11-20: su servicio `status-volcanos` da 401 (cambio de la fuente). Parser con respaldo en el último boletín (solo un volcán), hecho en el servidor y sin publicar; hace falta publicar para que se note. Para cubrir todos los volcanes: pedir acceso formal a CENVUL/IGP (ver `FUENTES-DE-DATOS.md`).
 2. **pt-BR necesita revisión humana** antes de confiar en él (sobre todo los textos de seguridad); ver `docs/TRADUCCION-PT-BR.md`.
