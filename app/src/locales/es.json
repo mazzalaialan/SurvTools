@@ -2473,6 +2473,8 @@
       "sectorsHint": "Brasil se baja por sectores: elegí cuáles en la lista de Ajustes → País."},
     "sectorShort": {"sul": "Sul", "sudeste": "Sudeste", "centro-oeste": "Centro-Oeste", "nordeste": "Nordeste", "norte": "Norte"},
     "sector": {
+      "toggle": "Ver u ocultar las zonas de {{country}}",
+      "zones": "Zonas",
       "title": "Sectores de Brasil",
       "hint": "Brasil es muy grande: sus datos sin conexión se bajan por sector (macrorregión del IBGE). Bajá el tuyo y los que vayas a visitar.",
       "sul": "Sul (PR, SC, RS)",

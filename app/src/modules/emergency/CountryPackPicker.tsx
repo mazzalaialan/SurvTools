@@ -86,27 +86,34 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                       type="button"
                       className="country-pack-select"
                       aria-pressed={country === c}
-                      aria-expanded={manage && c === 'BR' ? brOpen : undefined}
-                      aria-controls={manage && c === 'BR' ? 'country-sectors-BR' : undefined}
                       onClick={() => {
-                        if (manage && c === 'BR') {
-                          // Brasil se baja por sectores: tocarlo muestra (o esconde) sus sectores, sin cambiar el país actual (podés querer bajar el sector
-                          // pegado a donde vas). Para usarlo como país actual hay un botón dentro de la lista.
-                          setBrOpen(!brOpen);
-                          return;
-                        }
                         void update({ country: c });
-                        if (manage && state !== 'ready') void download(c);
+                        // Brasil se baja por sectores (con el control de al lado): elegirlo no baja nada.
+                        if (manage && c !== 'BR' && state !== 'ready') void download(c);
                       }}
                     >
                       {/* Marca de «país actual» con ícono y texto (aria-hidden: el nombre accesible sigue siendo solo el país): no depende del color. */}
                       {country === c && <MapPin size={18} aria-hidden className="country-pack-now-icon" />}
                       <span className="country-pack-name">{name}</span>
-                      {manage && c === 'BR' ? brOpen ? <ChevronUp size={16} aria-hidden /> : <ChevronDown size={16} aria-hidden /> : null}
                     </button>
                     {/* La leyenda va fuera del botón (superpuesta a su derecha) para no cambiar su texto ni su nombre accesible. */}
                     {manage && country === c && <span className="country-pack-now" aria-hidden>{t('country.map.legendMain')}</span>}
-                    {!manage || c === 'BR' ? null : busy === c ? (
+                    {manage && c === 'BR' ? (
+                      // Brasil es un botón como los demás (lo marca como país actual); sus sectores se despliegan con este control, al costado.
+                      <button
+                        type="button"
+                        className="country-pack-icon country-pack-toggle"
+                        data-testid="country-sectors-toggle-BR"
+                        aria-expanded={brOpen}
+                        aria-controls="country-sectors-BR"
+                        aria-label={t('country.sector.toggle', { country: name })}
+                        title={t('country.sector.toggle', { country: name })}
+                        onClick={() => setBrOpen(!brOpen)}
+                      >
+                        {brOpen ? <ChevronUp size={18} aria-hidden /> : <ChevronDown size={18} aria-hidden />}
+                        <span className="country-pack-size">{t('country.sector.zones')}</span>
+                      </button>
+                    ) : !manage ? null : busy === c ? (
                       <span className="country-pack-icon" role="img" aria-label={t('country.pack.downloading', { country: name })} title={t('country.pack.downloading', { country: name })}>
                         <Loader2 size={16} className="spin" aria-hidden />
                       </span>
@@ -137,14 +144,6 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                   {/* Los sectores de Brasil van pegados a la fila de Brasil, sangrados, para que se entienda a qué país pertenecen. */}
           {manage && c === 'BR' && brOpen && (
             <div className="country-sectors" id="country-sectors-BR" data-testid="country-sectors-BR">
-              {/* Justo debajo de la fila de Brasil (decisión del usuario): es lo primero que se ve al abrir el grupo. Fila de texto con el mismo ícono de
-                  «país actual», sin relleno (no se parece a «bajar»). Si Brasil ya es el país actual no hace falta: lo dice la fila de Brasil. */}
-              {country !== 'BR' && (
-                <button className="country-sector-use" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
-                  <MapPin size={18} aria-hidden />
-                  <span>{t('country.map.use', { country: t('country.BR') })}</span>
-                </button>
-              )}
               <p className="hint">
                 {t('country.sector.hint')}
               </p>

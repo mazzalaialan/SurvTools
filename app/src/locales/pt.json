@@ -3828,6 +3828,8 @@
   },
   "sectorShort": {"sul": "Sul", "sudeste": "Sudeste", "centro-oeste": "Centro-Oeste", "nordeste": "Nordeste", "norte": "Norte"},
     "sector": {
+      "toggle": "Mostrar ou ocultar as zonas de {{country}}",
+      "zones": "Zonas",
       "title": "Setores do Brasil",
       "hint": "O Brasil é enorme: os dados offline são baixados por setor (macrorregião do IBGE). Baixe o seu e os que você for visitar.",
       "sul": "Sul (PR, SC, RS)",

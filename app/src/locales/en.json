@@ -2474,6 +2474,8 @@
       "sectorsHint": "Brazil is downloaded by sector: choose which ones in the Settings → Country list."},
     "sectorShort": {"sul": "South", "sudeste": "Southeast", "centro-oeste": "Center-West", "nordeste": "Northeast", "norte": "North"},
     "sector": {
+      "toggle": "Show or hide the zones of {{country}}",
+      "zones": "Zones",
       "title": "Brazil sectors",
       "hint": "Brazil is huge: its offline data is downloaded by sector (IBGE macro-region). Download yours and the ones you will visit.",
       "sul": "South (PR, SC, RS)",

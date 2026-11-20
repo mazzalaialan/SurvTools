@@ -6054,27 +6054,6 @@ button.country-pack-del {
 }
 /* «Usar Brasil como país actual»: acción secundaria al pie de los sectores. Sin relleno ni peso (no se confunde con «bajar»), borde fuerte,
    ícono de «país actual», 48 px de alto y a todo el ancho de la lista para tocarla con guantes. */
-[data-area='country-picker'] .country-sector-use {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  width: 100%;
-  min-height: 48px;
-  padding: var(--sp-2) var(--sp-3);
-  border: 1px solid var(--control-border);
-  border-radius: var(--radius-ctl);
-  background: transparent;
-  color: var(--text);
-  font: inherit;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-}
-[data-area='country-picker'] .country-sector-use:active {
-  background: var(--border);
-}
-
 @media (prefers-reduced-motion: reduce) {
   [data-area='country-picker'] .spin {
     animation: none;
@@ -6102,6 +6081,7 @@ button.country-pack-del {
 [data-area='country-picker'] .country-pack > .country-sectors {
   margin: calc(-1 * var(--sp-1)) 0 var(--sp-1) var(--sp-4);
 }
-[data-area='country-picker'] .country-pack-item[data-testid='country-pack-BR'] .country-pack-now {
-  right: calc(var(--sp-3) + 16px + var(--sp-2));
+/* El control de zonas de Brasil ocupa el lugar de la celda de estado de las otras filas: mismo ancho, así la leyenda «País actual» no lo pisa. */
+[data-area='country-picker'] .country-pack-toggle {
+  min-width: 72px;
 }

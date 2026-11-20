@@ -805,9 +805,8 @@ test('el mapa se abre mirando al país actual de Ajustes, aunque estés parado e
 
   // Brasil como país actual: el mapa se centra en Brasil (lon cerca de -54, lat de -14), aunque la ubicación sea la de Buenos Aires.
   await page.goto('/#/settings');
-  await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' }).click();
-  await page.getByTestId('country-sector-use-BR').click();
-  await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true }).click();
+  await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true })).toHaveAttribute('aria-pressed', 'true');
   c = await center();
   expect(c.lon).toBeGreaterThan(-60);
   expect(c.lon).toBeLessThan(-48);
