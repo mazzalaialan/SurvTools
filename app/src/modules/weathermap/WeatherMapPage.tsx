@@ -23,6 +23,7 @@ import { RiverForecastLine } from './RiverForecastLine';
 import { TideGaugeLine } from './TideGaugeLine';
 import { boThreatLine } from '@/modules/navigation/bolivia';
 import { tideExtremes, tideLevelAt } from '@/modules/navigation/tides';
+import { LAYER_KEYS } from './layerKeys';
 import { clampView, fitBounds, fromMercator, homeBounds, tileBBox, tilesFor, tileZoom, toMercator, viewBBox, zoomAt, type Size, type View } from './projection';
 import { Notice } from '@/ui/Notice';
 import {
@@ -69,7 +70,6 @@ const SETTLE_MS = 500;
 /** Teselas de radar por cuadro (si hacen falta más, se usa un zoom menor). */
 const RADAR_TILES_MAX = 16;
 const PRELOAD_PARALLEL = 4;
-const LAYER_KEYS: (keyof WeatherMapLayers)[] = ['official', 'satellite', 'satRain', 'radar', 'regionWeather', 'earthquakes', 'hazards', 'fires', 'volcanoes', 'lightning', 'rivers', 'tides', 'waves', 'waypoints'];
 /** Cada cuánto se piden los rayos (el satélite saca un archivo cada 20 s). */
 const LIGHTNING_MS = 20_000;
 /** La lluvia estimada sale cada 10 minutos. */
@@ -597,7 +597,7 @@ export function WeatherMapPage() {
             waypoints={waypoints}
             here={here}
             lightning={showLightning ? (lightning?.flashes ?? null) : null}
-            rings={showLightning}
+            rings={layers.rings}
             animate={!saver}
             selected={selected}
             onSelect={setSelected}
@@ -749,16 +749,17 @@ function MapTimes({ sat, satNoaa, stale, rain, radar, fires, fmt }: { sat: Date 
 function Legend({ layers, zoneValue, windUnit, firmsFires, firesHidden, satNoaa }: { layers: WeatherMapLayers; zoneValue: WeatherMapValue; windUnit: string; firmsFires: boolean; firesHidden: number; satNoaa?: boolean }) {
   const { t } = useTranslation();
   const items: [boolean, string, string][] = [
+    [layers.rings, 'rings', t('weatherMap.legend.rings')],
     [layers.official, 'official', t('weatherMap.legend.official')],
     [layers.regionWeather && zoneValue === 'wind', 'wind', t('weatherMap.legend.wind', { unit: windUnit })],
     [layers.satellite, 'satellite', t(satNoaa ? 'weatherMap.legend.satelliteNoaa' : 'weatherMap.legend.satellite')],
     [layers.satRain, 'satRain', t('weatherMap.legend.satRain')],
     [layers.radar, 'radar', t('weatherMap.legend.radar')],
+    [layers.lightning, 'lightning', t('weatherMap.legend.lightning')],
     [layers.earthquakes, 'quake', t('weatherMap.legend.earthquakes')],
     [layers.hazards, 'hazard', t('weatherMap.legend.hazards')],
     [layers.volcanoes, 'volcano', t('weatherMap.legend.volcanoes')],
     [layers.fires, 'fire', t(firmsFires ? 'weatherMap.legend.firesConfidence' : 'weatherMap.legend.fires') + (firmsFires && firesHidden > 0 ? ` ${t('weatherMap.legend.firesHidden', { count: firesHidden })}` : '')],
-    [layers.lightning, 'lightning', t('weatherMap.legend.lightning')],
     [layers.rivers, 'rivers', t('weatherMap.legend.rivers')],
     [layers.tides, 'tides', t('weatherMap.legend.tides')],
     [layers.waves && sourceEnabled('open-meteo'), 'waves', t('weatherMap.legend.waves')],

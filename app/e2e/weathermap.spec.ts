@@ -202,7 +202,7 @@ test('mapa de tiempo: capas, animación, tocar un sismo o una alerta, y sin cone
   // Rayos: del servidor propio, círculos amarillos; cada tanda reemplaza a la anterior.
   await expect(page.getByRole('button', { name: 'Rayos' })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('lightning-status')).toHaveText(/^2 rayos en la región · actualizado \d\d:\d\d$/);
-  await expect(page.getByText(/Anillos de 10, 20 y 30 km alrededor tuyo/)).toBeVisible();
+  await expect(page.getByText(/Círculos de 10, 20 y 30 km alrededor tuyo/).first()).toBeVisible();
   // Sin imágenes de fondo, para leer el color.
   await page.getByRole('button', { name: 'Satélite (nubes)' }).click();
   await page.getByRole('button', { name: 'Radar de lluvia' }).click();
@@ -820,4 +820,26 @@ test('el mapa se abre mirando al país actual de Ajustes, aunque estés parado e
   c = await center();
   expect(c.lon).toBeGreaterThan(-75);
   expect(c.lon).toBeLessThan(-67);
+});
+
+test('capas del mapa del clima: los círculos de distancia van primero y marcados, y los rayos justo después del radar (tarjetas y pantalla completa)', async ({ page }) => {
+  await mockSources(page);
+  await setup(page);
+  await page.goto('/#/weather/map');
+  const chips = page.locator('section[aria-labelledby=wmap-layers] .chips').first().getByRole('button');
+  await expect(chips.first()).toHaveText('Círculos de distancia', { timeout: 20_000 });
+  await expect(chips.first()).toHaveAttribute('aria-pressed', 'true');
+  const names = await chips.allTextContents();
+  expect(names.indexOf('Rayos')).toBe(names.indexOf('Radar de lluvia') + 1);
+  // Los círculos no dependen de los rayos: con los rayos apagados siguen.
+  await page.getByRole('button', { name: 'Rayos' }).click();
+  await expect(page.getByRole('button', { name: 'Círculos de distancia' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText(/Círculos de 10, 20 y 30 km alrededor tuyo/).first()).toBeVisible();
+  // Pantalla completa: el mismo orden en el menú de capas, con los círculos marcados.
+  await page.getByRole('button', { name: 'Pantalla completa' }).click();
+  await page.getByTestId('wmap-fs-layers-btn').click();
+  const ids = await page.getByTestId('wmap-fs-menu').locator('[data-testid^=wmap-fs-layer-]').evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')!.replace('wmap-fs-layer-', '')));
+  expect(ids[0]).toBe('rings');
+  expect(ids.indexOf('lightning')).toBe(ids.indexOf('radar') + 1);
+  await expect(page.getByTestId('wmap-fs-layer-rings')).toHaveAttribute('aria-pressed', 'true');
 });

@@ -3,7 +3,7 @@ import type { WeatherMapLayers } from '@/core/settings/settings';
 import { quickRows } from './quickReference';
 
 const OFF: WeatherMapLayers = {
-  satellite: false, radar: false, regionWeather: false, official: false, earthquakes: false, hazards: false, fires: false, volcanoes: false,
+  rings: false, satellite: false, radar: false, regionWeather: false, official: false, earthquakes: false, hazards: false, fires: false, volcanoes: false,
   waypoints: false, satRain: false, lightning: false, rivers: false, tides: false, waves: false,
 };
 const opts = { zoneValue: 'temp' as const, windUnit: 'km/h', firmsFires: false, satNoaa: false };

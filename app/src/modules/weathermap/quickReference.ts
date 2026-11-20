@@ -34,6 +34,7 @@ export interface QuickOptions {
 export function quickRows(layers: WeatherMapLayers, o: QuickOptions): QuickRow[] {
   const rows: QuickRow[] = [];
   const add = (layer: keyof WeatherMapLayers, entries: QuickEntry[]) => rows.push({ layer, entries });
+  if (layers.rings) add('rings', [{ swatch: 'transparent', text: 'rings' }]);
   if (layers.official) {
     add('official', [
       { swatch: s(4), text: 'official.minor' },
@@ -47,6 +48,7 @@ export function quickRows(layers: WeatherMapLayers, o: QuickOptions): QuickRow[]
   if (layers.satellite) add('satellite', [{ swatch: 'linear-gradient(90deg, #8fd0ee, #2a6fd6, #3bd23b, #f2e94e)', text: o.satNoaa ? 'satellite.noaa' : 'satellite.gibs' }]);
   if (layers.satRain) add('satRain', [{ swatch: 'linear-gradient(90deg, #78c8ff, #288cf0, #1ebe50, #fadc28, #fa8c14, #e61e1e)', text: 'satRain' }]);
   if (layers.radar) add('radar', [{ swatch: 'linear-gradient(90deg, #3c6596, #1ea0dc, #1ec850, #fadc28, #e61e1e, #c81eb4, #ffffff)', text: 'radar' }]);
+  if (layers.lightning) add('lightning', [{ swatch: '#ffd400', text: 'lightning.flash' }]);
   if (layers.earthquakes) {
     add('earthquakes', [
       { swatch: s(6), text: 'quake.day' },
@@ -75,12 +77,6 @@ export function quickRows(layers: WeatherMapLayers, o: QuickOptions): QuickRow[]
           { swatch: s(4), text: 'fire.low' },
         ]
       : [{ swatch: s(5), text: 'fire.group' }]);
-  }
-  if (layers.lightning) {
-    add('lightning', [
-      { swatch: '#ffd400', text: 'lightning.flash' },
-      { swatch: 'transparent', text: 'lightning.rings' },
-    ]);
   }
   if (layers.rivers) {
     add('rivers', [

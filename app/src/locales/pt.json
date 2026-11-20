@@ -1658,6 +1658,7 @@
   },
   "layers": "Camadas",
   "layer": {
+   "rings": "Círculos de distância",
    "satellite": "Satélite (nuvens)",
    "satRain": "Chuva estimada (satélite)",
    "radar": "Radar de chuva",
@@ -1699,6 +1700,7 @@
   "speed": "Velocidade da animação: {{speed}}",
   "speedHint": "Toque para mudar a velocidade (0,5×, 1×, 2×, 4×)",
   "quick": {
+   "rings": "Círculos de 10, 20 e 30 km ao seu redor",
    "title": "Referência rápida",
    "hide": "Ocultar a tabela",
    "button": "Referência",
@@ -1740,8 +1742,7 @@
     "group": "Anomalia térmica (um grupo)"
    },
    "lightning": {
-    "flash": "Raio dos últimos minutos",
-    "rings": "Anéis de 10, 20 e 30 km ao seu redor"
+    "flash": "Raio dos últimos minutos"
    },
    "river": {
     "evacuation": "Evacuação",
@@ -1755,8 +1756,9 @@
   },
   "sinarameCredit": "Radar argentino: {{source}}. Dados orientativos, não oficiais.",
   "legend": {
+   "rings": "Círculos de 10, 20 e 30 km ao seu redor (a menos de 30 km chega o aviso de raios)",
    "official": "Alertas oficiais vigentes do SMN (Argentina), da Dirección Meteorológica de Chile, do INUMET (Uruguai) e dos SENAMHI da Bolívia e do Peru, com o texto original: zonas em amarelo (leve ou moderada), laranja (severa) ou vermelho (extrema). Toque em uma zona para ver o detalhe. Também as nuvens de cinza vulcânica (SIGMET de aviação, via NOAA)",
-   "lightning": "⚡ Raios dos últimos minutos (satélite GOES-19, a partir do servidor próprio): círculos amarelos, com um raio por grupo. Anéis de 10, 20 e 30 km ao seu redor: a menos de 30 km chega o aviso.",
+   "lightning": "⚡ Raios dos últimos minutos (satélite GOES-19, a partir do servidor próprio): círculos amarelos, com um raio por grupo.",
    "satelliteNoaa": "Satélite infravermelho de reserva (NOAA, mosaico global): as cores marcam nuvens muito altas e frias, as de tempestade. Uma imagem por hora, com 2 a 3 horas de atraso, a cerca de 3 km.",
    "satellite": "Satélite infravermelho GOES‑19: as cores marcam nuvens muito altas e frias, as de tempestade (NASA, a cada 10 min, ~45 min de atraso)",
    "satRain": "Chuva estimada com o infravermelho do GOES-19, a cada 10 min, pelo servidor próprio: de azul-claro (1 mm/h) a vermelho (mais de 40 mm/h). É orientativa: é calculada com a temperatura do topo das nuvens, então nuvens altas muito frias podem marcar chuva que não cai e a chuva de nuvens baixas não aparece. Onde há radar, o radar é mais preciso",

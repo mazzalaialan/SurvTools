@@ -225,6 +225,8 @@ export interface MapLayers {
 
 /** Capas del Mapa de Meteorología. Las que usan internet solo se descargan si están prendidas. */
 export interface WeatherMapLayers {
+  /** Círculos de 10, 20 y 30 km alrededor de mi ubicación (siempre disponibles, vengan o no los rayos). */
+  rings: boolean;
   satellite: boolean;
   radar: boolean;
   regionWeather: boolean;
@@ -236,7 +238,7 @@ export interface WeatherMapLayers {
   waypoints: boolean;
   /** Lluvia estimada por el servidor propio con el infrarrojo del GOES-19 (toda la región, cada 10 min). */
   satRain: boolean;
-  /** Rayos de los últimos minutos (GOES-19, desde el servidor propio) y anillos de 10, 20 y 30 km alrededor mío. */
+  /** Rayos de los últimos minutos (GOES-19, desde el servidor propio). */
   lightning: boolean;
   /** Alertas oficiales de los servicios meteorológicos (SMN, DMC, INUMET), desde el servidor propio. */
   official: boolean;
@@ -310,7 +312,7 @@ export const DEFAULT_SETTINGS: Settings = {
   duskPlace: null,
   starmapRed: true,
   starmapLayers: { constellationLines: true, constellationNames: true, starNames: true, planets: true, guide: true, grid: true },
-  weatherMapLayers: { satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false, waves: false },
+  weatherMapLayers: { rings: true, satellite: true, radar: false, regionWeather: true, official: true, earthquakes: true, hazards: true, fires: false, volcanoes: true, waypoints: true, satRain: true, lightning: true, rivers: false, tides: false, waves: false },
   weatherMapValue: 'temp',
   weatherMapQuickRef: true,
   weatherMapSpeed: 1,
