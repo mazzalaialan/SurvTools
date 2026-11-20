@@ -30,6 +30,9 @@ import { fetchCenvul } from './volcanoes/cenvul.ts';
 import { fetchVolcanoAlerts, type VolcanoAlert } from './volcanoes/oavv.ts';
 import { fetchForecasts, type StationForecast } from './rivers/forecast.ts';
 import { fetchRiverLevels } from './rivers/ina.ts';
+import { readFileSync } from 'node:fs';
+import { fetchBrLevels, type BrCatalogStation, type BrLevels } from './rivers/br.ts';
+import { brRiverLevels, brRiverStations as toRiverStations } from './rivers/brWatch.ts';
 import { loadRiverCatalog, RIVER_EVERY_MS, runRiverForecastWatch, runRiverWatch, stationsToWatch, type RiverLevel, type RiverStation } from './rivers/watch.ts';
 import { runVolcanoWatch, volcanoReadStamp, VOLCANO_EVERY_MS } from './volcanoes/watch.ts';
 import { createMailNotifier, createSourceMonitor } from './monitor/sources.ts';
@@ -283,6 +286,43 @@ async function riverTick() {
 }
 const riverTimer = setInterval(() => void riverTick(), RIVER_EVERY_MS);
 
+// Niveles de los ríos de Brasil (ANA, cotas del SGB/CPRM): igual que los del INA, solo las estaciones con un lugar guardado a menos de 5 km.
+// La telemetría se pide de a una estación con pausa (ver rivers/br.ts), por eso va aparte y con su propio candado.
+let brRiverStations: RiverStation[] | null = null;
+let brCatalogByCode = new Map<string, BrCatalogStation>();
+let brRiverBusy = false;
+let brRiverPrevious: BrLevels | null = null;
+async function brRiverTick() {
+  if (!config.hazardsEnabled || !config.appDir || !hasPlaces(db) || brRiverBusy) return;
+  brRiverBusy = true;
+  try {
+    if (!brRiverStations) {
+      const file = JSON.parse(readFileSync(`${config.appDir}/data/rivers-BR.json`, 'utf8')) as { stations: BrCatalogStation[] };
+      brCatalogByCode = new Map(file.stations.map((c) => [c.code, c]));
+      brRiverStations = toRiverStations(file.stations);
+    }
+    const now = new Date();
+    const watch = stationsToWatch(db, brRiverStations, now, config.rainHereMaxAgeMs);
+    if (!watch.length) return;
+    try {
+      const catalog = watch.map((s) => brCatalogByCode.get(String(s.id))).filter((c): c is BrCatalogStation => !!c);
+      const levels = await fetchBrLevels(catalog, now.getTime(), brRiverPrevious);
+      brRiverPrevious = levels;
+      await monitor.ok('ana', 'Los niveles de los ríos de Brasil (ANA)');
+      const { sent, removed } = await runRiverWatch(db, push, watch, brRiverLevels(levels), now, config.rainHereMaxAgeMs);
+      if (sent || removed) app.log.info({ sent, removed }, 'avisos de ríos de Brasil enviados');
+    } catch (err) {
+      await monitor.fail('ana', 'Los niveles de los ríos de Brasil (ANA)', err);
+      app.log.warn({ err: String(err) }, 'no se pudieron leer los niveles de los ríos de la ANA');
+    }
+  } catch (err) {
+    app.log.error(err, 'fallaron los avisos de ríos de Brasil');
+  } finally {
+    brRiverBusy = false;
+  }
+}
+const brRiverTimer = setInterval(() => void brRiverTick(), RIVER_EVERY_MS);
+
 // Alertas oficiales (SMN, DMC, INUMET, INMET): cada 10 minutos, para el mapa y para avisar. Se bajan solo los CAP nuevos.
 let officialBusy = false;
 let volcanoesAt = 0;
@@ -414,6 +454,7 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     clearInterval(lightningTimer);
     clearInterval(hazardTimer);
     clearInterval(riverTimer);
+    clearInterval(brRiverTimer);
     clearInterval(officialTimer);
     clearInterval(gardenTimer);
     clearInterval(outingTimer);

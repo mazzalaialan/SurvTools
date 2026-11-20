@@ -63,10 +63,12 @@ const TEXT = {
     sources: { INMET: 'INMET', SENAMHI_BO: 'SENAMHI Bolivia', SENAMHI_PE: 'SENAMHI Perú', SIGMET: 'SIGMET' } as Record<string, string>,
     volcanoLevels: { yellow: 'amarilla', orange: 'naranja', red: 'roja' },
     river: (river: string, station: string, level: string, status: string, km: string, dir: string, place: string) => `${river} en ${station}: ${level} m, ${status} · a ${km} km al ${dir} de ${place}`,
-    riverStates: { alert: (m: string) => `sobre el nivel de alerta (${m} m)`, evac: (m: string) => `sobre el nivel de evacuación (${m} m)`, low: (m: string) => `en aguas bajas (bajo ${m} m)` },
+    riverStates: { attention: (m: string) => `sobre el nivel de atención (${m} m)`, alert: (m: string) => `sobre el nivel de alerta (${m} m)`, evac: (m: string) => `sobre el nivel de evacuación (${m} m)`, low: (m: string) => `en aguas bajas (bajo ${m} m)` },
     riverForecast: (river: string, station: string, status: string, when: string, km: string, dir: string, place: string) => `Pronóstico: ${river} en ${station} llegaría ${status} el ${when} · a ${km} km al ${dir} de ${place}`,
-    riverForecastStates: { alert: (m: string) => `al nivel de alerta (${m} m)`, evac: (m: string) => `al nivel de evacuación (${m} m)`, low: (m: string) => `a aguas bajas (bajo ${m} m)` },
+    riverForecastStates: { attention: (m: string) => `al nivel de atención (${m} m)`, alert: (m: string) => `al nivel de alerta (${m} m)`, evac: (m: string) => `al nivel de evacuación (${m} m)`, low: (m: string) => `a aguas bajas (bajo ${m} m)` },
     riverForecastBody: (level: string) => `Altura prevista: ${level} m. Pronóstico del INA (Alerta Hidrológico), puede cambiar con la lluvia. Aviso informativo, no oficial: seguí las indicaciones de Defensa Civil y de Prefectura. Tocá para ver el pronóstico.`,
+    riverBodyBR: (at: string) => `Medido ${at}. Dato de la ANA (telemetría) con las cotas del SGB/CPRM. Aviso informativo, no oficial: seguí las indicaciones de la Defesa Civil (199). Tocá para ver los niveles.`,
+    riverStatesBR: { attention: (m: string) => `sobre la cota de atención (${m} m)`, alert: (m: string) => `sobre la cota de alerta (${m} m)`, evac: (m: string) => `sobre la cota de inundación (${m} m)` },
     riverBody: (at: string) => `Medido ${at}. Dato del INA (Alerta Hidrológico). Aviso informativo, no oficial: seguí las indicaciones de Defensa Civil y de Prefectura. Tocá para ver los niveles.`,
     official: (source: string, headline: string) => `${source}: ${headline}`,
     officialWhere: (places: string) => `Incluye ${places}.`,
@@ -124,10 +126,12 @@ const TEXT = {
     sources: { INMET: 'INMET', SENAMHI_BO: 'SENAMHI Bolivia', SENAMHI_PE: 'SENAMHI Peru', SIGMET: 'SIGMET' } as Record<string, string>,
     volcanoLevels: { yellow: 'yellow', orange: 'orange', red: 'red' },
     river: (river: string, station: string, level: string, status: string, km: string, dir: string, place: string) => `${river} at ${station}: ${level} m, ${status} · ${km} km ${dir} of ${place}`,
-    riverStates: { alert: (m: string) => `above the alert level (${m} m)`, evac: (m: string) => `above the evacuation level (${m} m)`, low: (m: string) => `at low water (below ${m} m)` },
+    riverStates: { attention: (m: string) => `above the attention level (${m} m)`, alert: (m: string) => `above the alert level (${m} m)`, evac: (m: string) => `above the evacuation level (${m} m)`, low: (m: string) => `at low water (below ${m} m)` },
     riverForecast: (river: string, station: string, status: string, when: string, km: string, dir: string, place: string) => `Forecast: ${river} at ${station} would reach ${status} on ${when} · ${km} km ${dir} of ${place}`,
-    riverForecastStates: { alert: (m: string) => `the alert level (${m} m)`, evac: (m: string) => `the evacuation level (${m} m)`, low: (m: string) => `low water (below ${m} m)` },
+    riverForecastStates: { attention: (m: string) => `the attention level (${m} m)`, alert: (m: string) => `the alert level (${m} m)`, evac: (m: string) => `the evacuation level (${m} m)`, low: (m: string) => `low water (below ${m} m)` },
     riverForecastBody: (level: string) => `Expected height: ${level} m. INA forecast (Alerta Hidrológico); it can change with rain. Informational, not official: follow civil defense and coast guard instructions. Tap to see the forecast.`,
+    riverBodyBR: (at: string) => `Measured ${at}. Data from ANA (telemetry) with the SGB/CPRM reference levels. Informational, not official: follow the instructions of Defesa Civil (199). Tap to see the levels.`,
+    riverStatesBR: { attention: (m: string) => `above the attention mark (${m} m)`, alert: (m: string) => `above the alert mark (${m} m)`, evac: (m: string) => `above the flood mark (${m} m)` },
     riverBody: (at: string) => `Measured ${at}. Data from INA (Alerta Hidrológico). Informational, not official: follow civil defense and coast guard instructions. Tap to see the levels.`,
     official: (source: string, headline: string) => `${source}: ${headline}`,
     officialWhere: (places: string) => `Includes ${places}.`,
@@ -185,10 +189,12 @@ const TEXT = {
     sources: { INMET: 'INMET', SENAMHI_BO: 'SENAMHI Bolívia', SENAMHI_PE: 'SENAMHI Peru', SIGMET: 'SIGMET' } as Record<string, string>,
     volcanoLevels: { yellow: 'amarelo', orange: 'laranja', red: 'vermelho' },
     river: (river: string, station: string, level: string, status: string, km: string, dir: string, place: string) => `${river} em ${station}: ${level} m, ${status} · a ${km} km ao ${dir} de ${place}`,
-    riverStates: { alert: (m: string) => `acima do nível de alerta (${m} m)`, evac: (m: string) => `acima do nível de evacuação (${m} m)`, low: (m: string) => `em águas baixas (abaixo de ${m} m)` },
+    riverStates: { attention: (m: string) => `acima do nível de atenção (${m} m)`, alert: (m: string) => `acima do nível de alerta (${m} m)`, evac: (m: string) => `acima do nível de evacuação (${m} m)`, low: (m: string) => `em águas baixas (abaixo de ${m} m)` },
     riverForecast: (river: string, station: string, status: string, when: string, km: string, dir: string, place: string) => `Previsão: ${river} em ${station} chegaria ${status} em ${when} · a ${km} km ao ${dir} de ${place}`,
-    riverForecastStates: { alert: (m: string) => `ao nível de alerta (${m} m)`, evac: (m: string) => `ao nível de evacuação (${m} m)`, low: (m: string) => `a águas baixas (abaixo de ${m} m)` },
+    riverForecastStates: { attention: (m: string) => `ao nível de atenção (${m} m)`, alert: (m: string) => `ao nível de alerta (${m} m)`, evac: (m: string) => `ao nível de evacuação (${m} m)`, low: (m: string) => `a águas baixas (abaixo de ${m} m)` },
     riverForecastBody: (level: string) => `Altura prevista: ${level} m. Previsão do INA (Alerta Hidrológico), pode mudar com a chuva. Aviso informativo, não oficial: siga as orientações da Defesa Civil e das autoridades. Toque para ver os níveis.`,
+    riverBodyBR: (at: string) => `Medido ${at}. Dado da ANA (telemetria) com as cotas de referência do SGB/CPRM. Aviso informativo, não oficial: siga as orientações da Defesa Civil (199). Toque para ver os níveis.`,
+    riverStatesBR: { attention: (m: string) => `acima da cota de atenção (${m} m)`, alert: (m: string) => `acima da cota de alerta (${m} m)`, evac: (m: string) => `acima da cota de inundação (${m} m)` },
     riverBody: (at: string) => `Medido ${at}. Dado do INA (Alerta Hidrológico). Aviso informativo, não oficial: siga as orientações da Defesa Civil e das autoridades. Toque para ver os níveis.`,
     official: (source: string, headline: string) => `${source}: ${headline}`,
     officialWhere: (places: string) => `Inclui ${places}.`,
@@ -409,7 +415,9 @@ export interface RiverPush {
   fixAt: string | null;
   station: string;
   river: string;
-  state: 'alert' | 'evac' | 'low';
+  state: 'attention' | 'alert' | 'evac' | 'low';
+  /** Organismo del dato: ANA (Brasil). Sin él, el INA. En Brasil «alert» es la cota de alerta e «evac», la de inundación. */
+  source?: 'ANA';
   level: number;
   threshold: number;
   at: string;
@@ -433,9 +441,11 @@ export function riverNotification(r: RiverPush, lang: Lang, now = Date.now()): {
       body: tx.riverForecastBody(num.format(r.level)) + fcExtra,
     };
   }
-  const title = tx.river(r.river, r.station, num.format(r.level), tx.riverStates[r.state](num.format(r.threshold)), km.format(Math.max(0.1, r.distanceKm)), dir, r.label ?? tx.officialHere);
+  const states = r.source === 'ANA' && r.state !== 'low' ? tx.riverStatesBR[r.state] : tx.riverStates[r.state];
+  const title = tx.river(r.river, r.station, num.format(r.level), states(num.format(r.threshold)), km.format(Math.max(0.1, r.distanceKm)), dir, r.label ?? tx.officialHere);
   const measured = new Date(r.at).toLocaleString(lang, { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   const extra = (r.stock?.length ? `\n${tx.hazardStock(r.stock.join(', '))}` : '') + lastFixNote(r.fixAt, lang, now);
+  if (r.source === 'ANA') return { title, body: tx.riverBodyBR(measured) + extra };
   return { title, body: tx.riverBody(measured) + extra };
 }
 

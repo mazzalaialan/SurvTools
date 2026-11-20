@@ -242,7 +242,7 @@ self.addEventListener('push', (event) => {
         const r = payload.river;
         const { title, body } = riverNotification(r, lang);
         // El aviso anticipado (pronóstico) no es tan urgente como el nivel ya alcanzado: sin vibración larga ni quedarse fija.
-        const urgent = r.state !== 'low' && !r.forecast;
+        const urgent = (r.state === 'alert' || r.state === 'evac') && !r.forecast;
         await self.registration.showNotification(title, {
           body,
           icon: ICON,

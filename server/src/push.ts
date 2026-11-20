@@ -78,7 +78,9 @@ export interface PushPayload {
     fixAt: string | null;
     station: string;
     river: string;
-    state: 'alert' | 'evac' | 'low';
+    state: 'attention' | 'alert' | 'evac' | 'low';
+    /** Organismo del dato: ANA (Brasil). Sin él, el INA. En Brasil `attention` es «atención», `alert` «alerta» y `evac` «inundación». */
+    source?: 'ANA';
     level: number;
     threshold: number;
     /** Cuándo se midió (ISO); si es un aviso anticipado, cuándo el pronóstico indica que llegará. */

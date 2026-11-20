@@ -179,6 +179,19 @@ describe('aviso de un río cerca de un lugar', () => {
 });
 
 describe('Brasil', () => {
+  it('aviso de río de la ANA: cota de atención, alerta o inundación, en los tres idiomas, informativo', async () => {
+    const { riverNotification } = await import('./format');
+    const b = { placeId: 'w1', label: 'Casa', fixAt: null, station: 'Uruguaiana', river: 'Uruguai', state: 'attention' as const, source: 'ANA' as const, level: 6.6, threshold: 6.5, at: '2026-11-14T15:00:00Z', distanceKm: 2, bearing: 90 };
+    expect(riverNotification(b, 'es').title).toBe('Uruguai en Uruguaiana: 6,60 m, sobre la cota de atención (6,50 m) · a 2 km al este de Casa');
+    expect(riverNotification({ ...b, state: 'evac', threshold: 8.5, level: 8.7 }, 'es').title).toContain('sobre la cota de inundación (8,50 m)');
+    expect(riverNotification({ ...b, state: 'alert', threshold: 7.5 }, 'en').title).toContain('above the alert mark (7.50 m)');
+    expect(riverNotification(b, 'pt').title).toBe('Uruguai em Uruguaiana: 6,60 m, acima da cota de atenção (6,50 m) · a 2 km ao leste de Casa');
+    expect(riverNotification(b, 'es').body).toMatch(/ANA .*SGB\/CPRM.*no oficial.*Defesa Civil \(199\)/);
+    expect(riverNotification(b, 'pt').body).toMatch(/não oficial/);
+    expect(riverNotification(b, 'en').body).toMatch(/not official/);
+    expect(riverNotification(b, 'es').body).not.toMatch(/INA/);
+  });
+
   const inmet = { key: 'INMET:urn:oid:2.49.0.0.76.0.2026.28735.1:0', source: 'INMET' as const, senderName: 'Instituto Nacional de Meteorologia', event: 'Tempestade', headline: 'Aviso de Tempestade. Severidade Grau: Moderate', severity: 'Moderate' as const, onset: '2026-11-22T09:33:00-03:00', expires: '2026-11-22T23:59:00-03:00', here: true, fixAt: null, places: [], stock: [], url: '' };
 
   it('alerta del INMET: el nombre del organismo en el título, en los tres idiomas', () => {

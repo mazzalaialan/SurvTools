@@ -20,13 +20,17 @@ export interface RiverStation {
   alert: number | null;
   evac: number | null;
   low: number | null;
+  /** Solo Brasil (ANA + SGB): cota de atención, por debajo de la de alerta. Los niveles de Brasil vienen ya en metros (ver rivers/brWatch.ts). */
+  attention?: number | null;
+  /** Organismo del dato. Sin él, el INA (Argentina). Cambia la clave de lo avisado y el texto del aviso. */
+  source?: 'ANA';
   /** Serie de altura del INA. */
   series: number;
   /** Modelos del INA que pronostican su altura, del mejor al peor (ver rivers/forecast.ts). */
   forecast?: number[];
 }
 
-export type RiverState = 'evac' | 'alert' | 'low' | 'normal';
+export type RiverState = 'evac' | 'alert' | 'attention' | 'low' | 'normal';
 
 /** Hasta dónde un lugar «está sobre el río»: más lejos, la crecida o la bajante no lo afecta de la misma forma. */
 export const RIVER_RADIUS_KM = 5;
@@ -35,9 +39,10 @@ export const RIVER_MAX_AGE_MS = 12 * 3_600_000;
 /** Cada cuánto se leen los niveles. */
 export const RIVER_EVERY_MS = 30 * 60_000;
 
-export function riverState(level: number, s: Pick<RiverStation, 'alert' | 'evac' | 'low'>): RiverState {
+export function riverState(level: number, s: Pick<RiverStation, 'alert' | 'evac' | 'low'> & { attention?: number | null }): RiverState {
   if (s.evac !== null && level >= s.evac) return 'evac';
   if (s.alert !== null && level >= s.alert) return 'alert';
+  if (s.attention != null && level >= s.attention) return 'attention';
   if (s.low !== null && level <= s.low) return 'low';
   return 'normal';
 }
@@ -89,7 +94,15 @@ export function stationsToWatch(db: Db, stations: RiverStation[], now = new Date
   return stations.filter((s) => places.some((p) => distanceKm(p, s) <= RIVER_RADIUS_KM));
 }
 
-const rank = (state: RiverState): number => (state === 'evac' ? 2 : state === 'alert' ? 1 : state === 'low' ? 1 : 0);
+/**
+ * Gravedad guardada en hazard_notices. En Argentina quedó como siempre (alerta 1, evacuación 2, aguas bajas 1: lo ya avisado no se repite
+ * al actualizar); Brasil tiene un escalón más (atención 1, alerta 2, inundación 3) y sus claves llevan «br», así que no se cruzan.
+ */
+const rank = (state: RiverState, s?: Pick<RiverStation, 'source'>): number =>
+  s?.source === 'ANA' ? (state === 'evac' ? 3 : state === 'alert' ? 2 : state === 'attention' ? 1 : 0) : state === 'evac' ? 2 : state === 'alert' || state === 'low' ? 1 : 0;
+/** Claves de lo avisado: `river:<id>` y `river-low:<id>` (Argentina) o `river:br:<código>` (Brasil). */
+const noticeKey = (s: Pick<RiverStation, 'id' | 'source'>, state: RiverState): string =>
+  s.source === 'ANA' ? `river:br:${s.id}` : state === 'low' ? `river-low:${s.id}` : `river:${s.id}`;
 
 export async function runRiverWatch(
   db: Db,
@@ -111,7 +124,9 @@ export async function runRiverWatch(
   // Cuando el río vuelve a lo normal (o deja de estar bajo), se borra lo avisado: la próxima crecida o bajante avisa de nuevo.
   const forget = db.prepare('DELETE FROM hazard_notices WHERE event_key = ?');
   for (const { s, state } of fresh) {
-    if (state === 'normal') {
+    if (s.source === 'ANA') {
+      if (state === 'normal') forget.run(noticeKey(s, state));
+    } else if (state === 'normal') {
       forget.run(`river:${s.id}`);
       forget.run(`river-low:${s.id}`);
     } else if (state === 'low') forget.run(`river:${s.id}`);
@@ -128,13 +143,13 @@ export async function runRiverWatch(
   for (const [deviceId, places] of byDevice) {
     for (const { s, level, state } of fresh) {
       if (state === 'normal') continue;
-      const key = state === 'low' ? `river-low:${s.id}` : `river:${s.id}`;
+      const key = noticeKey(s, state);
       const hit = places
         .map((row) => ({ row, km: distanceKm(row, s) }))
         .filter(({ row, km }) => {
           if (km > RIVER_RADIUS_KM) return false;
           const before = previous.get(deviceId, row.place_id, key) as { level: number } | undefined;
-          return !before || before.level < rank(state);
+          return !before || before.level < rank(state, s);
         })
         .sort((a, b) => a.km - b.km);
       if (!hit.length) continue;
@@ -149,8 +164,9 @@ export async function runRiverWatch(
           station: s.name,
           river: s.river,
           state,
+          ...(s.source ? { source: s.source } : {}),
           level: level.level,
-          threshold: (state === 'evac' ? s.evac : state === 'alert' ? s.alert : s.low) ?? level.level,
+          threshold: (state === 'evac' ? s.evac : state === 'alert' ? s.alert : state === 'attention' ? s.attention : s.low) ?? level.level,
           at: level.at,
           distanceKm: Math.round(km * 10) / 10,
           bearing: Math.round(bearingDeg(row, s)) % 360,
@@ -162,7 +178,7 @@ export async function runRiverWatch(
         result.removed++;
         break;
       }
-      for (const h of hit) mark.run(deviceId, h.row.place_id, key, rank(state), now.getTime());
+      for (const h of hit) mark.run(deviceId, h.row.place_id, key, rank(state, s), now.getTime());
       result.sent++;
     }
   }
