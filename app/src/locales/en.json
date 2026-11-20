@@ -2134,8 +2134,9 @@
     "searching": "Searching for GPS signal…",
     "accuracy": "GPS accurate to ±{{value}}",
     "error": {
-      "denied": "Location permission denied. Enable it in the browser's site permissions.",
-      "unavailable": "Couldn't get your location. Try outdoors, away from roofs and walls.",
+      "denied": "Location permission is off. Enable it in the site settings (the padlock in the address bar).",
+      "deniedNative": "Location permission is off. Enable it in the phone Settings → Apps → VikArg → Permissions → Location.",
+      "unavailable": "Couldn't get the location. Make sure the phone's location (GPS) is turned on and move to an open area.",
       "timeout": "GPS took too long. Try outdoors.",
       "unsupported": "This device has no GPS."
     }
@@ -2425,8 +2426,6 @@
       "liveShort": "Live",
       "map": "See the map with the live route", "mapShort": "Map",
       "summary": "See the route summary", "summaryShort": "Summary",
-      "menu": "Show the recording menu", "menuShort": "Menu",
-      "menuHide": "Hide the recording menu", "menuHideShort": "Hide",
       "pocketShort": "Pocket",
       "finishShort": "Finish",
       "start": "Record my trip",
@@ -2444,7 +2443,9 @@
       "understood": "Got it",
       "nothing": "Not saved: nothing was recorded (you need to move with a good GPS signal).",
       "nothingYet": "Nothing has been recorded yet: if you finish now the recording is discarded. Move a few meters with a good GPS signal (under open sky).",
-      "weakGps": "Weak GPS signal (±{{accuracy}}): nothing is recorded until it is under ±{{max}}. Open sky helps.",
+      "weakGps": "Weak GPS: not recording",
+      "lostGps": "No signal for {{time}}",
+      "fairGps": "Fair GPS",
       "waitingMove": "GPS ready: recording as you move.",
       "defaultName": "Trip on {{date}} {{time}}",
       "inProgress": "Recording",

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { gpsErrorText } from '@/core/geo/gpsText';
 import { Locate, LocateOff } from 'lucide-react';
 import { bearingDeg, cardinalOf, distanceMeters, type LatLon } from '@/core/geo/geo';
 import type { GeoError, GeoFix } from '@/core/geo/useGeolocation';
@@ -12,7 +13,7 @@ export function GpsStatus({ fix, error }: { fix: GeoFix | null; error: GeoError 
   if (error && !fix) {
     return (
       <p className="gps-status gps-error" role="status">
-        <LocateOff size={18} aria-hidden /> {t(`gps.error.${error}`)}
+        <LocateOff size={18} aria-hidden /> {gpsErrorText(t, error)}
       </p>
     );
   }

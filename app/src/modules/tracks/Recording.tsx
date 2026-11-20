@@ -1,12 +1,15 @@
 import { recordingLocation } from '@/core/geo/locationBackend';
+import { gpsErrorText } from '@/core/geo/gpsText';
+import { gpsSignal } from '@/core/geo/signal';
+import type { GeoError } from '@/core/geo/useGeolocation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronUp, Circle, ClipboardList, Gauge, Map as MapIcon, Menu, Moon, Pause, Play, Square, TriangleAlert, Undo2 } from 'lucide-react';
+import { Circle, ClipboardList, Gauge, Map as MapIcon, Moon, Pause, Play, Square, TriangleAlert, Undo2 } from 'lucide-react';
 import { usePocket } from '@/core/power/pocket';
 import { useWakeLock } from '@/core/power/useWakeLock';
 import { useSettings } from '@/core/settings/settings';
-import { formatDistance } from '@/core/units/units';
+import { formatDistance, type UnitSystem } from '@/core/units/units';
 import type { WorkoutKind } from '@/core/model/types';
 import { ACTIVITIES, ACTIVITY_KINDS } from '@/modules/training/activities';
 import { useKmVoice } from '@/modules/training/kmVoice';
@@ -147,13 +150,11 @@ export function RecordingBar() {
   const { t, i18n } = useTranslation();
   const { pathname, search } = useLocation();
   const units = useSettings((s) => s.settings.units);
-  const { status, track, error, elapsedMs, since, accuracy, pause, resume } = useRecorder();
+  const { status, track, error, elapsedMs, since, accuracy, lastFixAt, pause, resume } = useRecorder();
   const [, tick] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
   /** Nombre que se está poniendo al terminar (null: sin el diálogo). */
   const [naming, setNaming] = useState<string | null>(null);
-  /** En la pantalla «en vivo» la barra está plegada (los controles grandes están ahí): este botón la despliega. */
-  const [menuOpen, setMenuOpen] = useState(false);
   useWakeLock(status === 'recording');
   // Voz al cerrar cada kilómetro, en cualquier pantalla (no solo en «en vivo»).
   useKmVoice();
@@ -199,26 +200,6 @@ export function RecordingBar() {
       )}
     </>
   );
-  // En la pantalla en vivo de Entrenamiento los controles están en grande: la barra queda plegada, con los atajos y un botón
-  // para desplegar el menú de grabación completo.
-  if (onLive && !menuOpen) {
-    return (
-      <>
-        <section className={`rec-bar rec-${status}`} aria-label={t('tracks.rec.bar')} data-testid="rec-bar-live">
-          <span className="rec-dot" aria-hidden />
-          <strong className="rec-info">{status === 'recording' ? t('tracks.rec.recording') : t('tracks.rec.paused')}</strong>
-          <span className="rec-actions">
-            {shortcuts}
-            <button className="icon-btn rec-act" type="button" onClick={() => setMenuOpen(true)} aria-expanded={false} aria-label={t('tracks.rec.menu')} title={t('tracks.rec.menu')} data-testid="rec-menu-open">
-              <Menu size={20} />
-              <span className="rec-lbl">{t('tracks.rec.menuShort')}</span>
-            </button>
-          </span>
-        </section>
-        <RecWarning />
-      </>
-    );
-  }
   const backTo = `/orientation/tracks/${track.id}/follow`;
   const goingBack = pathname === backTo && search.includes('back');
   return (
@@ -226,24 +207,13 @@ export function RecordingBar() {
       <span className="rec-dot" aria-hidden />
       <span className="rec-info">
         <strong>{status === 'recording' ? t('tracks.rec.recording') : t('tracks.rec.paused')}</strong>
-        <span data-testid="rec-stats">
+        {/* El aviso del GPS va a la derecha de «Grabando», donde hay lugar; los datos pasan a la línea de abajo. */}
+        {status === 'recording' && <GpsHint error={error} accuracy={accuracy} lastFixAt={lastFixAt} points={points} units={units} lang={i18n.language} />}
+        <span className="rec-stats" data-testid="rec-stats">
           {formatDistance(track.distanceM, units, i18n.language)} · {formatDuration(elapsedS({ elapsedMs, since }))}
         </span>
         <RecordingEcoregion />
         <RecordingGeology />
-        {status === 'recording' &&
-          (error ? (
-            <span className="rec-hint rec-error">{t(`gps.error.${error}`)}</span>
-          ) : accuracy === null ? (
-            <span className="rec-hint">{t('gps.searching')}</span>
-          ) : accuracy > MAX_ACCURACY_M ? (
-            // Con tanto error los puntos no se toman: que se vea por qué no avanza.
-            <span className="rec-hint rec-error" data-testid="rec-gps">
-              {t('tracks.rec.weakGps', { accuracy: formatDistance(accuracy, units, i18n.language), max: formatDistance(MAX_ACCURACY_M, units, i18n.language) })}
-            </span>
-          ) : (
-            points < 2 && <span className="rec-hint">{t('tracks.rec.waitingMove')}</span>
-          ))}
       </span>
       <span className="rec-actions">
         {status === 'recording' ? (
@@ -275,17 +245,38 @@ export function RecordingBar() {
           <Square size={18} fill="currentColor" />
           <span className="rec-lbl">{t('tracks.rec.finishShort')}</span>
         </button>
-        {onLive && (
-          <button className="icon-btn rec-act" type="button" onClick={() => setMenuOpen(false)} aria-expanded aria-label={t('tracks.rec.menuHide')} title={t('tracks.rec.menuHide')} data-testid="rec-menu-close">
-            <ChevronUp size={20} />
-            <span className="rec-lbl">{t('tracks.rec.menuHideShort')}</span>
-          </button>
-        )}
       </span>
       <RecWarning />
       {naming !== null && <FinishDialog initialName={naming} points={points} onClose={() => setNaming(null)} />}
     </section>
   );
+}
+
+/**
+ * Estado del GPS en una frase corta y con qué hacer: buscando, regular, débil o sin señal (se nota por el silencio: el GPS que deja de dar posiciones
+ * no avisa). Con buena señal no dice nada, salvo que todavía no se movió.
+ */
+function GpsHint({ error, accuracy, lastFixAt, points, units, lang }: { error: GeoError | null; accuracy: number | null; lastFixAt: number | null; points: number; units: UnitSystem; lang: string }) {
+  const { t } = useTranslation();
+  if (error) return <span className="rec-hint rec-error">{gpsErrorText(t, error)}</span>;
+  const signal = gpsSignal({ accuracy, lastFixAt, now: Date.now() }, MAX_ACCURACY_M);
+  const dist = (m: number) => formatDistance(m, units, lang);
+  if (signal === 'searching') return <span className="rec-hint">{t('gps.searching')}</span>;
+  if (signal === 'lost')
+    return (
+      <span className="rec-hint rec-error" data-testid="rec-gps">
+        {t('tracks.rec.lostGps', { time: formatDuration(Math.round((Date.now() - (lastFixAt ?? Date.now())) / 1000)) })}
+      </span>
+    );
+  if (signal === 'weak')
+    // Con tanto error los puntos no se toman: que se vea por qué no avanza.
+    return (
+      <span className="rec-hint rec-error" data-testid="rec-gps">
+        {t('tracks.rec.weakGps', { accuracy: dist(accuracy ?? 0), max: dist(MAX_ACCURACY_M) })}
+      </span>
+    );
+  if (signal === 'fair') return <span className="rec-hint" data-testid="rec-gps-fair">{t('tracks.rec.fairGps', { accuracy: dist(accuracy ?? 0) })}</span>;
+  return points < 2 ? <span className="rec-hint">{t('tracks.rec.waitingMove')}</span> : null;
 }
 
 /** Aviso de que con el celular bloqueado el navegador no da la posición; si hubo un corte, pregunta qué hacer con el tramo. */

@@ -3428,8 +3428,9 @@
   "searching": "Buscando sinal de GPS…",
   "accuracy": "GPS com precisão de ±{{value}}",
   "error": {
-   "denied": "Não há permissão para usar a localização. Habilite nas permissões do navegador.",
-   "unavailable": "Não foi possível obter a localização. Tente ao ar livre, longe de tetos e paredes.",
+   "denied": "Sem permissão para usar a localização. Ative nas configurações do site (o cadeado da barra de endereço).",
+   "deniedNative": "Sem permissão para usar a localização. Ative em Ajustes do telefone → Aplicativos → VikArg → Permissões → Localização.",
+   "unavailable": "Não foi possível obter a localização. Confira se a localização (GPS) do telefone está ativada e vá para um lugar aberto.",
    "timeout": "O GPS demorou demais. Tente ao ar livre.",
    "unsupported": "Este dispositivo não tem GPS."
   }
@@ -3744,10 +3745,6 @@
    "mapShort": "Mapa",
    "summary": "Ver o resumo do rota",
    "summaryShort": "Resumo",
-   "menu": "Mostrar o menu de gravação",
-   "menuShort": "Menu",
-   "menuHide": "Ocultar o menu de gravação",
-   "menuHideShort": "Ocultar",
    "pocketShort": "Bolso",
    "finishShort": "Terminar",
    "start": "Gravar meu rota",
@@ -3765,7 +3762,9 @@
    "understood": "Entendi",
    "nothing": "Não foi salvo: nenhum trecho chegou a ser gravado (é preciso se mover com o GPS recebendo bom sinal).",
    "nothingYet": "Ainda não foi gravado nenhum trecho: se você terminar agora, a gravação é descartada. É preciso se mover alguns metros com bom sinal de GPS (a céu aberto).",
-   "weakGps": "Sinal de GPS fraco (±{{accuracy}}): não grava até baixar de ±{{max}}. A céu aberto melhora.",
+   "weakGps": "GPS fraco: não grava",
+   "lostGps": "Sem sinal há {{time}}",
+   "fairGps": "GPS regular",
    "waitingMove": "GPS pronto: grava conforme você se move.",
    "defaultName": "Rota de {{date}} {{time}}",
    "inProgress": "Gravando",

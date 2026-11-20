@@ -30,6 +30,7 @@ import { serverIsDown, serverMaps, type MapSourceMode, type ServerMaps } from '@
 import { CountryPackPicker } from '@/modules/emergency/CountryPackPicker';
 import { Segmented } from '@/ui/Segmented';
 import { Collapsible } from '@/ui/Collapsible';
+import { gpsErrorText } from '@/core/geo/gpsText';
 import { NewPasswordForm } from '@/ui/NewPasswordForm';
 import { useLibrary } from '@/modules/library/store';
 import { useMapZones } from '@/modules/maps/store';
@@ -406,7 +407,7 @@ function RedScheduleFields({ settings, onSave }: { settings: Settings; onSave: (
       const fix = await currentPosition();
       await onSave({ duskPlace: roundForDusk(fix.lat, fix.lon) });
     } catch (e) {
-      setError(t(`gps.error.${e instanceof GeoPositionError ? e.code : 'unavailable'}`));
+      setError(gpsErrorText(t, e instanceof GeoPositionError ? e.code : 'unavailable'));
     } finally {
       setLocating(false);
     }

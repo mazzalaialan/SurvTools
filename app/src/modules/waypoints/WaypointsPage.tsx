@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { gpsErrorText } from '@/core/geo/gpsText';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, MapPinPlus, Navigation, Plus } from 'lucide-react';
 import { useCapability } from '@/core/capabilities/capabilities';
@@ -54,7 +55,7 @@ export function WaypointsPage() {
       await saveWaypoint(wp);
       navigate(`/orientation/waypoints/${wp.id}`);
     } catch (e) {
-      setMarkError(t(`gps.error.${e instanceof GeoPositionError ? e.code : 'unavailable'}`));
+      setMarkError(gpsErrorText(t, e instanceof GeoPositionError ? e.code : 'unavailable'));
     } finally {
       setMarking(false);
     }

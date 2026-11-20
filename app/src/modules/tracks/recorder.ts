@@ -57,6 +57,8 @@ interface RecorderState {
   gapJoined: boolean | null;
   /** Precisión de la última posición del GPS (para mostrar por qué todavía no graba). */
   accuracy: number | null;
+  /** Cuándo (ms) llegó la última posición del GPS: sin posiciones nuevas por un rato, la señal se da por perdida. */
+  lastFixAt: number | null;
   /** Última posición del GPS con su velocidad, rumbo y altura (solo en modo «Conducir»: el GPS da la velocidad de ahora mejor que los puntos guardados). */
   fix: { speedMs: number | null; heading: number | null; altitude: number | null; at: number } | null;
   /** Empieza a grabar; con `kind` es una sesión de Entrenamiento (al terminar crea la actividad). */
@@ -73,7 +75,7 @@ interface RecorderState {
   lap: () => void;
 }
 
-const IDLE = { status: 'idle', track: null, elapsedMs: 0, since: null, error: null, warned: false, gapS: null, gapFrom: null, gapTo: null, gapJoined: null, accuracy: null, fix: null, lastWorkoutId: null } as const;
+const IDLE = { status: 'idle', track: null, elapsedMs: 0, since: null, error: null, warned: false, gapS: null, gapFrom: null, gapTo: null, gapJoined: null, accuracy: null, lastFixAt: null, fix: null, lastWorkoutId: null } as const;
 
 /** Más que esto con la pantalla apagada, se avisa que no se grabó. */
 const GAP_NOTICE_MS = 20_000;
@@ -115,7 +117,7 @@ function onPosition(p: Fix) {
   const s = useRecorder.getState();
   if (s.status !== 'recording' || !s.track) return;
   const fix = { lat: p.lat, lon: p.lon, accuracy: p.accuracy };
-  if (s.error || s.accuracy !== fix.accuracy) useRecorder.setState({ error: null, accuracy: fix.accuracy });
+  useRecorder.setState({ error: null, accuracy: fix.accuracy, lastFixAt: Date.now() });
   // Conduciendo: la velocidad y el rumbo salen del GPS en cada posición (aunque no se guarde el punto), para mostrarlos de ahora.
   if (s.track.vehicle && fix.accuracy <= MAX_ACCURACY_M) {
     const speedMs = p.speed !== null ? Math.max(0, p.speed) : null;
@@ -196,7 +198,7 @@ export const useRecorder = create<RecorderState>((set, get) => ({
       recKey: await newRecKey(),
     });
     prepareLocked(track.recKey!);
-    set({ status: 'recording', track, elapsedMs: 0, since: Date.now(), error: null, warned: false, gapS: null, accuracy: null, lastWorkoutId: null });
+    set({ status: 'recording', track, elapsedMs: 0, since: Date.now(), error: null, warned: false, gapS: null, accuracy: null, lastFixAt: null, lastWorkoutId: null });
     await persist();
     startWatch();
   },
@@ -350,6 +352,7 @@ async function restore(open: Track) {
       since: now,
       error: null,
       accuracy: null,
+      lastFixAt: null,
     });
     await persist();
     await clearLocked();

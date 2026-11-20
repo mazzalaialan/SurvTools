@@ -2134,8 +2134,9 @@
     "searching": "Buscando señal GPS…",
     "accuracy": "GPS con precisión de ±{{value}}",
     "error": {
-      "denied": "No hay permiso para usar la ubicación. Habilitalo en los permisos del navegador.",
-      "unavailable": "No se pudo obtener la ubicación. Probá al aire libre, lejos de techos y paredes.",
+      "denied": "No hay permiso para usar la ubicación. Habilitalo en la configuración del sitio (el candado de la barra de direcciones).",
+      "deniedNative": "No hay permiso para usar la ubicación. Habilitalo en Ajustes del teléfono → Aplicaciones → VikArg → Permisos → Ubicación.",
+      "unavailable": "No se pudo obtener la ubicación. Revisá que la ubicación (GPS) del teléfono esté activada y salí a un lugar abierto.",
       "timeout": "El GPS tardó demasiado. Probá al aire libre.",
       "unsupported": "Este dispositivo no tiene GPS."
     }
@@ -2424,8 +2425,6 @@
       "liveShort": "En vivo",
       "map": "Ver el mapa con el recorrido en vivo", "mapShort": "Mapa",
       "summary": "Ver el resumen del recorrido", "summaryShort": "Resumen",
-      "menu": "Mostrar el menú de grabación", "menuShort": "Menú",
-      "menuHide": "Ocultar el menú de grabación", "menuHideShort": "Ocultar",
       "pocketShort": "Bolsillo",
       "finishShort": "Terminar",
       "start": "Grabar mi recorrido",
@@ -2443,7 +2442,9 @@
       "understood": "Entendido",
       "nothing": "No se guardó: no llegó a grabarse ningún tramo (hace falta moverse con el GPS dando buena señal).",
       "nothingYet": "Todavía no se grabó ningún tramo: si terminás ahora se descarta la grabación. Hace falta moverse unos metros con buena señal de GPS (a cielo abierto).",
-      "weakGps": "Señal de GPS débil (±{{accuracy}}): no se graba hasta que baje de ±{{max}}. A cielo abierto mejora.",
+      "weakGps": "GPS débil: no graba",
+      "lostGps": "Sin señal hace {{time}}",
+      "fairGps": "GPS regular",
       "waitingMove": "GPS listo: se graba a medida que te movés.",
       "defaultName": "Recorrido del {{date}} {{time}}",
       "inProgress": "Grabando",

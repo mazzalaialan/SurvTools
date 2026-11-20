@@ -59,20 +59,16 @@ test('entrenamiento: sesión bajo techo, grabar con GPS y armar una salida', asy
   await expect(page.getByTestId('live-distance')).toHaveText(/^33\d$/);
   await expect(page.getByTestId('live-clock')).toHaveText(/^\d+:\d\d$/);
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-40-live.png`, fullPage: true });
-  // En la pantalla en vivo la barra está plegada, con atajos al mapa y al resumen y un botón para desplegar el menú de grabación.
-  const liveBar = page.getByTestId('rec-bar-live');
-  await expect(liveBar).toBeVisible();
-  await expect(liveBar.getByTestId('rec-map')).toBeVisible();
-  await expect(liveBar.getByTestId('rec-summary')).toBeVisible();
-  await expect(page.getByTestId('rec-bar')).toHaveCount(0);
-  await liveBar.getByTestId('rec-menu-open').click();
-  await expect(page.getByTestId('rec-bar')).toBeVisible();
+  // En la pantalla en vivo la barra de grabación está siempre completa (sin menú plegado): atajos y controles, menos «en vivo», que ya es esta pantalla.
+  const recBar = page.getByTestId('rec-bar');
+  await expect(recBar).toBeVisible();
+  await expect(recBar.getByTestId('rec-map')).toBeVisible();
+  await expect(recBar.getByTestId('rec-summary')).toBeVisible();
+  await expect(page.getByTestId('rec-bar-live')).toHaveCount(0);
+  await expect(page.getByTestId('rec-menu-open')).toHaveCount(0);
   await expect(page.getByTestId('rec-live')).toHaveCount(0); // ya está en «en vivo»
-  await expect(page.getByTestId('rec-menu-close')).toBeVisible();
-  await page.getByTestId('rec-menu-close').click();
-  await expect(page.getByTestId('rec-bar-live')).toBeVisible();
   // Del atajo al mapa y de vuelta.
-  await page.getByTestId('rec-bar-live').getByTestId('rec-map').click();
+  await page.getByTestId('rec-bar').getByTestId('rec-map').click();
   await expect(page).toHaveURL(/#\/orientation\/maps$/);
   await page.getByTestId('rec-bar').getByTestId('rec-live').click();
   await expect(page).toHaveURL(/#\/training\/live$/);

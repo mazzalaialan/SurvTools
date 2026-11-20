@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { gpsErrorText } from '@/core/geo/gpsText';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Copy, Crosshair, Navigation, Trash2 } from 'lucide-react';
 import { useCapability } from '@/core/capabilities/capabilities';
@@ -82,7 +83,7 @@ function WaypointForm({ stored }: { stored: Waypoint | undefined }) {
       if (here.alt !== null) setAlt(altitudeForInput(here.alt, units));
       dirty();
     } catch (e) {
-      setGpsError(t(`gps.error.${e instanceof GeoPositionError ? e.code : 'unavailable'}`));
+      setGpsError(gpsErrorText(t, e instanceof GeoPositionError ? e.code : 'unavailable'));
     } finally {
       setLocating(false);
     }

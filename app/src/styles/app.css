@@ -3133,13 +3133,22 @@ a.module-card:active {
 }
 
 .rec-hint {
-  flex-basis: 100%;
+  /* Al lado de «Grabando» (hay lugar): una frase corta que entra en la misma línea; si no entra, se parte dentro de su caja. */
+  flex: 0 1 auto;
+  min-width: 0;
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
 .rec-error {
   color: var(--danger);
+  font-weight: 600;
+}
+
+/* Distancia y tiempo, a la derecha de la línea de «Grabando». */
+.rec-stats {
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .rec-actions {
