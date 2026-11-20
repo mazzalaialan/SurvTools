@@ -746,6 +746,14 @@ function LockedInput({ id, value, onChange, placeholder }: { id: string; value: 
 function DeviceSection() {
   const { t } = useTranslation();
   const caps = useCapabilities((s) => s.caps);
+  // Los permisos pueden haber cambiado desde Ajustes de Android: se vuelven a leer al abrir esta sección y al volver a la app.
+  useEffect(() => {
+    const refresh = () => void useCapabilities.getState().detect();
+    const onVisible = () => document.visibilityState === 'visible' && refresh();
+    refresh();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
   return (
     <section className="card stack">
       <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.device')}</h2>

@@ -82,7 +82,7 @@ function canShareFiles(): boolean {
 
 export async function detectCapabilities(): Promise<CapabilityMap> {
   const native = isNativePlatform();
-  const [orientation, motion, camera, barometerOk, nativeBiometric] = await Promise.all([
+  const [orientation, motion, camera, barometerOk, nativeBiometric, backgroundOk] = await Promise.all([
     // Un celular quieto manda pocos eventos de orientación (Chrome solo avisa cuando cambian) y el primero puede tardar más que el plazo de la
     // prueba al arrancar: con la prueba, la brújula y el inclinómetro quedaban «no disponibles» toda la sesión aunque el sensor anduviera. En la
     // app nativa un teléfono siempre los tiene: alcanza con que el WebView los exponga y no se hace la prueba.
@@ -93,12 +93,14 @@ export async function detectCapabilities(): Promise<CapabilityMap> {
     // Los navegadores no exponen el barómetro: solo la app nativa lo lee (se pregunta directo al sensor, sin depender de que ya esté instalado).
     native ? import('./nativeBarometerProbe').then((m) => m.barometerAvailable()) : Promise.resolve(false),
     native ? import('@/core/security/nativeBiometric').then((m) => m.nativeAvailable()) : Promise.resolve(false),
+    // Permiso real de ubicación «todo el tiempo» (no solo que la app sea nativa): se lee sin pedirlo.
+    native ? import('./nativeBackgroundLocationProbe').then((m) => m.backgroundLocationGranted()) : Promise.resolve(false),
   ]);
   return {
     geolocation: 'geolocation' in navigator,
-    // GPS en segundo plano (grabar un recorrido con la pantalla apagada): solo la app nativa, con su servicio en primer plano (core/geo/nativeLocation.ts).
-    // En el navegador la ubicación se corta cuando la pestaña queda oculta.
-    backgroundLocation: native,
+    // GPS en segundo plano (grabar con la pantalla apagada): solo la app nativa y con el permiso «todo el tiempo» dado. En el navegador la
+    // ubicación se corta cuando la pestaña queda oculta.
+    backgroundLocation: backgroundOk,
     orientation,
     motion,
     barometer: barometerOk,
