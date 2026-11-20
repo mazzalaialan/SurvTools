@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Loader2, Map as MapIcon, RefreshCw, Trash2 } from 'lucide-react';
+import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Loader2, Map as MapIcon, MapPin, RefreshCw, Trash2 } from 'lucide-react';
 import { CONTINENTS, useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { confirmAction } from '@/ui/confirm';
 import { filesToDelete } from './countryDelete';
@@ -10,12 +10,19 @@ import { BR_SECTORS } from './sectors';
 import { useCountryPacks } from './useCountryPacks';
 
 /**
+ * Selector de país compartido (docs/DISENO.md, «Selector de país»). Dos modos con el mismo diseño y el mismo orden (continentes y, dentro de cada
+ * uno, alfabético):
+ * - `manage` (Ajustes): lista de filas con el estado del paquete, descarga, borrado, sectores de Brasil y mapa.
+ * - `choose` (Emergencias y guía de primeros auxilios): solo elegir el país actual, en grilla de dos columnas; Brasil se elige directo
+ *   (la descarga la sigue haciendo `useCountryPrefetch`, como antes).
+ *
  * Selector de país de Ajustes: a cada país le agrega el estado de su paquete de datos sin conexión (tilde verde si está bajado y al
  * día, ícono de actualización si hay una copia más nueva, ícono de descarga si falta) con un botón para bajarlo sin elegirlo y otro para
  * borrarlo (no el del país activo). Elegir el país también lo baja (ver `useCountryPrefetch`). Brasil es enorme: se baja y se borra por
  * SECTOR (las cinco macrorregiones del IBGE), con una lista debajo.
  */
-export function CountryPackPicker() {
+export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choose' }) {
+  const manage = mode === 'manage';
   const { t, i18n } = useTranslation();
   const country = useSettings((s) => s.settings.country);
   const update = useSettings((s) => s.update);
@@ -46,13 +53,17 @@ export function CountryPackPicker() {
   const sectorName = (id: BrSector) => t(`country.sector.${id}`);
 
   return (
-    <div className="field">
-      <label id="country-pack-label">{t('country.label')}</label>
-      <div>
-        <button className="btn" type="button" onClick={() => setMapOpen(true)} data-testid="country-pack-map-open">
-          <MapIcon size={18} aria-hidden /> {t('country.map.open')}
-        </button>
-      </div>
+    <div className="field country-picker" data-area="country-picker" data-mode={mode}>
+      {manage && (
+        <>
+          <label id="country-pack-label">{t('country.label')}</label>
+          <div>
+            <button className="btn" type="button" onClick={() => setMapOpen(true)} data-testid="country-pack-map-open">
+              <MapIcon size={18} aria-hidden /> {t('country.map.open')}
+            </button>
+          </div>
+        </>
+      )}
       {CONTINENTS.map((continent) => (
         <fieldset key={continent.id} className="country-continent" data-testid={`country-continent-${continent.id}`}>
           <legend>{t(`country.continent.${continent.id}`)}</legend>
@@ -69,34 +80,40 @@ export function CountryPackPicker() {
                 // Brasil se baja por sectores (abajo); el país activo no se borra (se volvería a bajar solo).
                 const canDelete = c !== 'BR' && c !== country && state !== undefined && state !== 'missing' && bytesToFree > 0;
                 return (
-                  <div key={c} className="country-pack-item" data-testid={`country-pack-${c}`} data-state={state ?? 'unknown'}>
+                  <Fragment key={c}>
+                  <div className="country-pack-item" data-testid={`country-pack-${c}`} data-state={state ?? 'unknown'}>
                     <button
                       type="button"
                       className="country-pack-select"
                       aria-pressed={country === c}
-                      aria-expanded={c === 'BR' ? brOpen : undefined}
-                      aria-controls={c === 'BR' ? 'country-sectors-BR' : undefined}
+                      aria-expanded={manage && c === 'BR' ? brOpen : undefined}
+                      aria-controls={manage && c === 'BR' ? 'country-sectors-BR' : undefined}
                       onClick={() => {
-                        if (c === 'BR') {
+                        if (manage && c === 'BR') {
                           // Brasil se baja por sectores: tocarlo muestra (o esconde) sus sectores, sin cambiar el país actual (podés querer bajar el sector
                           // pegado a donde vas). Para usarlo como país actual hay un botón dentro de la lista.
                           setBrOpen(!brOpen);
                           return;
                         }
                         void update({ country: c });
-                        if (state !== 'ready') void download(c);
+                        if (manage && state !== 'ready') void download(c);
                       }}
                     >
-                      {name}
-                      {c === 'BR' ? brOpen ? <ChevronUp size={14} aria-hidden style={{ marginLeft: 4 }} /> : <ChevronDown size={14} aria-hidden style={{ marginLeft: 4 }} /> : null}
+                      {/* Marca de «país actual» con ícono y texto (aria-hidden: el nombre accesible sigue siendo solo el país): no depende del color. */}
+                      {country === c && <MapPin size={18} aria-hidden className="country-pack-now-icon" />}
+                      <span className="country-pack-name">{name}</span>
+                      {manage && c === 'BR' ? brOpen ? <ChevronUp size={16} aria-hidden /> : <ChevronDown size={16} aria-hidden /> : null}
                     </button>
-                    {c === 'BR' ? null : busy === c ? (
+                    {/* La leyenda va fuera del botón (superpuesta a su derecha) para no cambiar su texto ni su nombre accesible. */}
+                    {manage && country === c && <span className="country-pack-now" aria-hidden>{t('country.map.legendMain')}</span>}
+                    {!manage || c === 'BR' ? null : busy === c ? (
                       <span className="country-pack-icon" role="img" aria-label={t('country.pack.downloading', { country: name })} title={t('country.pack.downloading', { country: name })}>
                         <Loader2 size={16} className="spin" aria-hidden />
                       </span>
                     ) : state === 'ready' ? (
                       <span className="country-pack-icon country-pack-ready" role="img" aria-label={t('country.pack.ready', { country: name })} title={t('country.pack.ready', { country: name })}>
                         <Check size={16} aria-hidden />
+                        {sizeText && <span className="country-pack-size">{sizeText}</span>}
                       </span>
                     ) : state ? (
                       <button
@@ -115,18 +132,16 @@ export function CountryPackPicker() {
                         )}
                       </button>
                     ) : null}
-                    {canDelete && busy !== c ? deleteButton(name, bytesToFree, () => remove(c), `country-pack-del-${c}`) : null}
+                    {manage && canDelete && busy !== c ? deleteButton(name, bytesToFree, () => remove(c), `country-pack-del-${c}`) : null}
                   </div>
-                );
-              })}
-          </div>
-          {continent.countries.includes('BR') && brOpen && (
+                  {/* Los sectores de Brasil van pegados a la fila de Brasil, sangrados, para que se entienda a qué país pertenecen. */}
+          {manage && c === 'BR' && brOpen && (
             <div className="country-sectors" id="country-sectors-BR" data-testid="country-sectors-BR">
-              <p className="hint" style={{ margin: '8px 0 4px' }}>
+              <p className="hint">
                 {t('country.sector.hint')}
               </p>
               {country !== 'BR' && (
-                <div style={{ margin: '0 0 8px' }}>
+                <div>
                   <button className="btn" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
                     {t('country.map.use', { country: t('country.BR') })}
                   </button>
@@ -142,7 +157,7 @@ export function CountryPackPicker() {
                   const size = totalText ? ` (${totalText})` : '';
                   return (
                     <div key={id} className="country-pack-item" data-testid={`country-sector-${id}`} data-state={state ?? 'unknown'}>
-                      <span className="country-pack-select" style={{ cursor: 'default' }}>
+                      <span className="country-pack-select country-sector-name">
                         {name}
                       </span>
                       {busySector === id ? (
@@ -152,6 +167,7 @@ export function CountryPackPicker() {
                       ) : state === 'ready' ? (
                         <span className="country-pack-icon country-pack-ready" role="img" aria-label={t('country.pack.ready', { country: label })} title={t('country.pack.ready', { country: label })}>
                           <Check size={16} aria-hidden />
+                          {totalText && <span className="country-pack-size">{totalText}</span>}
                         </span>
                       ) : state ? (
                         <button
@@ -177,9 +193,13 @@ export function CountryPackPicker() {
               </div>
             </div>
           )}
+                  </Fragment>
+                );
+              })}
+          </div>
         </fieldset>
       ))}
-      {mapOpen && <CountryPackMap onClose={() => setMapOpen(false)} />}
+      {manage && mapOpen && <CountryPackMap onClose={() => setMapOpen(false)} />}
     </div>
   );
 }

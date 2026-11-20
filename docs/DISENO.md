@@ -75,3 +75,13 @@ Problema: los botones de gestión (Buscar cercanos, Nuevo contacto, país activo
 | Deshabilitado | Sin relleno, borde punteado, texto `--text-muted` |
 
 En rojo nocturno todo lo anterior sigue siendo rojo (`--text`, `--bg` y `--danger` son rojos ahí): se distinguen por forma. Al pasar otras secciones, aplicar la misma tabla.
+
+## Selector de país (2026-11-20)
+Componente único: `app/src/modules/emergency/CountryPackPicker.tsx`, con `mode="manage"` (Ajustes → País) y `mode="choose"` (`CountrySwitch`, usado en Contactos de emergencia y en la guía de primeros auxilios). Mismo orden (continentes y, dentro de cada uno, alfabético), mismo diseño y mismo store (`useSettings.update({ country })`). Estilos acotados con `data-area="country-picker"` en el contenedor (al final de `app.css`), así no se mueve el resto de Ajustes.
+
+- **Continente:** título de bloque (`--fs-sm`, mayúsculas, `--text-muted`) con línea fina arriba; sin caja alrededor.
+- **País:** botón de 48 px, `--radius-ctl`, borde `--control-border`. El **país actual** va relleno (`--text`/`--bg`), en negrita, con ícono de ubicación y, en Ajustes, la leyenda «País actual» (texto fuera del botón y `aria-hidden`: el nombre accesible sigue siendo solo el país). `aria-pressed` se conserva.
+- **Ajustes (manage):** una fila por país; a la derecha una celda de 48 px con el estado del paquete, siempre ícono + peso (MB/KB): bajado y al día (tilde, borde punteado), sin bajar (flecha, botón), hay versión nueva (actualizar, borde de 2 px `--warn`), bajando (rueda). Borrar es una acción aparte, sin borde ni relleno, con el rojo solo en el ícono; no se ofrece para el país actual ni para Brasil entero.
+- **Brasil:** los sectores (Sul, Sudeste...) aparecen **debajo de la fila de Brasil**, sangrados y con una línea vertical a la izquierda; cada uno con su peso y su acción a la derecha. Un país sin sectores no cambia.
+- **Elegir (choose):** grilla de dos columnas, sin descargas, borrado, sectores ni mapa; elegir cambia el país actual (la descarga la sigue haciendo `useCountryPrefetch`). Brasil se elige directo.
+- **Pendiente de decisión:** pasar el resto de Ajustes al mismo sistema y mostrar el peso solo cuando hay datos.

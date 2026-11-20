@@ -5885,3 +5885,204 @@ button.country-pack-del {
 .content[data-area='emergency'] .search .input {
   padding-left: 42px;
 }
+
+/* =====================================================================================================
+   Selector de país (data-area='country-picker'): Ajustes → País (modo manage) y Contactos/Guía (modo choose).
+   Ver docs/DISENO.md. Un tono por función: neutro para selector y gestión; el país actual va lleno (--text/--bg) con ícono y,
+   en Ajustes, la leyenda «País actual»; el rojo solo en borrar; el estado del paquete se dice con ícono + peso en texto.
+   ===================================================================================================== */
+[data-area='country-picker'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Continente: título de bloque con línea fina arriba, sin caja alrededor (nada de cajas dentro de cajas). */
+[data-area='country-picker'] .country-continent {
+  margin: 0;
+  padding: var(--sp-2) 0 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+}
+[data-area='country-picker'] .country-continent > legend {
+  padding: 0 var(--sp-2) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Lista de países: una fila por país en Ajustes (el estado y el peso quedan alineados a la derecha); dos columnas al elegir. */
+[data-area='country-picker'] .country-pack {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+[data-area='country-picker'][data-mode='choose'] .country-pack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-area='country-picker'] .country-pack-item {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-2);
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+/* Botón del país: grande (48 px), texto a la izquierda; el seleccionado va relleno, con ícono (no depende del color). */
+[data-area='country-picker'] .country-pack-select {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-ctl);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-md);
+  text-align: left;
+  cursor: pointer;
+}
+[data-area='country-picker'] .country-pack-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+[data-area='country-picker'] .country-pack-select[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  border-color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--bg);
+}
+[data-area='country-picker'] .country-pack-now {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+[data-area='country-picker'] .country-pack-select:active:not([aria-pressed='true']) {
+  background: var(--border);
+}
+
+/* Estado del paquete: celda de 48 px de alto con ícono + peso; neutra (el color no es el único dato). */
+[data-area='country-picker'] .country-pack-icon {
+  min-width: 48px;
+  min-height: 48px;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-ctl);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+[data-area='country-picker'] .country-pack-size {
+  font-size: var(--fs-xs);
+  line-height: 1.2;
+}
+/* Falta bajar: es una acción, va con borde fuerte y texto normal. */
+[data-area='country-picker'] button.country-pack-get {
+  min-width: 72px;
+  border: 1px solid var(--control-border);
+  background: var(--surface-2);
+  color: var(--text);
+  gap: 0;
+  padding: 0 var(--sp-2);
+}
+[data-area='country-picker'] .country-pack-item[data-state='outdated'] .country-pack-get {
+  border: 2px solid var(--warn);
+  color: var(--text);
+  font-weight: 700;
+}
+[data-area='country-picker'] button.country-pack-get:active {
+  background: var(--border);
+}
+[data-area='country-picker'] .country-pack-ready {
+  min-width: 72px;
+  color: var(--text-muted);
+  border-style: dashed;
+}
+/* Borrar: acción destructiva aparte, sin borde ni relleno y con menos peso; el rojo solo en el ícono. */
+[data-area='country-picker'] button.country-pack-del {
+  min-width: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+}
+[data-area='country-picker'] button.country-pack-del:active {
+  background: var(--border);
+}
+
+/* Sectores de Brasil: sublista con una línea a la izquierda; filas de texto (no se eligen), con el peso y las acciones a la derecha. */
+[data-area='country-picker'] .country-sectors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0 var(--sp-2);
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--text);
+}
+[data-area='country-picker'] .country-sectors .country-pack {
+  margin-top: 0;
+}
+[data-area='country-picker'] .country-sectors .country-pack-select.country-sector-name {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  padding-left: 0;
+  font-size: var(--fs-sm);
+  cursor: default;
+}
+[data-area='country-picker'] .country-sectors .btn {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-area='country-picker'] .spin {
+    animation: none;
+  }
+}
+
+/* La leyenda «País actual» se superpone a la derecha del botón del país (fuera del botón, para no alterar su nombre accesible). */
+[data-area='country-picker'] .country-pack-item {
+  position: relative;
+}
+[data-area='country-picker'] .country-pack-now {
+  position: absolute;
+  top: 50%;
+  right: calc(72px + var(--sp-2) + var(--sp-3));
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bg);
+  white-space: nowrap;
+}
+/* Sectores bajo Brasil: sangría para agruparlos con la fila de arriba; en las demás filas no hay nada. */
+[data-area='country-picker'] .country-pack > .country-sectors {
+  margin: calc(-1 * var(--sp-1)) 0 var(--sp-1) var(--sp-4);
+}
+[data-area='country-picker'] .country-pack-item[data-testid='country-pack-BR'] .country-pack-now {
+  right: calc(var(--sp-3) + 16px + var(--sp-2));
+}
