@@ -3920,6 +3920,7 @@
   "all": "Todos os guias",
   "notFound": "Esse guia não foi encontrado.",
   "dont": "Não fazer",
+  "dontSpoken": "Não faça:",
   "step": "Passo {{n}}",
   "quick": "O mais urgente",
   "myLocation": "Minha localização (para o resgate)",

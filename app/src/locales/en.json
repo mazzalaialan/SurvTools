@@ -2563,6 +2563,7 @@
     "all": "All guides",
     "notFound": "Guide not found.",
     "dont": "Do not",
+    "dontSpoken": "Don't:",
     "step": "Step {{n}}",
     "quick": "Most urgent",
     "myLocation": "My location (for rescuers)",

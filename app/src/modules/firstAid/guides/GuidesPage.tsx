@@ -10,8 +10,8 @@ import { EnvSwitch, TOPIC_ICON, useLang } from './parts';
 import { fillGuideText } from './types';
 import { Notice } from '@/ui/Notice';
 
-/** Los seis temas que más urgen (RCP, sangrado, atragantamiento, dolor de pecho, ACV, alergia grave). Es solo el orden de acceso rápido; el contenido es el de cada guía. */
-const URGENT = ['cpr', 'bleeding', 'choking', 'chest', 'stroke', 'anaphylaxis'];
+/** Los ocho temas que más urgen (RCP, sangrado, atragantamiento, dolor de pecho, ACV, alergia grave, serpiente, hipotermia). Es solo el orden de acceso rápido; el contenido es el de cada guía. */
+const URGENT = ['cpr', 'bleeding', 'choking', 'chest', 'stroke', 'anaphylaxis', 'snakebite', 'hypothermia'];
 
 /** Guía de primeros auxilios: lo primero, la evaluación paso a paso y todas las situaciones. */
 export function GuidesPage() {

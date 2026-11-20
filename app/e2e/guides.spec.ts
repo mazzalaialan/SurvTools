@@ -284,6 +284,12 @@ test('guía en voz alta: lee cada paso, se corta al llamar y se repite', async (
   expect(first).toContain('¿Podés acercarte sin ponerte en peligro?');
   expect(first).toContain('Opciones, Sí, es seguro, No.');
 
+  // Los «No hacer» se leen con el aviso delante (si no, la voz los diría como una instrucción más). La síntesis cambia «:» por una pausa («,»).
+  await page.goto('/#/first-aid/guides/unconscious');
+  await expect.poll(spoken).toContain('No hacer, No le des nada de beber ni de comer.');
+  await page.goBack();
+  await expect.poll(spoken).toContain('¿El lugar es seguro?');
+
   // Al elegir una respuesta, lee el paso siguiente.
   await page.getByRole('button', { name: 'No', exact: true }).click();
   await expect.poll(spoken).toContain('No es seguro');

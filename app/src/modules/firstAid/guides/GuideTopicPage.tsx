@@ -34,7 +34,7 @@ export function GuideTopicPage() {
   spoken.current = node
     ? [
         fillText(node.title[lang]),
-        ...node.steps.filter((s) => !s.env || s.env === env).map((s) => fillText(s.text[lang])),
+        ...node.steps.filter((s) => !s.env || s.env === env).map((s) => (s.dont ? `${t('guides.dontSpoken')} ` : '') + fillText(s.text[lang])),
         node.question ? fillText(node.question[lang]) : '',
         node.options && node.options.length > 1
           ? t('guides.optionsSpoken', {
@@ -170,39 +170,55 @@ export function GuideTopicPage() {
           </ol>
         )}
 
-        {node.question && <p className="guide-question">{fill(node.question[lang])}</p>}
-        {node.options && (
-          <div className={`guide-options${node.options.length > 6 ? ' many' : ''}`} data-testid="guide-options">
-            {node.options.map((o) => {
-              // Solo las respuestas marcadas `answer` en el contenido llevan tilde (sí) o cruz (no); las demás, el ícono de su tema (o ninguno). Siempre decorativo: el texto manda.
-              const Icon = o.answer === 'yes' ? Check : o.answer === 'no' ? X : TOPIC_ICON[o.next.replace(/^topic:/, '').split('#')[0]!];
-              return (
-                <button
-                  key={o.next + o.label.es}
-                  className={`btn guide-option${o.answer ? ` answer-${o.answer}` : ''}`}
-                  type="button"
-                  onClick={() => go(o.next)}
-                >
-                  {Icon && <Icon className="guide-option-icon" size={o.answer ? 20 : 24} strokeWidth={o.answer ? 3 : 2} aria-hidden />}
-                  <span className="guide-option-text">{fill(o.label[lang])}</span>
-                  <ChevronRight className="guide-option-go" size={20} aria-hidden />
-                </button>
-              );
-            })}
+        {/* Panel de respuestas: pegado abajo (sticky, encima de la barra de navegación), así la pregunta y las respuestas
+            quedan siempre a la vista aunque los pasos sean largos. Si hay muchas opciones, scroll propio (máx. ~50 % de la pantalla). */}
+        {(node.question || node.options || trail.length > 0) && (
+          <div className={`guide-answers${node.options && node.options.length > 6 ? ' many' : ''}`} data-testid="guide-answers">
+            <div className="guide-answers-scroll">
+              {node.question && <p className="guide-question">{fill(node.question[lang])}</p>}
+              {node.options && (
+                <div className={`guide-options${node.options.length > 6 ? ' many' : ''}`} data-testid="guide-options">
+                  {node.options.map((o) => {
+                    // Solo las respuestas marcadas `answer` en el contenido llevan tilde (sí) o cruz (no); las demás, el ícono de su tema (o ninguno). Siempre decorativo: el texto manda.
+                    const Icon = o.answer === 'yes' ? Check : o.answer === 'no' ? X : TOPIC_ICON[o.next.replace(/^topic:/, '').split('#')[0]!];
+                    return (
+                      <button
+                        key={o.next + o.label.es}
+                        className={`btn guide-option${o.answer ? ` answer-${o.answer}` : ''}`}
+                        type="button"
+                        onClick={() => go(o.next)}
+                      >
+                        {Icon && <Icon className="guide-option-icon" size={o.answer ? 20 : 24} strokeWidth={o.answer ? 3 : 2} aria-hidden />}
+                        <span className="guide-option-text">{fill(o.label[lang])}</span>
+                        <ChevronRight className="guide-option-go" size={20} aria-hidden />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            {trail.length > 0 && (
+              <button className="btn guide-back" type="button" onClick={goBack} data-testid="guide-back">
+                <Undo2 size={20} aria-hidden /> {t('guides.back')}
+              </button>
+            )}
+            {/* Fin de guía (sin opciones): volver a evaluar a mano, junto a «Volver al paso anterior». */}
+            {!node.options && (
+              <Link className="btn btn-link" to="/first-aid/guides/assess">
+                <RotateCcw size={16} aria-hidden /> {t('guides.restart')}
+              </Link>
+            )}
           </div>
-        )}
-        {trail.length > 0 && (
-          <button className="btn guide-back" type="button" onClick={goBack} data-testid="guide-back">
-            <Undo2 size={20} aria-hidden /> {t('guides.back')}
-          </button>
         )}
       </section>
 
       {/* Secundarios y discretos: salir de este recorrido. */}
       <div className="guide-foot">
-        <Link className="btn btn-link" to="/first-aid/guides/assess">
-          <RotateCcw size={16} aria-hidden /> {t('guides.restart')}
-        </Link>
+        {node.options && (
+          <Link className="btn btn-link" to="/first-aid/guides/assess">
+            <RotateCcw size={16} aria-hidden /> {t('guides.restart')}
+          </Link>
+        )}
         <Link className="btn btn-link" to="/first-aid/guides">
           {t('guides.all')}
         </Link>

@@ -2562,6 +2562,7 @@
     "all": "Todas las guías",
     "notFound": "No se encontró esa guía.",
     "dont": "No hacer",
+    "dontSpoken": "No hacer:",
     "step": "Paso {{n}}",
     "quick": "Lo más urgente",
     "myLocation": "Mi ubicación (para el rescate)",

@@ -2999,12 +2999,67 @@ a.module-card:active {
 }
 
 .guide-question {
-  margin: 0;
-  padding-top: var(--sp-4);
-  border-top: 1px solid var(--border);
+  margin: 0 0 var(--sp-3);
   font-weight: 800;
   font-size: var(--fs-xl);
   line-height: 1.25;
+}
+
+/* Panel de respuestas (regla de «uso bajo estrés»): pregunta + opciones + «Volver al paso anterior» pegados al borde de abajo
+   (sticky, encima de la barra de navegación) para que no haya que desplazarse hasta las respuestas. Al final de los pasos queda en
+   su lugar natural, así no tapa nada y no hace falta reservar alto. Celular: de borde a borde. Escritorio (riel lateral, sin barra
+   abajo): pegado al borde de la ventana. Con muchas opciones, scroll propio y tope de ~50 % de la pantalla. */
+.guide-answers {
+  position: sticky;
+  bottom: calc(var(--bottomnav-h, 60px) + env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-height: 50dvh;
+  margin: 0 calc(-1 * var(--sp-4)) calc(-1 * var(--sp-4));
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  background: var(--surface);
+  border-top: 2px solid var(--text);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  box-shadow: 0 -6px 12px -8px rgb(0 0 0 / 0.35);
+}
+
+.guide-answers-scroll {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.guide-answers .btn-link {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* Muchas opciones: la pregunta baja un escalón para dejar lugar a las respuestas. */
+.guide-answers.many .guide-question {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-2);
+}
+
+@media (max-width: 899px) {
+  .guide-answers {
+    margin-inline: calc(-1 * (var(--sp-4) + var(--sp-4)));
+    padding-inline: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-radius: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .guide-answers {
+    bottom: 0;
+  }
 }
 
 /* Respuestas: botones grandes de ancho completo, borde de 2 px, ícono (✓ / ✕ o el del tema) + palabra + flecha. */
