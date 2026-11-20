@@ -2897,6 +2897,11 @@
   "units": { "metric": "Metric", "imperial": "Imperial" },
   "language": { "es": "Español", "en": "English", "pt": "Português" },
   "pwa": {
+    "stalled": "The download did not start. Try again.",
+    "retry": "Retry",
+    "force": "Force app update",
+    "forceHint": "If the update notice does not respond: this deletes the app copy stored on this device and downloads it again. Your data, maps, books and packages are not touched. It needs a connection.",
+    "forceConfirm": "The stored copy of the app is deleted and downloaded again (a few MB). A connection is required: if you do not have one, wait until you do. Your data is not touched. Continue?",
     "updateAvailable": "A new version is available.",
     "update": "Update",
     "downloading": "Downloading the new version…",

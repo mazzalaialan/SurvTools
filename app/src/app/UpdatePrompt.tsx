@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { isNativePlatform } from '@/core/platform';
+import { removeStaleRegistrations } from '@/core/portable/webUpdateRescue';
 import { formatBytes, networkInfo } from '@/modules/emergency/countryDownload';
 
 /**
@@ -14,6 +15,9 @@ import { formatBytes, networkInfo } from '@/modules/emergency/countryDownload';
  *   sigue funcionando mientras tanto. Al confirmar se ve una barra con lo bajado y, al terminar, aparece «Actualizar».
  * - «Más tarde» la oculta hasta cerrar la app: al volver a abrirla pregunta otra vez.
  */
+/** Cuánto se espera un avance de la descarga antes de ofrecer reintentar. */
+export const STALL_MS = 10_000;
+
 interface Pending {
   bytes: number | null;
   files: number;
@@ -43,12 +47,18 @@ function WebUpdatePrompt({ visible }: { visible: boolean }) {
   const [started, setStarted] = useState(false);
   const [progress, setProgress] = useState<Progress | null>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
+  const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
+  /** Tocó «Descargar ahora» y pasaron unos segundos sin que llegue ningún avance: se ofrece reintentar. */
+  const [stalled, setStalled] = useState(false);
   const {
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW({
     onRegisteredSW(_url, registration) {
       if (!registration) return;
+      registrationRef.current = registration;
+      // Un service worker de un nombre de sitio viejo (/PrepperApp/) puede seguir registrado: se da de baja.
+      void removeStaleRegistrations(registration.scope);
       // Solo es "versión nueva" si ya hay una funcionando (la primera instalación no se avisa).
       const watch = (worker: ServiceWorker | null) => {
         if (!worker || !navigator.serviceWorker.controller) return;
@@ -95,11 +105,28 @@ function WebUpdatePrompt({ visible }: { visible: boolean }) {
     };
   }, []);
 
+  // Si se tocó «Descargar ahora» y no llega ningún avance (el service worker no recibió el mensaje o se detuvo), se ofrece reintentar.
+  useEffect(() => {
+    if (!started || progress || needRefresh) {
+      setStalled(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setStalled(true), STALL_MS);
+    return () => window.clearTimeout(timer);
+  }, [started, progress, needRefresh]);
+
   // También se muestra si el service worker avisó que hay algo para bajar (la página pudo recargarse con la actualización ya esperando).
   if (!visible || later || (!needRefresh && !downloading && !pending && !started)) return null;
 
   const download = () => {
     setStarted(true);
+    channelRef.current?.postMessage({ type: 'UPDATE_START' });
+  };
+  /** Vuelve a buscar la versión nueva y a pedir la descarga (el service worker pudo no enterarse del primer pedido). */
+  const retry = () => {
+    setStalled(false);
+    void registrationRef.current?.update().catch(() => undefined);
+    channelRef.current?.postMessage({ type: 'UPDATE_QUERY' });
     channelRef.current?.postMessage({ type: 'UPDATE_START' });
   };
   /**
@@ -141,8 +168,15 @@ function WebUpdatePrompt({ visible }: { visible: boolean }) {
           </span>
           <progress max={progress.bytes ?? progress.files} value={progress.bytes !== null ? progress.done : progress.filesDone} aria-label={t('pwa.downloading')} />
         </span>
+      ) : stalled ? (
+        <span data-testid="update-stalled">{t('pwa.stalled')}</span>
       ) : (
         <span>{t('pwa.downloading')}</span>
+      )}
+      {stalled && !needRefresh && (
+        <button className="btn btn-primary" type="button" onClick={retry} data-testid="update-retry">
+          {t('pwa.retry')}
+        </button>
       )}
       {needRefresh && (
         <button className="btn btn-primary" type="button" onClick={activate}>

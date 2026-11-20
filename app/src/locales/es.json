@@ -2896,6 +2896,11 @@
   "units": { "metric": "Métrico", "imperial": "Imperial" },
   "language": { "es": "Español", "en": "English", "pt": "Português" },
   "pwa": {
+    "stalled": "La descarga no arrancó. Probá de nuevo.",
+    "retry": "Reintentar",
+    "force": "Forzar actualización de la app",
+    "forceHint": "Si el aviso de actualización no responde: esto borra la copia de la app guardada en este dispositivo y la vuelve a bajar. Tus datos, mapas, libros y paquetes no se tocan. Necesita conexión.",
+    "forceConfirm": "Se borra la copia de la app guardada y se vuelve a bajar (unos MB). Hace falta conexión: si no la tenés, esperá a tenerla. Tus datos no se tocan. ¿Seguir?",
     "updateAvailable": "Hay una versión nueva disponible.",
     "update": "Actualizar",
     "downloading": "Bajando la versión nueva…",

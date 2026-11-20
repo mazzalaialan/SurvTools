@@ -36,6 +36,7 @@ import { listImported, type ImportedMap } from '@/modules/maps/imported';
 import { AccountSection } from './AccountSection';
 import { ArchivedVaults } from '../screens/ArchivedVaults';
 import { isAndroid, isNativePlatform } from '@/core/platform';
+import { forceWebUpdate } from '@/core/portable/webUpdateRescue';
 import { redBarColor, toHex } from '@/core/systemBars';
 import { BiometricTest } from '../screens/BiometricTest';
 import { BiometricUnlockSettings } from '../screens/BiometricUnlockSettings';
@@ -179,6 +180,7 @@ export function SettingsPage() {
         <p style={{ margin: 0 }}>{t('app.name')}</p>
         <p className="hint" onClick={connections.tap} data-testid="app-version">{t('settings.version', { version: __APP_VERSION__ })}</p>
         <PortableUpdateCheck />
+        <ForceWebUpdate />
         <p className="hint" style={{ fontStyle: 'italic' }}>{t('app.motto')}</p>
         <Link className="btn" to="/about">
           <Info size={18} /> {t('about.link')}
@@ -306,6 +308,36 @@ function BackupSection() {
       </div>
       {isAndroid() && <AutoBackupField />}
     </section>
+  );
+}
+
+/** Solo en el paquete portable: buscar versiones nuevas a mano. */
+/** Solo en la web: si el aviso de actualización no responde, borra la copia de la app guardada y la vuelve a bajar (los datos no se tocan). */
+export function ForceWebUpdate() {
+  const { t } = useTranslation();
+  const [busy, setBusy] = useState(false);
+  if (isNativePlatform()) return null;
+  return (
+    <div className="stack" style={{ gap: 8 }} data-testid="force-update">
+      <p className="hint" style={{ margin: 0 }}>{t('pwa.forceHint')}</p>
+      <div>
+        <button
+          className="btn"
+          type="button"
+          disabled={busy}
+          data-testid="force-update-btn"
+          onClick={() => {
+            void confirmAction(t('pwa.forceConfirm')).then((ok) => {
+              if (!ok) return;
+              setBusy(true);
+              void forceWebUpdate();
+            });
+          }}
+        >
+          <RefreshCw size={18} /> {t('pwa.force')}
+        </button>
+      </div>
+    </div>
   );
 }
 

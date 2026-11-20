@@ -4340,6 +4340,11 @@
   "pt": "Português"
  },
  "pwa": {
+    "stalled": "O download não começou. Tente de novo.",
+    "retry": "Tentar de novo",
+    "force": "Forçar a atualização do app",
+    "forceHint": "Se o aviso de atualização não responder: isso apaga a cópia do app guardada neste dispositivo e a baixa de novo. Seus dados, mapas, livros e pacotes não são tocados. Precisa de conexão.",
+    "forceConfirm": "A cópia guardada do app é apagada e baixada de novo (alguns MB). É preciso ter conexão: se não tiver, espere até ter. Seus dados não são tocados. Continuar?",
   "updateAvailable": "Há uma nova versão disponível.",
   "update": "Atualizar",
   "downloading": "Baixando a nova versão…",
