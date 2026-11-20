@@ -633,6 +633,7 @@
     "callFire": "Fire department: {{number}}",
     "callsHere": "{{country}} numbers, based on your location.",
     "callsSettings": "{{country}} numbers (the country chosen in Settings; no location yet).",
+    "callsOffline": "Numbers for {{country}} (the country chosen in Settings; you are offline).",
     "call911": "Call {{number}}",
     "escapeNear": "Nearest escape point (yours): {{name}}, {{distance}} to the {{dir}}",
     "shelterNear": "Nearest shelter (yours): {{name}}, {{distance}} to the {{dir}}",

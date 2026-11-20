@@ -8,6 +8,7 @@ import { bearingDeg, cardinalOf, distanceMeters, formatDms } from '@/core/geo/ge
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { countryAt, loadBorders } from './borders';
 import { useCountry } from './currentCountry';
+import { useOnline } from '@/core/useOnline';
 import type { Country } from '@/core/settings/settings';
 import { speak, stopSpeaking, useSpeechVoice } from '@/core/speech/speech';
 import { CALLS } from '@/modules/firstAid/guides/types';
@@ -35,9 +36,11 @@ export function MyLocationPage() {
   // El número general de emergencias del país (en Chile, Carabineros).
   const settingsCountry = useCountry();
   // Acá, a propósito, los números son los del país donde uno está según la ubicación EN VIVO de esta pantalla (la que se está leyendo ahora, no la última
-  // conocida): es la pantalla para dictarle el lugar a quien atiende la emergencia. Sin ubicación, los del país elegido en Ajustes.
+  // conocida): es la pantalla para dictarle el lugar a quien atiende la emergencia. Sin ubicación o sin conexión, los del país elegido en Ajustes.
   const [here, setHere] = useState<Country | null>(null);
-  const callCountry = here ?? settingsCountry;
+  // Con conexión manda la ubicación en vivo; sin conexión (decisión del usuario, 2026-11-20) los del país elegido en Ajustes.
+  const online = useOnline();
+  const callCountry = online && here ? here : settingsCountry;
   const calls = CALLS[callCountry];
   const emergencyNumber = calls.emergency ?? '911';
   const waypoints = useWaypoints((s) => s.waypoints);
@@ -202,7 +205,7 @@ export function MyLocationPage() {
         </div>
       )}
       <p className="hint" style={{ margin: 0 }} data-testid="calls-country">
-        {t(here ? 'location.callsHere' : 'location.callsSettings', { country: t(`country.${callCountry}`) })}
+        {t(online && here ? 'location.callsHere' : online ? 'location.callsSettings' : 'location.callsOffline', { country: t(`country.${callCountry}`) })}
       </p>
       <p className="hint" style={{ margin: 0 }}>{t('location.intro')}</p>
 

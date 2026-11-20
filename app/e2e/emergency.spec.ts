@@ -193,6 +193,12 @@ test('mi ubicación para socorristas y radio', async ({ page }, testInfo) => {
   await expect(page.getByTestId('calls-country')).toHaveText('Números de Chile, según tu ubicación.');
   await expect(page.getByRole('link', { name: 'Llamar al 133' })).toHaveAttribute('href', 'tel:133');
   await expect(page.getByRole('link', { name: 'Salud (ambulancia): 131' })).toHaveAttribute('href', 'tel:131');
+  // Sin conexión manda el país elegido en Ajustes (Argentina), aunque la ubicación diga Chile.
+  await page.context().setOffline(true);
+  await expect(page.getByTestId('calls-country')).toHaveText('Números de Argentina (el país elegido en Ajustes; sin conexión).');
+  await expect(page.getByRole('link', { name: 'Salud (ambulancia): 107' })).toHaveAttribute('href', 'tel:107');
+  await page.context().setOffline(false);
+  await expect(page.getByTestId('calls-country')).toHaveText('Números de Chile, según tu ubicación.');
   await page.context().setGeolocation({ latitude: -41.1335, longitude: -71.3103 });
 
   await page.goto('/#/first-aid/radio');

@@ -1181,6 +1181,7 @@
   "callFire": "Bombeiros: {{number}}",
   "callsHere": "Números de {{country}}, conforme sua localização.",
   "callsSettings": "Números de {{country}} (o país escolhido em Configurações; ainda sem localização).",
+  "callsOffline": "Números de {{country}} (o país escolhido em Ajustes; sem conexão).",
   "call911": "Ligar para {{number}}",
   "escapeNear": "Ponto de fuga mais próximo (seu): {{name}}, a {{distance}} {{dir}}",
   "shelterNear": "Abrigo mais próximo (seu): {{name}}, a {{distance}} {{dir}}",

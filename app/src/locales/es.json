@@ -633,6 +633,7 @@
     "callFire": "Bomberos: {{number}}",
     "callsHere": "Números de {{country}}, según tu ubicación.",
     "callsSettings": "Números de {{country}} (el país elegido en Ajustes; sin ubicación todavía).",
+    "callsOffline": "Números de {{country}} (el país elegido en Ajustes; sin conexión).",
     "call911": "Llamar al {{number}}",
     "escapeNear": "Punto de escape más cercano (tuyo): {{name}}, a {{distance}} al {{dir}}",
     "shelterNear": "Refugio más cercano (tuyo): {{name}}, a {{distance}} al {{dir}}",
