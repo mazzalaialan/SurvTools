@@ -8,6 +8,7 @@ import { create } from 'zustand';
  */
 export type Capability =
   | 'geolocation'
+  | 'backgroundLocation'
   | 'orientation'
   | 'motion'
   | 'barometer'
@@ -23,6 +24,7 @@ export type Capability =
 
 export const CAPABILITIES: Capability[] = [
   'geolocation',
+  'backgroundLocation',
   'orientation',
   'motion',
   'barometer',
@@ -94,6 +96,9 @@ export async function detectCapabilities(): Promise<CapabilityMap> {
   ]);
   return {
     geolocation: 'geolocation' in navigator,
+    // GPS en segundo plano (grabar un recorrido con la pantalla apagada): solo la app nativa, con su servicio en primer plano (core/geo/nativeLocation.ts).
+    // En el navegador la ubicación se corta cuando la pestaña queda oculta.
+    backgroundLocation: native,
     orientation,
     motion,
     barometer: barometerOk,

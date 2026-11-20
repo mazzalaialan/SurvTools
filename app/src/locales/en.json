@@ -123,6 +123,7 @@
   },
   "capabilities": {
     "geolocation": "GPS / location",
+    "backgroundLocation": "GPS / location in the background",
     "orientation": "Compass",
     "motion": "Accelerometer",
     "barometer": "Barometer",
