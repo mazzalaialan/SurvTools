@@ -69,6 +69,7 @@ export function Shell() {
 
   return (
     <div className="shell">
+      {/* data-area='emergency': solo cambia el tono de la solapa activa (rojo = Emergencias; ver docs/DISENO.md). */}
       <nav className="bottomnav" aria-label={t('nav.main')} data-area={pathname.startsWith('/first-aid') ? 'emergency' : undefined}>
         {NAV.map(({ to, key, icon: Icon }) => (
           <NavLink key={to} to={to} end={to === '/'}>
@@ -98,7 +99,7 @@ export function Shell() {
             {MORE.map(({ to, key, icon: Icon }) => (
               <li key={to}>
                 <Link className="list-row" to={to} onClick={() => setMoreOpen(false)}>
-                  <Icon size={22} aria-hidden style={{ color: 'var(--accent)' }} />
+                  <Icon size={22} aria-hidden style={{ color: 'var(--text-muted)' }} />
                   <span className="list-main">
                     <span className="list-title">{t(`sections.${key}`)}</span>
                   </span>
@@ -135,8 +136,7 @@ export function Shell() {
         <PocketScreen />
         <ConfirmHost />
         <IncomingFileHandler />
-        {/* data-area: acota el estilo propio de cada sección (hoy, Emergencias; ver docs/DISENO.md). */}
-        <main className="content" data-area={pathname.startsWith('/first-aid') ? 'emergency' : undefined}>
+        <main className="content">
           <Suspense fallback={null}>
             <Outlet />
           </Suspense>

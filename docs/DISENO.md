@@ -1,12 +1,14 @@
 # Sistema de diseño de VikArg
 
-Referencia práctica, hecha sobre la sección **Emergencias** (`/first-aid/*`, 2026-11-20) para replicarla en las demás. Primero va la función: cada decisión se juzga por si se lee y se toca más rápido y con menos errores (con prisa, guantes, de noche, a pleno sol); recién después, por si se ve mejor. Ante la duda, gana lo claro sobre lo lindo.
+Referencia práctica, nacida en **Emergencias** (`/first-aid/*`, 2026-11-20) y extendida a toda la app el mismo día. Primero va la función: cada decisión se juzga por si se lee y se toca más rápido y con menos errores (con prisa, guantes, de noche, a pleno sol); recién después, por si se ve mejor. Ante la duda, gana lo claro sobre lo lindo.
 
 ## Cómo está armado
 
 - **Tokens:** `app/src/styles/theme.css` (color por tema, radios, escala tipográfica, espaciado, elevación).
-- **Alcance por sección:** `Shell.tsx` pone `data-area="emergency"` en `<main class="content">` cuando la ruta empieza con `/first-aid`. Los estilos de la pasada están al final de `app/src/styles/app.css` y todos llevan el prefijo `.content[data-area='emergency']`, así las clases compartidas (`.card`, `.btn`, `.input`, `.chip`...) no cambian en el resto de la app. **Para pasar otra sección:** agregar su ruta en `Shell.tsx` (`data-area="orientation"`, etc.) y repetir/generalizar el bloque cambiando el prefijo. Cuando todas estén pasadas, el bloque sube a las clases base y se borra el prefijo.
+- **Sistema global (2026-11-20):** el estilo que nació en Emergencias y Ajustes **vive en las clases base** de `app/src/styles/app.css` (`.btn`, `.btn-primary`, `.chip`, `.segmented`, `.input/.select`, `.card`, `.list-row`, `.empty`, `.error`, `.warning-box`, `.bottomnav`, `.module-card`, `.dialog`, `.toast`...), así que toda la app lo usa; ya no hay que acotar nada por sección. El bloque «Controles» (arriba del archivo) es la referencia. Lo propio de cada sección (llamadas, ubicación, guías, selector de país, desplegables) va con sus propias clases, sin prefijo.
+- **Únicos `data-area` que quedan:** `data-area="country-picker"` (componente `CountryPackPicker`, estilos acotados porque reutiliza clases comunes en un layout propio) y `data-area="emergency"` en `<nav class="bottomnav">` (`Shell.tsx`), que solo cambia el tono de la solapa activa a rojo dentro de `/first-aid`.
 - Se tocan **solo** CSS y marcado visual. Textos, `aria-label`, `data-testid`, roles y rutas no se cambian (las e2e buscan por eso).
+- **Colores:** nada de hexadecimales sueltos fuera de mapas y diagramas; siempre variables (así el rojo nocturno sigue siendo solo rojo). Los tamaños de fuente van en `--fs-*` (salvo cifras de instrumentos en pantalla grande) y los radios en `--radius-ctl` / `--radius-card`.
 
 ## Tokens
 
@@ -57,7 +59,7 @@ Degradados violeta/azul, brillos, glassmorphism, neones, sombras largas y difusa
 - **Sin romper:** `npx tsc --noEmit -p .`, `npx vitest run` y las e2e de las pantallas tocadas.
 
 ## Un solo tono por función (2026-11-20)
-Dentro de Emergencias, **todo lo que llama, avisa o marca la sección usa `--danger`**: botones de llamada (Contactos y Mi ubicación), íconos de la grilla y la solapa activa del menú de abajo (`.bottomnav[data-area='emergency'] a.active`). `--accent` (cobre) queda para enlaces, acciones comunes y la solapa activa en el resto de la app. No mezclar los dos tonos para la misma función: se nota como inconsistencia.
+Dentro de Emergencias, **todo lo que llama, avisa o marca la sección usa `--danger`**: botones de llamada (Contactos y Mi ubicación), íconos de la grilla y la solapa activa del menú de abajo (`.bottomnav[data-area='emergency'] a.active`). `--accent` (cobre) queda para enlaces y foco. No mezclar los dos tonos para la misma función: se nota como inconsistencia.
 
 ## Regla final de color de controles en Emergencias (2026-11-20)
 Problema: los botones de gestión (Buscar cercanos, Nuevo contacto, país activo) iban en cobre sólido junto a las llamadas en rojo óxido: dos tonos parecidos y distintos en la misma pantalla. Decisión: **el rojo es solo de lo que llama o avisa; el cobre solo de enlaces y foco; las acciones de gestión y los selectores son neutros** (color del texto), con jerarquía por forma (borde, relleno, ícono, peso) y no por color.
@@ -71,7 +73,7 @@ Problema: los botones de gestión (Buscar cercanos, Nuevo contacto, país activo
 | Botón con estado (`aria-pressed`, ej. «Ver en el mapa») | Como la secundaria con borde de 2 px `--text` y negrita al estar activo |
 | Enlace | `--accent` subrayado (`.map-link`, `.btn-link`, enlaces en texto) |
 | Peligro destructivo (borrar) | `.btn-danger-outline`: contorno `--danger`, sin relleno |
-| Solapa activa del menú de abajo | `--danger` en Emergencias; `--accent` en el resto de la app |
+| Solapa activa del menú de abajo | Color `--text` + barra de 3 px arriba (a la izquierda en el riel lateral): se distingue sin color. En Emergencias la barra y el ícono van en `--danger`. Es navegación, no un enlace: por eso no es cobre |
 | Deshabilitado | Sin relleno, borde punteado, texto `--text-muted` |
 
 En rojo nocturno todo lo anterior sigue siendo rojo (`--text`, `--bg` y `--danger` son rojos ahí): se distinguen por forma. Al pasar otras secciones, aplicar la misma tabla.
@@ -88,7 +90,7 @@ Componente único: `app/src/modules/emergency/CountryPackPicker.tsx`, con `mode=
 - **Pendiente de decisión:** pasar el resto de Ajustes al mismo sistema y mostrar el peso solo cuando hay datos.
 
 ## Ajustes (2026-11-20)
-Contenedor con `data-area="settings"` (en `SettingsPage`); estilos al final de `app.css`, acotados a ese atributo. Aplica la tabla de «Regla final de color de controles» sin cambios, y concreta dos filas que antes iban en cobre sólido:
+Hoy ya no hay `data-area="settings"`: estas reglas son globales (ver «Sistema global»). Aplica la tabla de «Regla final de color de controles» sin cambios, y concreta dos filas que antes iban en cobre sólido:
 
 | Función | Token / forma en Ajustes |
 |---|---|
@@ -101,3 +103,30 @@ Contenedor con `data-area="settings"` (en `SettingsPage`); estilos al final de `
 Criterio: va en desplegable **cerrado** lo de uso poco frecuente (formularios largos, listas, referencia). Lo frecuente (Tema, Idioma, País, Unidades, Backup) queda a la vista. Encabezado de 48 px completo como botón (`aria-expanded`, `aria-controls`), título en mayúsculas de bloque, **resumen con el estado que importa visible aunque esté cerrado** (p. ej. «La app no tiene contraseña…» con ícono de advertencia, o «Bloqueo automático: 5 min») y chevron. Sin animación. El contenido sigue montado (`hidden`), así no se pierde lo escrito. Las e2e lo abren con `openSection(page, 'security' | 'storage' | 'device')` (`app/e2e/settingsSections.ts`). Hoy: Seguridad, Almacenamiento, Este dispositivo.
 
 Selector de país: los continentes arrancan **cerrados**; «País actual» siempre visible arriba. En las e2e, `openContinent(page)` (`app/e2e/countryPicker.ts`).
+
+## Sistema global: tabla final y decisiones (2026-11-20)
+
+| Función | Token / forma (en toda la app) |
+|---|---|
+| Llamar / peligro | `--danger` (`.btn-danger` sólido con `--on-danger`; `.btn-call`, `.call-other` contorno de 2 px con ícono de teléfono; `.btn-danger-outline` para borrar; `.error` con barra de 4 px) |
+| Enlace, foco | `--accent` + subrayado (`a`, `.btn-link`); foco `--focus` |
+| Gestión, selectores, segmentados, primarios, casillas, rangos | Neutro: `--text`/`--bg`; primario = borde 2 px `--text`; seleccionado = relleno `--text`, letra `--bg`, negrita, aro interior |
+| Íconos de listas y grillas | `--text-muted`; el de Emergencias en `--danger`; íconos de estado (`--ok/--warn/--info/--danger`) solo cuando son un estado |
+| Estado de un dato (río, amenaza, nivel de pronóstico) | `--ok`, `--info`, `--warn`, `--danger` o `--scale-*` del tema, siempre con el texto del nivel |
+| Solapa activa | `--text` + barra de 3 px (rojo solo en Emergencias) |
+| Desplegable de detalle (`summary`) | `--text` con la flecha nativa |
+| Pulsado | Relleno `--border` (botones, chips, filas, segmentados, íconos); peligro: aro interior |
+| Deshabilitado | Sin relleno, borde punteado, `--text-muted` (también `.chip:disabled`) |
+| Vacío | `.empty`: caja punteada, texto a la izquierda |
+| Ritmo vertical | 16 px (`--sp-4`) entre bloques; títulos de bloque con 24 arriba y 12 abajo; tarjetas sueltas bajo `.content` con 16 de separación (`.content > .card:not(:last-child)`); dentro de una tarjeta 12 |
+| Cabecera | Celular (≤420 px): menos aire entre botones y título de 14 px para que el nombre no baje a 4 líneas |
+| Radios | `--radius-ctl` 8 (controles, filas, chips, avisos, etiquetas) y `--radius-card` 10 (tarjetas, grupos, diálogos, toasts); redondo solo para avatares, puntos, barras de progreso y cintas sobre mapas |
+| Elevación | `--elev-1` tarjetas; `--elev-2` diálogos y toasts |
+
+Cambios de comportamiento visual respecto del estilo viejo: botones primarios y chips/segmentados seleccionados dejaron de ser cobre sólido; los íconos de las grillas (Inicio y portadas de módulo) son neutros; el toast y el diálogo llevan borde `--control-border` en vez de cobre; estados de río y amenaza usan variables del tema (antes eran hexadecimales fijos, que no se ponían rojos en el modo nocturno).
+
+### Pantallas revisadas (celular 390×844, oscuro y claro; rojo nocturno y portugués en muestra)
+Inicio, Orientación (portada, brújula, waypoints y rutas, tracks, mapa estelar, declinómetro, inclinómetro, altímetro, mapas offline), Meteo (portada, clima, comparación, histórico, navegación/ríos, mapa de alertas y clima, sol y luna), Entrenamiento (portada, sesiones, salidas, mapa en vivo vacío), Inventario (portada, artículos, ubicaciones, alta de artículo), Documentos (lista, alta), Huerta (portada, calendario), Cabuyería (guía), Biblioteca (portada, libros), Compartir, Backup/Transferencia, Acerca de, Ajustes, Emergencias (comparada píxel a píxel contra el estado anterior), pantallas de bóveda (crear, clave de recuperación, desbloquear), diálogo de confirmación, «Más».
+
+### Pendiente de revisar con datos reales o sensores
+Pantallas que dependen de sensores o datos que no hay en la prueba (brújula con rumbo, inclinómetro con acelerómetro, grabación en vivo de Entrenamiento, lector de libros, huerta con canteros cargados, ficha del nudo, toasts en pantalla), pantalla completa de mapas y de la brújula 3D, y los controles dentro de los mapas (MapLibre). Objetivos táctiles de 32 px que se dejaron por ser densidad sobre mapas o grillas: `.map-link`, `.wmap-fs-menu .chip`, `.garden-cell`, `.first-steps-list a`.

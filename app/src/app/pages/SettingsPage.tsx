@@ -55,7 +55,7 @@ export function SettingsPage() {
   const addPassword = useVault((s) => s.addPassword);
 
   return (
-    <div className="stack" data-area="settings">
+    <div className="stack">
       <h1 className="page-title">{t('settings.title')}</h1>
 
       <section className="card stack">

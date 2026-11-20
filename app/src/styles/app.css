@@ -19,6 +19,7 @@ body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.45;
+  font-variant-numeric: tabular-nums; /* teléfonos, coordenadas, distancias y horarios alineados */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -39,45 +40,86 @@ a {
 }
 
 /* ---------- Controles ---------- */
+/*
+ * Sistema de diseño global (docs/DISENO.md). Un tono por función: rojo = llamar/peligro, cobre (--accent) = enlaces y foco,
+ * neutro (--text) = gestión, selectores, segmentados y botones primarios. Jerarquía por forma (borde, relleno, peso, ícono),
+ * nunca solo por color. Radios: --radius-ctl (controles) y --radius-card (tarjetas). Escala: --fs-xs..xl. Espaciado: --sp-*.
+ */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--sp-2);
   min-height: 48px; /* usable con guantes */
   padding: 0 20px;
   border: 1px solid var(--control-border);
-  border-radius: 10px;
+  border-radius: var(--radius-ctl);
   background: var(--surface-2);
   color: var(--text);
   font: inherit;
+  font-size: var(--fs-md);
   font-weight: 600;
   cursor: pointer;
   text-decoration: none; /* también cuando es un enlace (<a class="btn">) */
 }
 
-.btn:disabled {
-  opacity: 0.5;
+/* Pulsado: relleno --border con sombra interior (con guantes no se ve el dedo: el feedback tiene que verse). */
+.btn:not(:disabled):not(.disabled):active {
+  background: var(--border);
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3);
+}
+
+/* Deshabilitado: sin relleno, borde punteado y texto atenuado pero legible (no solo opacidad). */
+.btn:disabled,
+.btn.disabled {
+  opacity: 1;
+  background: transparent;
+  border-style: dashed;
+  border-width: 1px;
+  border-color: var(--control-border);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
+/* Acción primaria: NEUTRA, borde de 2 px del color del texto (no cobre sólido). Se distingue por forma y peso. */
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
+  background: var(--surface);
+  border: 2px solid var(--text);
+  color: var(--text);
 }
 
 .btn-primary:not(:disabled):hover {
-  background: var(--accent-strong);
+  background: var(--surface-2);
 }
 
+.btn-primary:not(:disabled):active {
+  background: var(--border);
+}
+
+/* Botón con estado (aria-pressed): borde de 2 px y negrita al estar activo. */
+.btn[aria-pressed='true'] {
+  border: 2px solid var(--text);
+  color: var(--text);
+  background: var(--surface-2);
+  font-weight: 700;
+}
+
+/* Enlace: cobre y subrayado (la única función del cobre, además del foco). */
 .btn-link {
   background: none;
   border: none;
   color: var(--accent);
   min-height: 44px;
   padding: 0 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn.btn-link:not(:disabled):not(.disabled):active {
+  background: none;
+  box-shadow: none;
+  color: var(--accent-strong);
 }
 
 .btn-block {
@@ -92,7 +134,7 @@ a {
 
 .field label,
 .field .field-label {
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -101,45 +143,66 @@ a {
   min-height: 48px;
   padding: 0 14px;
   border: 1px solid var(--control-border);
-  border-radius: 10px;
+  border-radius: var(--radius-ctl);
   background: var(--surface);
   color: var(--text);
   font: inherit;
+  font-size: var(--fs-md); /* 16 px: iOS no hace zoom al enfocar */
   width: 100%;
 }
 
+.input:focus-visible,
+.select:focus-visible {
+  outline-offset: 0;
+  border-color: var(--focus);
+}
+
+/* Con error: borde de 2 px en --danger (y el mensaje de texto debajo, que dice qué pasa). */
+.input[aria-invalid='true'],
+.select[aria-invalid='true'] {
+  border-width: 2px;
+  border-color: var(--danger);
+}
+
 .hint {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   margin: 0;
 }
 
+/* Error: barra de 4 px a la izquierda + texto (no depende solo del color). */
 .error {
   color: var(--danger);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  padding-left: var(--sp-3);
+  border-left: 4px solid var(--danger);
   margin: 0;
 }
 
 .success {
   color: var(--ok);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   margin: 0;
 }
 
+/* Segmentado (Tema, Idioma, Unidades...): neutro; el elegido va relleno --text/--bg, en negrita y con aro (se lee sin color). */
 .segmented {
   display: flex;
   border: 1px solid var(--control-border);
-  border-radius: 10px;
+  border-radius: var(--radius-ctl);
   overflow: hidden;
 }
 
 .segmented button {
   flex: 1;
-  min-height: 44px;
+  min-height: 48px;
+  padding: 0 var(--sp-2);
   border: none;
   background: var(--surface);
-  color: var(--text-muted);
+  color: var(--text);
   font: inherit;
+  font-size: var(--fs-md);
   cursor: pointer;
 }
 
@@ -147,24 +210,39 @@ a {
   border-left: 1px solid var(--border);
 }
 
-.segmented button[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 600;
+.segmented button:not([aria-pressed='true']):active {
+  background: var(--border);
 }
 
+.segmented button[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px var(--bg);
+}
+
+.segmented button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -4px;
+}
+
+/* Tarjeta: un radio, borde fino, elevación 1. Dentro no se anidan tarjetas: se separa con líneas finas o espacio. */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius-card);
+  padding: var(--sp-4);
+  box-shadow: var(--elev-1);
+}
+
+.card.stack {
+  gap: var(--sp-3);
 }
 
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 /* ---------- Pantallas de bóveda (setup / desbloqueo) ---------- */
@@ -204,37 +282,39 @@ a {
 
 .recovery-key {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  font-size: 1.3rem;
+  font-size: var(--fs-lg);
   letter-spacing: 0.06em;
   text-align: center;
   padding: 16px;
-  border: 2px dashed var(--accent);
-  border-radius: 10px;
+  border: 2px dashed var(--text);
+  border-radius: var(--radius-card);
   word-break: break-all;
   user-select: all;
 }
 
+/* Avisos: barra de 4 px a la izquierda + texto que dice qué pasa (el color solo refuerza). */
 .warning-box {
   border-left: 4px solid var(--warn);
   background: var(--surface-2);
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 0.92rem;
+  padding: var(--sp-3) 14px;
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
 }
 
 .ok-box {
   border-left: 4px solid var(--ok);
   background: var(--surface-2);
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 0.92rem;
+  padding: var(--sp-3) 14px;
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
 }
 
 .check {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: var(--sp-3);
   min-height: 48px;
+  padding: var(--sp-2) 0;
   cursor: pointer;
 }
 
@@ -244,16 +324,18 @@ input[type='range'],
 input[type='checkbox'],
 input[type='radio'],
 progress {
-  accent-color: var(--accent);
+  accent-color: var(--text); /* neutro: el cobre es de enlaces y foco */
 }
 input[type='range'] {
   width: 100%;
 }
 
 .check input {
+  flex: none;
   width: 22px;
   height: 22px;
-  accent-color: var(--accent);
+  margin-top: 1px;
+  accent-color: var(--text);
 }
 
 /* ---------- Shell ---------- */
@@ -285,16 +367,23 @@ input[type='range'] {
 
 .topbar h1,
 .topbar .topbar-title {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   flex: 1;
   min-width: 0;
   line-height: 1.15;
   text-wrap: balance;
 }
 
+/* Celular: menos aire entre los botones y título más chico, así el nombre de la app no baja a 4 líneas. */
 @media (max-width: 420px) {
+  .topbar {
+    gap: var(--sp-2);
+    padding-left: var(--sp-3);
+    padding-right: var(--sp-3);
+  }
+
   .topbar .topbar-title {
-    font-size: 0.95rem;
+    font-size: var(--fs-sm);
   }
 }
 
@@ -304,7 +393,7 @@ input[type='range'] {
   width: 48px;
   height: 48px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-ctl);
   background: none;
   color: var(--text-muted);
   cursor: pointer;
@@ -315,25 +404,38 @@ input[type='range'] {
   background: var(--surface-2);
 }
 
+.icon-btn:active {
+  color: var(--text);
+  background: var(--border);
+}
+
 .content {
   flex: 1;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 16px 16px 96px;
+  padding: var(--sp-4) var(--sp-4) 96px;
+}
+
+/* Ritmo vertical: las tarjetas sueltas de una pantalla (Inicio, listas) se separan 16 px entre sí y de lo que sigue
+   (el título de bloque ya trae 24 arriba y los márgenes se funden: no se suman). */
+.content > .card:not(:last-child) {
+  margin-bottom: var(--sp-4);
 }
 
 .page-title {
-  font-size: 1.4rem;
-  margin-bottom: 16px;
+  font-size: var(--fs-xl);
+  margin-bottom: var(--sp-4);
 }
 
+/* Título de bloque: etiqueta corta en mayúsculas, con peso para que se vea de un vistazo (no es protagonista). */
 .section-title {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   color: var(--text-muted);
-  margin: 24px 0 10px;
+  margin: var(--sp-6) 0 var(--sp-3);
 }
 
 /* Navegación inferior (celular) */
@@ -372,9 +474,17 @@ input[type='range'] {
   hyphens: none;
 }
 
+/* Solapa activa: color del texto y una barra de 3 px arriba (se distingue sin depender del color; sin negrita: las etiquetas largas no entrarían).
+   Es navegación, no un enlace: va en neutro; el rojo es solo de Emergencias (ver .bottomnav[data-area='emergency']). */
 .bottomnav a.active,
 .bottomnav .nav-more.active {
-  color: var(--accent);
+  color: var(--text);
+  box-shadow: inset 0 3px 0 currentColor;
+}
+
+.bottomnav a:not(.active):not(.nav-more):active,
+.bottomnav .nav-more:not(.active):active {
+  background: var(--surface-2);
 }
 
 .bottomnav .nav-wide {
@@ -411,6 +521,11 @@ input[type='range'] {
     padding: 12px 0;
   }
 
+  /* En el riel lateral, el indicador de la solapa activa va a la izquierda. */
+  .bottomnav a.active {
+    box-shadow: inset 3px 0 0 currentColor;
+  }
+
   .bottomnav .nav-wide {
     display: flex;
   }
@@ -438,7 +553,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 6px;
   min-height: 96px;
-  padding: 12px;
+  padding: var(--sp-3);
   text-align: left;
   font: inherit;
   color: var(--text);
@@ -455,12 +570,13 @@ input[type='range'] {
 
 .module-card .icon {
   flex: none;
-  color: var(--accent);
+  color: var(--text-muted); /* íconos neutros: el color queda para los estados (Emergencias lleva el de peligro, abajo) */
   margin-top: 1px;
 }
 
 .module-card h3 {
-  font-size: 1rem;
+  min-width: 0; /* en la fila con el ícono, una palabra larga («Recomendaciones») se parte en vez de salirse de la tarjeta */
+  font-size: var(--fs-md);
   line-height: 1.25;
   /* Sin guiones automáticos: partían «primeros» en medio del título; solo se corta si una palabra no entra. */
   overflow-wrap: break-word;
@@ -468,14 +584,14 @@ input[type='range'] {
 
 .module-card p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
 .module-card .badge {
   margin-top: auto;
   align-self: flex-start;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   padding: 2px 6px;
   border-radius: 4px;
   background: var(--surface-2);
@@ -517,11 +633,12 @@ input[type='range'] {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
 }
 
+/* ✓/✗ con texto (no depende del color); el sí no va en verde para no competir con los estados reales. */
 .cap-yes {
-  color: var(--ok);
+  color: var(--text);
 }
 
 .cap-no {
@@ -541,9 +658,9 @@ input[type='range'] {
   gap: 12px;
   padding: 12px 16px;
   background: var(--surface-2);
-  border: 1px solid var(--accent);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.4);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-2);
 }
 
 .toast span {
@@ -618,15 +735,14 @@ input[type='range'] {
   width: auto;
 }
 
-.btn[aria-pressed='true'] {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
+/* Vacío: caja punteada, texto a la izquierda y que diga qué hacer (no una pantalla en blanco). */
 .empty {
   color: var(--text-muted);
-  text-align: center;
-  padding: 32px 16px;
+  text-align: left;
+  padding: var(--sp-4);
+  border: 1px dashed var(--control-border);
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
 }
 
 .list {
@@ -647,7 +763,7 @@ input[type='range'] {
   padding: 10px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-ctl);
   color: var(--text);
   font: inherit;
   text-align: left;
@@ -661,7 +777,11 @@ input[type='range'] {
 
 a.list-row:hover,
 button.list-row:hover {
-  border-color: var(--accent);
+  border-color: var(--control-border);
+}
+
+.list-row:not(:disabled):active {
+  background: var(--border);
 }
 
 .list-main {
@@ -675,12 +795,13 @@ button.list-row:hover {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-size: var(--fs-md);
   font-weight: 600;
   overflow-wrap: anywhere;
 }
 
 .list-sub {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -691,10 +812,10 @@ button.list-row:hover {
 
 .pill {
   flex-shrink: 0;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-ctl);
   white-space: nowrap;
 }
 
@@ -714,7 +835,7 @@ button.list-row:hover {
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: var(--radius-ctl);
   color: #fff;
 }
 
@@ -749,15 +870,15 @@ button.list-row:hover {
 
 .fieldset {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 16px 16px;
+  border-radius: var(--radius-card);
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
   margin: 0;
 }
 
 .fieldset legend {
   padding: 0 6px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .row-end {
@@ -767,11 +888,19 @@ button.list-row:hover {
   gap: 8px;
 }
 
+/* Peligro contorno (borrar): sin relleno, borde de 2 px y texto en --danger. */
 .btn-danger-outline {
   background: none;
+  border-width: 2px;
   border-color: var(--danger);
   color: var(--danger);
   margin-right: auto;
+}
+
+.btn-danger-outline:disabled {
+  border-width: 1px;
+  color: var(--text-muted);
+  border-color: var(--control-border);
 }
 
 .picker {
@@ -786,15 +915,15 @@ button.list-row:hover {
   width: 44px;
   height: 44px;
   border: 2px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-ctl);
   background: var(--surface-2);
   color: var(--text);
   cursor: pointer;
 }
 
 .picker-item[aria-pressed='true'] {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent);
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--text);
 }
 
 /* ---------- Diálogo ---------- */
@@ -803,10 +932,11 @@ button.list-row:hover {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-card);
   background: var(--surface);
   color: var(--text);
+  box-shadow: var(--elev-2);
 }
 
 .dialog::backdrop {
@@ -827,7 +957,7 @@ button.list-row:hover {
 
 .dialog-header h2 {
   flex: 1;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
 }
 
 .dialog-body {
@@ -857,7 +987,7 @@ button.list-row:hover {
   margin-bottom: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-ctl);
 }
 
 .tree-row .icon-btn:disabled {
@@ -873,7 +1003,7 @@ button.list-row:hover {
 }
 
 .summary h2 {
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
 }
 
 a.module-card {
@@ -881,13 +1011,13 @@ a.module-card {
 }
 
 a.module-card:hover {
-  border-color: var(--accent);
+  border-color: var(--control-border);
 }
 
 /* Feedback inmediato al toque (con guantes no se ve el dedo). */
 a.module-card:active {
-  background: var(--surface-2);
-  border-color: var(--accent);
+  background: var(--border);
+  border-color: var(--control-border);
 }
 
 .file-input {
@@ -897,7 +1027,7 @@ a.module-card:active {
 .lot-total {
   margin: 0;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text);
 }
 
 /* ---------- Notificaciones y transferencia ---------- */
@@ -905,7 +1035,7 @@ a.module-card:active {
 .status-list {
   margin: 0;
   padding-left: 20px;
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -922,7 +1052,7 @@ a.module-card:active {
 .qr {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
 }
 
 .transfer-code,
@@ -935,7 +1065,7 @@ a.module-card:active {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text);
 }
 
 /* ---------- Fotos y escáner ---------- */
@@ -946,7 +1076,7 @@ a.module-card:active {
   height: auto;
   max-height: 360px;
   object-fit: contain;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: var(--surface-2);
 }
 
@@ -958,7 +1088,7 @@ a.module-card:active {
   gap: 8px;
   height: 140px;
   border: 2px dashed var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   color: var(--text-muted);
 }
 
@@ -967,7 +1097,7 @@ a.module-card:active {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: #000;
 }
 
@@ -994,7 +1124,7 @@ a.module-card:active {
   gap: 8px;
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .gps-error {
@@ -1010,12 +1140,12 @@ a.module-card:active {
 .nav-label {
   display: block;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .nav-value {
   display: block;
-  font-size: 1.6rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -1046,7 +1176,7 @@ a.module-card:active {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--text);
   color: var(--bg);
   font-weight: 700;
 }
@@ -1085,7 +1215,7 @@ a.module-card:active {
 
 .rose-letter {
   fill: var(--text);
-  font-size: 18px;
+  font-size: var(--fs-lg);
   font-weight: 700;
 }
 
@@ -1113,7 +1243,7 @@ a.module-card:active {
   justify-content: center;
   gap: 8px;
   margin: 0;
-  font-size: 1.3rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
 }
 
@@ -1165,7 +1295,7 @@ a.module-card:active {
   flex-direction: column;
   gap: 2px;
   padding: 8px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: rgb(0 0 0 / 0.55);
   color: #fff;
   font-weight: 600;
@@ -1173,7 +1303,7 @@ a.module-card:active {
 }
 
 .fs-overlay .fs-big {
-  font-size: 1.3rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
 }
 
@@ -1189,7 +1319,7 @@ a.module-card:active {
   position: relative;
   height: min(68dvh, 720px);
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   background: #05070d;
   touch-action: none;
   user-select: none;
@@ -1225,22 +1355,35 @@ a.module-card:active {
   gap: 8px;
 }
 
+/* Chip (filtros, selectores): 44 px, borde de control. Seleccionado: relleno --text, letra --bg, negrita y aro interior
+   (se distingue sin depender del color; el rojo es de llamar y el cobre de enlaces). */
 .chip {
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: none;
-  color: var(--text-muted);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-ctl);
+  background: var(--surface);
+  color: var(--text);
   font: inherit;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 
 .chip[aria-pressed='true'] {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--text);
+  background: var(--text);
   color: var(--bg);
-  font-weight: 600;
+  box-shadow: inset 0 0 0 2px var(--bg);
+  font-weight: 700;
+}
+
+.chip:not(:disabled):active {
+  background: var(--border);
+}
+
+.chip[aria-pressed='true']:active {
+  background: var(--text);
+  box-shadow: inset 0 0 0 3px var(--bg);
 }
 
 .sky-pointing {
@@ -1338,10 +1481,10 @@ a.module-card:active {
 .incl-risk {
   margin: 0;
   padding: 6px 16px;
-  border-radius: 999px;
+  border-radius: var(--radius-ctl);
   background: var(--zone);
   color: #fff;
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   text-transform: none;
 }
 
@@ -1496,7 +1639,7 @@ a.module-card:active {
 
 .sky-big {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
 }
 
@@ -1516,7 +1659,7 @@ a.module-card:active {
 .sky-table thead th {
   color: var(--text-muted);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .moon-row {
@@ -1551,7 +1694,7 @@ a.module-card:active {
 }
 
 .weather-now .sky-icon {
-  color: var(--accent);
+  color: var(--text);
 }
 
 .weather-temp {
@@ -1597,13 +1740,13 @@ a.module-card:active {
   gap: 4px;
   min-width: 52px;
   padding: 8px 4px;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: var(--surface-2);
 }
 
 .hour-strip .hint {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
 }
 
 .hour-strip li {
@@ -1615,7 +1758,7 @@ a.module-card:active {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1638,7 +1781,7 @@ a.module-card:active {
 }
 
 .hour-meta {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -1670,7 +1813,7 @@ a.module-card:active {
 
 .weather-legend summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -1682,7 +1825,7 @@ a.module-card:active {
   flex-direction: column;
   gap: 4px;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .weather-legend svg {
@@ -1705,7 +1848,7 @@ a.module-card:active {
   gap: 8px;
   padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: var(--surface-2);
 }
 
@@ -1722,7 +1865,7 @@ a.module-card:active {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .fact {
@@ -1795,7 +1938,7 @@ a.module-card:active {
 
 .rain-bars .hint {
   margin: 0;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
 }
 
 .rain-notices {
@@ -1814,7 +1957,7 @@ a.module-card:active {
   margin: 0 auto;
   padding: 4px 4px 4px 12px;
   border: 1px solid var(--info);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: var(--surface);
   color: var(--info);
 }
@@ -1838,7 +1981,7 @@ a.module-card:active {
 
 .update-text .hint {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
 }
 
 .day-name {
@@ -1925,7 +2068,7 @@ a.module-card:active {
   flex: none;
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
   object-fit: cover;
   background: var(--surface-2);
 }
@@ -1952,7 +2095,7 @@ a.module-card:active {
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: var(--surface-2);
   cursor: pointer;
 }
@@ -1969,7 +2112,7 @@ a.module-card:active {
   height: auto;
   max-height: 60dvh;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
   background: var(--surface-2);
 }
 
@@ -2003,7 +2146,7 @@ a.module-card:active {
   min-height: 340px;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   background: var(--bg);
 }
 
@@ -2052,7 +2195,7 @@ a.module-card:active {
 }
 
 .wmap-progress {
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -2068,7 +2211,7 @@ a.module-card:active {
   padding: 0;
   list-style: none;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .wmap-swatch {
@@ -2101,7 +2244,7 @@ a.module-card:active {
   min-height: 340px;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   background: var(--surface);
 }
 
@@ -2162,14 +2305,15 @@ a.module-card:active {
 }
 
 .maps-camera-btn[aria-pressed='true'] {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--text);
+  box-shadow: inset 0 0 0 2px var(--bg);
+  border-color: var(--text);
   color: var(--bg);
 }
 
 .maps-camera-text {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
 }
 
 /* En el seguimiento de un track no hay botón de ubicación: los de cámara bajan. */
@@ -2195,10 +2339,10 @@ a.module-card:active {
   flex-direction: column;
   gap: 2px;
   padding: 8px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   border: 2px solid transparent;
   background: rgb(0 0 0 / 0.6);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
 }
 
 /* Texto blanco siempre (no el color del estado): se lee sobre cualquier fondo. */
@@ -2215,7 +2359,7 @@ a.module-card:active {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
 }
 
 .follow-overlay.follow-on {
@@ -2234,7 +2378,7 @@ a.module-card:active {
 
 .follow-overlay .follow-turn {
   flex-basis: 100%;
-  font-size: 1rem;
+  font-size: var(--fs-md);
 }
 
 .zone-go {
@@ -2301,19 +2445,6 @@ a.module-card:active {
   color: var(--text-muted);
 }
 
-.contact-icon-police { color: var(--info); }
-.contact-icon-fire { color: var(--danger); }
-.contact-icon-medical,
-.contact-icon-hospital { color: var(--ok); }
-.contact-icon-civilDefense { color: var(--warn); }
-.contact-icon-fuel,
-.contact-icon-tyres,
-.contact-icon-carRepair,
-.contact-icon-atm { color: var(--accent); }
-.contact-icon-pharmacy { color: var(--ok); }
-.contact-icon-aed { color: var(--danger); }
-.contact-icon-water { color: var(--info); }
-.contact-icon-shelter { color: var(--warn); }
 
 .contact-actions,
 .phone-actions {
@@ -2324,11 +2455,23 @@ a.module-card:active {
   gap: 4px;
 }
 
+/* Botón de llamada: lo vital. Número en --fs-lg y negrita, siempre con el ícono de teléfono (no depende del color),
+   borde de 2 px en el tono de peligro (el único tono de «llamar»). */
 .btn-call {
-  min-height: 48px;
-  padding: 6px 16px;
+  min-height: 52px;
+  min-width: 96px;
+  padding: 6px 14px;
   white-space: nowrap;
-  font-weight: 600;
+  border: 2px solid var(--danger);
+  background: var(--surface-2);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.btn-call svg {
+  color: var(--danger);
+  width: 18px;
+  height: 18px;
 }
 
 .map-links {
@@ -2341,18 +2484,18 @@ a.module-card:active {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .source-badge {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
 }
 
 .source-official { color: var(--ok); }
 
 .location-big {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   word-break: break-word;
@@ -2360,7 +2503,7 @@ a.module-card:active {
 
 .location-dms {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2383,12 +2526,12 @@ a.module-card:active {
 .location-message {
   margin: 0;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: var(--surface-2);
   white-space: pre-wrap;
   word-break: break-word;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .row-end.wrap {
@@ -2398,13 +2541,19 @@ a.module-card:active {
 .call-911 {
   justify-content: center;
   min-height: 52px;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
 }
 
+/* Peligro sólido: solo para llamar a emergencias o lo irreversible. Pulsado: aro interior (se nota sin color). */
 .btn-danger {
   background: var(--danger);
   border-color: var(--danger);
-  color: #fff;
+  color: var(--on-danger);
+}
+
+.btn.btn-danger:not(:disabled):not(.disabled):active {
+  box-shadow: inset 0 0 0 3px var(--on-danger);
+  background: var(--danger);
 }
 
 .radio-freqs {
@@ -2435,18 +2584,18 @@ a.module-card:active {
 }
 .rpt-distance {
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text);
 }
 .rpt-details {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .rpt-help summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--text);
 }
 
 .rpt-help dl {
@@ -2462,7 +2611,7 @@ a.module-card:active {
 .rpt-help dd {
   margin: 0 0 6px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 /* ---------- Mis datos (Contactos de emergencia) ---------- */
@@ -2473,7 +2622,7 @@ a.module-card:active {
 
 .my-data-name {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
 }
 
 .my-data-list {
@@ -2483,7 +2632,7 @@ a.module-card:active {
 }
 
 .my-data-list dt {
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   margin-top: 6px;
 }
@@ -2512,7 +2661,7 @@ a.module-card:active {
 
 .doc-subgroup-title {
   margin: 4px 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   color: var(--text-muted);
 }
 
@@ -2575,7 +2724,7 @@ a.module-card:active {
 
 .contact-group-title {
   margin: 8px 0 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   color: var(--text-muted);
 }
 
@@ -2627,7 +2776,7 @@ a.module-card:active {
   gap: 4px;
   padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
 }
 
 .share-conflict-field {
@@ -2649,7 +2798,8 @@ a.module-card:active {
 }
 
 .btn-lg {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
+  min-height: 56px;
   padding: 14px 18px;
   justify-content: center;
 }
@@ -2659,7 +2809,7 @@ a.module-card:active {
   padding-left: 22px;
   display: grid;
   gap: 10px;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   line-height: 1.45;
 }
 
@@ -2679,7 +2829,7 @@ a.module-card:active {
   align-items: center;
   padding: 10px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
 }
 
 .guide-call {
@@ -2691,7 +2841,7 @@ a.module-card:active {
 .guide-question {
   margin: 4px 0 0;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
 }
 
 .guide-options {
@@ -2725,24 +2875,23 @@ a.module-card:active {
 .about-info {
   margin: 0;
   padding: 8px 10px;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   white-space: pre-wrap;
   word-break: break-word;
   color: var(--text-muted);
   background: var(--surface-2, transparent);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
 }
 
 .btn.disabled {
-  opacity: 0.5;
-  pointer-events: none;
+  pointer-events: none; /* el aspecto va en .btn:disabled, .btn.disabled (arriba) */
 }
 
 .home-footer {
   margin: 24px 0 8px;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .home-footer a {
@@ -2769,13 +2918,13 @@ a.module-card:active {
 }
 
 .track-stats dt {
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
 .track-stats dd {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
 }
 
@@ -2809,7 +2958,7 @@ a.module-card:active {
 .page-head .track-title-input {
   flex: 1;
   min-width: 0;
-  font-size: 1.2rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
 }
 
@@ -2853,8 +3002,8 @@ a.module-card:active {
   margin: 0;
   padding: 14px;
   border: 2px solid var(--border);
-  border-radius: 12px;
-  font-size: 1.15rem;
+  border-radius: var(--radius-card);
+  font-size: var(--fs-lg);
   font-weight: 600;
   text-align: center;
 }
@@ -2876,7 +3025,7 @@ a.module-card:active {
 
 .follow-turn {
   flex-basis: 100%;
-  font-size: 1rem;
+  font-size: var(--fs-md);
 }
 
 .follow-map {
@@ -2921,7 +3070,7 @@ a.module-card:active {
 }
 
 .locked-input .icon-btn[aria-pressed='true'] {
-  color: var(--accent);
+  color: var(--text);
 }
 
 /* Lo grabado: verde, como en el mapa. */
@@ -2985,7 +3134,7 @@ a.module-card:active {
 
 .rec-hint {
   flex-basis: 100%;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -3014,7 +3163,7 @@ a.module-card:active {
 }
 
 .rec-lbl {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   line-height: 1;
 }
@@ -3038,7 +3187,7 @@ a.module-card:active {
   margin: 0 0 4px;
   padding-top: 6px;
   border-top: 1px solid var(--border);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--warn);
 }
 
@@ -3054,7 +3203,7 @@ a.module-card:active {
   flex: none;
   min-height: 32px;
   padding: 2px 10px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .rec-notice {
@@ -3097,7 +3246,7 @@ a.module-card:active {
   gap: 8px;
   background: #000;
   color: #444;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   text-align: center;
   touch-action: manipulation;
   user-select: none;
@@ -3132,7 +3281,7 @@ a.module-card:active {
 
 .follow-north text {
   fill: var(--text);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 
@@ -3158,7 +3307,7 @@ a.module-card:active {
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
 }
 
 .garden-strip {
@@ -3183,7 +3332,7 @@ a.module-card:active {
 }
 
 .garden-month-name {
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-align: center;
   color: var(--text-muted);
 }
@@ -3241,7 +3390,7 @@ a.module-card:active {
   width: 30%;
   max-width: 150px;
   flex-shrink: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -3256,7 +3405,7 @@ a.module-card:active {
 
 .garden-facts dt {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .garden-facts dd {
@@ -3283,7 +3432,7 @@ a.module-card:active {
   border-radius: 4px;
   background: var(--surface-2);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-shadow: 0 0 2px #000;
   cursor: pointer;
@@ -3321,7 +3470,7 @@ a.module-card:active {
   object-fit: contain;
   object-position: left;
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
 }
 
 .knot-steps {
@@ -3401,7 +3550,7 @@ a.module-card:active {
   max-height: 50vh;
   object-fit: contain;
   background: var(--kd-bg);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
 }
 
 /* Diagramas propios dentro de la página: toman el fondo del tema (variables --kd-* en theme.css). */
@@ -3421,7 +3570,7 @@ a.module-card:active {
 .knot-step-img {
   width: 100%;
   max-width: 560px;
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
 }
 .knot-thumb.knot-figure svg {
   width: 56px;
@@ -3435,7 +3584,7 @@ a.module-card:active {
 
 .knot-practice-text {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--fs-lg);
   line-height: 1.5;
   flex: 1;
 }
@@ -3479,7 +3628,7 @@ a.module-card:active {
 }
 
 .library-book.is-free {
-  border-left: 4px solid #5fbf7a;
+  border-left: 4px solid var(--ok);
 }
 
 .library-book.is-rights {
@@ -3490,7 +3639,7 @@ a.module-card:active {
   width: 22px;
   height: 22px;
   flex-shrink: 0;
-  accent-color: var(--accent);
+  accent-color: var(--text);
 }
 
 .library-cat summary {
@@ -3512,7 +3661,7 @@ a.module-card:active {
   padding: 10px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
 }
 
@@ -3539,7 +3688,7 @@ a.module-card:active {
   height: calc(100dvh - 230px);
   min-height: 360px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: var(--bg);
 }
 
@@ -3580,7 +3729,7 @@ a.module-card:active {
   stroke-width: 3;
 }
 .decl-mag {
-  stroke: #d33;
+  stroke: var(--danger);
   stroke-width: 4;
   stroke-linecap: round;
 }
@@ -3595,11 +3744,11 @@ a.module-card:active {
 }
 .decl-label {
   fill: var(--text);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
 }
 .decl-label-mag {
-  fill: #d33;
+  fill: var(--danger);
 }
 .decl-result {
   font-weight: 600;
@@ -3624,7 +3773,7 @@ a.module-card:active {
   gap: 6px;
 }
 .measure-big {
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   margin: 0;
 }
@@ -3680,9 +3829,9 @@ a.module-card:active {
 }
 
 .btn-small {
-  min-height: 32px;
+  min-height: 44px; /* mínimo táctil: con guantes un botón de 32 px se erra */
   padding: 4px 10px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   gap: 4px;
 }
 
@@ -3695,7 +3844,7 @@ a.module-card:active {
   flex-direction: column;
   padding: 6px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
@@ -3707,7 +3856,7 @@ a.module-card:active {
   min-height: 40px;
   padding: 6px 10px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
   background: none;
   color: var(--text);
   font: inherit;
@@ -3722,7 +3871,7 @@ a.module-card:active {
 
 .maps-menu-coords {
   padding: 4px 10px 6px;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
   margin-bottom: 4px;
@@ -3785,7 +3934,7 @@ a.module-card:active {
 }
 .draw-text {
   fill: var(--warn);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
 }
 .draw-phone {
@@ -3956,7 +4105,7 @@ a.module-card:active {
 /* Aviso de beta en la práctica de nudos. */
 .knot-practice-beta {
   margin: 0 0 6px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 /* Altímetro. */
@@ -3971,7 +4120,7 @@ a.module-card:active {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 .alt-chart {
@@ -4032,7 +4181,7 @@ a.module-card:active {
 /* Elegir un punto en el mapa. */
 .map-pick {
   height: min(60dvh, 480px);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   overflow: hidden;
 }
 
@@ -4054,35 +4203,35 @@ a.module-card:active {
 
 /* Pantalla en vivo de Entrenamiento: números grandes para mirar de reojo. */
 .live { align-items: stretch; text-align: center; }
-.live-kind { margin: 0; color: var(--text-muted, inherit); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.85rem; }
+.live-kind { margin: 0; color: var(--text-muted, inherit); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: var(--fs-sm); }
 .live-clock { margin: 0; font-size: clamp(3.5rem, 18vw, 6rem); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .live-clock[data-paused='true'] { opacity: 0.45; }
 .live-main { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
 .live-big { font-size: clamp(3rem, 15vw, 5rem); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-.live-unit { font-size: 1.4rem; font-weight: 600; }
+.live-unit { font-size: var(--fs-xl); font-weight: 600; }
 .live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.live-tile { display: flex; flex-direction: column; gap: 4px; padding: 14px 8px; border-radius: 16px; background: var(--surface-2); }
-.live-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; }
+.live-tile { display: flex; flex-direction: column; gap: 4px; padding: 14px 8px; border-radius: var(--radius-card); background: var(--surface-2); }
+.live-label { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; }
 .live-value { font-size: clamp(1.5rem, 7vw, 2.1rem); font-weight: 700; font-variant-numeric: tabular-nums; }
 .live-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.live-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 64px; border: 0; border-radius: 18px; font: inherit; font-size: 1.15rem; font-weight: 700; cursor: pointer; background: var(--surface-2); color: inherit; }
-.live-btn-go { background: var(--ok); color: #fff; }
-.live-btn-stop { background: var(--danger, #c0392b); color: #fff; }
+.live-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 64px; border: 0; border-radius: var(--radius-card); font: inherit; font-size: var(--fs-lg); font-weight: 700; cursor: pointer; background: var(--surface-2); color: inherit; }
+.live-btn-go { background: var(--ok); color: var(--bg); }
+.live-btn-stop { background: var(--danger); color: var(--on-danger); }
 
-.live-phase { display: flex; align-items: baseline; justify-content: center; gap: 14px; padding: 12px; border-radius: 16px; background: var(--surface-2); }
-.live-phase-name { font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.live-phase { display: flex; align-items: baseline; justify-content: center; gap: 14px; padding: 12px; border-radius: var(--radius-card); background: var(--surface-2); }
+.live-phase-name { font-size: var(--fs-xl); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
 .live-phase-time { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-.live-phase-work { background: var(--danger, #c0392b); color: #fff; }
-.live-phase-rest, .live-phase-cooldown { background: var(--ok); color: #fff; }
-.live-phase-warmup { background: var(--warn); color: #000; }
+.live-phase-work { background: var(--danger); color: var(--on-danger); }
+.live-phase-rest, .live-phase-cooldown { background: var(--ok); color: var(--bg); }
+.live-phase-warmup { background: var(--warn); color: var(--bg); }
 
-.bmi-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.bmi-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
 .bmi-table caption { text-align: left; font-weight: 600; padding-bottom: 4px; }
 .bmi-table th, .bmi-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border, rgba(128,128,128,.3)); }
 .bmi-table tr[aria-current='true'] { background: var(--surface-2); font-weight: 700; }
 
 .countdown { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; background: var(--bg, #121a24); color: var(--text, #e8e2d6); }
-.countdown-label { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.countdown-label { margin: 0; font-size: var(--fs-lg); text-transform: uppercase; letter-spacing: 0.08em; }
 .countdown-number { margin: 0; font-size: clamp(8rem, 40vw, 16rem); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 
 .timer-set { display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -4110,7 +4259,7 @@ a.module-card:active {
   height: min(70dvh, 640px);
   min-height: 320px;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   background: #000;
 }
 
@@ -4174,18 +4323,18 @@ a.module-card:active {
 
 .hg-card {
   fill: #fff;
-  font-size: 18px;
+  font-size: var(--fs-lg);
   font-weight: 700;
 }
 
 .hg-small {
   fill: rgb(255 255 255 / 0.6);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .hg-name {
   fill: #ffb000;
-  font-size: 15px;
+  font-size: var(--fs-md);
   font-weight: 700;
 }
 
@@ -4197,7 +4346,7 @@ a.module-card:active {
   margin: 0;
   text-align: center;
   color: #fff;
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   text-shadow: 0 0 4px #000;
 }
@@ -4230,7 +4379,7 @@ a.module-card:active {
 
 .bd-card {
   fill: var(--text);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 
@@ -4317,7 +4466,7 @@ a.module-card:active {
   min-height: 48px;
   padding: 0 24px;
   border: 1px solid #444;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: none;
   color: #777;
   font: inherit;
@@ -4336,7 +4485,7 @@ a.module-card:active {
 }
 
 .first-steps-list a {
-  display: inline-block;
+  display: block; /* en bloque, el número queda junto a la primera línea aunque el texto baje */
   min-height: 32px;
   padding: 4px 0;
 }
@@ -4386,7 +4535,7 @@ a.module-card:active {
 }
 
 .topbar-lock {
-  margin-left: 20px;
+  margin-left: var(--sp-3);
   border: 1px solid var(--control-border);
 }
 
@@ -4401,7 +4550,7 @@ a.module-card:active {
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: var(--accent-strong);
+  color: var(--text); /* desplegable: neutro (el cobre es de enlaces) */
   font-weight: 600;
 }
 
@@ -4439,8 +4588,10 @@ a.module-card:active {
 
 /* Escalas del mapa topográfico que no entran: grisadas y sin respuesta al toque. */
 .chip:disabled {
-  opacity: 0.38;
   cursor: not-allowed;
+  border-style: dashed;
+  color: var(--text-muted);
+  background: transparent;
   text-decoration: line-through;
 }
 
@@ -4462,7 +4613,7 @@ a.module-card:active {
   gap: 4px;
   min-height: 44px;
   padding: 0 4px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   margin-left: auto;
 }
 
@@ -4474,7 +4625,7 @@ a.module-card:active {
   padding: 14px 16px;
   border: 2px solid var(--warn);
   border-left-width: 8px;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--warn) 16%, var(--surface));
 }
 .beta-banner-icon {
@@ -4488,24 +4639,24 @@ a.module-card:active {
 }
 .beta-banner-title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   line-height: 1.35;
 }
 .beta-banner-pill {
   display: inline-block;
   padding: 2px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-ctl);
   background: var(--warn);
   color: var(--bg);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
   letter-spacing: 0.08em;
   vertical-align: 1px;
 }
 .beta-banner-sub {
   margin: 6px 0 10px;
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
 }
 .beta-banner-link {
   display: inline-flex;
@@ -4523,7 +4674,7 @@ a.module-card:active {
 }
 .lock-card-fields dt {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   margin-top: 6px;
 }
 .lock-card-fields dd {
@@ -4594,7 +4745,7 @@ a.module-card:active {
 }
 .tide-axis {
   fill: var(--text-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 /* Navegación: pronóstico de altura de los ríos */
@@ -4642,36 +4793,42 @@ a.module-card:active {
   gap: 2px;
   text-align: right;
 }
+/* Amenaza (SENAMHI): color de la escala del tema y texto con contraste en cada uno (también en rojo nocturno); el nombre del nivel va escrito. */
 .threat-yellow {
   background: var(--scale-4);
-  color: #1a1a1a;
+  color: var(--on-steep);
 }
 .threat-orange {
   background: var(--scale-5);
-  color: #1a1a1a;
+  color: var(--on-steep);
 }
 .threat-red {
   background: var(--scale-6);
-  color: #fff;
+  color: var(--on-danger);
 }
 .chip-state {
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   padding: 1px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-ctl);
   border: 1px solid currentColor;
 }
+/* Estado del río: colores del tema (los fijos de antes no cambiaban en rojo nocturno ni cumplían el contraste en claro); siempre con el texto del nivel. */
 .river-ok {
-  color: #3a9a5b;
+  color: var(--ok);
 }
 .river-low {
   color: var(--info);
 }
 .river-alert {
-  color: #d99a1c;
+  color: var(--warn);
 }
 .river-evac {
-  color: #d33;
+  color: var(--danger);
+}
+/* El nombre de la estación se parte por palabras (en flex, el texto quedaba en una columna angosta de 2 letras por línea). */
+.river-row .list-title {
+  display: block;
 }
 
 /* Marco de un continente en el selector de país: los países van dentro, ordenados alfabéticamente. */
@@ -4679,13 +4836,13 @@ a.module-card:active {
   margin: 10px 0 0;
   padding: 8px 10px 10px;
   border: 1px solid var(--control-border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   min-inline-size: 0;
 }
 
 .country-continent > legend {
   padding: 0 6px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-muted, inherit);
 }
@@ -4701,7 +4858,7 @@ a.module-card:active {
   display: flex;
   align-items: stretch;
   border: 1px solid var(--control-border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--surface);
 }
@@ -4741,7 +4898,7 @@ button.country-pack-icon {
 }
 
 .country-pack-size {
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   white-space: nowrap;
 }
 
@@ -4800,7 +4957,7 @@ button.country-pack-del {
 
 .hist-hours-head {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   border-bottom: 1px solid var(--border);
 }
 
@@ -4836,12 +4993,12 @@ button.country-pack-del {
   padding: 8px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
 }
 
 .maps-layers-group {
   margin: 4px 0 0;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -4882,7 +5039,7 @@ button.country-pack-del {
 .cmp-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   white-space: nowrap;
 }
 .cmp-table th,
@@ -4906,7 +5063,7 @@ button.country-pack-del {
 .cmp-grid {
   border-collapse: separate;
   border-spacing: 1px;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   white-space: nowrap;
 }
 .cmp-grid th,
@@ -4932,7 +5089,7 @@ button.country-pack-del {
 .cmp-grid .cmp-hour {
   font-weight: 400;
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
 }
 .cmp-grid tr.cmp-median .cmp-cell {
   font-weight: 700;
@@ -4966,7 +5123,7 @@ button.country-pack-del {
   color: var(--warn);
 }
 .cmp-rain-wet {
-  color: var(--accent);
+  color: var(--info);
   font-weight: 600;
 }
 
@@ -5011,7 +5168,7 @@ button.country-pack-del {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 /* Faltantes del botiquín: botones chicos en la misma línea que el texto */
@@ -5042,11 +5199,11 @@ button.country-pack-del {
   min-height: 40px;
   padding: 0 12px;
   gap: 6px;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 .km-accent {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--text);
+  color: var(--text);
   background: transparent;
 }
 .km-x {
@@ -5067,8 +5224,8 @@ button.country-pack-del {
   padding: 10px 12px;
   background: var(--surface-2);
   border-left: 4px solid var(--ok);
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-sm);
 }
 
 /* Asistente de botiquines: personas */
@@ -5083,7 +5240,7 @@ button.country-pack-del {
   height: 22px;
 }
 .kb-why {
-  color: var(--accent);
+  color: var(--text);
 }
 
 /* Comparación de pronósticos: cada día en su tarjeta, con su ícono del tiempo */
@@ -5096,7 +5253,7 @@ button.country-pack-del {
   padding: 12px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
 }
 .cmp-day-head {
   display: flex;
@@ -5106,7 +5263,7 @@ button.country-pack-del {
 }
 .cmp-sky {
   flex: none;
-  color: var(--accent);
+  color: var(--text);
 }
 .cmp-day-sky {
   margin: 0;
@@ -5152,16 +5309,16 @@ button.country-pack-del {
   min-height: 48px;
   padding: 10px 6px;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   cursor: pointer;
 }
 .hist-strip-day[aria-pressed='true'] {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  border-color: var(--text);
+  box-shadow: 0 0 0 1px var(--text);
 }
 .hist-strip-date {
   font-weight: 700;
@@ -5177,7 +5334,7 @@ button.country-pack-del {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
 }
 
 /* Mapa de países para bajar los datos sin conexión (Ajustes → País → «Ver en el mapa»). */
@@ -5186,7 +5343,7 @@ button.country-pack-del {
   max-height: 42vh;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
 }
 
 .country-map-neighbor {
@@ -5252,7 +5409,7 @@ button.country-pack-del {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -5265,7 +5422,7 @@ button.country-pack-del {
   border-radius: 50%;
   background: var(--text-muted);
   color: var(--surface);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
 }
 
@@ -5305,7 +5462,7 @@ button.country-pack-del {
 .country-map-zoom .icon-btn {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-ctl);
 }
 .country-map-zoom .icon-btn:disabled {
   opacity: 0.4;
@@ -5355,9 +5512,9 @@ button.country-pack-del {
 .wmap-quick {
   padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--surface) 92%, transparent);
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
 }
 
 .wmap-fs-menu {
@@ -5370,7 +5527,7 @@ button.country-pack-del {
 .wmap-fs-menu .chip {
   min-height: 32px;
   padding: 2px 10px;
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
 }
 
 .wmap-quick {
@@ -5431,159 +5588,105 @@ button.country-pack-del {
   min-height: 36px;
   padding: 0 8px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-ctl);
   background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   cursor: pointer;
 }
 
 /* =====================================================================
- * Sección EMERGENCIAS (segunda pasada de diseño; referencia para las demás).
- * Todo va acotado a `main.content[data-area='emergency']` (lo pone Shell.tsx en /first-aid/*),
- * así las clases compartidas (.card, .btn, .input, .chip...) no cambian en el resto de la app todavía.
- * Sistema y reglas: docs/DISENO.md. Prioridad: lectura y toque rápidos antes que adorno.
+ * Piezas de Emergencias y filas de contacto (clases propias de la sección o de listas con acciones).
+ * El sistema general (botones, chips, tarjetas, campos...) vive arriba, en las clases base: docs/DISENO.md.
  * ===================================================================== */
 
-.content[data-area='emergency'] {
-  font-variant-numeric: tabular-nums; /* teléfonos, coordenadas, distancias y horarios alineados */
+.my-data-list dt {
+  font-size: var(--fs-sm);
 }
 
-/* --- Tipografía: 5 tamaños (xs, sm, md, lg, xl) --- */
-.content[data-area='emergency'] .page-title {
-  font-size: var(--fs-xl);
-  margin-bottom: var(--sp-4);
+/* --- Filas con acción a la derecha (contactos, radio, tracks, equipo): línea fina, ícono neutro arriba, acción centrada --- */
+.contact-row {
+  padding: var(--sp-3) 0;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: flex-start; /* filas altas (parques con varias frecuencias): el ícono queda arriba, junto al nombre */
 }
 
-/* Título de bloque: etiqueta corta en mayúsculas, con peso para que se vea de un vistazo. */
-.content[data-area='emergency'] .section-title {
+.contact-row .list-main {
+  /* Base chica: el botón de llamada de un número corto entra al lado del texto en 390 px; uno largo baja abajo. */
+  flex: 1 1 7rem;
+}
+
+.contact-row .contact-actions,
+.contact-row > .phone-actions {
+  flex: 0 1 auto;
+  align-self: center;
+}
+
+.contact-icon,
+[class*='contact-icon-'] {
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+}
+
+.contact-icon {
+  margin-top: 2px;
+}
+
+/* El título de página ya queda separado por el hueco de la pila: sin margen doble. */
+.stack > .page-head {
+  margin-bottom: 0;
+}
+
+.contact-group-title {
   font-size: var(--fs-sm);
   font-weight: 700;
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: var(--sp-3) 0 0;
 }
 
-.content[data-area='emergency'] .hint,
-.content[data-area='emergency'] .list-sub,
-.content[data-area='emergency'] .field label,
-.content[data-area='emergency'] .field .field-label,
-.content[data-area='emergency'] .fieldset legend,
-.content[data-area='emergency'] .my-data-list dt {
+.source-badge {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.source-official {
+  color: var(--ok);
+}
+
+.map-link {
+  font-size: var(--fs-sm);
+  min-height: 32px;
+}
+
+.rpt-distance {
+  font-size: var(--fs-md);
+}
+
+.rpt-details,
+.rpt-help dd {
   font-size: var(--fs-sm);
 }
 
-.content[data-area='emergency'] .list-title {
-  font-size: var(--fs-md);
-}
-
-/* --- Tarjeta: un radio, un borde fino, elevación 1 --- */
-.content[data-area='emergency'] .card {
-  border-radius: var(--radius-card);
-  box-shadow: var(--elev-1);
-  padding: var(--sp-4);
-}
-
-.content[data-area='emergency'] .card.stack {
-  gap: var(--sp-3);
-}
-
-.content[data-area='emergency'] .stack {
-  gap: var(--sp-4);
-}
-
-/* --- Botones: radio de control, estado al tocar, deshabilitado que no depende solo del color --- */
-.content[data-area='emergency'] .btn,
-.content[data-area='emergency'] .icon-btn,
-.content[data-area='emergency'] .segmented {
-  border-radius: var(--radius-ctl);
-}
-
-.content[data-area='emergency'] .btn {
-  font-size: var(--fs-md);
-}
-
-.content[data-area='emergency'] .btn:not(:disabled):not(.disabled):active {
-  background: var(--border);
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3);
-}
-
-/* Acción principal de gestión (Buscar cercanos, Nuevo contacto, Agregar...): NEUTRA y con borde grueso del color del texto.
- * El rojo es de lo que llama y el cobre de los enlaces: así las llamadas son lo más fuerte y no chocan con el cobre.
- * Se distingue por forma (borde de 2 px, ícono +, peso) y no solo por color. */
-.content[data-area='emergency'] .btn-primary {
-  background: var(--surface);
-  border: 2px solid var(--text);
-  color: var(--text);
-}
-
-.content[data-area='emergency'] .btn-primary:not(:disabled):hover {
-  background: var(--surface-2);
-}
-
-.content[data-area='emergency'] .btn-primary:not(:disabled):active {
-  background: var(--border);
-}
-
-/* Deshabilitado: sin relleno y con borde punteado (se nota aunque no se distinga el color); se sigue leyendo. */
-.content[data-area='emergency'] .btn:disabled,
-.content[data-area='emergency'] .btn.disabled {
-  opacity: 1;
-  background: transparent;
-  border-style: dashed;
-  border-color: var(--control-border);
-  color: var(--text-muted);
-}
-
-.content[data-area='emergency'] .btn-primary:disabled {
-  border-width: 1px;
-  background: transparent;
-  color: var(--text-muted);
-  border-color: var(--control-border);
-}
-
-.content[data-area='emergency'] .icon-btn {
-  width: 44px;
-  height: 44px;
-  color: var(--text);
-}
-
-.content[data-area='emergency'] .icon-btn:active {
-  background: var(--border);
-}
-
-.content[data-area='emergency'] .btn-danger {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: var(--on-danger);
-}
-
-.content[data-area='emergency'] .btn-danger:not(:disabled):active {
-  box-shadow: inset 0 0 0 3px var(--on-danger);
-  background: var(--danger);
-}
-
-.content[data-area='emergency'] .btn-danger-outline {
-  border-width: 2px;
-  background: transparent;
-}
-
-/* --- Botón de llamada: lo vital. Número grande, ícono de teléfono (no depende del color), borde de 2 px. --- */
-.content[data-area='emergency'] .btn-call {
-  min-height: 52px;
-  min-width: 96px;
-  padding: 6px 14px;
-  /* Un solo tono para todo lo que llama (Contactos y Mi ubicación): el de peligro. */
-  border: 2px solid var(--danger);
-  background: var(--surface-2);
+/* --- Llamadas: «Llamar al 911» sólido en --danger arriba de todo; los otros números del país, contorno de 2 px --- */
+.call-911 {
+  min-height: 56px;
   font-size: var(--fs-lg);
   font-weight: 700;
 }
 
-.content[data-area='emergency'] .btn-call svg {
+.other-calls .call-other {
+  min-height: 52px;
+  border: 2px solid var(--danger);
+  background: var(--surface);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.other-calls .call-other svg {
   color: var(--danger);
-  width: 18px;
-  height: 18px;
 }
 
 /* Menú de abajo: dentro de Emergencias la solapa activa lleva el mismo tono de peligro que los botones de llamada y los íconos de la sección. */
@@ -5591,300 +5694,81 @@ button.country-pack-del {
   color: var(--danger);
 }
 
-/* El de «Llamar al 911» (y los números del país): sólido en color de peligro, arriba de todo. */
-.content[data-area='emergency'] .call-911 {
-  min-height: 56px;
-  font-size: var(--fs-lg);
-  font-weight: 700;
-}
-
-.content[data-area='emergency'] .other-calls .call-other {
-  min-height: 52px;
-  border: 2px solid var(--danger);
-  background: var(--surface);
-  font-size: var(--fs-lg);
-  font-weight: 700;
-}
-
-.content[data-area='emergency'] .other-calls .call-other svg {
-  color: var(--danger);
-}
-
-/* --- Campos: radio de control, 48 px, error visible con borde grueso --- */
-.content[data-area='emergency'] .input,
-.content[data-area='emergency'] .select {
-  border-radius: var(--radius-ctl);
-  font-size: var(--fs-md);
-}
-
-.content[data-area='emergency'] .input:focus-visible,
-.content[data-area='emergency'] .select:focus-visible {
-  outline-offset: 0;
-  border-color: var(--focus);
-}
-
-.content[data-area='emergency'] .input[aria-invalid='true'],
-.content[data-area='emergency'] .select[aria-invalid='true'] {
-  border-width: 2px;
-  border-color: var(--danger);
-}
-
-/* --- Chips (filtros): 44 px, borde de control, activo = relleno + negrita --- */
-.content[data-area='emergency'] .chip {
-  min-height: 44px;
-  padding: 6px 14px;
-  border: 1px solid var(--control-border);
-  border-radius: var(--radius-ctl);
-  background: var(--surface);
-  color: var(--text);
-  font-size: var(--fs-sm);
-}
-
-/* Seleccionado (país, filtros): relleno del color del texto con letra del fondo, negrita y aro interior.
- * Neutro a propósito: el rojo queda para llamar y el cobre para enlaces; se lee sin depender del color. */
-.content[data-area='emergency'] .chip[aria-pressed='true'] {
-  border-color: var(--text);
-  background: var(--text);
-  color: var(--bg);
-  box-shadow: inset 0 0 0 2px var(--bg);
-  font-weight: 700;
-}
-
-.content[data-area='emergency'] .chip:not(:disabled):active {
-  background: var(--border);
-}
-
-.content[data-area='emergency'] .chip[aria-pressed='true']:active {
-  background: var(--text);
-  box-shadow: inset 0 0 0 3px var(--bg);
-}
-
-.content[data-area='emergency'] .chip:disabled {
-  opacity: 1;
-  border-style: dashed;
-  color: var(--text-muted);
-  background: transparent;
-}
-
-/* Otros controles «seleccionado» de la sección, en el mismo tono neutro que los chips. */
-.content[data-area='emergency'] .btn[aria-pressed='true'] {
-  border: 2px solid var(--text);
-  color: var(--text);
-  background: var(--surface-2);
-  font-weight: 700;
-}
-
-.content[data-area='emergency'] .segmented button[aria-pressed='true'],
-.content[data-area='emergency'] .country-pack-select[aria-pressed='true'] {
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 700;
-}
-
-.content[data-area='emergency'] .picker-item[aria-pressed='true'] {
-  border-color: var(--text);
-  box-shadow: 0 0 0 2px var(--text);
-}
-
-/* --- Listas: filas con línea fina, íconos neutros (el color queda para los estados) --- */
-.content[data-area='emergency'] .list-row {
-  border-radius: var(--radius-ctl);
-}
-
-.content[data-area='emergency'] .list-row:not(:disabled):active {
-  background: var(--border);
-}
-
-.content[data-area='emergency'] .contact-row {
-  padding: var(--sp-3) 0;
-  gap: var(--sp-3);
-}
-
-.content[data-area='emergency'] .contact-row .list-main {
-  /* Base chica: el botón de llamada de un número corto entra al lado del texto en 390 px; uno largo baja abajo. */
-  flex: 1 1 7rem;
-}
-
-/* El título de página ya queda separado por el hueco de la pila: sin margen doble. */
-.content[data-area='emergency'] .stack > .page-head {
-  margin-bottom: 0;
-}
-
-.content[data-area='emergency'] .contact-row {
-  gap: var(--sp-2) var(--sp-3);
-}
-
-.content[data-area='emergency'] .contact-icon,
-.content[data-area='emergency'] [class*='contact-icon-'] {
-  color: var(--text-muted);
-  width: 24px;
-  height: 24px;
-}
-
-.content[data-area='emergency'] .contact-row .contact-actions,
-.content[data-area='emergency'] .contact-row > .phone-actions {
-  flex: 0 1 auto;
-}
-
-.content[data-area='emergency'] .contact-group-title {
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  color: var(--text-muted);
-  margin: var(--sp-3) 0 0;
-}
-
-.content[data-area='emergency'] .source-badge {
-  font-size: var(--fs-xs);
-  font-weight: 700;
-}
-
-.content[data-area='emergency'] .source-official {
-  color: var(--ok);
-}
-
-.content[data-area='emergency'] .map-link {
-  font-size: var(--fs-sm);
-  min-height: 32px;
-}
-
-.content[data-area='emergency'] .rpt-distance {
-  font-size: var(--fs-md);
-}
-
-.content[data-area='emergency'] .rpt-details,
-.content[data-area='emergency'] .rpt-help dd {
-  font-size: var(--fs-sm);
-}
-
-/* --- Avisos y estados: borde grueso de la izquierda + texto (no dependen solo del color) --- */
-.content[data-area='emergency'] .warning-box,
-.content[data-area='emergency'] .ok-box {
-  border-radius: var(--radius-ctl);
-  font-size: var(--fs-md);
-}
-
-.content[data-area='emergency'] .error {
-  font-size: var(--fs-md);
-  font-weight: 600;
-  padding-left: var(--sp-3);
-  border-left: 4px solid var(--danger);
-}
-
-/* Vacío: caja punteada, texto alineado a la izquierda y con una indicación (no una pantalla en blanco). */
-.content[data-area='emergency'] .empty {
-  text-align: left;
-  padding: var(--sp-4);
-  border: 1px dashed var(--control-border);
-  border-radius: var(--radius-ctl);
-  font-size: var(--fs-md);
-}
-
 /* --- Mi ubicación: las coordenadas son el dato principal --- */
-.content[data-area='emergency'] .location-big {
+.location-big {
   font-size: var(--fs-xl);
   line-height: 1.2;
 }
 
-.content[data-area='emergency'] .location-dms {
+.location-dms {
   font-size: var(--fs-lg);
 }
 
-.content[data-area='emergency'] .location-message {
+.location-message {
   font-size: var(--fs-md);
   line-height: 1.5;
   border-radius: var(--radius-ctl);
 }
 
-.content[data-area='emergency'] .location-refs dt,
-.content[data-area='emergency'] .location-refs dd {
+.location-refs dt,
+.location-refs dd {
   padding: 6px 0;
   border-bottom: 1px solid var(--border);
 }
 
-.content[data-area='emergency'] .location-refs dt:last-of-type,
-.content[data-area='emergency'] .location-refs dd:last-of-type {
+.location-refs dt:last-of-type,
+.location-refs dd:last-of-type {
   border-bottom: none;
 }
 
 /* --- Mis datos / ficha médica --- */
-.content[data-area='emergency'] .my-data {
-  border-left-width: 4px;
-}
-
-.content[data-area='emergency'] .my-data-name {
+.my-data-name {
   font-size: var(--fs-lg);
   font-weight: 700;
 }
 
-.content[data-area='emergency'] .avatar {
+.avatar {
   border: 1px solid var(--border);
 }
 
-.content[data-area='emergency'] .allergy {
+.allergy {
   font-size: var(--fs-sm);
 }
 
-.content[data-area='emergency'] .fieldset {
-  border-radius: var(--radius-card);
-}
-
 /* --- Guías: lectura de lejos y con prisa --- */
-.content[data-area='emergency'] .guide-steps {
+.guide-steps {
   font-size: var(--fs-lg);
   gap: var(--sp-3);
 }
 
-.content[data-area='emergency'] .guide-question {
+.guide-question {
   font-size: var(--fs-lg);
 }
 
-.content[data-area='emergency'] .guide-option {
+.guide-option {
   min-height: 52px;
   font-size: var(--fs-md);
 }
 
-.content[data-area='emergency'] .guide-calls {
+.guide-calls {
   border-radius: var(--radius-ctl);
 }
 
-.content[data-area='emergency'] .btn-lg {
-  font-size: var(--fs-lg);
-  min-height: 56px;
-}
-
-.content[data-area='emergency'] .pill {
-  font-size: var(--fs-xs);
-  border-radius: var(--radius-ctl);
-}
-
-.content[data-area='emergency'] .contact-row {
-  align-items: flex-start; /* filas altas (parques con varias frecuencias): el ícono queda arriba, junto al nombre */
-}
-
-.content[data-area='emergency'] .contact-icon {
-  margin-top: 2px;
-}
-
-.content[data-area='emergency'] .contact-row .contact-actions,
-.content[data-area='emergency'] .contact-row > .phone-actions {
-  align-self: center;
-}
-
-/* Buscador de las guías: la lupa dentro del campo (fuera de .toolbar quedaba arriba del campo). */
-.content[data-area='emergency'] .search {
+/* Buscador con la lupa dentro del campo. */
+.search {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.content[data-area='emergency'] .search > svg {
+.search > svg {
   position: absolute;
   left: 14px;
   color: var(--text-muted);
   pointer-events: none;
 }
 
-.content[data-area='emergency'] .search .input {
+.search .input {
   padding-left: 42px;
 }
 
@@ -6148,175 +6032,10 @@ button.country-pack-del {
   min-width: 72px;
 }
 
-/* =====================================================================================================
-   Ajustes (data-area='settings', lo pone SettingsPage en su contenedor). Mismo sistema que Emergencias (docs/DISENO.md, «Regla final de color
-   de controles»): un tono por función. El cobre sólido de antes (segmentados y botones primarios) pasa a neutro: selector = relleno
-   --text/--bg + negrita + aro; acción primaria = borde de 2 px --text; el cobre queda para enlaces y foco. Modo rojo: todo son variables rojas.
-   ===================================================================================================== */
-[data-area='settings'] {
-  font-variant-numeric: tabular-nums;
-}
-[data-area='settings'] .page-title {
-  font-size: var(--fs-xl);
-}
-[data-area='settings'] .card {
-  border-radius: var(--radius-card);
-  box-shadow: var(--elev-1);
-  padding: var(--sp-4);
-}
-[data-area='settings'] .card.stack {
-  gap: var(--sp-3);
-}
-[data-area='settings'] .section-title {
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
-[data-area='settings'] .hint,
-[data-area='settings'] .list-sub,
-[data-area='settings'] .field label,
-[data-area='settings'] .field .field-label,
-[data-area='settings'] .cap-list li {
-  font-size: var(--fs-sm);
-}
-[data-area='settings'] .list-title,
-[data-area='settings'] .error,
-[data-area='settings'] .success,
-[data-area='settings'] .warning-box,
-[data-area='settings'] .ok-box {
-  font-size: var(--fs-md);
-}
-[data-area='settings'] .list-row,
-[data-area='settings'] .warning-box,
-[data-area='settings'] .ok-box {
-  border-radius: var(--radius-ctl);
-}
-[data-area='settings'] .error {
-  font-weight: 600;
-  padding-left: var(--sp-3);
-  border-left: 4px solid var(--danger);
-}
 /* Los h3 de formularios (cambiar contraseña, etc.) con la escala del sistema. */
-[data-area='settings'] h3 {
+:where(.card) h3 {
   font-size: var(--fs-md);
   font-weight: 700;
-}
-
-/* --- Selector / segmentado (Tema, Idioma, Unidades, Rojo nocturno automático): neutro, el elegido se ve sin depender del color --- */
-[data-area='settings'] .segmented {
-  border-radius: var(--radius-ctl);
-}
-[data-area='settings'] .segmented button {
-  min-height: 48px;
-  padding: 0 var(--sp-2);
-  font-size: var(--fs-md);
-  color: var(--text);
-}
-[data-area='settings'] .segmented button:not([aria-pressed='true']):active {
-  background: var(--border);
-}
-[data-area='settings'] .segmented button[aria-pressed='true'] {
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 700;
-  box-shadow: inset 0 0 0 2px var(--bg);
-}
-[data-area='settings'] .segmented button:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: -4px;
-}
-
-/* --- Botones --- */
-[data-area='settings'] .btn,
-[data-area='settings'] .icon-btn {
-  border-radius: var(--radius-ctl);
-  font-size: var(--fs-md);
-}
-[data-area='settings'] .btn:not(:disabled):active {
-  background: var(--border);
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3);
-}
-[data-area='settings'] .btn:focus-visible,
-[data-area='settings'] .icon-btn:focus-visible,
-[data-area='settings'] .btn-link:focus-visible,
-[data-area='settings'] .collapsible-toggle:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-/* Acción principal: neutra, borde grueso (no cobre sólido). */
-[data-area='settings'] .btn-primary {
-  background: var(--surface);
-  border: 2px solid var(--text);
-  color: var(--text);
-}
-[data-area='settings'] .btn-primary:not(:disabled):hover {
-  background: var(--surface-2);
-}
-/* Deshabilitado: sin relleno, borde punteado y texto atenuado pero legible (no solo opacidad). */
-[data-area='settings'] .btn:disabled {
-  opacity: 1;
-  background: transparent;
-  border-style: dashed;
-  border-width: 1px;
-  border-color: var(--control-border);
-  color: var(--text-muted);
-}
-[data-area='settings'] .btn-danger-outline {
-  border-width: 2px;
-  background: transparent;
-  color: var(--danger);
-  border-color: var(--danger);
-}
-[data-area='settings'] .btn-danger-outline:disabled {
-  border-width: 1px;
-  color: var(--text-muted);
-  border-color: var(--control-border);
-}
-/* Enlace: cobre y subrayado (la única función del cobre acá, además del foco). */
-[data-area='settings'] .btn-link {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  font-size: var(--fs-md);
-}
-
-/* --- Campos --- */
-[data-area='settings'] .input,
-[data-area='settings'] .select {
-  border-radius: var(--radius-ctl);
-  font-size: var(--fs-md);
-}
-[data-area='settings'] .input:focus-visible,
-[data-area='settings'] .select:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 0;
-}
-[data-area='settings'] .input[aria-invalid='true'] {
-  border-width: 2px;
-  border-color: var(--danger);
-}
-/* Casillas: relleno neutro (no cobre) y objetivo cómodo. */
-[data-area='settings'] .check input,
-[data-area='settings'] input[type='checkbox'],
-[data-area='settings'] input[type='radio'],
-[data-area='settings'] input[type='range'] {
-  accent-color: var(--text);
-}
-[data-area='settings'] .check {
-  gap: var(--sp-3);
-  align-items: flex-start;
-  padding: var(--sp-2) 0;
-}
-[data-area='settings'] .check input {
-  flex: none;
-  margin-top: 1px;
-}
-
-/* --- Dispositivo: lista de funciones con ✓/✗ y texto (no depende del color); el sí no va en verde para no competir con los estados reales --- */
-[data-area='settings'] .cap-yes {
-  color: var(--text);
-}
-[data-area='settings'] .cap-no {
-  color: var(--text-muted);
 }
 
 /* --- Desplegable (ui/Collapsible): encabezado de 48 px completo como botón; título + resumen a la izquierda, chevron a la derecha --- */
@@ -6383,7 +6102,7 @@ button.country-pack-del {
 .collapsible-body[hidden] {
   display: none;
 }
-[data-area='settings'] .card.collapsible {
+.card.collapsible {
   padding: 0;
 }
 

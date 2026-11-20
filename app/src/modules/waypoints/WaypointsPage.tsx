@@ -101,7 +101,7 @@ export function WaypointsPage() {
           {rows.map((wp) => (
             <li key={wp.id} className="list-item-actions">
               <Link className="list-row" to={`/orientation/waypoints/${wp.id}`}>
-                <MapPin size={22} aria-hidden style={{ color: 'var(--accent)', flex: 'none' }} />
+                <MapPin size={22} aria-hidden style={{ color: 'var(--text-muted)', flex: 'none' }} />
                 <span className="list-main">
                   <span className="list-title">{wp.name}</span>
                   {wp.role && <span className="list-sub" data-testid="wp-role-badge">{t(`waypoints.role.${wp.role}`)}</span>}

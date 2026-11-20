@@ -38,7 +38,7 @@ export function RoutesSection() {
           {rows.map(({ route, points }) => (
             <li key={route.id}>
               <Link className="list-row" to={`/orientation/routes/${route.id}`}>
-                <RouteIcon size={22} aria-hidden style={{ color: 'var(--accent)', flex: 'none' }} />
+                <RouteIcon size={22} aria-hidden style={{ color: 'var(--text-muted)', flex: 'none' }} />
                 <span className="list-main">
                   <span className="list-title">{route.name}</span>
                   <span className="list-sub">
