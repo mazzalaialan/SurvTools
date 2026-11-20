@@ -30,6 +30,19 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
   const [mapOpen, setMapOpen] = useState(false);
   /** Los sectores de Brasil se muestran al tocar Brasil (y se esconden al volver a tocarlo). */
   const [brOpen, setBrOpen] = useState(false);
+  /**
+   * Los continentes son desplegables y arrancan CERRADOS (decisión del usuario): con muchos países y continentes la lista ocuparía demasiado.
+   * El país actual se ve siempre arriba («País actual») y el continente que lo contiene lleva una marca de ubicación mientras está cerrado.
+   */
+  const continentOfCountry = CONTINENTS.find((ct) => ct.countries.includes(country))?.id;
+  const [openContinents, setOpenContinents] = useState<Set<string>>(() => new Set());
+  const toggleContinent = (id: string) =>
+    setOpenContinents((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   /** Borrar con confirmación: dice cuánto se libera y que se puede volver a bajar. */
   async function askRemove(name: string, bytes: number, run: () => Promise<void>) {
@@ -64,10 +77,31 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
           </div>
         </>
       )}
+      {/* El país actual siempre a la vista, aunque todos los continentes estén cerrados. */}
+      <p className="country-current" data-testid="country-current">
+        <MapPin size={18} aria-hidden />
+        <span className="country-current-label">{t('country.map.legendMain')}</span>
+        <strong>{t(`country.${country}`)}</strong>
+      </p>
       {CONTINENTS.map((continent) => (
         <fieldset key={continent.id} className="country-continent" data-testid={`country-continent-${continent.id}`}>
-          <legend>{t(`country.continent.${continent.id}`)}</legend>
-          <div className="country-pack" role="group" aria-label={`${t('country.label')} · ${t(`country.continent.${continent.id}`)}`}>
+          <legend>
+            <button
+              type="button"
+              className="country-continent-toggle"
+              data-testid={`country-continent-toggle-${continent.id}`}
+              aria-expanded={openContinents.has(continent.id)}
+              aria-controls={`country-continent-list-${continent.id}`}
+              onClick={() => toggleContinent(continent.id)}
+            >
+              <span>{t(`country.continent.${continent.id}`)}</span>
+              {continent.id === continentOfCountry && !openContinents.has(continent.id) && <MapPin size={16} aria-hidden className="country-continent-here" />}
+              <span className="country-continent-count">{t('country.continent.count', { count: continent.countries.length })}</span>
+              {openContinents.has(continent.id) ? <ChevronUp size={18} aria-hidden /> : <ChevronDown size={18} aria-hidden />}
+            </button>
+          </legend>
+          {openContinents.has(continent.id) && (
+          <div className="country-pack" id={`country-continent-list-${continent.id}`} role="group" aria-label={`${t('country.label')} · ${t(`country.continent.${continent.id}`)}`}>
             {[...continent.countries]
               .sort((a, b) => t(`country.${a}`).localeCompare(t(`country.${b}`), i18n.language))
               .map((c: Country) => {
@@ -197,6 +231,7 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                 );
               })}
           </div>
+          )}
         </fieldset>
       ))}
       {manage && mapOpen && <CountryPackMap onClose={() => setMapOpen(false)} />}

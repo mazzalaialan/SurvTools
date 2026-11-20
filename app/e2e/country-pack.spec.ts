@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openContinent } from './countryPicker';
 
 const PASSWORD = 'prueba-segura-123';
 
@@ -18,6 +19,7 @@ const stored = (page: Page) =>
 test('Ajustes: cada país dice si su paquete está sin bajar, se baja con el ícono sin elegir el país y queda con el tilde verde', async ({ page }, testInfo) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   const py = page.getByTestId('country-pack-PY');
   // Paraguay no está bajado: ícono de descarga, con el peso en la ayuda.
   await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
@@ -44,6 +46,7 @@ test('Ajustes: cada país dice si su paquete está sin bajar, se baja con el íc
 test('Ajustes: el mapa de países muestra el estado de cada uno y baja el que se toca', async ({ page }, testInfo) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   await page.getByTestId('country-pack-map-open').click();
   const map = page.getByTestId('country-map');
@@ -73,6 +76,7 @@ test('Ajustes: el mapa de países muestra el estado de cada uno y baja el que se
 test('Ajustes: un país con datos viejos se ve en ámbar con «Actualizar» y vuelve al verde al actualizarlo', async ({ page }, testInfo) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   const py = page.getByTestId('country-pack-PY');
   await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   await page.getByTestId('country-pack-get-PY').click();
@@ -106,6 +110,7 @@ test('Ajustes: un país con datos viejos se ve en ámbar con «Actualizar» y vu
 test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo pone como país activo', async ({ page }, testInfo) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   const py = page.getByTestId('country-pack-PY');
   await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   await page.getByTestId('country-pack-map-open').click();
@@ -151,6 +156,7 @@ test('Mapa de países: el primer toque marca, el segundo baja y el tercero lo po
 test('Mapa de países: se puede acercar, alejar y arrastrar sin marcar nada por error', async ({ page }) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   await page.getByTestId('country-pack-map-open').click();
   const svg = page.getByTestId('country-map');
@@ -199,6 +205,7 @@ test.describe('Mapa de países: pellizco con dos dedos', () => {
   test('acerca y aleja alrededor de los dedos sin correrse', async ({ page }) => {
     await start(page);
     await page.goto('/#/settings');
+    await openContinent(page);
     await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
     await page.getByTestId('country-pack-map-open').click();
     const svg = page.getByTestId('country-map');
@@ -247,15 +254,35 @@ test('Ajustes: los países van en un marco por continente (América del Sur) y e
   const frame = page.getByTestId('country-continent-southAmerica');
   await expect(frame).toBeVisible({ timeout: 15_000 });
   await expect(frame.getByText('América del Sur', { exact: true })).toBeVisible();
+  await openContinent(page);
   // Solo los países (la lista de sectores de Brasil va debajo, en otro grupo).
   const names = await frame.locator('.country-pack').first().locator('.country-pack-select').allTextContents();
   expect(names).toEqual(['Argentina', 'Bolivia', 'Brasil', 'Chile', 'Paraguay', 'Perú', 'Uruguay']);
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-99-country-continent.png` });
 });
 
+test('Ajustes: los continentes arrancan cerrados, «País actual» muestra siempre el país y el continente que lo contiene lleva la marca', async ({ page }) => {
+  await start(page);
+  await page.goto('/#/settings');
+  const toggle = page.getByTestId('country-continent-toggle-southAmerica');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false', { timeout: 15_000 });
+  await expect(page.getByTestId('country-pack-AR')).toHaveCount(0);
+  const current = page.getByTestId('country-current');
+  await expect(current).toContainText('País actual');
+  await expect(current).toContainText('Argentina');
+  // Abrir y cerrar: la lista aparece y desaparece; el país actual no se mueve.
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByTestId('country-pack-AR')).toBeVisible();
+  await toggle.click();
+  await expect(page.getByTestId('country-pack-AR')).toHaveCount(0);
+  await expect(current).toContainText('Argentina');
+});
+
 test('Ajustes: se puede borrar el paquete de un país bajado, pero no el del país activo', async ({ page }, testInfo) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   const py = page.getByTestId('country-pack-PY');
   await expect(py).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   // Sin bajar no hay nada que borrar, y el país activo (Argentina) no ofrece borrarse.
@@ -287,6 +314,7 @@ test('Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con 
   await start(page);
   await page.goto('/#/settings');
   // Los sectores aparecen con el control de al lado de Brasil y se esconden al volver a tocarlo; tocar Brasil lo elige como país actual.
+  await openContinent(page);
   await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   await expect(page.getByTestId('country-sectors-BR')).toHaveCount(0);
   await page.getByTestId('country-sectors-toggle-BR').click();
@@ -313,6 +341,7 @@ test('Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con 
 test('Mapa de países: Brasil se divide en sus cinco sectores y se baja (o se borra) el que se toca', async ({ page }, testInfo) => {
   await start(page);
   await page.goto('/#/settings');
+  await openContinent(page);
   await expect(page.getByTestId('country-pack-PY')).toHaveAttribute('data-state', 'missing', { timeout: 15_000 });
   await page.getByTestId('country-pack-map-open').click();
   await expect(page.getByTestId('country-map')).toBeVisible();

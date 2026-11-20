@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import { inaRunRoute } from './fixtures/inaForecast';
 import { expect, test, type Page } from '@playwright/test';
+import { openContinent } from './countryPicker';
 
 // La copia propia de Open-Meteo del servidor no entra en las pruebas: 404 = «no está ahí», y la app pasa al servicio simulado de abajo.
 test.beforeEach(async ({ context }) => {
@@ -805,6 +806,7 @@ test('el mapa se abre mirando al país actual de Ajustes, aunque estés parado e
 
   // Brasil como país actual: el mapa se centra en Brasil (lon cerca de -54, lat de -14), aunque la ubicación sea la de Buenos Aires.
   await page.goto('/#/settings');
+  await openContinent(page);
   await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true }).click();
   await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true })).toHaveAttribute('aria-pressed', 'true');
   c = await center();
@@ -815,6 +817,7 @@ test('el mapa se abre mirando al país actual de Ajustes, aunque estés parado e
 
   // Chile: su franja larga y angosta, no el Cono Sur de Argentina.
   await page.goto('/#/settings');
+  await openContinent(page);
   await page.getByTestId('country-pack-CL').getByRole('button', { name: 'Chile', exact: true }).click();
   c = await center();
   expect(c.lon).toBeGreaterThan(-75);

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openContinent } from './countryPicker';
 
 const PASSWORD = 'prueba-segura-123';
 // Centro de Curitiba (Paraná): sector Sul de Brasil. Los Ajustes arrancan con Argentina.
@@ -19,6 +20,7 @@ async function start(page: Page) {
 /** Elige Brasil como país actual desde Ajustes (Brasil es un botón como los demás; sus sectores se despliegan con el control de al lado). */
 async function chooseBrazil(page: Page) {
   await page.goto('/#/settings');
+  await openContinent(page);
   await page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true }).click();
   await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true })).toHaveAttribute('aria-pressed', 'true');
 }
@@ -53,6 +55,7 @@ test('estás en Brasil sin Wi-Fi seguro: pregunta por el sector donde estás (Su
   // En Ajustes: solo el sector Sul figura bajado y se puede borrar; el borrado no se vuelve a bajar solo al volver a mirar el lugar.
   await page.goto('/#/settings');
   // Los sectores se ven con el control de al lado de Brasil (si están desplegados, no hace falta tocarlo).
+  await openContinent(page);
   if (!(await page.getByTestId('country-sectors-BR').isVisible())) await page.getByTestId('country-sectors-toggle-BR').click();
   await expect(page.getByTestId('country-sector-sul')).toHaveAttribute('data-state', 'ready', { timeout: 15_000 });
   await expect(page.getByTestId('country-sector-sudeste')).toHaveAttribute('data-state', 'missing');
@@ -91,5 +94,6 @@ test('estás en Brasil con otro país elegido: se pregunta si querés cambiarlo 
   await expect.poll(async () => (await stored(page)).includes('BR-sul.json'), { timeout: 60_000 }).toBe(true);
   expect(await stored(page)).not.toContain('BR-sudeste.json');
   await page.goto('/#/settings');
+  await openContinent(page);
   await expect(page.getByTestId('country-pack-BR').getByRole('button', { name: 'Brasil', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });

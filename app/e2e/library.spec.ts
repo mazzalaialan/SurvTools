@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { waitForServiceWorker } from './serviceWorker';
+import { openSection } from './settingsSections';
 
 const PASSWORD = 'prueba-segura-123';
 const SERVER = 'http://127.0.0.1:8099';
@@ -105,6 +106,7 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
 
   // Espacio: Ajustes muestra cuánto ocupan los libros bajados.
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'storage');
   await expect(page.getByTestId('storage-books')).toContainText('2 libros de la biblioteca');
 
   // Borrar varios libros a la vez: modo "Elegir para borrar", elegir los dos y borrarlos.
@@ -119,6 +121,7 @@ test('biblioteca: libres (verde) y con derechos (clave VikArg), bajar por catego
   await expect(page.getByTestId('book-enciclopedia').getByLabel('En el dispositivo')).toHaveCount(0);
   await expect(page.getByTestId('library-delete-mode')).toHaveCount(0);
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'storage');
   await expect(page.getByTestId('storage-books')).toContainText('0 libros de la biblioteca');
 });
 
@@ -131,6 +134,7 @@ test('biblioteca: cancelar una descarga en curso no gasta más datos y deja lo q
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'storage');
   await page.getByRole('button', { name: 'Desbloquear para modificar' }).first().click();
   await page.getByLabel('Servidor VikArg').fill(SERVER);
   await page.getByRole('button', { name: 'Guardar' }).last().click();
@@ -166,11 +170,13 @@ test('verificar descargas: con el libro en el dispositivo está todo en orden; s
 
   // Sin nada bajado, no hay qué revisar.
   await page.goto('/#/settings');
+  await openSection(page, 'storage');
   await page.getByTestId('verify-run').click();
   await expect(page.getByTestId('verify-none')).toBeVisible();
 
   // Se baja el libro libre.
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'storage');
   await page.getByRole('button', { name: 'Desbloquear para modificar' }).first().click();
   await page.getByLabel('Servidor VikArg').fill(SERVER);
   await page.getByRole('button', { name: 'Guardar' }).last().click();
@@ -182,6 +188,7 @@ test('verificar descargas: con el libro en el dispositivo está todo en orden; s
 
   // Todo en orden.
   await page.goto('/#/settings');
+  await openSection(page, 'storage');
   await page.getByTestId('verify-run').click();
   await expect(page.getByTestId('verify-ok')).toContainText('1 libros');
 

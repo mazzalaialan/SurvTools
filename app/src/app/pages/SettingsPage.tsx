@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Archive, Check, Crosshair, Info, Loader2, Lock, LockOpen, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { Archive, Check, TriangleAlert, Crosshair, Info, Loader2, Lock, LockOpen, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { lastBackupAt } from '@/core/backup/backup';
 import { backupReminder } from '@/core/backup/reminder';
 import { autoBackupState, hasAutoBackupPassword, runAutoBackup, setAutoBackupPassword, type AutoBackupResult, type AutoBackupState } from '@/core/backup/autoBackup';
@@ -29,6 +29,7 @@ import { roundForDusk } from '@/core/settings/theme';
 import { serverIsDown, serverMaps, type MapSourceMode, type ServerMaps } from '@/modules/maps/sources';
 import { CountryPackPicker } from '@/modules/emergency/CountryPackPicker';
 import { Segmented } from '@/ui/Segmented';
+import { Collapsible } from '@/ui/Collapsible';
 import { NewPasswordForm } from '@/ui/NewPasswordForm';
 import { useLibrary } from '@/modules/library/store';
 import { useMapZones } from '@/modules/maps/store';
@@ -54,22 +55,12 @@ export function SettingsPage() {
   const addPassword = useVault((s) => s.addPassword);
 
   return (
-    <div className="stack">
+    <div className="stack" data-area="settings">
       <h1 className="page-title">{t('settings.title')}</h1>
 
       <section className="card stack">
         <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.general')}</h2>
-        <Segmented
-          label={t('settings.language')}
-          value={settings.language}
-          options={LANGUAGES.map((l) => ({ value: l, label: t(`language.${l}`) }))}
-          onChange={(language) => {
-            setLanguage(language);
-            void update({ language });
-          }}
-        />
-        <CountryPackPicker />
-        <p className="hint" style={{ margin: 0 }}>{t('country.hint')}</p>
+        {/* El tema es lo que más se cambia (de día, de noche, en ahorro): va primero, antes del idioma y el país. */}
         <Segmented
           label={t('settings.theme')}
           value={settings.theme}
@@ -88,6 +79,17 @@ export function SettingsPage() {
           </label>
         )}
         {settings.theme === 'red' && settings.showStatusBar && isAndroid() && <SystemBarRedField level={settings.systemBarRed} onChange={(systemBarRed) => void update({ systemBarRed })} />}
+        <Segmented
+          label={t('settings.language')}
+          value={settings.language}
+          options={LANGUAGES.map((l) => ({ value: l, label: t(`language.${l}`) }))}
+          onChange={(language) => {
+            setLanguage(language);
+            void update({ language });
+          }}
+        />
+        <CountryPackPicker />
+        <p className="hint" style={{ margin: 0 }}>{t('country.hint')}</p>
         <Segmented
           label={t('settings.units')}
           value={settings.units}
@@ -110,8 +112,13 @@ export function SettingsPage() {
       <DeviceSection />
       <StorageSection />
 
-      <section className="card stack" data-testid="security">
-        <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.security')}</h2>
+      {/* Seguridad: se toca rara vez, va cerrada. Lo que importa (sin contraseña / bloqueo automático) queda en el encabezado. */}
+      <Collapsible
+        id="security"
+        testId="security"
+        title={t('settings.security')}
+        summary={openVault ? <span className="summary-warn"><TriangleAlert size={16} aria-hidden /> {t('settings.noPasswordStatus')}</span> : `${t('settings.autoLock')}: ${t('settings.minutes', { count: settings.autoLockMinutes })}`}
+      >
         {openVault ? (
           <>
             {/* Sin contraseña: nada que bloquear; se puede poner una cuando se quiera (los datos no se re-cifran). */}
@@ -168,7 +175,7 @@ export function SettingsPage() {
         {/* Prueba (sin cambiar nada) de si este dispositivo puede desbloquear con huella, cara o PIN. */}
         {/* La prueba usa claves de acceso de WebAuthn: en la app nativa la huella va por el Keystore de Android y no aplica. */}
         {!isNativePlatform() && <BiometricTest />}
-      </section>
+      </Collapsible>
 
       <NotificationsSection />
       <AccountSection />
@@ -755,8 +762,7 @@ function DeviceSection() {
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
   return (
-    <section className="card stack">
-      <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.device')}</h2>
+    <Collapsible id="device" title={t('settings.device')}>
       <p className="hint">{t('settings.deviceHint')}</p>
       <ul className="cap-list">
         {CAPABILITIES.map((c) => {
@@ -769,7 +775,7 @@ function DeviceSection() {
           );
         })}
       </ul>
-    </section>
+    </Collapsible>
   );
 }
 
@@ -827,9 +833,12 @@ function StorageSection() {
   }
 
   return (
-    <section className="card stack" data-testid="storage">
-      <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.storage')}</h2>
-      {estimate && <p style={{ margin: 0 }}>{t('settings.storageUsed', { used: fmt(estimate.usage ?? 0), quota: fmt(estimate.quota ?? 0) })}</p>}
+    <Collapsible
+      id="storage"
+      testId="storage"
+      title={t('settings.storage')}
+      summary={estimate ? t('settings.storageUsed', { used: fmt(estimate.usage ?? 0), quota: fmt(estimate.quota ?? 0) }) : undefined}
+    >
       <ul className="list storage-list">
         <li className="list-row" data-testid="storage-books">
           <span className="list-main">
@@ -894,7 +903,7 @@ function StorageSection() {
         </>
       )}
       <VerifyDownloads />
-    </section>
+    </Collapsible>
   );
 }
 

@@ -3790,6 +3790,7 @@
  },
  "country": {
   "continent": {
+   "count": "{{count}} países",
    "southAmerica": "América do Sul"
   },
   "label": "País",

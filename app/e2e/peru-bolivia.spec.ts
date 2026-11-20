@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openContinent } from './countryPicker';
 
 const PASSWORD = 'prueba-segura-123';
 // Laguna Llanganuco, dentro del Parque Nacional Huascarán (Perú).
@@ -19,6 +20,7 @@ test('Perú y Bolivia: números, radio, parques y la red de radioaficionados de 
 
   // Perú: números oficiales y el CICOTOX; los sin confirmar, avisados.
   await page.goto('/#/first-aid/contacts');
+  await openContinent(page);
   await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true }).click();
   const numbers = page.getByTestId('national-numbers');
   await expect(numbers).toContainText('Policía Nacional');
@@ -43,6 +45,7 @@ test('Perú y Bolivia: números, radio, parques y la red de radioaficionados de 
   // Bolivia: Sajama, con el contacto del SERNAP y sin la red de Perú.
   await context.setGeolocation(SAJAMA);
   await page.goto('/#/first-aid/contacts');
+  await openContinent(page);
   await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Bolivia', exact: true }).click();
   await expect(page.getByTestId('national-numbers').getByTestId('unconfirmed-boAmbulance')).toBeVisible();
   await page.goto('/#/first-aid/radio');
@@ -64,6 +67,7 @@ test('radio: las emisoras, los parques y las repetidoras son las del país del l
 
   // Ajustes con Argentina y el lugar en Perú (Huascarán): salen las de Perú.
   await page.goto('/#/first-aid/contacts');
+  await openContinent(page);
   await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Argentina', exact: true }).click();
   await page.goto('/#/first-aid/radio');
   const stations = page.getByTestId('radio-stations');
@@ -74,6 +78,7 @@ test('radio: las emisoras, los parques y las repetidoras son las del país del l
 
   // Al revés: Ajustes con Perú y el lugar en la Argentina (Bariloche): salen las argentinas.
   await page.goto('/#/first-aid/contacts');
+  await openContinent(page);
   await page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true }).click();
   await context.setGeolocation({ latitude: -41.13, longitude: -71.31 });
   await page.goto('/#/first-aid/radio');

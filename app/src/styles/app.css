@@ -5915,6 +5915,66 @@ button.country-pack-del {
   color: var(--text-muted);
 }
 
+/* País actual siempre visible, arriba del selector (sin tener que abrir cada continente). */
+[data-area='country-picker'] .country-current {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  min-height: 48px;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
+}
+[data-area='country-picker'] .country-current-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+[data-area='country-picker'] .country-continent-here {
+  flex: none;
+  color: var(--text);
+}
+
+/* Continente desplegable: toda la franja del título es un botón de 48 px (con muchos continentes la lista ocuparía demasiado). */
+[data-area='country-picker'] .country-continent > legend {
+  width: 100%;
+  padding: 0;
+}
+[data-area='country-picker'] .country-continent-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--sp-1);
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+}
+[data-area='country-picker'] .country-continent-toggle > span:first-child {
+  flex: 1;
+}
+[data-area='country-picker'] .country-continent-count {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+[data-area='country-picker'] .country-continent-toggle:active {
+  background: var(--border);
+}
+
 /* Lista de países: una fila por país en Ajustes (el estado y el peso quedan alineados a la derecha); dos columnas al elegir. */
 [data-area='country-picker'] .country-pack {
   display: flex;
@@ -6084,4 +6144,243 @@ button.country-pack-del {
 /* El control de zonas de Brasil ocupa el lugar de la celda de estado de las otras filas: mismo ancho, así la leyenda «País actual» no lo pisa. */
 [data-area='country-picker'] .country-pack-toggle {
   min-width: 72px;
+}
+
+/* =====================================================================================================
+   Ajustes (data-area='settings', lo pone SettingsPage en su contenedor). Mismo sistema que Emergencias (docs/DISENO.md, «Regla final de color
+   de controles»): un tono por función. El cobre sólido de antes (segmentados y botones primarios) pasa a neutro: selector = relleno
+   --text/--bg + negrita + aro; acción primaria = borde de 2 px --text; el cobre queda para enlaces y foco. Modo rojo: todo son variables rojas.
+   ===================================================================================================== */
+[data-area='settings'] {
+  font-variant-numeric: tabular-nums;
+}
+[data-area='settings'] .page-title {
+  font-size: var(--fs-xl);
+}
+[data-area='settings'] .card {
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-1);
+  padding: var(--sp-4);
+}
+[data-area='settings'] .card.stack {
+  gap: var(--sp-3);
+}
+[data-area='settings'] .section-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+[data-area='settings'] .hint,
+[data-area='settings'] .list-sub,
+[data-area='settings'] .field label,
+[data-area='settings'] .field .field-label,
+[data-area='settings'] .cap-list li {
+  font-size: var(--fs-sm);
+}
+[data-area='settings'] .list-title,
+[data-area='settings'] .error,
+[data-area='settings'] .success,
+[data-area='settings'] .warning-box,
+[data-area='settings'] .ok-box {
+  font-size: var(--fs-md);
+}
+[data-area='settings'] .list-row,
+[data-area='settings'] .warning-box,
+[data-area='settings'] .ok-box {
+  border-radius: var(--radius-ctl);
+}
+[data-area='settings'] .error {
+  font-weight: 600;
+  padding-left: var(--sp-3);
+  border-left: 4px solid var(--danger);
+}
+/* Los h3 de formularios (cambiar contraseña, etc.) con la escala del sistema. */
+[data-area='settings'] h3 {
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
+/* --- Selector / segmentado (Tema, Idioma, Unidades, Rojo nocturno automático): neutro, el elegido se ve sin depender del color --- */
+[data-area='settings'] .segmented {
+  border-radius: var(--radius-ctl);
+}
+[data-area='settings'] .segmented button {
+  min-height: 48px;
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-md);
+  color: var(--text);
+}
+[data-area='settings'] .segmented button:not([aria-pressed='true']):active {
+  background: var(--border);
+}
+[data-area='settings'] .segmented button[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px var(--bg);
+}
+[data-area='settings'] .segmented button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -4px;
+}
+
+/* --- Botones --- */
+[data-area='settings'] .btn,
+[data-area='settings'] .icon-btn {
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
+}
+[data-area='settings'] .btn:not(:disabled):active {
+  background: var(--border);
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3);
+}
+[data-area='settings'] .btn:focus-visible,
+[data-area='settings'] .icon-btn:focus-visible,
+[data-area='settings'] .btn-link:focus-visible,
+[data-area='settings'] .collapsible-toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+/* Acción principal: neutra, borde grueso (no cobre sólido). */
+[data-area='settings'] .btn-primary {
+  background: var(--surface);
+  border: 2px solid var(--text);
+  color: var(--text);
+}
+[data-area='settings'] .btn-primary:not(:disabled):hover {
+  background: var(--surface-2);
+}
+/* Deshabilitado: sin relleno, borde punteado y texto atenuado pero legible (no solo opacidad). */
+[data-area='settings'] .btn:disabled {
+  opacity: 1;
+  background: transparent;
+  border-style: dashed;
+  border-width: 1px;
+  border-color: var(--control-border);
+  color: var(--text-muted);
+}
+[data-area='settings'] .btn-danger-outline {
+  border-width: 2px;
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+[data-area='settings'] .btn-danger-outline:disabled {
+  border-width: 1px;
+  color: var(--text-muted);
+  border-color: var(--control-border);
+}
+/* Enlace: cobre y subrayado (la única función del cobre acá, además del foco). */
+[data-area='settings'] .btn-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: var(--fs-md);
+}
+
+/* --- Campos --- */
+[data-area='settings'] .input,
+[data-area='settings'] .select {
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
+}
+[data-area='settings'] .input:focus-visible,
+[data-area='settings'] .select:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0;
+}
+[data-area='settings'] .input[aria-invalid='true'] {
+  border-width: 2px;
+  border-color: var(--danger);
+}
+/* Casillas: relleno neutro (no cobre) y objetivo cómodo. */
+[data-area='settings'] .check input,
+[data-area='settings'] input[type='checkbox'],
+[data-area='settings'] input[type='radio'],
+[data-area='settings'] input[type='range'] {
+  accent-color: var(--text);
+}
+[data-area='settings'] .check {
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-2) 0;
+}
+[data-area='settings'] .check input {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* --- Dispositivo: lista de funciones con ✓/✗ y texto (no depende del color); el sí no va en verde para no competir con los estados reales --- */
+[data-area='settings'] .cap-yes {
+  color: var(--text);
+}
+[data-area='settings'] .cap-no {
+  color: var(--text-muted);
+}
+
+/* --- Desplegable (ui/Collapsible): encabezado de 48 px completo como botón; título + resumen a la izquierda, chevron a la derecha --- */
+.collapsible {
+  padding: 0;
+}
+.collapsible-head {
+  margin: 0;
+  font-size: inherit;
+}
+.collapsible-toggle {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: var(--sp-3);
+  row-gap: var(--sp-1);
+  width: 100%;
+  min-height: 48px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 0;
+  border-radius: var(--radius-card);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.collapsible-toggle > svg {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--text-muted);
+}
+.collapsible-toggle:active {
+  background: var(--border);
+}
+.collapsible-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.collapsible-summary {
+  grid-column: 1;
+  font-size: var(--fs-md);
+  font-weight: 400;
+  color: var(--text);
+}
+.summary-warn {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  font-weight: 600;
+}
+.summary-warn svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--warn);
+}
+.collapsible-body {
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  border-top: 1px solid var(--border);
+}
+.collapsible-body[hidden] {
+  display: none;
+}
+[data-area='settings'] .card.collapsible {
+  padding: 0;
 }

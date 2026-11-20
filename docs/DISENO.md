@@ -86,3 +86,18 @@ Componente único: `app/src/modules/emergency/CountryPackPicker.tsx`, con `mode=
 - **Brasil como país actual (Ajustes):** tocar la fila de Brasil solo despliega los sectores y NO cambia el país actual. La acción «Usar Brasil como país actual» va **al pie de la lista de sectores** (primero qué es cada sector y cuánto pesa), como fila de texto de 48 px: ancho de la lista, sin relleno ni negrita fuerte (no se parece a «bajar»), borde `--control-border` e ícono de ubicación (el mismo que marca al país actual). Si Brasil ya es el país actual no se muestra (lo dice la fila de Brasil, rellena y con «País actual»). Antes era un botón ancho relleno arriba de los sectores, que competía con las descargas.
 - **Elegir (choose):** grilla de dos columnas, sin descargas, borrado, sectores ni mapa; elegir cambia el país actual (la descarga la sigue haciendo `useCountryPrefetch`). Brasil se elige directo.
 - **Pendiente de decisión:** pasar el resto de Ajustes al mismo sistema y mostrar el peso solo cuando hay datos.
+
+## Ajustes (2026-11-20)
+Contenedor con `data-area="settings"` (en `SettingsPage`); estilos al final de `app.css`, acotados a ese atributo. Aplica la tabla de «Regla final de color de controles» sin cambios, y concreta dos filas que antes iban en cobre sólido:
+
+| Función | Token / forma en Ajustes |
+|---|---|
+| Segmentado / selector (Tema, Rojo nocturno automático, Idioma, Unidades) | 48 px, `--radius-ctl`. Elegido: relleno `--text`, letra `--bg`, negrita y aro interior; no elegido: `--surface`, texto `--text`. Foco: contorno `--focus` |
+| Acción primaria (Activar notificaciones, Guardar, Quitar contraseña, verificar/rehacer descargas) | Fondo `--surface`, borde de 2 px `--text`, texto `--text` negrita. Deshabilitada: sin relleno, borde punteado de 1 px, texto `--text-muted` |
+| Casillas | `accent-color: --text` (neutro), fila de 48 px mínimo |
+| Lista «Este dispositivo» | ✓/✗ con texto; el sí en `--text`, el no en `--text-muted` (el verde queda para estados reales) |
+
+### Desplegables (`app/src/ui/Collapsible.tsx`)
+Criterio: va en desplegable **cerrado** lo de uso poco frecuente (formularios largos, listas, referencia). Lo frecuente (Tema, Idioma, País, Unidades, Backup) queda a la vista. Encabezado de 48 px completo como botón (`aria-expanded`, `aria-controls`), título en mayúsculas de bloque, **resumen con el estado que importa visible aunque esté cerrado** (p. ej. «La app no tiene contraseña…» con ícono de advertencia, o «Bloqueo automático: 5 min») y chevron. Sin animación. El contenido sigue montado (`hidden`), así no se pierde lo escrito. Las e2e lo abren con `openSection(page, 'security' | 'storage' | 'device')` (`app/e2e/settingsSections.ts`). Hoy: Seguridad, Almacenamiento, Este dispositivo.
+
+Selector de país: los continentes arrancan **cerrados**; «País actual» siempre visible arriba. En las e2e, `openContinent(page)` (`app/e2e/countryPicker.ts`).

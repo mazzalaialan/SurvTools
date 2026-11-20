@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { openSection } from './settingsSections';
 
 const PASSWORD = 'prueba-segura-123';
 
@@ -378,6 +379,7 @@ test('embarazo: se carga en la ficha, personaliza el botiquín con avisos y no q
   // Con «Mostrar datos de emergencia sin desbloquear» activado, la pantalla de bloqueo muestra también el embarazo (y la fecha de parto);
   // con la opción apagada, no hay tarjeta.
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await page.getByTestId('emergency-on-lock').check();
   await page.waitForTimeout(1200);
   await page.getByRole('button', { name: 'Bloquear ahora' }).first().click();

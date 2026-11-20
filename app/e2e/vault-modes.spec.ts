@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openSection } from './settingsSections';
 
 const PASSWORD = 'prueba-segura-123';
 
@@ -26,6 +27,7 @@ test('sin contraseña: entra sola, no se bloquea, el backup pide su contraseña 
 
   // Ajustes: avisa que no hay contraseña y permite poner una (con clave de recuperación nueva).
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   const security = page.getByTestId('security');
   await expect(security.getByTestId('no-password-status')).toBeVisible();
   // Al entrar a Ajustes el cursor NO salta al campo de la contraseña (abriría el teclado en el celular).
@@ -44,6 +46,7 @@ test('sin contraseña: entra sola, no se bloquea, el backup pide su contraseña 
 
   // Y se puede volver a quitar (con la contraseña actual).
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   const remove = page.getByTestId('remove-password');
   await remove.getByLabel('Contraseña actual').fill('mal-mal-mal');
   await remove.getByRole('button', { name: 'Quitar la contraseña' }).click();
@@ -85,6 +88,7 @@ test('datos de emergencia en la pantalla de bloqueo: solo si se activan, y al d�
   await page.getByRole('button', { name: 'Desbloquear' }).click();
 
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await page.getByTestId('emergency-on-lock').check();
   // Se guarda la copia (con un pequeño retraso) y se bloquea.
   await page.waitForTimeout(1200);
@@ -102,6 +106,7 @@ test('datos de emergencia en la pantalla de bloqueo: solo si se activan, y al d�
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await page.getByTestId('emergency-on-lock').uncheck();
   await page.waitForTimeout(300);
   await page.locator('.topbar-lock').click();
@@ -147,6 +152,7 @@ test('olvidé la contraseña y la clave: guardo la bóveda aparte, empiezo de ce
 
   // Desde Ajustes se recupera la vieja: con una contraseña incorrecta no pasa nada; con la correcta vuelve su dato.
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   const archived = page.getByTestId('archived-vaults');
   await expect(archived).toBeVisible();
   await archived.getByRole('button', { name: 'Recuperar', exact: true }).click();
@@ -160,6 +166,7 @@ test('olvidé la contraseña y la clave: guardo la bóveda aparte, empiezo de ce
   await expect(page.getByText('Refugio Viejo')).toBeVisible();
   // La bóveda que estaba activa quedó guardada aparte (se pidió guardarla): ahora es la que figura en la lista.
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await expect(page.getByTestId('archived-vaults')).toContainText('Bóveda guardada el');
 
   // Y borrar todo también es una salida, con la palabra de confirmación.
@@ -177,6 +184,7 @@ test('probar biometría: con un autenticador virtual con PRF el dispositivo sirv
   await page.getByRole('button', { name: 'Entendido, usar sin contraseña' }).click();
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   const cdp = await context.newCDPSession(page);
   await cdp.send('WebAuthn.enable');
   // Con PRF: pasa todos los pasos.
@@ -222,6 +230,7 @@ test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir 
   });
   // Activar.
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   const box = page.getByTestId('biometric-unlock');
   await box.getByTestId('biometric-unlock-on-button').click();
   await expect(box.getByTestId('biometric-unlock-message')).toContainText('Listo', { timeout: 20_000 });
@@ -237,6 +246,7 @@ test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir 
 
   // Cambiar la contraseña confirmando con la huella, sin escribir la actual (por si se olvidó).
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await page.getByTestId('change-password-bio').click();
   await expect(page.getByTestId('change-password-bio-ok')).toBeVisible({ timeout: 20_000 });
   await page.getByLabel('Contraseña nueva').fill('contraseña-nueva-456');
@@ -245,6 +255,7 @@ test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir 
 
   // Código de recuperación nuevo, confirmando con la huella: se muestra una vez y hay que anotarlo.
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await page.getByTestId('new-recovery-bio').click();
   await page.getByTestId('confirm-ok').click();
   await expect(page.locator('.recovery-key')).toBeVisible({ timeout: 20_000 });
@@ -263,6 +274,7 @@ test('desbloquear con biometría: se activa en Ajustes, desbloquea sin escribir 
 
   // Desactivar: el botón de la biometría desaparece del bloqueo.
   await page.goto('/#/settings');
+  await openSection(page, 'security');
   await page.getByTestId('biometric-unlock-off').click();
   await page.getByTestId('confirm-ok').click();
   await expect(page.getByTestId('biometric-unlock-on-button')).toBeVisible();

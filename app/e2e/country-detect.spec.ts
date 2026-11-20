@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openContinent } from './countryPicker';
 
 const PASSWORD = 'prueba-segura-123';
 // Laguna Llanganuco, dentro del Parque Nacional Huascarán (Perú). Los Ajustes arrancan con Argentina.
@@ -72,6 +73,7 @@ test('aceptar el cambio pasa a Perú como país elegido y baja su paquete; los n
   await page.goto('/#/first-aid/contacts');
   await expect(page.locator('#national-title')).toHaveText('Números nacionales de Perú');
   await expect(page.getByTestId('national-numbers')).toContainText('Policía Nacional');
+  await openContinent(page);
   await expect(page.getByRole('group', { name: 'País' }).getByRole('button', { name: 'Perú', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
