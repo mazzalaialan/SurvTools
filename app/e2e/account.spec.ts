@@ -118,6 +118,7 @@ test('desactivar las notificaciones sin conexión deja el borrado de la cuenta p
 
   // Servidor inalcanzable: se apagan igual, pero el borrado queda pendiente (no se olvida la cuenta).
   await page.route(`${SERVER}/api/devices/**`, (route) => (route.request().method() === 'DELETE' ? route.abort() : route.continue()));
+  await openSection(page, 'notifications');
   await page.getByRole('button', { name: 'Desactivar' }).click();
   await expect(page.getByTestId('delete-pending')).toContainText('se borra sola cuando vuelva la conexión', SLOW);
   await expect(page.getByTestId('account-pending')).toBeVisible();

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { OfficialWeatherNotice } from '@/ui/OfficialWeatherNotice';
+import { Collapsible } from '@/ui/Collapsible';
 import { Bell, BellOff, Send } from 'lucide-react';
 import {
   ServerError,
@@ -16,7 +17,8 @@ import { notificationBackend } from '@/core/notifications/backend';
 
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
 
-export function NotificationsSection() {
+/** `showServer`: la dirección del servidor solo se muestra si se abrió «Conexiones» (7 toques a la versión): es configuración interna. */
+export function NotificationsSection({ showServer = false }: { showServer?: boolean }) {
   const { t } = useTranslation();
   const { notificationsEnabled, notifyHour, serverUrl, serverLocation, updateNotices, hazardNotices } = useSettings((s) => s.settings);
   const update = useSettings((s) => s.update);
@@ -57,14 +59,17 @@ export function NotificationsSection() {
   }
 
   return (
-    <section className="card stack">
-      <h2 className="section-title" style={{ marginTop: 0 }}>{t('notifications.title')}</h2>
+    <Collapsible
+      id="notifications"
+      title={t('notifications.title')}
+      summary={notificationsEnabled ? t('notifications.summaryOn', { hour: `${String(notifyHour).padStart(2, '0')}:00` }) : t('notifications.summaryOff')}
+    >
       <p className="hint">{t('notifications.intro')}</p>
 
       {notificationsEnabled ? (
         <>
           <ul className="status-list">
-            <li>{state?.push ? t('notifications.pushOn', { server: state.push.serverUrl }) : serverUrl ? t('notifications.pushPending') : t('notifications.localOnly')}</li>
+            <li>{state?.push ? (showServer ? t('notifications.pushOn', { server: state.push.serverUrl }) : t('notifications.pushOnShort')) : serverUrl ? t('notifications.pushPending') : t('notifications.localOnly')}</li>
             {result && !result.localDaily && !result.push && <li>{t('notifications.inAppOnly')}</li>}
             {result?.pushError && <li className="error">{t(`notifications.error.${result.pushError.code}`)}</li>}
           </ul>
@@ -135,6 +140,6 @@ export function NotificationsSection() {
       )}
       {denied && <p className="error">{t('notifications.error.permission-denied')}</p>}
       {error && !denied && <p className="error" role="alert">{error}</p>}
-    </section>
+    </Collapsible>
   );
 }

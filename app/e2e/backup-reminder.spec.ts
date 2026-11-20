@@ -27,7 +27,7 @@ test('recordatorio de backup: aparece a los 3 días de uso sin backup, se pospon
   const start = Date.now();
   await page.clock.setFixedTime(start + 4 * DAY);
   await page.goto('/#/settings');
-  await expect(page.getByTestId('settings-last-backup')).toHaveClass(/warning-box/);
+  await expect(page.getByTestId('settings-last-backup')).toHaveClass(/summary-warn/);
   await page.goto('/#/');
   const card = page.getByTestId('backup-reminder');
   await expect(card).toContainText('Todavía no hiciste ningún backup');

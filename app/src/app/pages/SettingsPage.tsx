@@ -190,7 +190,7 @@ export function SettingsPage() {
         {!isNativePlatform() && <BiometricTest />}
       </Collapsible>
 
-      <NotificationsSection />
+      <NotificationsSection showServer={connections.visible} />
       <AccountSection />
 
       {connections.visible && <ConnectionsSection settings={settings} onSave={update} />}
@@ -316,19 +316,26 @@ function BackupSection() {
   const firstUseAt = useSettings((s) => s.settings.firstUseAt);
   // Vencido: sin snooze (en Ajustes se ve siempre que corresponda; el «recordármelo» es del aviso del Inicio).
   const overdue = backupReminder({ lastBackupAt: last, firstUseAt, snoozedUntil: null }).due;
+  // La copia y la transferencia se usan de vez en cuando: desplegable cerrado, con cuándo fue la última (y el aviso si está atrasada) a la vista.
+  const lastText = daysAgo === null ? t('backup.never') : daysAgo === 0 ? t('backup.lastToday') : t('backup.lastDaysAgo', { count: daysAgo });
   return (
-    <section className="card stack">
-      <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.backupTitle')}</h2>
-      <p className={overdue ? 'warning-box' : 'hint'} style={{ margin: 0 }} data-testid="settings-last-backup">
-        {daysAgo === null ? t('backup.never') : daysAgo === 0 ? t('backup.lastToday') : t('backup.lastDaysAgo', { count: daysAgo })}
-      </p>
+    <Collapsible
+      id="backup"
+      title={t('settings.backupTitle')}
+      summary={
+        <span className={overdue ? 'summary-warn' : undefined} data-testid="settings-last-backup">
+          {overdue && <TriangleAlert size={16} aria-hidden />}
+          <span>{lastText}</span>
+        </span>
+      }
+    >
       <div>
         <Link className="btn" to="/settings/backup">
           <Archive size={18} /> {t('settings.backupOpen')}
         </Link>
       </div>
       {isAndroid() && <AutoBackupField />}
-    </section>
+    </Collapsible>
   );
 }
 

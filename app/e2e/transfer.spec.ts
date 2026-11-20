@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openSection } from './settingsSections';
 import { SLOW, waitForServiceWorker } from './serviceWorker';
 
 const PASSWORD = 'prueba-segura-123';
@@ -78,6 +79,7 @@ test('notificaciones sin servidor', async ({ page, context }) => {
   await server.fill('');
   await server.locator('xpath=ancestor::form').getByRole('button', { name: 'Guardar' }).click();
   await waitForServiceWorker(page);
+  await openSection(page, 'notifications');
   await page.getByRole('button', { name: 'Activar notificaciones' }).click();
   await expect(page.getByText(/Sin servidor: aviso diario aproximado/)).toBeVisible(SLOW);
   await page.getByRole('button', { name: 'Probar', exact: true }).click();
