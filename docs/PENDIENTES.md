@@ -10,6 +10,8 @@
 
 **En cola (pedido del usuario, 2026-11-20), a hacer cuando termine la extensión del diseño a toda la app:** revisar con el agente `vikarg-disenador` la **guía de primeros auxilios** (`app/src/modules/firstAid/*`, `/first-aid/guides`) para que sea **muy práctica y fácil de entender para alguien con mucho estrés**: simplificar lo más posible (una decisión por pantalla, frases cortas, lo vital arriba y grande, sin jerga), y agregar un botón **«Volver al paso anterior»** (además de «Volver a evaluar») por si se equivocó al elegir una respuesta. Verificar con las e2e de guías y revisar el contenido en pt/en. Sin cambiar el contenido médico sin avisar: cualquier cambio de texto clínico lo valida el usuario.
 
+**En cola (decisión del usuario, 2026-11-20): responder la guía de primeros auxilios EN VOZ ALTA.** Hacerlo con un **modelo propio sin conexión (Vosk o similar)**, con gramática cerrada por paso, confirmación de lo entendido («Entendí: sí») antes de seleccionar, función experimental apagada por defecto en Ajustes y primero solo en la APK. Análisis, opciones, riesgos y plan en **`docs/investigaciones/guia-respuesta-por-voz.md`** (esfuerzo estimado 4 a 6 días; empezar con un prototipo en español probado en el Motorola).
+
 **Abierto, en orden de importancia:**
 1. **CENVUL (volcanes de Perú):** causa hallada 2026-11-20: su servicio `status-volcanos` da 401 (cambio de la fuente). Parser con respaldo en el último boletín (solo un volcán), hecho en el servidor y sin publicar; hace falta publicar para que se note. Para cubrir todos los volcanes: pedir acceso formal a CENVUL/IGP (ver `FUENTES-DE-DATOS.md`).
 2. **pt-BR necesita revisión humana** antes de confiar en él (sobre todo los textos de seguridad); ver `docs/TRADUCCION-PT-BR.md`.
