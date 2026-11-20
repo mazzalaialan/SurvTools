@@ -11,7 +11,7 @@
 **Abierto, en orden de importancia:**
 1. **CENVUL (volcanes de Perú) caída** desde antes de la 0.99.0 (`/api/health` → `sourcesDown`, «lista de volcanes vacía»). No se investigó; ofrecido al usuario, sin respuesta.
 2. **pt-BR necesita revisión humana** antes de confiar en él (sobre todo los textos de seguridad); ver `docs/TRADUCCION-PT-BR.md`.
-3. **Brasil:** sin datos de radio; avisos push de ríos no extendidos a Brasil; ANA/CNES contra OSM (revisar duplicados antes de cargar); pedidos formales a organismos sin enviar (`docs/NUEVOS-PAISES.md`).
+3. **Brasil:** sin datos de radio; avisos push de ríos no extendidos a Brasil; **ANA/CNES contra OSM: comparado el 2026-11-20** (ANA: OSM no tiene nada, se mantiene; CNES: faltan en OSM cerca de la mitad de los establecimientos relevantes, cargar solo hospitales/UPA/policlínicas/postos SUS; detalle en `docs/NUEVOS-PAISES.md`, falta confirmar los códigos `TP_UNIDADE` y decidir el pin doble); pedidos formales a organismos sin enviar (`docs/NUEVOS-PAISES.md`).
 4. «Mi ubicación» usa el GPS en vivo como excepción a la regla «el país seleccionado manda»: el usuario no lo confirmó.
 5. **Máquina de desarrollo/producción:** el swap está lleno (4 de 4 GiB) con 6,7 GiB de RAM libre: revisar qué lo ocupa.
 6. Versión 1.0.0: solo cuando la app esté publicada en las dos tiendas (decisión del usuario).
