@@ -5,6 +5,9 @@
 
 :root,
 :root[data-theme='dark'] {
+  /* Radios: 2 valores (controles y tarjetas). Espaciado en escala de 4 px. */
+  --radius-ctl: 8px;
+  --radius-card: 10px;
   /* Diagramas de nudos: fondo, borde de la cuerda y flechas. */
   --kd-bg: #243243;
   --kd-edge: #0b1118;

@@ -25,7 +25,7 @@ export function ModuleGrid({ section }: { section: Section }) {
   }
 
   return (
-    <div className="module-grid">
+    <div className="module-grid" data-section={section}>
       {MODULES.filter((m) => m.section === section && !(m.hideWhenOff && !settings[m.hideWhenOff])).map((m) => {
         // Mientras se detectan las capacidades, se asume que están para no parpadear a "no disponible".
         const status: ModuleStatus = caps
@@ -37,8 +37,11 @@ export function ModuleGrid({ section }: { section: Section }) {
         const label = badge(status);
         const body: ReactNode = (
           <>
-            <Icon className="icon" size={28} aria-hidden />
-            <h3>{t(`modules.${m.id}.title`)}</h3>
+            {/* Ícono y título en una fila: la tarjeta queda más baja y entran más módulos por pantalla. */}
+            <div className="module-head">
+              <Icon className="icon" size={24} aria-hidden />
+              <h3>{t(`modules.${m.id}.title`)}</h3>
+            </div>
             <p>{t(`modules.${m.id}.desc`)}</p>
             {label && <span className="badge">{label}</span>}
           </>

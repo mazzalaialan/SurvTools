@@ -429,30 +429,41 @@ input[type='range'] {
 .module-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
+  gap: 8px;
 }
 
+/* Tarjeta plana: borde fino, sin sombra. Ícono y título en una fila; la descripción abajo. */
 .module-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-height: 132px;
-  padding: 14px;
+  gap: 6px;
+  min-height: 96px;
+  padding: 12px;
   text-align: left;
   font: inherit;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius-card);
+}
+
+.module-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .module-card .icon {
+  flex: none;
   color: var(--accent);
+  margin-top: 1px;
 }
 
 .module-card h3 {
   font-size: 1rem;
+  line-height: 1.25;
+  /* Sin guiones automáticos: partían «primeros» en medio del título; solo se corta si una palabra no entra. */
+  overflow-wrap: break-word;
 }
 
 .module-card p {
@@ -464,15 +475,23 @@ input[type='range'] {
 .module-card .badge {
   margin-top: auto;
   align-self: flex-start;
-  font-size: 0.72rem;
-  padding: 2px 8px;
-  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
   background: var(--surface-2);
   color: var(--text-muted);
 }
 
-.module-card[data-status='unavailable'] {
-  opacity: 0.45;
+/* Emergencias: el ícono va en el color de peligro (el título y el texto siguen diciendo de qué se trata). */
+.module-grid[data-section='firstAid'] .module-card:not([data-status='unavailable']) .icon {
+  color: var(--danger);
+}
+
+/* No disponible: sin bajar la opacidad del texto (perdía contraste); se distingue por el borde punteado, el fondo hundido y la etiqueta. */
+.module-card[data-status='unavailable'],
+.module-card[data-status='soon'] {
+  background: var(--surface-2);
+  border-style: dashed;
 }
 
 .module-card[data-status='unavailable'] .icon {
@@ -862,6 +881,12 @@ a.module-card {
 }
 
 a.module-card:hover {
+  border-color: var(--accent);
+}
+
+/* Feedback inmediato al toque (con guantes no se ve el dedo). */
+a.module-card:active {
+  background: var(--surface-2);
   border-color: var(--accent);
 }
 
