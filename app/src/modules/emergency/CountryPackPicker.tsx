@@ -140,13 +140,6 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
               <p className="hint">
                 {t('country.sector.hint')}
               </p>
-              {country !== 'BR' && (
-                <div>
-                  <button className="btn" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
-                    {t('country.map.use', { country: t('country.BR') })}
-                  </button>
-                </div>
-              )}
               <div className="country-pack" role="group" aria-label={t('country.sector.title')}>
                 {BR_SECTORS.map(({ id }) => {
                   const sp = sectors[id];
@@ -191,6 +184,14 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                   );
                 })}
               </div>
+              {/* Acción secundaria, después de los sectores (primero qué es cada uno y cuánto pesa): fila de texto con el mismo ícono de «país actual»,
+                  sin relleno (no se parece a «bajar»). Si Brasil ya es el país actual no hace falta: lo dice la fila de Brasil. */}
+              {country !== 'BR' && (
+                <button className="country-sector-use" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
+                  <MapPin size={18} aria-hidden />
+                  <span>{t('country.map.use', { country: t('country.BR') })}</span>
+                </button>
+              )}
             </div>
           )}
                   </Fragment>
