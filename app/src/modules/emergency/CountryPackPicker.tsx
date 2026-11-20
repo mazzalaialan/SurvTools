@@ -137,6 +137,14 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                   {/* Los sectores de Brasil van pegados a la fila de Brasil, sangrados, para que se entienda a qué país pertenecen. */}
           {manage && c === 'BR' && brOpen && (
             <div className="country-sectors" id="country-sectors-BR" data-testid="country-sectors-BR">
+              {/* Justo debajo de la fila de Brasil (decisión del usuario): es lo primero que se ve al abrir el grupo. Fila de texto con el mismo ícono de
+                  «país actual», sin relleno (no se parece a «bajar»). Si Brasil ya es el país actual no hace falta: lo dice la fila de Brasil. */}
+              {country !== 'BR' && (
+                <button className="country-sector-use" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
+                  <MapPin size={18} aria-hidden />
+                  <span>{t('country.map.use', { country: t('country.BR') })}</span>
+                </button>
+              )}
               <p className="hint">
                 {t('country.sector.hint')}
               </p>
@@ -184,14 +192,6 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                   );
                 })}
               </div>
-              {/* Acción secundaria, después de los sectores (primero qué es cada uno y cuánto pesa): fila de texto con el mismo ícono de «país actual»,
-                  sin relleno (no se parece a «bajar»). Si Brasil ya es el país actual no hace falta: lo dice la fila de Brasil. */}
-              {country !== 'BR' && (
-                <button className="country-sector-use" type="button" data-testid="country-sector-use-BR" onClick={() => void update({ country: 'BR' })}>
-                  <MapPin size={18} aria-hidden />
-                  <span>{t('country.map.use', { country: t('country.BR') })}</span>
-                </button>
-              )}
             </div>
           )}
                   </Fragment>
