@@ -1,6 +1,31 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Building2, LocateFixed, Trees } from 'lucide-react';
+import {
+  Activity,
+  ArrowDownToLine,
+  Bed,
+  Bone,
+  Brain,
+  Building2,
+  Bug,
+  Candy,
+  ClipboardList,
+  Droplet,
+  Flame,
+  Heart,
+  HeartPulse,
+  LocateFixed,
+  Mountain,
+  Skull,
+  Snowflake,
+  Sun,
+  Syringe,
+  Trees,
+  Waves,
+  Wind,
+  Worm,
+  type LucideIcon,
+} from 'lucide-react';
 import { currentPosition } from '@/core/geo/useGeolocation';
 import { useSettings, type FirstAidEnv } from '@/core/settings/settings';
 import { useCountry } from '@/modules/emergency/currentCountry';
@@ -12,11 +37,35 @@ export function useLang(): 'es' | 'en' {
   return i18n.language.startsWith('en') ? 'en' : 'es';
 }
 
+/** Ícono de cada tema: ayuda a reconocer la opción de un vistazo (con guantes, de noche); siempre va junto al texto, nunca solo. */
+export const TOPIC_ICON: Record<string, LucideIcon> = {
+  cpr: HeartPulse,
+  unconscious: Bed,
+  bleeding: Droplet,
+  march: ClipboardList,
+  altitude: Mountain,
+  choking: Wind,
+  snakebite: Worm,
+  stings: Bug,
+  anaphylaxis: Syringe,
+  fall: ArrowDownToLine,
+  fracture: Bone,
+  burns: Flame,
+  chest: Heart,
+  stroke: Brain,
+  seizure: Activity,
+  poisoning: Skull,
+  hypothermia: Snowflake,
+  heat: Sun,
+  hypoglycemia: Candy,
+  drowning: Waves,
+};
+
 /**
  * Ciudad (la ayuda llega en minutos) o zona agreste (puede tardar horas). Se
  * elige a mano o se detecta con la ubicación; queda guardado.
  */
-export function EnvSwitch() {
+export function EnvSwitch({ compact = false, hint = !compact }: { compact?: boolean; hint?: boolean }) {
   const { t, i18n } = useTranslation();
   const env = useSettings((s) => s.settings.firstAidEnv);
   const country = useCountry();
@@ -69,15 +118,27 @@ export function EnvSwitch() {
       <Icon size={16} aria-hidden /> {t(`guides.env.${value}`)}
     </button>
   );
-  const km = (n: number) => new Intl.NumberFormat(i18n.language, { maximumFractionDigits: n < 10 ? 1 : 0 }).format(n);
+  const km = (n: number) =>
+    new Intl.NumberFormat(i18n.language, {
+      maximumFractionDigits: n < 10 ? 1 : 0,
+    }).format(n);
 
   return (
-    <div className="stack" style={{ gap: 4 }}>
-      <div className="chips" role="group" aria-label={t('guides.env.label')}>
+    <div className="stack guide-envbox" style={{ gap: 4 }}>
+      {/* Dos botones del mismo ancho (uno solo está elegido); en los pasos, «detectar» es un ícono al lado para no comer pantalla. */}
+      <div className={`guide-env-row${compact ? ' compact' : ''}`} role="group" aria-label={t('guides.env.label')}>
         {option('city', Building2)}
         {option('wild', Trees)}
-        <button type="button" className="chip guide-env" onClick={() => void detect()} disabled={busy}>
-          <LocateFixed size={16} aria-hidden /> {busy ? t('guides.detect.busy') : t('guides.detect.button')}
+        <button
+          type="button"
+          className="chip guide-env guide-env-detect"
+          onClick={() => void detect()}
+          disabled={busy}
+          aria-label={compact ? t('guides.detect.button') : undefined}
+          title={compact ? t('guides.detect.button') : undefined}
+        >
+          <LocateFixed size={compact ? 22 : 16} aria-hidden />
+          {!compact && <> {busy ? t('guides.detect.busy') : t('guides.detect.button')}</>}
         </button>
       </div>
       {result && (
@@ -96,7 +157,11 @@ export function EnvSwitch() {
           {error}
         </p>
       )}
-      <p className="hint" style={{ margin: 0 }}>{t(`guides.env.${env}Hint`)}</p>
+      {hint && (
+        <p className="hint" style={{ margin: 0 }}>
+          {t(`guides.env.${env}Hint`)}
+        </p>
+      )}
     </div>
   );
 }

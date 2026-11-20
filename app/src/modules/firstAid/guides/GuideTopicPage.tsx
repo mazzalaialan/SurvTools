@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, type MouseEvent } from 'react';
-import { Ban, LocateFixed, Repeat, RotateCcw, Undo2, Volume2, VolumeX } from 'lucide-react';
+import { Ban, Check, ChevronRight, LocateFixed, Repeat, RotateCcw, Undo2, Volume2, VolumeX, X } from 'lucide-react';
 import { speak, stopSpeaking, useSpeechVoice } from '@/core/speech/speech';
 import { useSettings } from '@/core/settings/settings';
 import { useCountry } from '@/modules/emergency/currentCountry';
 import { PhoneActions } from '@/modules/emergency/parts';
 import { resolveNext, TOPIC_BY_ID } from './content';
-import { EnvSwitch, useLang } from './parts';
+import { EnvSwitch, TOPIC_ICON, useLang } from './parts';
 import { CALLS, fillGuideText } from './types';
 import { Notice } from '@/ui/Notice';
 
@@ -36,7 +36,11 @@ export function GuideTopicPage() {
         fillText(node.title[lang]),
         ...node.steps.filter((s) => !s.env || s.env === env).map((s) => fillText(s.text[lang])),
         node.question ? fillText(node.question[lang]) : '',
-        node.options && node.options.length > 1 ? t('guides.optionsSpoken', { options: node.options.map((o) => fillText(o.label[lang])).join(', ') }) : '',
+        node.options && node.options.length > 1
+          ? t('guides.optionsSpoken', {
+              options: node.options.map((o) => fillText(o.label[lang])).join(', '),
+            })
+          : '',
       ]
     : [];
 
@@ -78,7 +82,9 @@ export function GuideTopicPage() {
   const go = (next: string) => {
     const target = resolveNext(topic.id, next);
     const startOfTopic = TOPIC_BY_ID.get(target.topic)?.start;
-    navigate(`/first-aid/guides/${target.topic}${target.node === startOfTopic ? '' : `?paso=${target.node}`}`, { state: { trail: [...trail, here].slice(-40) } });
+    navigate(`/first-aid/guides/${target.topic}${target.node === startOfTopic ? '' : `?paso=${target.node}`}`, {
+      state: { trail: [...trail, here].slice(-40) },
+    });
   };
   const goBack = () => {
     const previous = trail.at(-1);
@@ -94,9 +100,15 @@ export function GuideTopicPage() {
   return (
     <div className="stack guide" onClickCapture={stopOnCall}>
       <div className="page-head">
-        <h1 className="page-title" style={{ flex: 1 }}>{topic.title[lang]}</h1>
+        <h1 className="page-title guide-topic">{topic.title[lang]}</h1>
         {voice && voiceOn && (
-          <button className="icon-btn" type="button" onClick={() => speak(spoken.current, voice)} aria-label={t('guides.voiceRepeat')} title={t('guides.voiceRepeat')}>
+          <button
+            className="icon-btn"
+            type="button"
+            onClick={() => speak(spoken.current, voice)}
+            aria-label={t('guides.voiceRepeat')}
+            title={t('guides.voiceRepeat')}
+          >
             <Repeat size={20} />
           </button>
         )}
@@ -117,58 +129,81 @@ export function GuideTopicPage() {
         )}
       </div>
 
-      <EnvSwitch />
+      <EnvSwitch compact />
 
-      <section className="card stack" aria-labelledby="guide-node-title" data-testid="guide-node">
-        <h2 id="guide-node-title" className="section-title" style={{ margin: 0 }}>
+      <section className="card guide-node" aria-labelledby="guide-node-title" data-testid="guide-node">
+        {/* Dónde está: «Paso N» según lo recorrido (solo cuenta si se llegó contestando; desde la lista es el 1). */}
+        <p className="guide-eyebrow">{t('guides.step', { n: trail.length + 1 })}</p>
+        <h2 id="guide-node-title" className="guide-node-title">
           {fill(node.title[lang])}
         </h2>
-        <ol className="guide-steps">
-          {steps.map((s, i) => (
-            <li key={i} className={s.dont ? 'guide-dont' : undefined} data-env={s.env}>
-              {s.dont && <Ban size={16} aria-label={t('guides.dont')} />} {fill(s.text[lang])}
-            </li>
-          ))}
-        </ol>
 
+        {/* Lo vital arriba: a quién llamar, antes de leer los pasos. El primero (el que más urge) va sólido. */}
         {calls.length > 0 && (
           <div className="guide-calls" data-testid="guide-calls">
             {calls.map((c) => (
               <span key={c.key} className="guide-call">
-                <span className="hint">{t(`guides.call.${c.key}`)}</span>
+                <span className="guide-call-label">{t(`guides.call.${c.key}`)}</span>
                 <PhoneActions phone={c.number} />
               </span>
             ))}
             {env === 'wild' && (
-              <Link className="btn" to="/first-aid/location">
-                <LocateFixed size={18} /> {t('guides.myLocation')}
+              <Link className="btn guide-location" to="/first-aid/location">
+                <LocateFixed size={20} aria-hidden /> {t('guides.myLocation')}
               </Link>
             )}
           </div>
         )}
 
+        {steps.length > 0 && (
+          <ol className="guide-steps">
+            {steps.map((s, i) => (
+              <li key={i} className={s.dont ? 'guide-dont' : undefined} data-env={s.env}>
+                {s.dont && (
+                  <span className="guide-dont-tag">
+                    <Ban size={20} aria-hidden /> {t('guides.dont')}
+                  </span>
+                )}
+                <span>{fill(s.text[lang])}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+
         {node.question && <p className="guide-question">{fill(node.question[lang])}</p>}
         {node.options && (
-          <div className="guide-options" data-testid="guide-options">
-            {node.options.map((o) => (
-              <button key={o.next + o.label.es} className="btn guide-option" type="button" onClick={() => go(o.next)}>
-                {fill(o.label[lang])}
-              </button>
-            ))}
+          <div className={`guide-options${node.options.length > 6 ? ' many' : ''}`} data-testid="guide-options">
+            {node.options.map((o) => {
+              // Solo las respuestas marcadas `answer` en el contenido llevan tilde (sí) o cruz (no); las demás, el ícono de su tema (o ninguno). Siempre decorativo: el texto manda.
+              const Icon = o.answer === 'yes' ? Check : o.answer === 'no' ? X : TOPIC_ICON[o.next.replace(/^topic:/, '').split('#')[0]!];
+              return (
+                <button
+                  key={o.next + o.label.es}
+                  className={`btn guide-option${o.answer ? ` answer-${o.answer}` : ''}`}
+                  type="button"
+                  onClick={() => go(o.next)}
+                >
+                  {Icon && <Icon className="guide-option-icon" size={o.answer ? 20 : 24} strokeWidth={o.answer ? 3 : 2} aria-hidden />}
+                  <span className="guide-option-text">{fill(o.label[lang])}</span>
+                  <ChevronRight className="guide-option-go" size={20} aria-hidden />
+                </button>
+              );
+            })}
           </div>
         )}
         {trail.length > 0 && (
           <button className="btn guide-back" type="button" onClick={goBack} data-testid="guide-back">
-            <Undo2 size={18} aria-hidden /> {t('guides.back')}
+            <Undo2 size={20} aria-hidden /> {t('guides.back')}
           </button>
         )}
       </section>
 
-      <div className="row-end wrap">
-        <Link className="btn" to="/first-aid/guides/assess">
-          <RotateCcw size={18} /> {t('guides.restart')}
+      {/* Secundarios y discretos: salir de este recorrido. */}
+      <div className="guide-foot">
+        <Link className="btn btn-link" to="/first-aid/guides/assess">
+          <RotateCcw size={16} aria-hidden /> {t('guides.restart')}
         </Link>
-        <Link className="btn" to="/first-aid/guides">
+        <Link className="btn btn-link" to="/first-aid/guides">
           {t('guides.all')}
         </Link>
       </div>

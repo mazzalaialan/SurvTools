@@ -2786,6 +2786,8 @@ a.module-card:active {
 
 /* ---------- Guía de primeros auxilios ---------- */
 
+/* Pantallas de «uso bajo estrés» (guía de primeros auxilios): una decisión por pantalla, lo vital arriba y grande,
+   botones de ≥56 px con ícono + palabra, texto de ≥1.125 rem. Reglas en docs/DISENO.md. */
 .guide-first {
   border-left: 4px solid var(--danger);
 }
@@ -2794,7 +2796,16 @@ a.module-card:active {
   margin: 0;
   padding-left: 20px;
   display: grid;
-  gap: 6px;
+  gap: var(--sp-2);
+  font-size: var(--fs-md);
+  line-height: 1.4;
+}
+
+.guide-start {
+  min-height: 64px;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  gap: var(--sp-3);
 }
 
 .btn-lg {
@@ -2804,64 +2815,331 @@ a.module-card:active {
   justify-content: center;
 }
 
+/* Selector Ciudad / Zona agreste: dos botones del mismo ancho (uno solo elegido, relleno) y «detectar» aparte. */
+.guide-env {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+.guide-env-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+.guide-env-row .chip {
+  min-height: 52px;
+  padding: 6px 8px;
+  font-size: var(--fs-md);
+}
+
+.guide-env-row .guide-env-detect {
+  grid-column: 1 / -1;
+  min-height: 44px;
+}
+
+/* En los pasos, «detectar» es un cuadrado de 52 px al lado: el selector ocupa una sola línea. */
+.guide-env-row.compact {
+  grid-template-columns: 1fr 1fr 52px;
+}
+
+.guide-env-row.compact .guide-env-detect {
+  grid-column: auto;
+  min-height: 52px;
+  padding: 0;
+}
+
+/* Un paso: contexto chico → título grande → llamar → pasos numerados → pregunta → opciones → volver atrás. */
+.guide .page-head {
+  margin-bottom: 0;
+}
+
+.guide-topic {
+  font-size: var(--fs-md);
+  color: var(--text-muted);
+}
+
+.guide-node {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.guide-eyebrow {
+  margin: 0 0 calc(-1 * var(--sp-2));
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.guide-node-title {
+  margin: 0;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Pasos: números en un cuadro (hacer lo siguiente, en orden); «No hacer» no se numera y va en un recuadro rojo con ícono y rótulo. */
 .guide-steps {
   margin: 0;
-  padding-left: 22px;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
   display: grid;
-  gap: 10px;
+  gap: var(--sp-3);
+  font-size: var(--fs-lg);
+  line-height: 1.4;
+}
+
+.guide-steps li {
+  position: relative;
+  padding-left: 40px;
+  overflow-wrap: anywhere;
+}
+
+.guide-steps li:not(.guide-dont) {
+  counter-increment: paso;
+}
+
+.guide-steps li:not(.guide-dont)::before {
+  content: counter(paso);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-ctl);
   font-size: var(--fs-md);
-  line-height: 1.45;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
-.guide-dont {
-  color: var(--danger);
-  font-weight: 600;
+.guide-steps li.guide-dont {
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-3);
+  border: 2px solid var(--danger);
+  border-left-width: 6px;
+  border-radius: var(--radius-ctl);
+  font-weight: 700;
 }
 
-.guide-dont svg {
-  vertical-align: -3px;
-}
-
-.guide-calls {
+.guide-dont-tag {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
   align-items: center;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
+  gap: var(--sp-2);
+  color: var(--danger);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* A quién llamar: filas de ancho completo, el primero sólido en --danger y el resto de contorno (siempre con ícono de teléfono). */
+.guide-calls {
+  display: grid;
+  gap: var(--sp-3);
 }
 
 .guide-call {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.guide-call-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.guide-call .phone-actions {
+  flex-wrap: nowrap;
+  justify-content: stretch;
+  gap: var(--sp-2);
+}
+
+.guide-call .btn-call {
+  flex: 1;
+  min-height: 60px;
+  font-size: var(--fs-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-call .btn-call svg {
+  width: 24px;
+  height: 24px;
+}
+
+.guide-call:first-child .btn-call {
+  background: var(--danger);
+  color: var(--on-danger);
+}
+
+.guide-call:first-child .btn-call svg {
+  color: var(--on-danger);
+}
+
+.guide-call:first-child .btn-call:not(:disabled):active {
+  background: var(--danger);
+  box-shadow: inset 0 0 0 3px var(--on-danger);
+}
+
+.guide-location {
+  min-height: 52px;
+  justify-content: center;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  border-width: 2px;
 }
 
 .guide-question {
-  margin: 4px 0 0;
-  font-weight: 700;
-  font-size: var(--fs-lg);
+  margin: 0;
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border);
+  font-weight: 800;
+  font-size: var(--fs-xl);
+  line-height: 1.25;
 }
 
+/* Respuestas: botones grandes de ancho completo, borde de 2 px, ícono (✓ / ✕ o el del tema) + palabra + flecha. */
 .guide-options {
   display: grid;
-  gap: 8px;
+  gap: var(--sp-3);
 }
 
 .guide-option {
   justify-content: flex-start;
+  gap: var(--sp-3);
   text-align: left;
-  min-height: 48px;
+  min-height: 60px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 2px solid var(--text);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.25;
   white-space: normal;
 }
 
-.guide-env {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.guide-option-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
+.guide-option-icon {
+  flex: none;
+}
+
+/* Sí / No: TODO el botón lleva el tono (borde de 2 px + banda gruesa a la izquierda + relleno suave del 10 %, para que el texto
+   siga en --text con buen contraste y no se parezca a «Llamar», que es sólido). */
+.guide-option.answer-yes {
+  border-color: var(--ok);
+  border-left-width: 8px;
+  background: color-mix(in srgb, var(--ok) 10%, var(--surface));
+}
+
+.guide-option.answer-no {
+  border-color: var(--danger);
+  border-left-width: 8px;
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+}
+
+.guide-option.answer-yes:not(:disabled):active,
+.guide-option.answer-no:not(:disabled):active {
+  background: var(--border);
+}
+
+/* Sí / No: tilde en cuadro RELLENO verde (--ok) y cruz en cuadro de CONTORNO rojo (--danger): se distinguen por la forma
+   aunque el color no exista (rojo nocturno, daltonismo). Es la excepción a «un tono por función»: verde = sí, rojo = no. */
+.guide-option.answer-yes .guide-option-icon,
+.guide-option.answer-no .guide-option-icon {
+  box-sizing: content-box;
+  padding: 4px;
+  border: 2px solid;
+  border-radius: var(--radius-ctl);
+}
+
+.guide-option.answer-yes .guide-option-icon {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: var(--bg);
+}
+
+.guide-option.answer-no .guide-option-icon {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.guide-option-go {
+  flex: none;
+  color: var(--text-muted);
+}
+
+/* Muchas opciones (p. ej. «¿Qué le pasó?»): más juntas y de texto algo menor, pero siempre ≥56 px. */
+.guide-options.many {
+  gap: var(--sp-2);
+}
+
+.guide-options.many .guide-option {
+  min-height: 56px;
+  font-size: var(--fs-md);
+}
+
+/* «Volver al paso anterior»: junto a las opciones pero con otra forma (relleno gris, borde fino, centrado): no es una respuesta. */
+.guide-back {
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 52px;
+  background: var(--surface-2);
+  font-size: var(--fs-md);
+}
+
+.guide-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.guide-foot .btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* Lo más urgente: 2 columnas de botones de ≥64 px, ícono + nombre del tema. */
+.guide-quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+.guide-quick-btn {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--sp-2);
+  min-height: 72px;
+  padding: var(--sp-3) 10px;
+  border-width: 2px;
+  text-align: left;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.guide-list-icon {
+  flex: none;
+  color: var(--text-muted);
+}
 
 .labeled-phone {
   display: flex;
@@ -5742,25 +6020,6 @@ button.country-pack-del {
 
 .allergy {
   font-size: var(--fs-sm);
-}
-
-/* --- Guías: lectura de lejos y con prisa --- */
-.guide-steps {
-  font-size: var(--fs-lg);
-  gap: var(--sp-3);
-}
-
-.guide-question {
-  font-size: var(--fs-lg);
-}
-
-.guide-option {
-  min-height: 52px;
-  font-size: var(--fs-md);
-}
-
-.guide-calls {
-  border-radius: var(--radius-ctl);
 }
 
 /* Buscador con la lupa dentro del campo. */

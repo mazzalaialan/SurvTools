@@ -2563,6 +2563,8 @@
     "all": "All guides",
     "notFound": "Guide not found.",
     "dont": "Do not",
+    "step": "Step {{n}}",
+    "quick": "Most urgent",
     "myLocation": "My location (for rescuers)",
     "disclaimer": "Guide based on the first aid recommendations of the European Resuscitation Council, the Red Cross and the Argentine Ministry of Health. It does not replace a course: take a CPR and first aid course. When in doubt, call {{medical}}.",
     "env": {

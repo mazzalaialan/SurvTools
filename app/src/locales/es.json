@@ -2562,6 +2562,8 @@
     "all": "Todas las guías",
     "notFound": "No se encontró esa guía.",
     "dont": "No hacer",
+    "step": "Paso {{n}}",
+    "quick": "Lo más urgente",
     "myLocation": "Mi ubicación (para el rescate)",
     "disclaimer": "Guía basada en las recomendaciones de primeros auxilios del Consejo Europeo de Resucitación, la Cruz Roja y el Ministerio de Salud. No reemplaza un curso: hacé uno de RCP y primeros auxilios. Ante la duda, llamá al {{medical}}.",
     "env": {

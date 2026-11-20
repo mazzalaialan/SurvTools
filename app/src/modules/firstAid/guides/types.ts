@@ -21,6 +21,11 @@ export interface Option {
   label: L;
   /** Otro paso del mismo tema, `topic:<id>` para pasar a otra guía o `topic:<id>#<paso>` a un paso de otra. */
   next: string;
+  /**
+   * Metadato de interfaz (no cambia el texto médico): marca solo las respuestas que son un sí o un no claro, para mostrar tilde verde o cruz roja
+   * junto al texto. Las categorías («Brazo o pierna») y los resultados («No respira») van sin marcar.
+   */
+  answer?: 'yes' | 'no';
 }
 
 export interface GuideNode {

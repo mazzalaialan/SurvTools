@@ -41,8 +41,8 @@ export const TOPICS: Topic[] = [
         ],
         question: l('¿Podés acercarte sin ponerte en peligro?', 'Can you get close without putting yourself in danger?'),
         options: [
-          { label: l('Sí, es seguro', 'Yes, it is safe'), next: 'responds' },
-          { label: l('No', 'No'), next: 'unsafe' },
+          { answer: 'yes', label: l('Sí, es seguro', 'Yes, it is safe'), next: 'responds' },
+          { answer: 'no', label: l('No', 'No'), next: 'unsafe' },
         ],
       },
       unsafe: {
@@ -61,8 +61,8 @@ export const TOPICS: Topic[] = [
         steps: [s('Tocale los hombros y hablale fuerte: "¿Me escuchás? ¿Estás bien?"', 'Tap their shoulders and speak loudly: "Can you hear me? Are you OK?"')],
         question: l('¿Responde, se mueve o abre los ojos?', 'Do they answer, move or open their eyes?'),
         options: [
-          { label: l('Sí', 'Yes'), next: 'bleeding' },
-          { label: l('No responde', 'No response'), next: 'breathing' },
+          { answer: 'yes', label: l('Sí', 'Yes'), next: 'bleeding' },
+          { answer: 'no', label: l('No responde', 'No response'), next: 'breathing' },
         ],
       },
       breathing: {
@@ -76,8 +76,8 @@ export const TOPICS: Topic[] = [
         calls: ['same', 'emergency'],
         question: l('¿Respira normalmente?', 'Are they breathing normally?'),
         options: [
-          { label: l('No, o solo bocanadas', 'No, or only gasps'), next: 'topic:cpr' },
-          { label: l('Sí, respira', 'Yes, breathing'), next: 'topic:unconscious' },
+          { answer: 'no', label: l('No, o solo bocanadas', 'No, or only gasps'), next: 'topic:cpr' },
+          { answer: 'yes', label: l('Sí, respira', 'Yes, breathing'), next: 'topic:unconscious' },
         ],
       },
       bleeding: {
@@ -85,8 +85,8 @@ export const TOPICS: Topic[] = [
         steps: [s('Buscá sangre en todo el cuerpo, también debajo de la ropa y de la persona.', 'Look for blood all over the body, also under clothing and underneath the person.')],
         question: l('¿Sale en chorro, empapa la ropa o forma un charco?', 'Is it spurting, soaking the clothes or pooling?'),
         options: [
-          { label: l('Sí, sangra mucho', 'Yes, heavy bleeding'), next: 'topic:bleeding' },
-          { label: l('No', 'No'), next: 'what' },
+          { answer: 'yes', label: l('Sí, sangra mucho', 'Yes, heavy bleeding'), next: 'topic:bleeding' },
+          { answer: 'no', label: l('No', 'No'), next: 'what' },
         ],
       },
       what: {
@@ -151,8 +151,8 @@ export const TOPICS: Topic[] = [
         calls: ['same', 'emergency'],
         question: l('¿Tienen un desfibrilador (DEA)?', 'Do you have a defibrillator (AED)?'),
         options: [
-          { label: l('Sí', 'Yes'), next: 'aed' },
-          { label: l('No', 'No'), next: 'continue' },
+          { answer: 'yes', label: l('Sí', 'Yes'), next: 'aed' },
+          { answer: 'no', label: l('No', 'No'), next: 'continue' },
         ],
       },
       aed: {
@@ -231,8 +231,8 @@ export const TOPICS: Topic[] = [
         steps: [s('Seguí apretando fuerte.', 'Keep pressing hard.')],
         question: l('¿Paró o bajó mucho con la presión?', 'Did it stop or slow down a lot with pressure?'),
         options: [
-          { label: l('Sí, paró', 'Yes, it stopped'), next: 'stopped' },
-          { label: l('No, sigue saliendo en chorro o empapando', 'No, still spurting or soaking'), next: 'tourniquet' },
+          { answer: 'yes', label: l('Sí, paró', 'Yes, it stopped'), next: 'stopped' },
+          { answer: 'no', label: l('No, sigue saliendo en chorro o empapando', 'No, still spurting or soaking'), next: 'tourniquet' },
         ],
       },
       tourniquet: {
@@ -411,8 +411,8 @@ export const TOPICS: Topic[] = [
         ],
         question: l('¿Hay alguna de estas señales graves?', 'Is there any of these severe signs?'),
         options: [
-          { label: l('Sí: confusión, tambalea al caminar, falta de aire en reposo o tos con espuma', 'Yes: confusion, stumbling, breathless at rest or frothy cough'), next: 'severe' },
-          { label: l('No, solo síntomas leves', 'No, only mild symptoms'), next: 'start' },
+          { answer: 'yes', label: l('Sí: confusión, tambalea al caminar, falta de aire en reposo o tos con espuma', 'Yes: confusion, stumbling, breathless at rest or frothy cough'), next: 'severe' },
+          { answer: 'no', label: l('No, solo síntomas leves', 'No, only mild symptoms'), next: 'start' },
         ],
       },
       severe: {
@@ -441,8 +441,8 @@ export const TOPICS: Topic[] = [
         steps: [s('Preguntale: "¿Te estás ahogando?"', 'Ask: "Are you choking?"')],
         question: l('¿Tose con fuerza o puede hablar?', 'Are they coughing hard or able to speak?'),
         options: [
-          { label: l('Sí, tose', 'Yes, coughing'), next: 'cough' },
-          { label: l('No puede toser, hablar ni respirar (adulto o niño)', 'Cannot cough, speak or breathe (adult or child)'), next: 'adult' },
+          { answer: 'yes', label: l('Sí, tose', 'Yes, coughing'), next: 'cough' },
+          { answer: 'no', label: l('No puede toser, hablar ni respirar (adulto o niño)', 'Cannot cough, speak or breathe (adult or child)'), next: 'adult' },
           { label: l('Es un bebé (menos de 1 año)', 'It is a baby (under 1 year)'), next: 'baby' },
         ],
       },
