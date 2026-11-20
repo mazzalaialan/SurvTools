@@ -2884,6 +2884,9 @@
   }
  },
  "account": {
+  "summaryActive": "Este dispositivo está registrado no servidor",
+  "pendingShort": "Exclusão pendente: conclui quando voltar a conexão",
+  "doneShort": "Conta excluída do servidor",
   "confirmWord": "APAGAR",
   "typeWord": "Digite {{word}} para confirmar",
   "wrongWord": "Digite {{word}} para confirmar.",

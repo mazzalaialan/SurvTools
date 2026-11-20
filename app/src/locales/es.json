@@ -1919,6 +1919,9 @@
     "cardinalLong": { "N": "Norte", "NE": "Noreste", "E": "Este", "SE": "Sudeste", "S": "Sur", "SW": "Sudoeste", "W": "Oeste", "NW": "Noroeste" }
   },
   "account": {
+    "summaryActive": "Este dispositivo está registrado en el servidor",
+    "pendingShort": "Borrado pendiente: se completa al volver la conexión",
+    "doneShort": "Cuenta borrada del servidor",
     "confirmWord": "BORRAR",
     "typeWord": "Escribí {{word}} para confirmar",
     "wrongWord": "Escribí {{word}} para confirmar.",

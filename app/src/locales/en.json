@@ -1919,6 +1919,9 @@
     "cardinalLong": { "N": "North", "NE": "Northeast", "E": "East", "SE": "Southeast", "S": "South", "SW": "Southwest", "W": "West", "NW": "Northwest" }
   },
   "account": {
+    "summaryActive": "This device is registered on the server",
+    "pendingShort": "Deletion pending: it completes when you are back online",
+    "doneShort": "Account deleted from the server",
     "confirmWord": "DELETE",
     "typeWord": "Type {{word}} to confirm",
     "wrongWord": "Type {{word}} to confirm.",

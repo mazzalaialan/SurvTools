@@ -68,7 +68,19 @@ export function SettingsPage() {
           onChange={(theme) => void update({ theme })}
         />
         {settings.theme === 'saver' && <p className="hint" data-testid="saver-hint">{t('settings.saverHint')}</p>}
-        <RedScheduleFields settings={settings} onSave={update} />
+        {/* Se toca una sola vez: va en un desplegable cerrado, con el modo elegido a la vista en el encabezado. */}
+        <Collapsible
+          id="redschedule"
+          inline
+          title={t('settings.redSchedule')}
+          summary={
+            settings.redSchedule === 'custom'
+              ? `${t('settings.redScheduleOptions.custom')} ${settings.redFrom}–${settings.redTo}`
+              : t(`settings.redScheduleOptions.${settings.redSchedule}`)
+          }
+        >
+          <RedScheduleFields settings={settings} onSave={update} />
+        </Collapsible>
         {settings.theme === 'red' && isNativePlatform() && (
           <label className="check" data-testid="show-status-bar">
             <input type="checkbox" checked={settings.showStatusBar} onChange={(e) => void update({ showStatusBar: e.target.checked })} />
@@ -185,10 +197,11 @@ export function SettingsPage() {
       <section className="card">
         <h2 className="section-title" style={{ marginTop: 0 }}>{t('settings.about')}</h2>
         <p style={{ margin: 0 }}>{t('app.name')}</p>
+        {/* La frase va pegada al nombre de la app (no entre los botones). */}
+        <p className="hint" style={{ margin: 0, fontStyle: 'italic' }}>{t('app.motto')}</p>
         <p className="hint" onClick={connections.tap} data-testid="app-version">{t('settings.version', { version: __APP_VERSION__ })}</p>
         <PortableUpdateCheck />
         <ForceWebUpdate />
-        <p className="hint" style={{ fontStyle: 'italic' }}>{t('app.motto')}</p>
         <Link className="btn" to="/about">
           <Info size={18} /> {t('about.link')}
         </Link>

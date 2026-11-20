@@ -163,7 +163,7 @@ test('configuración inicial, ubicaciones, artículo con lote y alerta', async (
 
   // Tema rojo nocturno
   await page.getByRole('link', { name: 'Ajustes' }).click();
-  await page.getByRole('button', { name: 'Rojo nocturno' }).click();
+  await page.getByRole('button', { name: 'Rojo nocturno', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'red');
   await page.goto('/#/inventory/items');
   await shot(page, '07-items-red');

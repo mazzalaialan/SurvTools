@@ -8,6 +8,7 @@ import { useSettings } from '@/core/settings/settings';
 import { useVault } from '@/core/security/useVault';
 import { verifyPassword } from '@/core/security/vault';
 import { Dialog } from '@/ui/Dialog';
+import { Collapsible } from '@/ui/Collapsible';
 
 /**
  * Eliminar mi cuenta: VikArg no tiene usuario y contraseña en el servidor; la
@@ -61,8 +62,13 @@ export function AccountSection() {
   }
 
   return (
-    <section className="card stack" data-testid="account">
-      <h2 className="section-title" style={{ marginTop: 0 }}>{t('account.title')}</h2>
+    // Texto largo y una acción destructiva de uso raro: va en un desplegable cerrado, con el estado a la vista en el encabezado.
+    <Collapsible
+      id="account"
+      testId="account"
+      title={t('account.title')}
+      summary={done ? t('account.doneShort') : push === undefined ? undefined : push ? t('account.summaryActive') : pending > 0 ? t('account.pendingShort') : t('account.none')}
+    >
       <p className="hint" style={{ margin: 0 }}>{t('account.intro')}</p>
       <ul className="account-list hint">
         {(['subscription', 'prefs', 'alerts', 'places', 'notices'] as const).map((k) => (
@@ -151,6 +157,6 @@ export function AccountSection() {
           </form>
         </Dialog>
       )}
-    </section>
+    </Collapsible>
   );
 }

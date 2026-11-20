@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { SLOW, waitForServiceWorker } from './serviceWorker';
+import { openSection } from './settingsSections';
 
 const PASSWORD = 'prueba-segura-123';
 const SERVER = 'http://127.0.0.1:8099';
@@ -15,6 +16,7 @@ test('eliminar mi cuenta: pide la contraseña y borra el dispositivo del servido
 
   // Sin cuenta todavía: no hay nada para borrar.
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'account');
   await expect(page.getByTestId('account-none')).toBeVisible();
 
   // El push real no anda en el navegador de pruebas: se registra el dispositivo en el
@@ -49,6 +51,7 @@ test('eliminar mi cuenta: pide la contraseña y borra el dispositivo del servido
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'account');
   await waitForServiceWorker(page);
 
   const account = page.getByTestId('account');
@@ -109,6 +112,7 @@ test('desactivar las notificaciones sin conexión deja el borrado de la cuenta p
   await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Desbloquear' }).click();
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'account');
   await waitForServiceWorker(page);
   await expect(page.getByTestId('disable-deletes')).toContainText('se elimina tu cuenta del servidor');
 
@@ -137,6 +141,7 @@ test('Ajustes: «Conexiones» no se muestra; se abre con 7 toques en la versión
   await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 
   await page.goto('/#/settings');
+  await openSection(page, 'account');
   await expect(page.getByTestId('app-version')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Conexiones' })).toHaveCount(0);
   const version = page.getByTestId('app-version');
@@ -149,5 +154,6 @@ test('Ajustes: «Conexiones» no se muestra; se abre con 7 toques en la versión
   // El enlace interno también la abre (y los valores por defecto siguen funcionando sin abrirla).
   await page.evaluate(() => sessionStorage.clear());
   await page.goto('/#/settings?conexiones=1');
+  await openSection(page, 'account');
   await expect(page.getByRole('heading', { name: 'Conexiones' })).toBeVisible();
 });

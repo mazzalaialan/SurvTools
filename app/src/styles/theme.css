@@ -192,3 +192,8 @@
 :root[data-theme='red'] img {
   filter: grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(0.6);
 }
+
+/* Barra de desplazamiento neutra (nada de cobre): el pulgar en el color del borde de los controles, sin pista. */
+html {
+  scrollbar-color: var(--control-border) transparent;
+}

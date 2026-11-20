@@ -4263,6 +4263,8 @@ a.module-card:active {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  /* Separación de lo que viene abajo (primeros pasos, alertas): antes quedaban pegados a los botones. */
+  margin-bottom: 16px;
 }
 
 @media (min-width: 640px) {
@@ -6383,4 +6385,17 @@ button.country-pack-del {
 }
 [data-area='settings'] .card.collapsible {
   padding: 0;
+}
+
+/* Desplegable dentro de una tarjeta (variante `inline`): bloque con borde fino, sin tarjeta propia. */
+.collapsible-inline {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+.collapsible-inline > .collapsible-head .collapsible-toggle {
+  padding: var(--sp-2) var(--sp-3);
+}
+.collapsible-inline > .collapsible-body {
+  padding: var(--sp-3);
 }

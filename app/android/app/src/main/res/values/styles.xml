@@ -10,6 +10,8 @@
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- El brillo del borde al desplazar (y los controles del sistema) en gris neutro: no heredan el color de acento. -->
+        <item name="android:colorEdgeEffect">#8A94A0</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>

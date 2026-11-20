@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openSection } from './settingsSections';
 
 const PASSWORD = 'prueba-segura-123';
 
@@ -85,6 +86,7 @@ test('rojo nocturno automático: horario fijo y al anochecer', async ({ page }) 
   await setup(page);
   await page.goto('/#/settings');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await openSection(page, 'redschedule');
 
   await page.getByRole('button', { name: 'Horario' }).click();
   await page.getByLabel('Desde').fill('20:00');
