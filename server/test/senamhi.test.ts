@@ -90,4 +90,14 @@ describe('volcanes de Perú (CENVUL)', () => {
     assert.equal(list[0]!.lat, -15.787);
     assert.throws(() => parseCenvul('<html></html>'), /no trae los datos/);
   });
+
+  // Muestra REAL bajada el 2026-11-20: el servicio "status-volcanos" de la fuente responde 401 y solo queda el último boletín.
+  it('si el estado de los volcanes da 401, usa el último boletín (si es reciente)', async () => {
+    const { parseCenvul } = await import('../src/volcanoes/cenvul.ts');
+    const html = fixture('cenvul-sin-estado-2026-11-20.html');
+    const list = parseCenvul(html, Date.parse('2026-11-20T15:00:00Z'));
+    assert.deepEqual(list.map((v) => [v.name, v.level, v.source]), [['VOLCÁN SABANCAYA', 'orange', 'CENVUL']]);
+    // Boletín viejo: ya no sirve y se informa la falla.
+    assert.throws(() => parseCenvul(html, Date.parse('2027-01-20T00:00:00Z')), /lista de volcanes vacía/);
+  });
 });

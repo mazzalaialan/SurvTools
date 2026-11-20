@@ -9,7 +9,7 @@
 **Pendiente de probar en el teléfono (no se pudo desde la computadora):** que la línea «GPS / ubicación en segundo plano» coincida con el permiso que Android muestra para la app (con ubicación permitida, también «solo mientras se usa» = tilde; sin permiso = cruz); que el botón de actualización de la web ande con una versión nueva publicada.
 
 **Abierto, en orden de importancia:**
-1. **CENVUL (volcanes de Perú) caída** desde antes de la 0.99.0 (`/api/health` → `sourcesDown`, «lista de volcanes vacía»). No se investigó; ofrecido al usuario, sin respuesta.
+1. **CENVUL (volcanes de Perú):** causa hallada 2026-11-20: su servicio `status-volcanos` da 401 (cambio de la fuente). Parser con respaldo en el último boletín (solo un volcán), hecho en el servidor y sin publicar; hace falta publicar para que se note. Para cubrir todos los volcanes: pedir acceso formal a CENVUL/IGP (ver `FUENTES-DE-DATOS.md`).
 2. **pt-BR necesita revisión humana** antes de confiar en él (sobre todo los textos de seguridad); ver `docs/TRADUCCION-PT-BR.md`.
 3. **Brasil:** sin datos de radio; avisos push de ríos no extendidos a Brasil; **ANA/CNES contra OSM: comparado el 2026-11-20** (ANA: OSM no tiene nada, se mantiene; CNES: faltan en OSM cerca de la mitad de los establecimientos relevantes, cargar solo hospitales/UPA/policlínicas/postos SUS; detalle en `docs/NUEVOS-PAISES.md`, códigos `TP_UNIDADE` confirmados salvo 15, 62 y 72; pin doble decidido: se muestra el CNES y se oculta el de OSM a ~150 m); pedidos formales a organismos sin enviar (`docs/NUEVOS-PAISES.md`).
 4. «Mi ubicación» usa el GPS en vivo como excepción a la regla «el país seleccionado manda»: el usuario no lo confirmó.
