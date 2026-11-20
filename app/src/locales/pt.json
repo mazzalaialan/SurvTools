@@ -1295,6 +1295,8 @@
   "nacionalNotePE": "Rádio pública: Radio Nacional del Perú (IRTP), FM 103.9 e AM 850 em Lima e 70 estações FM em todo o país. AM chega mais longe à noite; FM, só perto. As frequências vêm da lista oficial do IRTP (de 2021): se na sua cidade for outra, avise-nos.",
   "nacionalTitlePY": "Radio Nacional del Paraguay mais próxima",
   "nacionalNotePY": "Rádio pública: Radio Nacional del Paraguay (Mitic), AM 920 em Assunção, FM 105.9 em San Pedro e AM 700 em Pilar, segundo seu site oficial (radionacional.gov.py, consultado em 16/11/2026): não há uma lista completa, confirme a frequência na sua região. AM chega mais longe à noite; FM, só perto.",
+  "nacionalTitleBR": "Rádio Nacional (EBC) mais próxima",
+  "nacionalNoteBR": "Rádio pública: Rádio Nacional (EBC), AM 980 e FM 96,1 em Brasília, FM 87,1 no Rio de Janeiro e em São Paulo, FM 93,7 em São Luís e FM 96,1 em Tabatinga (Alto Solimões). A Rádio Nacional da Amazônia transmite em ondas curtas (11.780 e 6.180 kHz) para a Amazônia Legal. Segundo o site oficial da EBC (consultado em 20/11/2026); a de Recife não publica frequência ali: confirme a da sua região. AM chega mais longe à noite; FM, só perto.",
   "nacionalTitleCL": "Rádio com cobertura nacional mais próxima",
   "nacionalNoteCL": "O Chile não tem rádio pública nacional: é mostrada a rede da Radio Bío-Bío (privada, com emissoras em todas as regiões), que informa as emergências. Os alertas oficiais da SENAPRED chegam também ao celular pelo Sistema de Alerta de Emergencia (SAE). Frequências via Wikipédia; confirme-as com o seu rádio.",
   "packageMissing": "As emissoras de {{country}} vêm nos dados offline do país: são baixadas sozinhas na primeira vez que houver conexão.",
@@ -1357,6 +1359,19 @@
     "desc": "Sete canais a cada 25 kHz: 467,5625; 467,5875; 467,6125; 467,6375; 467,6625; 467,6875 e 467,7125 MHz."
    },
    "note": "Sem confirmar: vem do regulamento do MTC (versão de 2012) e de sua canalização oficial, e não conseguimos ver o plano de frequências vigente. Não servem para serviços públicos. Os rádios europeus PMR446 (446 MHz) não constam como de uso livre no Peru e não os incluímos. A banda cidadã de 27 MHz existe (até 5 W, sem proteção contra interferências), mas não encontramos o trâmite nem os canais. Se algo não coincidir, avise-nos em Configurações."
+  },
+  "br": {
+   "title": "Radioamadores e faixa do cidadão (Brasil)",
+   "intro": "No Brasil a LABRE (radioamadores) e a Defesa Civil mantêm a RENER, a rede nacional de emergência. As de radioamador são para quem tem licença; a faixa do cidadão (PX, 27 MHz) é de uso livre, com um cadastro simples na Anatel.",
+   "labre": { "name": "VHF 2 m: frequência nacional de emergência", "desc": "FM simplex. A LABRE a indica como a principal de emergência em VHF (comunicado de 23/07/2026)." },
+   "dmr": { "name": "DMR: grupo de conversação (LABRE)", "desc": "TG local/nacional, nas redes DMR que o tenham." },
+   "hf": { "name": "RENER: faixas de HF para chamada", "desc": "Referência para as chamadas iniciais e a ativação da rede (Portaria 307/2009, item 8); a frequência exata é definida por quem coordena cada ativação." },
+   "vhf": { "name": "RENER: faixas de VHF para chamada", "desc": "FM simplex e repetidoras (Portaria 307/2009, item 8)." },
+   "px9": { "name": "PX canal 9: emergências", "desc": "Canal restrito a mensagens de emergência em todo o território nacional. AM ou FM." },
+   "px11": { "name": "PX canal 11: chamada e escuta", "desc": "Restrito a chamada e escuta em todo o território nacional." },
+   "px19": { "name": "PX canal 19: rodovias", "desc": "Restrito ao uso em rodovias." },
+   "note": "Exceto o PX, são frequências de radioamador: transmite quem tem licença (COER); com a vida em perigo, pode-se pedir socorro por qualquer meio. Os canais do PX vêm da Res. 444/2006 da Anatel; a página atual diz que a canalização é regida por uma resolução de 2025: confirme-os.",
+   "sources": "Fontes: LABRE (labre.org.br, 23/07/2026); Portaria 307/2009 do Ministério da Integração (RENER); Anatel, Res. 444/2006 e página «Rádio do Cidadão» (modificada em 03/03/2026). Consultadas em 20/11/2026."
   },
   "rener": {
    "title": "Rede de emergência de radioamadores (RENER, Peru)",

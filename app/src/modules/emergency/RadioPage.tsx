@@ -207,6 +207,8 @@ export function RadioPage() {
 
       <RenerSection place={place} />
 
+      <BrazilRadioSection place={place} />
+
       <RepeatersSection place={place} country={country} />
 
       <HamSection country={country} />
@@ -295,6 +297,58 @@ const PE_FREE: { id: string; freq: string }[] = [
   { id: 'fam1', freq: '462,5625 – 462,7125 MHz' },
   { id: 'fam2', freq: '467,5625 – 467,7125 MHz' },
 ];
+
+/**
+ * Radio de Brasil, con fuente oficial: la frecuencia nacional de emergencia de la LABRE (146,520 MHz FM y el grupo DMR 724193, comunicado
+ * del 23/07/2026), las bandas de llamada de la RENER (Portaria MI 307/2009, ítem 8) y los canales de la banda ciudadana (PX, 27 MHz) que
+ * la Anatel reserva a emergencias, llamada y rutas (Res. 444/2006; la Anatel dice hoy que la canalización pasó a una norma de 2025: sin
+ * confirmar). Repetidoras: no hay listado oficial ni abierto (ver docs/FUENTES-DE-DATOS.md), por eso no hay.
+ */
+const BR_FREQS: { id: string; freq: string }[] = [
+  { id: 'labre', freq: '146,520 MHz' },
+  { id: 'dmr', freq: 'TG 724193' },
+  { id: 'hf', freq: '3.500–3.550 / 3.600–3.700 · 7.000–7.100 · 14.000–14.350 kHz' },
+  { id: 'vhf', freq: '146,390–146,600 MHz (FM simplex) · 146,600–146,990 y 147,000–147,330 MHz (repetidoras)' },
+  { id: 'px9', freq: '27,065 MHz' },
+  { id: 'px11', freq: '27,085 MHz' },
+  { id: 'px19', freq: '27,185 MHz' },
+];
+
+function BrazilRadioSection({ place }: { place: { lat: number; lon: number } | null }) {
+  const { t } = useTranslation();
+  const country = useCountry();
+  const [borders, setBorders] = useState<BordersData | null>(null);
+  useEffect(() => {
+    void loadBorders().then(setBorders);
+  }, []);
+  const show = useMemo(() => {
+    if (place && borders) return distanceToCountry(borders, 'BR', place.lat, place.lon) <= FAR_M;
+    return country === 'BR';
+  }, [borders, place?.lat, place?.lon, country]);
+  if (!show) return null;
+  return (
+    <section className="card stack" aria-labelledby="br-radio-title" data-testid="br-frequencies">
+      <h2 id="br-radio-title" className="section-title" style={{ margin: 0 }}>{t('radio.br.title')}</h2>
+      <p className="hint" style={{ margin: 0 }}>{t('radio.br.intro')}</p>
+      <ul className="list">
+        {BR_FREQS.map((r) => (
+          <li key={r.id} className="contact-row">
+            <span className="list-main">
+              <span className="list-title">{t(`radio.br.${r.id}.name`)}</span>
+              <span className="list-sub">{t(`radio.br.${r.id}.desc`)}</span>
+            </span>
+            <span className="contact-actions">
+              <strong className="radio-freqs">{r.freq}</strong>
+              <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.br.${r.id}.name`) })} />
+            </span>
+          </li>
+        ))}
+      </ul>
+      <Notice id="radio.brNote">{t('radio.br.note')}</Notice>
+      <p className="hint" style={{ margin: 0 }}>{t('radio.br.sources')}</p>
+    </section>
+  );
+}
 
 /** Aviso de radioaficionados: se puede dar por leído y la tarjeta deja de ocupar lugar. */
 function HamSection({ country }: { country: string }) {

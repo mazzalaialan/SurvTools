@@ -732,6 +732,8 @@
     "nacionalNotePE": "Radio pública: Radio Nacional del Perú (IRTP), FM 103.9 y AM 850 en Lima y 70 estaciones FM en todo el país. AM llega más lejos de noche; FM, solo cerca. Las frecuencias vienen de la lista oficial del IRTP (de 2021): si en tu ciudad es otra, avisanos.",
     "nacionalTitlePY": "Radio Nacional del Paraguay más cercana",
     "nacionalNotePY": "Radio pública: Radio Nacional del Paraguay (Mitic), AM 920 en Asunción, FM 105.9 en San Pedro y AM 700 en Pilar, según su sitio oficial (radionacional.gov.py, consultado el 16/11/2026): no hay un listado completo, confirmá la frecuencia en tu zona. AM llega más lejos de noche; FM, solo cerca.",
+    "nacionalTitleBR": "Rádio Nacional (EBC) más cercana",
+    "nacionalNoteBR": "Radio pública: Rádio Nacional (EBC), AM 980 y FM 96,1 en Brasilia, FM 87,1 en Río de Janeiro y en São Paulo, FM 93,7 en São Luís y FM 96,1 en Tabatinga (Alto Solimões). La Rádio Nacional da Amazônia emite en onda corta (11.780 y 6.180 kHz) para la Amazonia Legal. Según el sitio oficial de la EBC (consultado el 20/11/2026); la de Recife no publica frecuencia ahí: confirmá la de tu zona. AM llega más lejos de noche; FM, solo cerca.",
     "nacionalTitleCL": "Radio con cobertura nacional más cercana",
     "nacionalNoteCL": "Chile no tiene radio pública nacional: se muestra la red de Radio Bío-Bío (privada, con emisoras en todas las regiones), que informa las emergencias. Las alertas oficiales de SENAPRED llegan además al celular por el Sistema de Alerta de Emergencia (SAE). Frecuencias vía Wikipedia; confirmalas con tu radio.",
     "packageMissing": "Las emisoras de {{country}} vienen en los datos sin conexión del país: se bajan solos la primera vez que haya conexión.",
@@ -748,6 +750,19 @@
     "emergencyOnly": "Solo si tu vida depende de eso. No es de uso libre: fuera de una emergencia real no se transmite ahí.",
     "vhf": "VHF",
     "peFree": {"title": "Radios de uso libre (Perú)", "intro": "Walkie-talkies de uso familiar: no piden licencia si tienen 500 mW de potencia o menos. Sirven para comunicarse en el grupo, no para llamar a las instituciones.", "fam1": {"name": "Canales 1 a 7", "desc": "Siete canales cada 25 kHz: 462,5625; 462,5875; 462,6125; 462,6375; 462,6625; 462,6875 y 462,7125 MHz."}, "fam2": {"name": "Canales 8 a 14", "desc": "Siete canales cada 25 kHz: 467,5625; 467,5875; 467,6125; 467,6375; 467,6625; 467,6875 y 467,7125 MHz."}, "note": "Sin confirmar: sale del reglamento del MTC (versión de 2012) y su canalización oficial, y no pudimos ver el plan de frecuencias vigente. No sirven para servicios públicos. Los equipos europeos PMR446 (446 MHz) no figuran como de uso libre en Perú y no los incluimos. La banda ciudadana de 27 MHz existe (hasta 5 W, sin protección contra interferencias), pero no encontramos el trámite ni los canales. Si algo no coincide, avisanos desde Ajustes."},
+    "br": {
+      "title": "Radioaficionados y banda ciudadana (Brasil)",
+      "intro": "En Brasil la LABRE (radioaficionados) y la Defensa Civil sostienen la RENER, la red nacional de emergencia. Las de radioaficionados son para quien tiene licencia; la banda ciudadana (PX, 27 MHz) es de uso libre con un registro simple en la Anatel.",
+      "labre": { "name": "VHF 2 m: frecuencia nacional de emergencia", "desc": "FM simplex. La LABRE la señala como la principal de emergencia en VHF (comunicado del 23/07/2026)." },
+      "dmr": { "name": "DMR: grupo de conversación (LABRE)", "desc": "TG local/nacional, en las redes DMR que lo tengan." },
+      "hf": { "name": "RENER: bandas HF de llamada", "desc": "Referencia para las llamadas iniciales y la activación de la red (Portaria 307/2009, ítem 8); la frecuencia exacta la fija quien coordina cada activación." },
+      "vhf": { "name": "RENER: bandas VHF de llamada", "desc": "Simplex FM y repetidoras (Portaria 307/2009, ítem 8)." },
+      "px9": { "name": "PX canal 9: emergencias", "desc": "Canal restringido a mensajes de emergencia en todo el país. AM o FM." },
+      "px11": { "name": "PX canal 11: llamada y escucha", "desc": "Restringido a llamada y escucha en todo el país." },
+      "px19": { "name": "PX canal 19: rutas", "desc": "Restringido al uso en rutas y carreteras." },
+      "note": "Salvo el PX, son frecuencias de radioaficionados: transmite quien tiene licencia (COER); con la vida en peligro se puede pedir auxilio por cualquier medio. Los canales del PX salen de la Res. 444/2006 de la Anatel; su página actual dice que la canalización se rige por una resolución de 2025: confirmalos.",
+      "sources": "Fuentes: LABRE (labre.org.br, 23/07/2026); Portaria 307/2009 del Ministerio de la Integración (RENER); Anatel, Res. 444/2006 y página «Rádio do Cidadão» (modificada el 03/03/2026). Consultadas el 20/11/2026."
+    },
     "rener": {
       "title": "Red de emergencia de radioaficionados (RENER, Perú)",
       "intro": "La RENER, del Radio Club Peruano con INDECI, se activa en emergencias y desastres. Son frecuencias de radioaficionados: transmite quien tiene licencia.",

@@ -573,10 +573,22 @@ const RADIO_PY = [
 ];
 
 /**
- * Radio de Brasil: sin fuente pública verificada (la EBC/Radio Nacional no publica un listado de frecuencias con licencia clara y la
- * ANATEL no ofrece uno abierto que se pueda usar así). Se deja vacía a propósito: no se inventan emisoras. `build` y la app aceptan la lista vacía.
+ * Rádio Nacional de Brasil (EBC, empresa pública), de la página oficial https://www.ebc.com.br/sobre/radio-nacional (consultada el
+ * 2026-11-20): solo las emisoras con frecuencia publicada ahí. Rio de Janeiro y São Paulo: FM 87,1 (la página no da AM); Brasília: AM 980 y
+ * FM 96,1; São Luís: FM 93,7; Alto Solimões: FM 96,1 (Tabatinga). Recife figura entre las emisoras propias pero sin frecuencia: queda afuera.
+ * La Rádio Nacional da Amazônia (onda corta, 11.780 y 6.180 kHz) no tiene un lugar fijo: va en el texto de la app. Cada emisora va en el
+ * sector donde está. Las coordenadas son las del centro de la ciudad. No se agregan emisoras comerciales ni de otras redes sin fuente oficial.
  */
-const RADIO_BR = [];
+const RADIO_BR = {
+  sudeste: [
+    ['Rádio Nacional do Rio de Janeiro', 'Rio de Janeiro', null, 87.1, { province: 'Rio de Janeiro', lat: -22.9068, lon: -43.1729 }],
+    ['Rádio Nacional de São Paulo', 'São Paulo', null, 87.1, { province: 'São Paulo', lat: -23.5505, lon: -46.6333 }],
+  ],
+  'centro-oeste': [['Rádio Nacional de Brasília', 'Brasília', 980, 96.1, { province: 'Distrito Federal', lat: -15.7939, lon: -47.8828 }]],
+  nordeste: [['Rádio Nacional de São Luís', 'São Luís', null, 93.7, { province: 'Maranhão', lat: -2.5307, lon: -44.3068 }]],
+  norte: [['Rádio Nacional do Alto Solimões', 'Tabatinga', null, 96.1, { province: 'Amazonas', lat: -4.253, lon: -69.938 }]],
+  sul: [],
+};
 
 const only = process.argv[2];
 const BR_SECTORS = ['sul', 'sudeste', 'centro-oeste', 'nordeste', 'norte'];
@@ -586,12 +598,12 @@ if (!only || only === 'BO') await build('BO', RADIO_BO, { fire: 'Bomberos', poli
 if (!only || only === 'PE') await build('PE', RADIO_PE, { fire: 'Bomberos', police: 'Comisaría', health: 'Centro de salud', radioSource: 'Radio Nacional del Perú (IRTP, datos abiertos de datosabiertos.gob.pe, ODC-By, planilla de 2021)' });
 if (!only || only === 'PY') await build('PY', RADIO_PY, { fire: 'Bomberos', police: 'Policía', health: 'Centro de salud', radioSource: 'Radio Nacional del Paraguay (radionacional.gov.py, sitio oficial, 2026-11-16)' });
 // Brasil: `BR` arma los sectores que tengan archivo local; `BR-<sector>` uno solo.
-const BR_LABELS = { fire: 'Bombeiros', police: 'Polícia', health: 'Unidade de saúde', radioSource: 'Sin fuente pública verificada: no se incluyen emisoras' };
+const BR_LABELS = { fire: 'Bombeiros', police: 'Polícia', health: 'Unidade de saúde', radioSource: 'Rádio Nacional (EBC, ebc.com.br/sobre/radio-nacional, sitio oficial, consultado el 2026-11-20)' };
 for (const sector of BR_SECTORS) {
   const cc = `BR-${sector}`;
   if (only === cc || only === 'BR' || (!only && hasLocal(cc))) {
     if (!hasLocal(cc)) throw new Error(`${cc}: falta places-${cc}.jsonl (OSM_LOCAL_DIR; ver tools/osm-index/brazil.sh)`);
-    await build(cc, RADIO_BR, BR_LABELS);
+    await build(cc, RADIO_BR[sector] ?? [], BR_LABELS);
   }
 }
 if (!only && !BR_SECTORS.some((s) => hasLocal(`BR-${s}`))) console.warn('BR: sin places-BR-<sector>.jsonl, se salta');

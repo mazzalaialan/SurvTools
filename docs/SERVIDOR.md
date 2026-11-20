@@ -203,6 +203,7 @@ docker compose logs -f vikarg
 ## Ríos: avisos y niveles de Bolivia
 
 - **Avisos de ríos de Argentina (`server/src/rivers/watch.ts`):** cada 30 minutos el servidor lee, del INA (Alerta Hidrológico), el nivel de las estaciones que tienen un lugar guardado (waypoint, reserva o cantero) a menos de 5 km, y manda un aviso cuando el río llega a su nivel de alerta o de evacuación, o baja a «aguas bajas». Una vez por estación y lugar (otra vez si empeora, y de nuevo en la próxima crecida o bajante); una lectura de más de 12 horas no avisa. Funciona con los mismos avisos de peligro que sismos y volcanes (el interruptor de la app). Necesita `APP_DIR` (lee el catálogo `data/rivers-AR.json` de la app compilada). La fuente `INA` aparece en el aviso de fuentes caídas.
+- **Avisos de ríos de Brasil (`server/src/rivers/brWatch.ts`, `brRiverTick` en `main.ts`):** igual que los del INA pero con las estaciones de la ANA que tienen cotas del SGB (atención, alerta, inundación; en metros), leídas de a una con pausa. Claves `river:br:<código>` en `hazard_notices`; sin país por dispositivo: avisa por cercanía a los lugares guardados. Informativos, no oficiales.
 - **Niveles de Bolivia (`GET /api/rivers/bo`, `server/src/rivers/bo.ts`):** el SENAMHI Bolivia publica un PDF por día hábil; el servidor lo baja, lo lee (con `unpdf`, sin programas externos) y lo guarda 3 horas, solo cuando alguien lo pide. Si el SENAMHI falla devuelve el último bueno (hasta 7 días) marcado `stale`. No requiere cuenta ni token.
 
 ## Hora límite de regreso de una salida

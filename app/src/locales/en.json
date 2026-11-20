@@ -732,6 +732,8 @@
     "nacionalNotePE": "Public radio: Radio Nacional del Perú (IRTP), FM 103.9 and AM 850 in Lima and 70 FM stations across the country. AM reaches farther at night; FM only nearby. Frequencies come from IRTP's official list (from 2021): if yours differs, let us know.",
     "nacionalTitlePY": "Nearest Radio Nacional del Paraguay",
     "nacionalNotePY": "Public radio: Radio Nacional del Paraguay (Mitic), AM 920 in Asunción, FM 105.9 in San Pedro and AM 700 in Pilar, according to its official site (radionacional.gov.py, checked on 2026-11-16): there is no complete list, confirm the frequency in your area. AM carries farther at night; FM only nearby.",
+    "nacionalTitleBR": "Nearest Rádio Nacional (EBC)",
+    "nacionalNoteBR": "Public radio: Rádio Nacional (EBC), AM 980 and FM 96.1 in Brasília, FM 87.1 in Rio de Janeiro and São Paulo, FM 93.7 in São Luís and FM 96.1 in Tabatinga (Alto Solimões). Rádio Nacional da Amazônia broadcasts on shortwave (11,780 and 6,180 kHz) for the Legal Amazon. From the official EBC site (checked 20/11/2026); the Recife station lists no frequency there: confirm the one in your area. AM carries farther at night; FM only nearby.",
     "nacionalTitleCL": "Nearest nationwide radio station",
     "nacionalNoteCL": "Chile has no national public radio: this shows the Radio Bío-Bío network (private, with stations in every region), which reports emergencies. SENAPRED official alerts also reach phones through the Emergency Alert System (SAE). Frequencies via Wikipedia; check them with your radio.",
     "packageMissing": "The {{country}} stations come with the country's offline data: it downloads automatically the first time there is a connection.",
@@ -748,6 +750,19 @@
     "emergencyOnly": "Only if your life depends on it. Not free to use: outside a real emergency, don't transmit there.",
     "vhf": "VHF",
     "peFree": {"title": "Free-use radios (Peru)", "intro": "Family walkie-talkies: no license needed at 500 mW or less. They are for talking within your group, not for calling institutions.", "fam1": {"name": "Channels 1 to 7", "desc": "Seven channels 25 kHz apart: 462.5625, 462.5875, 462.6125, 462.6375, 462.6625, 462.6875 and 462.7125 MHz."}, "fam2": {"name": "Channels 8 to 14", "desc": "Seven channels 25 kHz apart: 467.5625, 467.5875, 467.6125, 467.6375, 467.6625, 467.6875 and 467.7125 MHz."}, "note": "Unconfirmed: from the MTC regulation (2012 version) and its official channel plan; we could not see the current frequency plan. Not for public services. European PMR446 radios (446 MHz) are not listed as free use in Peru, so we leave them out. The 27 MHz citizens band exists (up to 5 W, no protection from interference), but we found neither the procedure nor the channels. If anything does not match, tell us from Settings."},
+    "br": {
+      "title": "Ham radio and citizens band (Brazil)",
+      "intro": "In Brazil LABRE (radio amateurs) and Civil Defense run RENER, the national emergency network. The amateur frequencies are for licensed operators; the citizens band (PX, 27 MHz) is free to use with a simple registration with Anatel.",
+      "labre": { "name": "VHF 2 m: national emergency frequency", "desc": "FM simplex. LABRE names it the main VHF emergency frequency (notice of 23/07/2026)." },
+      "dmr": { "name": "DMR: talkgroup (LABRE)", "desc": "Local/national TG, on the DMR networks that carry it." },
+      "hf": { "name": "RENER: HF calling bands", "desc": "Reference for first calls and activating the network (Portaria 307/2009, item 8); whoever coordinates each activation sets the exact frequency." },
+      "vhf": { "name": "RENER: VHF calling bands", "desc": "FM simplex and repeaters (Portaria 307/2009, item 8)." },
+      "px9": { "name": "PX channel 9: emergencies", "desc": "Channel restricted to emergency traffic nationwide. AM or FM." },
+      "px11": { "name": "PX channel 11: calling and listening", "desc": "Restricted to calling and listening nationwide." },
+      "px19": { "name": "PX channel 19: highways", "desc": "Restricted to use on highways." },
+      "note": "Except for the PX, these are amateur frequencies: only licensed operators (COER) transmit; if your life is in danger you can ask for help by any means. The PX channels come from Anatel's Res. 444/2006; its current page says the channel plan is now governed by a 2025 resolution: confirm them.",
+      "sources": "Sources: LABRE (labre.org.br, 23/07/2026); Portaria 307/2009 of the Ministry of National Integration (RENER); Anatel, Res. 444/2006 and its «Rádio do Cidadão» page (modified 03/03/2026). Checked 20/11/2026."
+    },
     "rener": {
       "title": "Amateur radio emergency network (RENER, Peru)",
       "intro": "RENER, run by the Radio Club Peruano with INDECI, is activated in emergencies and disasters. These are amateur radio frequencies: licensed operators transmit.",
