@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, type MouseEvent } from 'react';
-import { Ban, LocateFixed, Repeat, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { Ban, LocateFixed, Repeat, RotateCcw, Undo2, Volume2, VolumeX } from 'lucide-react';
 import { speak, stopSpeaking, useSpeechVoice } from '@/core/speech/speech';
 import { useSettings } from '@/core/settings/settings';
 import { useCountry } from '@/modules/emergency/currentCountry';
@@ -16,6 +16,7 @@ export function GuideTopicPage() {
   const { topicId } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const lang = useLang();
   const env = useSettings((s) => s.settings.firstAidEnv);
@@ -69,10 +70,19 @@ export function GuideTopicPage() {
     );
   }
 
+  // El recorrido de pasos de esta evaluación (en el estado de la navegación): permite «Volver al paso anterior» si se eligió mal, aunque se haya
+  // pasado a otra guía, sin depender del botón «atrás» del teléfono. Al llegar de otro lado (la lista, un enlace) no hay recorrido y no se ofrece.
+  const stateTrail = (location.state as { trail?: unknown } | null)?.trail;
+  const trail = Array.isArray(stateTrail) ? stateTrail.filter((x): x is string => typeof x === 'string') : [];
+  const here = `${location.pathname}${location.search}`;
   const go = (next: string) => {
     const target = resolveNext(topic.id, next);
     const startOfTopic = TOPIC_BY_ID.get(target.topic)?.start;
-    navigate(`/first-aid/guides/${target.topic}${target.node === startOfTopic ? '' : `?paso=${target.node}`}`);
+    navigate(`/first-aid/guides/${target.topic}${target.node === startOfTopic ? '' : `?paso=${target.node}`}`, { state: { trail: [...trail, here].slice(-40) } });
+  };
+  const goBack = () => {
+    const previous = trail.at(-1);
+    if (previous) navigate(previous, { state: { trail: trail.slice(0, -1) } });
   };
   const steps = node.steps.filter((s) => !s.env || s.env === env);
   const fill = fillText;
@@ -146,6 +156,11 @@ export function GuideTopicPage() {
               </button>
             ))}
           </div>
+        )}
+        {trail.length > 0 && (
+          <button className="btn guide-back" type="button" onClick={goBack} data-testid="guide-back">
+            <Undo2 size={18} aria-hidden /> {t('guides.back')}
+          </button>
         )}
       </section>
 

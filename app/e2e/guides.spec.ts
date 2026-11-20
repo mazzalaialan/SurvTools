@@ -30,6 +30,8 @@ test('guía de primeros auxilios: lo primero, evaluación paso a paso y entorno'
   await page.getByRole('link', { name: 'Empezar evaluación' }).click();
   const node = page.getByTestId('guide-node');
   await expect(node).toContainText('¿El lugar es seguro?');
+  // En el primer paso no hay a dónde volver.
+  await expect(page.getByTestId('guide-back')).toHaveCount(0);
   await page.getByRole('button', { name: 'Sí, es seguro' }).click();
   await page.getByRole('button', { name: 'Sí', exact: true }).click();
   await page.getByRole('button', { name: 'Sí, sangra mucho' }).click();
@@ -39,6 +41,16 @@ test('guía de primeros auxilios: lo primero, evaluación paso a paso y entorno'
   await page.getByRole('button', { name: 'Brazo o pierna' }).click();
   await page.getByRole('button', { name: 'No, sigue saliendo en chorro o empapando' }).click();
   await expect(node).toContainText('Torniquete');
+  await expect(node).toContainText('No lo aflojes ni lo saques');
+
+  // «Volver al paso anterior» deshace la última respuesta (por si se eligió mal) y se puede volver a elegir.
+  await page.getByTestId('guide-back').click();
+  await expect(node).not.toContainText('No lo aflojes ni lo saques');
+  await expect(page.getByRole('button', { name: 'No, sigue saliendo en chorro o empapando' })).toBeVisible();
+  await page.getByTestId('guide-back').click();
+  await expect(page.getByRole('button', { name: 'Brazo o pierna' })).toBeVisible();
+  await page.getByRole('button', { name: 'Brazo o pierna' }).click();
+  await page.getByRole('button', { name: 'No, sigue saliendo en chorro o empapando' }).click();
   await expect(node).toContainText('No lo aflojes ni lo saques');
 
   // Zona agreste: aparecen los pasos de evacuación y el acceso a Mi ubicación.
