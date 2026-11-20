@@ -5437,3 +5437,408 @@ button.country-pack-del {
   font-weight: 600;
   cursor: pointer;
 }
+
+/* =====================================================================
+ * Sección EMERGENCIAS (segunda pasada de diseño; referencia para las demás).
+ * Todo va acotado a `main.content[data-area='emergency']` (lo pone Shell.tsx en /first-aid/*),
+ * así las clases compartidas (.card, .btn, .input, .chip...) no cambian en el resto de la app todavía.
+ * Sistema y reglas: docs/DISENO.md. Prioridad: lectura y toque rápidos antes que adorno.
+ * ===================================================================== */
+
+.content[data-area='emergency'] {
+  font-variant-numeric: tabular-nums; /* teléfonos, coordenadas, distancias y horarios alineados */
+}
+
+/* --- Tipografía: 5 tamaños (xs, sm, md, lg, xl) --- */
+.content[data-area='emergency'] .page-title {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--sp-4);
+}
+
+/* Título de bloque: etiqueta corta en mayúsculas, con peso para que se vea de un vistazo. */
+.content[data-area='emergency'] .section-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.content[data-area='emergency'] .hint,
+.content[data-area='emergency'] .list-sub,
+.content[data-area='emergency'] .field label,
+.content[data-area='emergency'] .field .field-label,
+.content[data-area='emergency'] .fieldset legend,
+.content[data-area='emergency'] .my-data-list dt {
+  font-size: var(--fs-sm);
+}
+
+.content[data-area='emergency'] .list-title {
+  font-size: var(--fs-md);
+}
+
+/* --- Tarjeta: un radio, un borde fino, elevación 1 --- */
+.content[data-area='emergency'] .card {
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-1);
+  padding: var(--sp-4);
+}
+
+.content[data-area='emergency'] .card.stack {
+  gap: var(--sp-3);
+}
+
+.content[data-area='emergency'] .stack {
+  gap: var(--sp-4);
+}
+
+/* --- Botones: radio de control, estado al tocar, deshabilitado que no depende solo del color --- */
+.content[data-area='emergency'] .btn,
+.content[data-area='emergency'] .icon-btn,
+.content[data-area='emergency'] .segmented {
+  border-radius: var(--radius-ctl);
+}
+
+.content[data-area='emergency'] .btn {
+  font-size: var(--fs-md);
+}
+
+.content[data-area='emergency'] .btn:not(:disabled):not(.disabled):active {
+  background: var(--border);
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3);
+}
+
+.content[data-area='emergency'] .btn-primary:not(:disabled):active {
+  background: var(--accent-strong);
+}
+
+/* Deshabilitado: sin relleno y con borde punteado (se nota aunque no se distinga el color); se sigue leyendo. */
+.content[data-area='emergency'] .btn:disabled,
+.content[data-area='emergency'] .btn.disabled {
+  opacity: 1;
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--control-border);
+  color: var(--text-muted);
+}
+
+.content[data-area='emergency'] .btn-primary:disabled {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--control-border);
+}
+
+.content[data-area='emergency'] .icon-btn {
+  width: 44px;
+  height: 44px;
+  color: var(--text);
+}
+
+.content[data-area='emergency'] .icon-btn:active {
+  background: var(--border);
+}
+
+.content[data-area='emergency'] .btn-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-danger);
+}
+
+.content[data-area='emergency'] .btn-danger:not(:disabled):active {
+  box-shadow: inset 0 0 0 3px var(--on-danger);
+  background: var(--danger);
+}
+
+.content[data-area='emergency'] .btn-danger-outline {
+  border-width: 2px;
+  background: transparent;
+}
+
+/* --- Botón de llamada: lo vital. Número grande, ícono de teléfono (no depende del color), borde de 2 px. --- */
+.content[data-area='emergency'] .btn-call {
+  min-height: 52px;
+  min-width: 96px;
+  padding: 6px 14px;
+  border: 2px solid var(--accent);
+  background: var(--surface-2);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.content[data-area='emergency'] .btn-call svg {
+  color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+
+/* El de «Llamar al 911» (y los números del país): sólido en color de peligro, arriba de todo. */
+.content[data-area='emergency'] .call-911 {
+  min-height: 56px;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.content[data-area='emergency'] .other-calls .call-other {
+  min-height: 52px;
+  border: 2px solid var(--danger);
+  background: var(--surface);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.content[data-area='emergency'] .other-calls .call-other svg {
+  color: var(--danger);
+}
+
+/* --- Campos: radio de control, 48 px, error visible con borde grueso --- */
+.content[data-area='emergency'] .input,
+.content[data-area='emergency'] .select {
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
+}
+
+.content[data-area='emergency'] .input:focus-visible,
+.content[data-area='emergency'] .select:focus-visible {
+  outline-offset: 0;
+  border-color: var(--focus);
+}
+
+.content[data-area='emergency'] .input[aria-invalid='true'],
+.content[data-area='emergency'] .select[aria-invalid='true'] {
+  border-width: 2px;
+  border-color: var(--danger);
+}
+
+/* --- Chips (filtros): 44 px, borde de control, activo = relleno + negrita --- */
+.content[data-area='emergency'] .chip {
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-ctl);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.content[data-area='emergency'] .chip[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: inset 0 0 0 1px var(--on-accent);
+  font-weight: 700;
+}
+
+.content[data-area='emergency'] .chip:not(:disabled):active {
+  background: var(--border);
+}
+
+.content[data-area='emergency'] .chip[aria-pressed='true']:active {
+  background: var(--accent-strong);
+}
+
+.content[data-area='emergency'] .chip:disabled {
+  opacity: 1;
+  border-style: dashed;
+  color: var(--text-muted);
+  background: transparent;
+}
+
+/* --- Listas: filas con línea fina, íconos neutros (el color queda para los estados) --- */
+.content[data-area='emergency'] .list-row {
+  border-radius: var(--radius-ctl);
+}
+
+.content[data-area='emergency'] .list-row:not(:disabled):active {
+  background: var(--border);
+}
+
+.content[data-area='emergency'] .contact-row {
+  padding: var(--sp-3) 0;
+  gap: var(--sp-3);
+}
+
+.content[data-area='emergency'] .contact-row .list-main {
+  /* Base chica: el botón de llamada de un número corto entra al lado del texto en 390 px; uno largo baja abajo. */
+  flex: 1 1 7rem;
+}
+
+/* El título de página ya queda separado por el hueco de la pila: sin margen doble. */
+.content[data-area='emergency'] .stack > .page-head {
+  margin-bottom: 0;
+}
+
+.content[data-area='emergency'] .contact-row {
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.content[data-area='emergency'] .contact-icon,
+.content[data-area='emergency'] [class*='contact-icon-'] {
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+}
+
+.content[data-area='emergency'] .contact-row .contact-actions,
+.content[data-area='emergency'] .contact-row > .phone-actions {
+  flex: 0 1 auto;
+}
+
+.content[data-area='emergency'] .contact-group-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: var(--sp-3) 0 0;
+}
+
+.content[data-area='emergency'] .source-badge {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.content[data-area='emergency'] .source-official {
+  color: var(--ok);
+}
+
+.content[data-area='emergency'] .map-link {
+  font-size: var(--fs-sm);
+  min-height: 32px;
+}
+
+.content[data-area='emergency'] .rpt-distance {
+  font-size: var(--fs-md);
+}
+
+.content[data-area='emergency'] .rpt-details,
+.content[data-area='emergency'] .rpt-help dd {
+  font-size: var(--fs-sm);
+}
+
+/* --- Avisos y estados: borde grueso de la izquierda + texto (no dependen solo del color) --- */
+.content[data-area='emergency'] .warning-box,
+.content[data-area='emergency'] .ok-box {
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
+}
+
+.content[data-area='emergency'] .error {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  padding-left: var(--sp-3);
+  border-left: 4px solid var(--danger);
+}
+
+/* Vacío: caja punteada, texto alineado a la izquierda y con una indicación (no una pantalla en blanco). */
+.content[data-area='emergency'] .empty {
+  text-align: left;
+  padding: var(--sp-4);
+  border: 1px dashed var(--control-border);
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-md);
+}
+
+/* --- Mi ubicación: las coordenadas son el dato principal --- */
+.content[data-area='emergency'] .location-big {
+  font-size: var(--fs-xl);
+  line-height: 1.2;
+}
+
+.content[data-area='emergency'] .location-dms {
+  font-size: var(--fs-lg);
+}
+
+.content[data-area='emergency'] .location-message {
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  border-radius: var(--radius-ctl);
+}
+
+.content[data-area='emergency'] .location-refs dt,
+.content[data-area='emergency'] .location-refs dd {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.content[data-area='emergency'] .location-refs dt:last-of-type,
+.content[data-area='emergency'] .location-refs dd:last-of-type {
+  border-bottom: none;
+}
+
+/* --- Mis datos / ficha médica --- */
+.content[data-area='emergency'] .my-data {
+  border-left-width: 4px;
+}
+
+.content[data-area='emergency'] .my-data-name {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.content[data-area='emergency'] .avatar {
+  border: 1px solid var(--border);
+}
+
+.content[data-area='emergency'] .allergy {
+  font-size: var(--fs-sm);
+}
+
+.content[data-area='emergency'] .fieldset {
+  border-radius: var(--radius-card);
+}
+
+/* --- Guías: lectura de lejos y con prisa --- */
+.content[data-area='emergency'] .guide-steps {
+  font-size: var(--fs-lg);
+  gap: var(--sp-3);
+}
+
+.content[data-area='emergency'] .guide-question {
+  font-size: var(--fs-lg);
+}
+
+.content[data-area='emergency'] .guide-option {
+  min-height: 52px;
+  font-size: var(--fs-md);
+}
+
+.content[data-area='emergency'] .guide-calls {
+  border-radius: var(--radius-ctl);
+}
+
+.content[data-area='emergency'] .btn-lg {
+  font-size: var(--fs-lg);
+  min-height: 56px;
+}
+
+.content[data-area='emergency'] .pill {
+  font-size: var(--fs-xs);
+  border-radius: var(--radius-ctl);
+}
+
+.content[data-area='emergency'] .contact-row {
+  align-items: flex-start; /* filas altas (parques con varias frecuencias): el ícono queda arriba, junto al nombre */
+}
+
+.content[data-area='emergency'] .contact-icon {
+  margin-top: 2px;
+}
+
+.content[data-area='emergency'] .contact-row .contact-actions,
+.content[data-area='emergency'] .contact-row > .phone-actions {
+  align-self: center;
+}
+
+/* Buscador de las guías: la lupa dentro del campo (fuera de .toolbar quedaba arriba del campo). */
+.content[data-area='emergency'] .search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.content[data-area='emergency'] .search > svg {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.content[data-area='emergency'] .search .input {
+  padding-left: 42px;
+}

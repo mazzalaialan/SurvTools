@@ -135,7 +135,8 @@ export function Shell() {
         <PocketScreen />
         <ConfirmHost />
         <IncomingFileHandler />
-        <main className="content">
+        {/* data-area: acota el estilo propio de cada sección (hoy, Emergencias; ver docs/DISENO.md). */}
+        <main className="content" data-area={pathname.startsWith('/first-aid') ? 'emergency' : undefined}>
           <Suspense fallback={null}>
             <Outlet />
           </Suspense>

@@ -8,6 +8,22 @@
   /* Radios: 2 valores (controles y tarjetas). Espaciado en escala de 4 px. */
   --radius-ctl: 8px;
   --radius-card: 10px;
+  /* Escala tipográfica corta (5 tamaños) y espaciado en múltiplos de 4 px: ver docs/DISENO.md. */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  /* Elevación: 1 = tarjetas (apenas despegan del fondo); 2 = lo que flota (diálogos, menús). */
+  --elev-1: var(--shadow);
+  --elev-2: 0 4px 14px rgb(0 0 0 / 0.45);
+  /* Texto sobre --danger (en oscuro, el óxido pide texto oscuro para pasar 4,5:1). */
+  --on-danger: #1a0a06;
   /* Diagramas de nudos: fondo, borde de la cuerda y flechas. */
   --kd-bg: #243243;
   --kd-edge: #0b1118;
@@ -66,6 +82,8 @@
   --info: #335d86;
   --warn: #8a6200;
   --danger: #a3361c;
+  --on-danger: #ffffff;
+  --elev-2: 0 4px 14px rgb(0 0 0 / 0.18);
   /* Pendiente (inclinómetro y capa de avalanchas): 30–45° rojo puro, 45–55° naranja, más de 55° gris. */
   --slope-avalanche: #c8100c;
   --slope-steep: #c25f00;
@@ -109,6 +127,7 @@
   --info: #557aa0;
   --warn: #c0932f;
   --danger: #e06a50;
+  --elev-2: none;
   /* Pendiente (inclinómetro y capa de avalanchas): 30–45° rojo puro, 45–55° naranja, más de 55° gris. */
   --slope-avalanche: #d9261d;
   --slope-steep: #ff8c1a;
@@ -148,6 +167,8 @@
   --info: #b02a1c;
   --warn: #e04a2c;
   --danger: #ff2a12;
+  --on-danger: #000000;
+  --elev-2: none;
   /* Pendiente (inclinómetro y capa de avalanchas): 30–45° rojo puro, 45–55° naranja, más de 55° gris. */
   --slope-avalanche: #ff0000;
   --slope-steep: #ff7a45;
