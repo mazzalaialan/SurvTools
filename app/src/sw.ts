@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import { PrecacheController, PrecacheRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
+import { SERVER_PAGES } from './core/portable/swRoutes';
 import { db } from '@/core/db/db';
 import {
   alertsNotification,
@@ -146,7 +147,9 @@ self.addEventListener('install', (event) => event.waitUntil(onInstall(event)));
 // Al activarse se borra lo viejo del precache (solo entonces: antes la versión vieja lo necesita).
 self.addEventListener('activate', (event) => event.waitUntil(precache.activate(event)));
 
-registerRoute(new NavigationRoute(precache.createHandlerBoundToURL('index.html')));
+// Toda navegación devuelve la app (`index.html`), salvo las páginas que sirve el servidor propio en el mismo sitio: la ubicación en vivo (`/l/<id>`), la
+// salida compartida (`/o/<id>`) y la API. Sin esta excepción, abrir uno de esos enlaces mostraba la app en vez del recorrido (ver `core/portable/swRoutes.ts`).
+registerRoute(new NavigationRoute(precache.createHandlerBoundToURL('index.html'), { denylist: [SERVER_PAGES] }));
 
 // La app pide activar la versión nueva cuando el usuario toca "Actualizar".
 self.addEventListener('message', (event) => {
