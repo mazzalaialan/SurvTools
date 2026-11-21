@@ -636,9 +636,20 @@ input[type='range'] {
   font-size: var(--fs-sm);
 }
 
-/* ✓/✗ con texto (no depende del color); el sí no va en verde para no competir con los estados reales. */
+/* ✓/✗ con texto (no depende del color) y, además, tilde verde y cruz roja para leerlo de un vistazo (pedido del usuario, 2026-11-21). En el modo rojo
+   nocturno ambos tonos son rojos: ahí se distinguen por la forma. */
 .cap-yes {
   color: var(--text);
+}
+
+.cap-yes svg {
+  color: var(--ok);
+  stroke-width: 3;
+}
+
+.cap-no svg {
+  color: var(--danger);
+  stroke-width: 3;
 }
 
 .cap-no {

@@ -14,6 +14,7 @@ import {
 import { readNotificationState, type NotificationState } from '@/core/notifications/state';
 import { useSettings } from '@/core/settings/settings';
 import { notificationBackend } from '@/core/notifications/backend';
+import { PressureAlertsControl } from '@/modules/weather/PressureAlerts';
 
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
 
@@ -128,6 +129,8 @@ export function NotificationsSection({ showServer = false }: { showServer?: bool
           <Bell size={18} /> {t('notifications.enable')}
         </button>
       )}
+      {/* Aviso local por la presión del barómetro (solo teléfonos que lo tienen): el mismo ajuste que en Clima. */}
+      <PressureAlertsControl />
       {testSent && notificationsEnabled && (
         <p className="hint" role="status" data-testid="test-sent">
           {t(testSent === 'server' ? 'notifications.testSentServer' : 'notifications.testSentLocal')}
