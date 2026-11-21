@@ -80,6 +80,9 @@ function DocumentForm({ stored }: { stored: PersonalDocument | undefined }) {
         <h1 className="page-title" style={{ flex: 1 }}>{stored ? stored.title : t('documents.new')}</h1>
       </div>
 
+      {/* Lo que se consulta (las fotos del documento) va arriba; los datos, debajo. Con el documento recién creado no hay fotos aún: va el formulario solo. */}
+      {stored && <PagesSection document={stored} />}
+
       <form className="card stack" onSubmit={handleSubmit}>
         <div className="field">
           <label htmlFor="title">{t('documents.titleLabel')}</label>
@@ -131,7 +134,7 @@ function DocumentForm({ stored }: { stored: PersonalDocument | undefined }) {
         </div>
       </form>
 
-      {stored ? <PagesSection document={stored} /> : <p className="hint">{t('documents.saveFirst')}</p>}
+      {!stored && <p className="hint">{t('documents.saveFirst')}</p>}
     </div>
   );
 }
@@ -187,7 +190,7 @@ function PagesSection({ document }: { document: PersonalDocument }) {
         <ul className="doc-grid">
           {pages.map((page, index) => (
             <li key={page.id}>
-              <PageThumb page={page} label={t('documents.photoN', { n: index + 1 })} onOpen={() => setViewing(index)} />
+              <PageThumb page={page} label={t('documents.photoN', { n: index + 1 })} n={index + 1} onOpen={() => setViewing(index)} />
             </li>
           ))}
         </ul>
@@ -213,11 +216,13 @@ function PagesSection({ document }: { document: PersonalDocument }) {
   );
 }
 
-function PageThumb({ page, label, onOpen }: { page: Attachment; label: string; onOpen: () => void }) {
+function PageThumb({ page, label, n, onOpen }: { page: Attachment; label: string; n: number; onOpen: () => void }) {
   const url = useBlobUrl(page.id, page.mime);
   return (
     <button className="doc-tile" type="button" onClick={onOpen} aria-label={label}>
       {url && <img src={url} alt="" />}
+      {/* Número visible para ubicarse al reordenar; el nombre accesible sigue siendo el aria-label. */}
+      <span className="doc-tile-n" aria-hidden>{n}</span>
     </button>
   );
 }
@@ -263,10 +268,10 @@ function PageViewer({
             <Trash2 size={18} /> {t('photo.remove')}
           </button>
           <button className="btn" type="button" onClick={() => void handleMove(-1)} disabled={index === 0} aria-label={t('documents.moveBefore')} title={t('documents.moveBefore')}>
-            <ArrowLeft size={18} />
+            <ArrowLeft size={18} aria-hidden /> {t('documents.moveBefore')}
           </button>
           <button className="btn" type="button" onClick={() => void handleMove(1)} disabled={index === last} aria-label={t('documents.moveAfter')} title={t('documents.moveAfter')}>
-            <ArrowRight size={18} />
+            {t('documents.moveAfter')} <ArrowRight size={18} aria-hidden />
           </button>
         </>
       }
@@ -278,12 +283,12 @@ function PageViewer({
           </a>
         )}
       </div>
-      <div className="row-between">
+      <div className="doc-nav">
         <button className="btn" type="button" onClick={() => onIndex(index - 1)} disabled={index === 0} aria-label={t('documents.previous')}>
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} aria-hidden /> {t('documents.previous')}
         </button>
         <button className="btn" type="button" onClick={() => onIndex(index + 1)} disabled={index === last} aria-label={t('documents.next')}>
-          <ChevronRight size={20} />
+          {t('documents.next')} <ChevronRight size={20} aria-hidden />
         </button>
       </div>
     </Dialog>

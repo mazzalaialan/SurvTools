@@ -216,19 +216,23 @@ export function LibraryPage() {
       {!catalog && !loading && <p className="hint">{t('library.noLibrary')}</p>}
       {catalog && (
         <>
-          <p className="hint library-legend" style={{ margin: 0 }}>
-            <span className="license-icon is-free" aria-hidden>
-              <LockOpen size={16} />
-            </span>{' '}
-            <strong>{t('library.free')}</strong>: {t('library.freeHint')}{' '}
-            <span className="license-icon is-rights" aria-hidden>
-              <Lock size={16} />
-            </span>{' '}
-            <strong>{t('library.rights')}</strong>:{' '}
-            {canPrivate ? t('library.rightsHint') : t('library.rightsUnavailable')}
-          </p>
+          <div className="hint library-legend">
+            <p>
+              <span className="license-icon is-free" aria-hidden>
+                <LockOpen size={16} />
+              </span>{' '}
+              <strong>{t('library.free')}</strong>: {t('library.freeHint')}
+            </p>
+            <p>
+              <span className="license-icon is-rights" aria-hidden>
+                <Lock size={16} />
+              </span>{' '}
+              <strong>{t('library.rights')}</strong>:{' '}
+              {canPrivate ? t('library.rightsHint') : t('library.rightsUnavailable')}
+            </p>
+          </div>
           {key && (
-            <p className="hint" style={{ margin: 0 }}>
+            <p className="hint library-key">
               <Unlock size={14} aria-hidden /> {t('library.keyActive')}{' '}
               {passphrase && (
                 <button className="btn-link" type="button" onClick={() => void forgetKey()}>
@@ -288,19 +292,21 @@ export function LibraryPage() {
                     {t('library.selectAll')}
                   </label>
                 )}
-                <ul className="list">
+                <ul className="list list-flat">
                   {cat.books.map((b) => {
                     const inst = installed.get(b.id);
                     const fail = failures.get(b.id);
                     return (
                       <li key={b.id} className={`list-row library-book ${b.license === 'public' ? 'is-free' : 'is-rights'}`} data-testid={`book-${b.id}`}>
-                        <input
-                          type="checkbox"
-                          checked={isPicked(b.id)}
-                          disabled={!pickable(b)}
-                          onChange={() => (delMode ? pick([b.id], !toDelete.has(b.id)) : toggle(b.id))}
-                          aria-label={t(delMode ? 'library.selectBookDelete' : 'library.selectBook', { title: b.title })}
-                        />
+                        <span className="library-pick">
+                          <input
+                            type="checkbox"
+                            checked={isPicked(b.id)}
+                            disabled={!pickable(b)}
+                            onChange={() => (delMode ? pick([b.id], !toDelete.has(b.id)) : toggle(b.id))}
+                            aria-label={t(delMode ? 'library.selectBookDelete' : 'library.selectBook', { title: b.title })}
+                          />
+                        </span>
                         <span className="list-main">
                           <span className="list-title">{b.title}</span>
                           <span className="list-sub">
@@ -327,7 +333,7 @@ export function LibraryPage() {
                               </button>
                             </>
                           )}
-                          {inst && upToDate(b) && <CircleCheck size={18} style={{ color: 'var(--ok)', flexShrink: 0 }} aria-label={t('library.installed')} />}
+                          {inst && upToDate(b) && <CircleCheck size={20} className="library-ok" aria-label={t('library.installed')} />}
                         </span>
                       </li>
                     );
@@ -341,7 +347,7 @@ export function LibraryPage() {
 
       {delMode && (
         <div className="library-bar" data-testid="library-delete-bar">
-          <span style={{ flex: 1 }}>{t('library.toDelete', { count: delBooks.length, mb: mb(delBytes, lang) })}</span>
+          <span className="library-bar-text">{t('library.toDelete', { count: delBooks.length, mb: mb(delBytes, lang) })}</span>
           <button className="btn" type="button" onClick={leaveDelMode}>
             {t('common.cancel')}
           </button>
@@ -373,7 +379,7 @@ export function LibraryPage() {
                   {t(`library.stopped.${stopped}`, { count: chosen.length })}
                 </span>
               )}
-              <span style={{ flex: 1 }}>{t('library.selected', { count: chosen.length, mb: mb(chosenBytes, lang) })}</span>
+              <span className="library-bar-text">{t('library.selected', { count: chosen.length, mb: mb(chosenBytes, lang) })}</span>
               <button className="btn" type="button" onClick={() => setSelected([...selected], false)}>
                 {t('common.cancel')}
               </button>

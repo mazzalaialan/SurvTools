@@ -598,6 +598,21 @@ input[type='range'] {
   color: var(--text-muted);
 }
 
+/* Celular (grilla de 2 columnas): si queda una tarjeta sola al final, ocupa todo el ancho. Así «Recomendaciones» (la palabra más larga)
+   no se parte en dos líneas en la portada de Inventario, y no queda un hueco a la derecha. */
+/* Pantalla ancha: tarjetas de al menos 200 px (a 160 «Recomendaciones» se partía en «Recomendaci / ones»). */
+@media (min-width: 520px) {
+  .module-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 519px) {
+  .module-grid > .module-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
 /* Emergencias: el ícono va en el color de peligro (el título y el texto siguen diciendo de qué se trata). */
 .module-grid[data-section='firstAid'] .module-card:not([data-status='unavailable']) .icon {
   color: var(--danger);
@@ -863,6 +878,12 @@ button.list-row:hover {
   border: 1px solid var(--warn);
 }
 
+/* Fácil (huerta): contorno en --ok como --warn y --danger; antes, hexadecimales fijos que no se ponían rojos de noche. */
+.pill-free {
+  color: var(--ok);
+  border: 1px solid var(--ok);
+}
+
 .pill-danger {
   color: var(--bg);
   background: var(--danger);
@@ -913,17 +934,21 @@ button.list-row:hover {
   resize: vertical;
 }
 
+/* Grupo de campos dentro de una tarjeta o diálogo: línea fina arriba y sin caja (no anidar cajas dentro de cajas). */
 .fieldset {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  padding: var(--sp-3) 0 0;
   margin: 0;
+  min-width: 0;
 }
 
 .fieldset legend {
-  padding: 0 6px;
+  padding: 0 8px 0 0;
   color: var(--text-muted);
   font-size: var(--fs-sm);
+  font-weight: 700;
 }
 
 .row-end {
@@ -964,6 +989,11 @@ button.list-row:hover {
   background: var(--surface-2);
   color: var(--text);
   cursor: pointer;
+}
+
+:root[data-theme='red'] .swatch {
+  /* Rojo nocturno: solo rojos. El color de la categoría queda como tono (claro/oscuro) del mismo rojo. */
+  filter: grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(0.8);
 }
 
 .picker-item[aria-pressed='true'] {
@@ -1007,6 +1037,17 @@ button.list-row:hover {
 
 .dialog-body {
   padding: 16px 20px 20px;
+}
+
+/* Formularios largos en un diálogo (lote, categoría, ubicación): Guardar / Eliminar quedan fijos abajo, sin tener que
+   desplazar hasta el final con guantes. Se extiende hasta los bordes del cuerpo para tapar lo que pasa por debajo. */
+.dialog-body > form > .row-end:last-child {
+  position: sticky;
+  bottom: 0;
+  margin: 0 -20px -20px;
+  padding: 12px 20px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
 }
 
 /* ---------- Árbol de ubicaciones ---------- */
@@ -1469,22 +1510,41 @@ a.module-card:active {
   display: flex;
   align-items: flex-start;
   gap: 4px;
+  border-bottom: 1px solid var(--border);
 }
-
+.list-flat > .rule-item:last-child {
+  border-bottom: 0;
+}
+/* Cada regla ya lleva su línea en .rule-item: la fila interna no repite la separación. */
 .rule-item > .rule-card {
   flex: 1;
   min-width: 0;
+  border-bottom: 0;
 }
 
-.rule-check {
+/* Área táctil de 44 px para una casilla suelta (la casilla mide 22). */
+.tap-box {
   flex: none;
-  width: 22px;
-  height: 22px;
-  margin: 14px 0 0 4px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-top: 6px;
+}
+.rule-check {
+  width: 24px;
+  height: 24px;
 }
 
-.rule-item[data-active='false'] > .rule-card {
-  opacity: 0.55;
+/* Plan sin controlar: se atenúa el nombre (--text-muted) sin bajar la opacidad de todo; el texto «No se controla» lo dice. */
+.rule-item[data-active='false'] .list-title {
+  color: var(--text-muted);
+}
+
+/* Cada plan (3 días, 7 días, 6 meses) separado del anterior por una línea. */
+.rule-group + .rule-group {
+  border-top: 1px solid var(--border);
+  padding-top: var(--sp-3);
 }
 
 .progress {
@@ -2156,10 +2216,41 @@ a.module-card:active {
   cursor: pointer;
 }
 
+.doc-tile {
+  position: relative;
+}
+
 .doc-tile img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Número de la foto: sirve para ubicarse al reordenar. Chapa con fondo del tema (legible sobre cualquier foto). */
+.doc-tile-n {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  min-width: 24px;
+  padding: 1px 6px;
+  border-radius: var(--radius-ctl);
+  background: var(--bg);
+  border: 1px solid var(--control-border);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  text-align: center;
+}
+
+/* Visor: «Anterior / Siguiente» (navegar) a todo el ancho; «Mover antes / después» (reordenar) va en el pie, con texto. */
+.doc-nav {
+  display: flex;
+  gap: 8px;
+}
+.doc-nav .btn {
+  flex: 1;
 }
 
 .doc-viewer img {
@@ -2749,19 +2840,39 @@ a.module-card:active {
   margin-top: 12px;
 }
 
+/* Nombre de la persona: dato que se busca, no una etiqueta; va en --text y con peso (antes, gris y liviano). */
 .doc-subgroup-title {
-  margin: 4px 0;
+  margin: 8px 0 4px;
   font-size: var(--fs-md);
-  color: var(--text-muted);
+  font-weight: 700;
+  color: var(--text);
 }
 
 .doc-move {
   display: flex;
   gap: 4px;
+  margin-left: auto;
 }
 
+/* Ordenar: el título no se estruja (en 390 px quedaba una letra por línea). Fecha o botones bajan de línea y el título
+   conserva al menos 10 rem. */
+.doc-sorting {
+  flex-wrap: wrap;
+}
+.doc-sorting .list-main {
+  flex: 1 1 10rem;
+}
+.doc-sorting .icon-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--control-border);
+}
+/* Deshabilitado sin opacidad: borde punteado y sin relleno (igual que el resto de los controles). */
 .doc-sorting .icon-btn:disabled {
-  opacity: 0.3;
+  border-style: dotted;
+  color: var(--text-muted);
+  background: none;
+  cursor: default;
 }
 
 
@@ -4073,40 +4184,75 @@ a.module-card:active {
 
 /* ---------- Biblioteca ---------- */
 
-.pill-free {
-  color: #0b3d1a;
-  background: #5fbf7a;
+/* Casilla de un libro en un área de 44 px (la casilla sola mide 22). */
+.library-pick {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -8px;
 }
-
-.pill-rights {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--warn);
-  border: 1px solid var(--warn);
-}
-
-.library-book.is-free {
-  border-left: 4px solid var(--ok);
-}
-
-.library-book.is-rights {
-  border-left: 4px solid var(--warn);
-}
-
 .library-book input[type='checkbox'] {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   accent-color: var(--text);
 }
 
+/* Categoría: encabezado de 48 px con flecha visible (con display:flex el <summary> pierde su triángulo y no se notaba que se abre). */
 .library-cat summary {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
   align-items: baseline;
+  min-height: 48px;
+  padding-right: 28px;
+  position: relative;
   cursor: pointer;
+  list-style: none;
+}
+.library-cat summary::-webkit-details-marker {
+  display: none;
+}
+.library-cat summary::after {
+  content: '';
+  position: absolute;
+  right: 6px;
+  top: 14px;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);
+}
+.library-cat[open] summary::after {
+  top: 20px;
+  transform: rotate(-135deg);
+}
+.library-cat .check {
+  border-top: 1px solid var(--border);
+}
+.library-ok {
+  flex: none;
+  color: var(--ok);
+}
+.library-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0;
+}
+.library .btn-link {
+  font-size: var(--fs-sm);
+}
+.library-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.library-legend p {
+  margin: 0;
 }
 
 .library-bar {
@@ -4117,11 +4263,19 @@ a.module-card:active {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 12px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: var(--radius-card);
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+  box-shadow: var(--elev-2);
+}
+/* El conteo ocupa su línea (en 390 px quedaba en una columna de 4 palabras por línea); los botones se reparten la de abajo. */
+.library-bar-text {
+  flex: 1 1 100%;
+  font-variant-numeric: tabular-nums;
+}
+.library-bar > .btn {
+  flex: 1 1 140px;
 }
 
 .reader {
@@ -4529,19 +4683,18 @@ a.module-card:active {
 .license-icon {
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
 }
-.license-icon.is-free {
-  color: #3fae5f;
-}
+/* Libre = candado abierto, con derechos = cerrado: la forma lo dice. Un solo tono (antes verde y ámbar, y un verde fijo que no se ponía rojo de noche). */
+.license-icon.is-free,
 .license-icon.is-rights {
-  color: var(--warn);
+  color: var(--text);
 }
 .library-legend .license-icon {
   width: 20px;
@@ -4975,11 +5128,6 @@ a.module-card:active {
 }
 [data-theme='red'] .garden-bar.on.garden-bar-harvest {
   background: var(--scale-6);
-}
-
-[data-theme='red'] .pill-free {
-  color: #000;
-  background: var(--ok);
 }
 
 [data-theme='red'] .hg-path {
@@ -6594,4 +6742,15 @@ button.country-pack-del {
 }
 .collapsible-inline > .collapsible-body {
   padding: var(--sp-3);
+}
+
+/* Categoría oculta: se atenúa el nombre sin bajar la opacidad (el ícono de ojo tachado lo dice). */
+.row-hidden .list-title,
+.row-hidden .list-sub {
+  color: var(--text-muted);
+}
+
+/* Rojo nocturno: la imagen de la cámara del escáner también en rojo (el filtro es solo visual; la lectura del código usa los cuadros originales). */
+:root[data-theme='red'] .scanner-video {
+  filter: grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(0.8);
 }

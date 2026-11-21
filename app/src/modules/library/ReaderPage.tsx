@@ -21,6 +21,8 @@ function readerCss(fontPct: number): string {
     h1, h2, h3 { line-height: 1.25; color: ${v('--text', '#111')}; }
     a { color: ${v('--accent', '#06c')}; }
     img { max-width: 100%; height: auto; background: #fff; border-radius: 6px; }
+    /* Rojo nocturno: el iframe no hereda el filtro de imágenes de la app; sin esto, las figuras (fondo blanco) encandilan. */
+    ${document.documentElement.dataset.theme === 'red' ? 'img { filter: grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(0.6); }' : ''}
     figure { margin: 12px 0; }
     table { border-collapse: collapse; display: block; overflow-x: auto; }
     td, th { border: 1px solid ${v('--border', '#ccc')}; padding: 4px 6px; }

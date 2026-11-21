@@ -48,7 +48,7 @@ export function CategoriesPage() {
       <ul className="list">
         {sorted.map((c) => (
           <li key={c.id}>
-            <button className="list-row" type="button" onClick={() => setEditing({ category: c, isNew: false })} style={{ opacity: c.hidden ? 0.5 : 1 }}>
+            <button className={c.hidden ? 'list-row row-hidden' : 'list-row'} type="button" onClick={() => setEditing({ category: c, isNew: false })}>
               <CategoryIcon category={c} />
               <span className="list-main">
                 <span className="list-title">

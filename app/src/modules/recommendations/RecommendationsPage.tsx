@@ -47,7 +47,7 @@ export function RecommendationsPage() {
           <p className="hint">{t('recommendations.noMembers')}</p>
         ) : (
           <>
-            <ul className="list">
+            <ul className="list list-flat">
               {memberList.map((m) => (
                 <li key={m.id}>
                   <button className="list-row" type="button" onClick={() => setEditingMember(m)}>
@@ -101,16 +101,18 @@ export function RecommendationsPage() {
                   <strong>{t('recommendations.plan', { span: span(days, t) })}</strong>
                   <span className="hint">{on === 0 ? t('recommendations.planOff') : t('recommendations.planOn', { on, total: list.length })}</span>
                 </label>
-                <ul className="list">
+                <ul className="list list-flat">
                   {list.map((rule) => (
                     <li key={rule.id} className="rule-item" data-active={rule.active !== false}>
-                      <input
-                        type="checkbox"
-                        className="rule-check"
-                        checked={rule.active !== false}
-                        onChange={(e) => void setActive([rule.id], e.target.checked)}
-                        aria-label={t('recommendations.control', { name: rule.description || t('recommendations.rule') })}
-                      />
+                      <span className="tap-box">
+                        <input
+                          type="checkbox"
+                          className="rule-check"
+                          checked={rule.active !== false}
+                          onChange={(e) => void setActive([rule.id], e.target.checked)}
+                          aria-label={t('recommendations.control', { name: rule.description || t('recommendations.rule') })}
+                        />
+                      </span>
                       <RuleCard rule={rule} onEdit={() => setEditingRule(rule)} />
                     </li>
                   ))}
