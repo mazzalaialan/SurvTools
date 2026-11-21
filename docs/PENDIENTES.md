@@ -759,3 +759,6 @@ Lista en `app/src/modules/knots/pendingSteps.ts` (el cartel sale en la ficha y e
 - **Todos los pasos:** `ocho-dos-gazas` (sin referencia ni diagrama), `mula` (bloqueo sin referencia), `atadura-diagonal` (arranque leñador/ballestrinque y frapeo), `ocho-doble` (solo topología).
 - **Pasos puntuales:** ocho-gaza 2–3; ocho-direccional 2–3 (seno arriba/abajo del tramo interior); as-de-guia-doble 3 (deducido); mariposa 2; pescador 2–3 y pescador-doble 3 (enganche/quiralidad sin foto); prusik 2–4 (sentido de giro); klemheist 1–3 (orden #10/#11, vueltas); bachmann 2–3 (barra del mosquetón); palomar 2–4; clinch 3–4 (remate); uni 3–4; camionero 3–4 (ojo y cotes sobre dos tramos); cadena 2–4; guarda 3–4 (capas por palo); asiento-rappel 2 y 5 (dos simples; nudo llano); silla-bombero 3; cornamusa 3; margarita 3 (cote derecho); atadura-cuadrada 3 (frapeo esquemático); atadura-tripode 2–3.
 - Al verificar un paso: sacarlo de `pendingSteps.ts`, ajustar el ref y tachar acá.
+
+## Aviso en los libros con derechos (HECHO el 2026-11-21, sin publicar)
+Los libros con derechos muestran: «solo para uso ante emergencias; si te sirven, comprá la obra original del autor en cualquiera de sus formatos». Sale en la leyenda de la biblioteca, en el diálogo del candado de cada libro y arriba del lector (`library.rightsBuy`, es/en/pt). Falta probarlo en el celular.

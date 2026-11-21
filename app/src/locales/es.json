@@ -3464,6 +3464,7 @@
     "freeHint": "dominio público o licencia libre; se bajan sin más.",
     "rights": "Con derechos",
     "freeInfo": "Dominio público o licencia libre: se baja sin clave y se puede compartir.",
+    "rightsBuy": "Estos libros son solo para uso ante emergencias. Si te sirven, comprá la obra original del autor, en cualquiera de sus formatos (papel, digital o audio): es la forma de apoyar a quien la escribió.",
     "rightsInfo": "Uso personal: se baja con la clave VikArg y no se comparte. Para leerlo sin conexión queda descifrado solo en este dispositivo.",
     "rightsHint": "uso personal: se bajan con la clave VikArg y no se comparten.",
     "rightsUnavailable": "este servidor no ofrece los libros con derechos.",

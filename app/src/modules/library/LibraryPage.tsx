@@ -80,6 +80,7 @@ function LicenseBadge({ book, canPrivate }: { book: LibraryBook; canPrivate: boo
       {open && (
         <Dialog title={label} onClose={() => setOpen(false)}>
           <p style={{ margin: 0 }}>{t(free ? 'library.freeInfo' : 'library.rightsInfo')}</p>
+          {!free && <p className="hint" data-testid="rights-buy-dialog"><strong>{t('library.rightsBuy')}</strong></p>}
           {free && book.licenseReason && <p className="hint">{book.licenseReason}</p>}
           {!free && !canPrivate && <p className="hint">{t('library.rightsUnavailable')}</p>}
         </Dialog>
@@ -229,6 +230,9 @@ export function LibraryPage() {
               </span>{' '}
               <strong>{t('library.rights')}</strong>:{' '}
               {canPrivate ? t('library.rightsHint') : t('library.rightsUnavailable')}
+            </p>
+            <p className="library-buy" role="note" data-testid="rights-buy">
+              <BookOpen size={16} aria-hidden /> {t('library.rightsBuy')}
             </p>
           </div>
           {key && (

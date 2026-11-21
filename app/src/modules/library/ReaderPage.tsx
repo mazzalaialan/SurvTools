@@ -141,6 +141,11 @@ export function ReaderPage() {
           <AArrowUp size={20} />
         </button>
       </div>
+      {book.license !== 'public' && (
+        <p className="library-buy library-buy-reader" role="note" data-testid="reader-rights-buy">
+          {t('library.rightsBuy')}
+        </p>
+      )}
       {html === null ? (
         <p className="hint reader-frame" role="status" data-testid={missing ? 'reader-missing' : 'reader-wait'}>
           {missing ? t('library.missingBook') : t('library.preparing')}
