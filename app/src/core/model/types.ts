@@ -601,7 +601,7 @@ export interface Track extends BaseEntity {
    * intervalos iguales de distancia, de ahí salen el gráfico, `minEle`, `maxEle` y el desnivel del recorrido. Se calcula una vez (ver `tracks/terrainElevation.ts`);
    * la altura del GPS de un celular tiene ~20 m de error fijo, el terreno no. Sin esto, se usa la altura del GPS alisada.
    */
-  terrain?: { profile: number[] };
+  terrain?: { profile: number[]; /** Versión del cálculo (si cambia, se recalcula una vez): 2 = desnivel sobre el terreno alisado. */ v?: number };
   /** Tiempo grabando, sin contar las pausas. */
   durationS?: number;
   /** Mientras se graba: clave privada para leer los puntos grabados con la app bloqueada (ver tracks/lockedBuffer). */

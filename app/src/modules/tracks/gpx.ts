@@ -117,21 +117,29 @@ const ELEVATION_SMOOTH_HALF_M = 100;
 export function smoothElevations(seg: TrackPoint[]): (number | null)[] {
   const along: number[] = [0];
   for (let i = 1; i < seg.length; i++) along.push(along[i - 1]! + distanceMeters({ lat: seg[i - 1]![0], lon: seg[i - 1]![1] }, { lat: seg[i]![0], lon: seg[i]![1] }));
+  return smoothAlong(
+    along,
+    seg.map((p) => p[2]),
+  );
+}
+
+/** La misma altura alisada para cualquier serie de alturas con su distancia recorrida (la del terreno también trae ruido de punto a punto). */
+export function smoothAlong(along: number[], values: (number | null)[]): (number | null)[] {
   const out: (number | null)[] = [];
   let lo = 0;
   let hi = 0;
-  for (let i = 0; i < seg.length; i++) {
-    if (seg[i]![2] === null) {
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] === null) {
       out.push(null);
       continue;
     }
     while (along[i]! - along[lo]! > ELEVATION_SMOOTH_HALF_M) lo++;
     if (hi < i) hi = i;
-    while (hi + 1 < seg.length && along[hi + 1]! - along[i]! <= ELEVATION_SMOOTH_HALF_M) hi++;
+    while (hi + 1 < values.length && along[hi + 1]! - along[i]! <= ELEVATION_SMOOTH_HALF_M) hi++;
     const window: number[] = [];
     for (let k = lo; k <= hi; k++) {
-      const e = seg[k]![2];
-      if (e !== null) window.push(e);
+      const e = values[k];
+      if (e !== null && e !== undefined) window.push(e);
     }
     // Media de lo que queda al descartar el 40 % de cada punta: tan robusta a un valor suelto como la mediana, pero sin saltar entre dos valores
     // cuando la altura alterna (la mediana oscila si hay dos grupos de valores).

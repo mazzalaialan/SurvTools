@@ -1,9 +1,10 @@
 import { repos } from '@/core/db/repository';
 import { touch } from '@/core/model/entity';
 import type { Track } from '@/core/model/types';
-import { summarizePath, type HeightLoader } from '@/modules/maps/measure';
+import { climb, summarizePath, type HeightLoader } from '@/modules/maps/measure';
 import { useTraining } from '@/modules/training/store';
 import { ELEVATION_V } from './elevationFix';
+import { smoothAlong } from './gpx';
 import { useTracks } from './store';
 
 /**
@@ -15,6 +16,8 @@ import { useTracks } from './store';
 
 /** Cuántas alturas se guardan del perfil: sobra para dibujarlo (el gráfico mide ~300 px) y pesa poco. */
 export const PROFILE_POINTS = 120;
+/** Versión del cálculo de la altura del terreno: si cambia, los recorridos se recalculan una vez. 2 = desnivel sobre el terreno alisado. */
+export const TERRAIN_V = 2;
 
 export interface TerrainStats {
   minEle: number;
@@ -49,11 +52,18 @@ export async function terrainStats(points: { lat: number; lon: number }[], load?
   if (points.length < 2) return null;
   const s = await summarizePath(points, load);
   if (s.ascent === null || s.descent === null || s.min === null || s.max === null || s.profile.length < 2) return null;
+  // El desnivel se cuenta sobre el terreno alisado como el del GPS: el modelo (~30 m por punto) también trae ruido de punto a punto, que sumado crudo
+  // inflaba el desnivel (medido: 35 m crudos contra ~20 m alisados en una caminata llana de 3,4 km). La altura mínima, la máxima y el perfil son las del mapa.
+  const smooth = smoothAlong(
+    s.profile.map((p) => p[0]),
+    s.profile.map((p) => p[1]),
+  ) as number[];
+  const { ascent, descent } = climb(smooth);
   return {
     minEle: s.min,
     maxEle: s.max,
-    ascentM: Math.round(s.ascent),
-    descentM: Math.round(s.descent),
+    ascentM: Math.round(ascent),
+    descentM: Math.round(descent),
     profile: resampleProfile(s.profile).map((h) => Math.round(h * 10) / 10),
   };
 }
@@ -68,12 +78,12 @@ export function withTerrain(t: Track, stats: TerrainStats): Track {
     descentM: stats.descentM,
     // El desnivel ya no sale del GPS: la migración del alisado no lo pisa.
     elevationV: ELEVATION_V,
-    terrain: { profile: stats.profile },
+    terrain: { profile: stats.profile, v: TERRAIN_V },
   };
 }
 
-/** Solo los grabados con la app y terminados, que todavía no tienen la altura del terreno. */
-export const needsTerrain = (t: Track): boolean => t.recorded === true && !t.recording && !t.terrain && t.segments.flat().length >= 2;
+/** Solo los grabados con la app y terminados, que todavía no tienen la altura del terreno (o la tienen de un cálculo anterior). */
+export const needsTerrain = (t: Track): boolean => t.recorded === true && !t.recording && t.terrain?.v !== TERRAIN_V && t.segments.flat().length >= 2;
 
 /** Pasa la altura y el desnivel del terreno a la actividad de Entrenamiento que usa este recorrido. */
 async function syncWorkouts(t: Track): Promise<void> {

@@ -4,7 +4,7 @@ import type { HeightLoader } from '@/modules/maps/measure';
 import { SLOPE_TILE } from '@/modules/maps/slope';
 import { ELEVATION_V } from './elevationFix';
 import type { TrackPoint } from './gpx';
-import { needsTerrain, PROFILE_POINTS, resampleProfile, terrainStats, withTerrain } from './terrainElevation';
+import { needsTerrain, PROFILE_POINTS, resampleProfile, TERRAIN_V, terrainStats, withTerrain } from './terrainElevation';
 
 /** Terreno de mentira: cada píxel del mundo (a zoom 12) vale `height(gx, gy)`; las teselas se arman al pedirlas. */
 const world =
@@ -44,6 +44,15 @@ describe('altura del terreno de un recorrido', () => {
     expect(s!.profile[0]!).toBeLessThan(s!.profile.at(-1)!);
   });
 
+  it('el ruido del propio modelo de terreno no se suma como desnivel (pero la altura mínima y máxima son las del mapa)', async () => {
+    // Terreno llano con ±8 m de ruido de píxel a píxel: sin alisar sumaría cientos de metros de subidas y bajadas que no existen.
+    const noisy = world((gx) => 20 + ((gx * 7919) % 17) - 8);
+    const s = await terrainStats(path(), noisy);
+    expect(s!.ascentM).toBeLessThan(10);
+    expect(s!.descentM).toBeLessThan(10);
+    expect(s!.maxEle - s!.minEle).toBeGreaterThan(4); // el rango sale tal cual del mapa
+  });
+
   it('sin datos de elevación (sin conexión y sin zona descargada): no hay valores, se queda con el GPS', async () => {
     expect(await terrainStats(path(), async () => null)).toBeNull();
     // Un solo tramo sin datos (un borde del recorrido): tampoco se inventa nada.
@@ -67,8 +76,10 @@ describe('altura del terreno de un recorrido', () => {
   it('el recorrido pasa a usar los valores del terreno y queda marcado para que el desnivel viejo no lo pise', () => {
     expect(needsTerrain(track())).toBe(true);
     const done = withTerrain(track(), { minEle: 2.5, maxEle: 15, ascentM: 24, descentM: 28, profile: [3, 5, 4] });
-    expect(done).toMatchObject({ minEle: 2.5, maxEle: 15, ascentM: 24, descentM: 28, elevationV: ELEVATION_V, terrain: { profile: [3, 5, 4] } });
+    expect(done).toMatchObject({ minEle: 2.5, maxEle: 15, ascentM: 24, descentM: 28, elevationV: ELEVATION_V, terrain: { profile: [3, 5, 4], v: TERRAIN_V } });
     expect(needsTerrain(done)).toBe(false);
+    // Un cálculo anterior (sin versión) se rehace una vez.
+    expect(needsTerrain({ ...done, terrain: { profile: [3, 5, 4] } })).toBe(true);
   });
 
   it('solo se calcula para recorridos grabados con la app, terminados y con puntos', () => {
