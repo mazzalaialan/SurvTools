@@ -7,16 +7,16 @@ import type { CarabinerShape, LockKind } from './carabiners';
  */
 const BODIES: Record<CarabinerShape, { body: string; gate: string; weight?: number }> = {
   d: {
-    body: 'M38 14 H29 Q23 14 23 20 V100 Q23 112 35 112 H50 Q62 112 60 98 L58 74',
-    gate: 'M58 74 L51 26 Q50 17 46 14',
+    body: 'M40 14 H28 Q22 14 22 20 V100 Q22 112 34 112 H46 Q58 112 58 100 L58 70',
+    gate: 'M58 70 V28 Q58 17 50 14',
   },
   offset: {
-    body: 'M38 14 H33 Q26 14 25 22 L16 98 Q14 112 30 112 H50 Q66 112 63 98 L60 76',
-    gate: 'M60 76 L54 28 Q52 18 47 14',
+    body: 'M36 14 H30 Q24 14 24 20 V96 Q24 112 42 112 H58 Q82 112 76 90 L58 60',
+    gate: 'M58 60 L46 28 Q44 17 40 14',
   },
   pear: {
-    body: 'M38 14 H35 Q27 14 25 26 L14 88 Q10 112 34 112 H50 Q74 112 67 88 L62 70',
-    gate: 'M62 70 L56 30 Q54 18 47 14',
+    body: 'M37 14 Q29 16 25 32 Q10 70 14 92 Q18 112 43 112 Q68 112 72 92 Q76 70 61 44',
+    gate: 'M61 44 Q56 24 49 15',
   },
   oval: {
     body: 'M36 12 C22 12 18 34 18 60 C18 86 22 108 40 108 C58 108 62 86 62 60',
@@ -27,8 +27,8 @@ const BODIES: Record<CarabinerShape, { body: string; gate: string; weight?: numb
     gate: 'M72 64 V28 Q72 16 60 13',
   },
   steel: {
-    body: 'M38 14 H29 Q23 14 23 20 V100 Q23 112 35 112 H50 Q62 112 60 98 L58 74',
-    gate: 'M58 74 L51 26 Q50 17 46 14',
+    body: 'M40 14 H28 Q22 14 22 20 V100 Q22 112 34 112 H46 Q58 112 58 100 L58 70',
+    gate: 'M58 70 V28 Q58 17 50 14',
     weight: 11,
   },
   key: {
