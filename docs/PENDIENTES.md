@@ -1,6 +1,8 @@
 # Pendientes de VikArg
 
-## RELEVO (2026-11-20, versión publicada 0.102.0): LEER PRIMERO
+## RELEVO (2026-11-21, versión publicada 0.103.0): LEER PRIMERO
+
+**Publicado y en producción: 0.103.0** (release `v0.103.0` con su APK; el aviso de actualización NO se mandó). Pruebas: servidor 293, app 1150, e2e 182 (3 saltadas por diseño) y 6 de actualización (`--workers=1`). **Qué trae desde la 0.102.0:** (1) **Ajustes**: Notificaciones y Copia de seguridad/transferencia en desplegables cerrados con el estado a la vista; «Conectado al servidor» sin la URL salvo que se abran las Conexiones (7 toques a la versión); Rojo nocturno automático y Eliminar mi cuenta en desplegables; (2) **altura y desnivel de los recorridos solo con el GPS alisado** (media recortada a ±100 m, saldo cerrado, altura mínima y máxima de la serie alisada; los recorridos grabados se recalculan una vez, `elevationV = 5`): una caminata llana real pasó de +121/−126 m a +21/−24 m; ver la decisión final y sus límites en la nota «Desnivel inflado por el ruido del GPS» más abajo (el mapa de terreno NO se usa para poner valores). La nota siguiente describe la 0.102.0, base de esta.
 
 **Publicado y en producción: 0.102.0** (release `v0.102.0` con su APK; el aviso de actualización NO se mandó). Pruebas de esa versión: servidor 293, app 1140, e2e 182 (3 saltadas por diseño) y 6 de actualización (`--workers=1`). La nota siguiente describe la 0.100.x, base de esta.
 
