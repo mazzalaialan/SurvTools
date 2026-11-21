@@ -76,6 +76,7 @@
     "anchors": {"title": "Anchors", "desc": "Trees, rocks, slings, equalized anchors, pickets and deadmen"},
     "knotGuide": {"title": "Knot guide", "desc": "By name, by use (rappel, rescue, camp…) or by what you need to do"},
     "ropes": {"title": "Ropes", "desc": "Types, strength and care"},
+    "carabiners": {"title": "Carabiners", "desc": "Types, locks, uses and why the metal matters"},
     "knotGlossary": {"title": "Glossary", "desc": "Working end, standing part, bight, loop…"},
     "inventory": { "title": "Items", "desc": "Stock, batches and expiry dates" },
     "locations": { "title": "Locations", "desc": "Where everything is stored" },

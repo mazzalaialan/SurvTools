@@ -49,6 +49,9 @@
 
 **Reglas que siguen vigiladas:** no publicar sin aprobación explícita; no mandar el aviso de actualización si no lo piden; solo `contacto.vikarg@gmail.com` en contenidos; migraciones del servidor siempre al final de `db.ts`; `p.json` y `viz.png` de la raíz eran restos de pruebas y se borraron el 2026-11-20 (si reaparecen, no son de la app); no usar `pkill` ni `--force`; `/tmp` es RAM.
 
+## Mosquetones en Cabuyería (HECHO el 2026-11-21, sin publicar)
+Tarjeta nueva «Mosquetones» (`/knots/carabiners`) entre Cuerdas y Glosario: regla «aluminio con aluminio, no sobre acero», 7 formas con dibujo, usos, ventajas y desventajas, 4 trabas, resistencias mínimas (EN 12275: 20/7/7 kN) y revisión/descarte plegada. Datos en `modules/knots/carabiners.ts`, dibujo en `CarabinerFigure.tsx`. **Falta:** que una persona con oficio (guía de montaña) revise los textos y las cifras; el portugués muestra el texto en español como el resto de Cabuyería.
+
 ## (Histórico, al 0.93.0) ESTADO ACTUAL (2026-11-19)
 
 **Léase primero.** Resumen del trabajo de la app nativa (Android) y de las versiones 0.86 a 0.93; el detalle de cada cosa está en las notas fechadas más abajo (buscar «2026-11-18»). La sección siguiente («ESTADO ACTUAL 2026-11-15») es **histórica**.

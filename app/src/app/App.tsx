@@ -84,6 +84,7 @@ const ReaderPage = page(() => import('@/modules/library/ReaderPage').then((m) =>
 const AnchorPage = page(() => import('@/modules/knots/AnchorPages').then((m) => ({ default: m.AnchorPage })));
 const AnchorsPage = page(() => import('@/modules/knots/AnchorPages').then((m) => ({ default: m.AnchorsPage })));
 const GlossaryPage = page(() => import('@/modules/knots/InfoPages').then((m) => ({ default: m.GlossaryPage })));
+const CarabinersPage = page(() => import('@/modules/knots/CarabinerPages').then((m) => ({ default: m.CarabinersPage })));
 const RopesPage = page(() => import('@/modules/knots/InfoPages').then((m) => ({ default: m.RopesPage })));
 const KnotGuidePage = page(() => import('@/modules/knots/KnotGuidePage').then((m) => ({ default: m.KnotGuidePage })));
 const KnotPage = page(() => import('@/modules/knots/KnotPage').then((m) => ({ default: m.KnotPage })));
@@ -180,6 +181,7 @@ const router = createHashRouter([
       { path: '/knots/anchors', element: <AnchorsPage /> },
       { path: '/knots/anchors/:id', element: <AnchorPage /> },
       { path: '/knots/ropes', element: <RopesPage /> },
+      { path: '/knots/carabiners', element: <CarabinersPage /> },
       { path: '/knots/glossary', element: <GlossaryPage /> },
       { path: '/training', element: <SectionPage section="training" /> },
       { path: '/training/workouts', element: <TrainingPage /> },

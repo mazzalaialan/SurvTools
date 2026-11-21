@@ -76,6 +76,7 @@
     "anchors": {"title": "Anclajes", "desc": "Árboles, rocas, cintas, anclajes repartidos, estacas y \"hombre muerto\""},
     "knotGuide": {"title": "Guía de nudos", "desc": "Por nombre, por uso (rappel, rescate, campamento…) o por lo que necesitás hacer"},
     "ropes": {"title": "Cuerdas", "desc": "Tipos, resistencia y cuidado"},
+    "carabiners": {"title": "Mosquetones", "desc": "Tipos, trabas, usos y por qué el metal importa"},
     "knotGlossary": {"title": "Glosario", "desc": "Chicote, firme, seno, gaza, cote…"},
     "inventory": { "title": "Artículos", "desc": "Stock, lotes y vencimientos" },
     "locations": { "title": "Ubicaciones", "desc": "Dónde está guardado cada cosa" },

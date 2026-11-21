@@ -118,6 +118,21 @@ test('cabuyería: buscar por uso (rappel → Machard), ficha, práctica, aprendi
   await page.getByLabel('Buscar un nudo').fill('carpa');
   await expect(page.getByTestId('knot-list')).toContainText('Tensor ajustable');
 
+  // Mosquetones: tarjeta propia en Cabuyería, antes del glosario, con la regla del metal, formas, trabas y descarte.
+  await page.goto('/#/knots');
+  const cards = await page.locator('a[href$="/knots/carabiners"], a[href$="/knots/glossary"]').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
+  expect(cards.findIndex((h) => h?.endsWith('/knots/carabiners'))).toBeLessThan(cards.findIndex((h) => h?.endsWith('/knots/glossary')));
+  await page.getByRole('link', { name: /Mosquetones/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Mosquetones' })).toBeVisible();
+  await expect(page.getByTestId('carabiner-metal')).toContainText('aluminio, tiene que correr sobre aluminio, no sobre acero');
+  await expect(page.getByTestId('carabiner-types').locator('svg.carabiner-fig')).toHaveCount(7);
+  await expect(page.getByTestId('carabiner-d')).toContainText('Ventajas');
+  await expect(page.getByTestId('carabiner-d')).toContainText('Desventajas');
+  await expect(page.getByTestId('carabiner-locks').locator('article')).toHaveCount(4);
+  await expect(page.getByTestId('carabiner-lock-twist')).toContainText('Automático de doble acción');
+  await expect(page.getByTestId('carabiner-care-toggle')).toHaveAttribute('aria-expanded', 'false');
+  await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-56-carabiners.png`, fullPage: true });
+
   await page.goto('/#/knots/glossary');
   await expect(page.getByTestId('knot-glossary')).toContainText('Chicote');
 
