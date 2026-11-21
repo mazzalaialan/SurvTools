@@ -762,3 +762,9 @@ Lista en `app/src/modules/knots/pendingSteps.ts` (el cartel sale en la ficha y e
 
 ## Aviso en los libros con derechos (HECHO el 2026-11-21, sin publicar)
 Los libros con derechos muestran: «solo para uso ante emergencias; si te sirven, comprá la obra original del autor en cualquiera de sus formatos». Sale en la leyenda de la biblioteca, en el diálogo del candado de cada libro y arriba del lector (`library.rightsBuy`, es/en/pt). Falta probarlo en el celular.
+
+## Revisar los libros de la biblioteca (pedido el 2026-11-21)
+Hay que darles una revisada a todos los libros, con ejemplos que ya se vieron:
+- **Títulos que no dicen nada:** por ejemplo «FM 3-05.70 (FM 21-76)» (manual de supervivencia del Ejército de EE. UU.). Poner un título entendible (p. ej. «Manual de supervivencia del Ejército de EE. UU.») y dejar el código del manual como dato secundario. Revisar el resto del catálogo con el mismo criterio.
+- **Páginas casi vacías:** en ese mismo libro, las páginas 5, 6, 7 y 8 muestran solo un título y nada más. Ver si es un problema de la conversión (texto o imágenes que no se extrajeron, capítulos cortados) y regenerar el libro. Revisar también si pasa en otros libros.
+- Al terminar: revisar el catálogo completo (títulos, categorías, capítulos y páginas vacías) y regenerar los paquetes que hagan falta.
