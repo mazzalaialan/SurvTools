@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Track } from '@/core/model/types';
 import { addPoint, closeGap, dropOpenGap, finishedTrack, firstPoints, gapLines, joinLastSegments, openGap, SAVER_STEP_M, shouldAdd } from './record';
-import { balancedClimb, closeLoop, isLoop, trackStats, type TrackPoint } from './gpx';
+import { balancedClimb, trackStats, type TrackPoint } from './gpx';
 
 const track = (segments: Track['segments']): Track =>
   ({ id: 'r', name: 'R', desc: '', source: '', link: null, segments, waypoints: [], distanceM: 0, ascentM: 0, descentM: 0, minEle: null, maxEle: null, notes: '', recorded: true, recording: true }) as unknown as Track;
@@ -157,11 +157,15 @@ describe('desnivel con la altura ruidosa del GPS', () => {
     expect(trackStats([seg]).ascentM).toBe(25);
   });
 
-  it('la altura mínima y máxima son las medidas', () => {
-    const seg = walk(50, (i) => 100 + (i % 2 ? 30 : 0));
+  it('la altura mínima y máxima salen de la altura alisada: un salto suelto del GPS no es la cima', () => {
+    // Terreno llano a 100 m con un único punto en 160 m (un salto del GPS): no puede ser la altura máxima.
+    const seg = walk(50, (i) => (i === 25 ? 160 : 100));
     const s = trackStats([seg]);
-    expect(s.minEle).toBe(100);
-    expect(s.maxEle).toBe(130);
+    expect(s.maxEle).toBeLessThan(110);
+    expect(s.minEle).toBeGreaterThan(95);
+    // Una cima sostenida (tramo largo) sí cuenta.
+    const climb = trackStats([walk(80, (i) => 100 + (i > 30 && i < 60 ? 40 : 0))]);
+    expect(climb.maxEle).toBeGreaterThan(135);
   });
 });
 
@@ -176,29 +180,40 @@ describe('subida y bajada cierran la cuenta', () => {
     expect(balancedClimb([])).toEqual({ ascent: 0, descent: 0 });
   });
 
-  it('un circuito (termina donde empezó) tiene la misma subida que bajada; una ida sola, no', () => {
-    expect(closeLoop(18, 23, true)).toEqual({ ascent: 20.5, descent: 20.5 });
-    expect(closeLoop(18, 23, false)).toEqual({ ascent: 18, descent: 23 });
-    const start = { lat: -34.58, lon: -58.63 };
-    expect(isLoop(start, { lat: -34.5805, lon: -58.63 }, 3400)).toBe(true); // a ~55 m
-    expect(isLoop(start, { lat: -34.59, lon: -58.63 }, 3400)).toBe(false); // a ~1,1 km
-    expect(isLoop(start, start, 200)).toBe(false); // demasiado corto para ser un circuito
-    expect(isLoop(undefined, start, 3400)).toBe(false);
+  it('un circuito por caminos distintos no se iguala: cada subida y bajada son las de los datos', () => {
+    // Termina donde empezó (mismo punto, misma altura), pero la ida tiene una loma de 40 m y la vuelta casi no sube: el total de subida y de bajada lo dan los datos.
+    const n = 120;
+    const lat = (i: number) => -34.58 - (i <= n ? i : 2 * n - i) * 0.00009;
+    const ele = (i: number) => (i <= n ? 20 + 40 * Math.sin((Math.PI * i) / n) ** 2 * (i < n / 2 ? 1 : 0.2) : 20 + 3 * Math.sin((Math.PI * (2 * n - i)) / n));
+    const seg: TrackPoint[] = Array.from({ length: 2 * n + 1 }, (_, i) => [lat(i), -58.63 + (i > n ? 0.0004 : 0), ele(i), 1_000_000 + i * 8] as TrackPoint);
+    const s = trackStats([seg]);
+    expect(Math.abs(s.ascentM - s.descentM)).toBeLessThanOrEqual(6); // termina cerca de la altura del inicio, pero no se fuerza la igualdad
+    expect(s.ascentM).toBeGreaterThan(15);
   });
 
-  it('un recorrido de ida y vuelta por el mismo camino da la misma subida y bajada', () => {
-    // Ida: sube 30 m en 1,5 km; vuelta por el mismo camino con la altura del GPS desfasada y ruidosa (como en una caminata real).
-    let seed = 3;
+  it('subida menos bajada es la diferencia de altura entre el inicio y el final, aunque no terminen en el mismo lugar', () => {
+    const seg: TrackPoint[] = Array.from({ length: 120 }, (_, i) => [-34.58 - i * 0.00009, -58.63, 50 + (i < 60 ? i : 120 - i) * 0.4 + 12, 1_000_000 + i * 8] as TrackPoint);
+    const s = trackStats([seg]);
+    expect(s.ascentM - s.descentM).toBeGreaterThanOrEqual(-3);
+    expect(s.ascentM - s.descentM).toBeLessThanOrEqual(3);
+  });
+});
+
+describe('escalones sostenidos del error de altura del GPS', () => {
+  it('tramos largos con el GPS 15 m más alto o más bajo (como en una caminata llana real) no suman casi desnivel', () => {
+    // Terreno llano a 10 m; el error del GPS tiene escalones que duran unos 300 a 600 m (la altura medida salta y se queda).
+    const offset = (i: number) => (i < 27 ? 13 : i < 37 ? 28 : i < 50 ? 14 : i < 56 ? 7 : i < 67 ? 14 : i < 84 ? 30 : 15);
+    let seed = 9;
     const rnd = () => {
       seed = (seed * 1664525 + 1013904223) % 4294967296;
       return seed / 4294967296 - 0.5;
     };
-    const n = 150;
-    const lat = (i: number) => -34.58 - (i <= n ? i : 2 * n - i) * 0.00009;
-    const seg: TrackPoint[] = Array.from({ length: 2 * n + 1 }, (_, i) => [lat(i), -58.63, 20 + 30 * ((i <= n ? i : 2 * n - i) / n) + (i > n ? 4 : 0) + rnd() * 10, 1_000_000 + i * 8] as TrackPoint);
+    const seg: TrackPoint[] = Array.from({ length: 100 }, (_, i) => [-34.58 - i * 0.0003, -58.63, 10 + offset(i) + rnd() * 8, 1_000_000 + i * 20] as TrackPoint);
     const s = trackStats([seg]);
-    expect(s.ascentM).toBe(s.descentM);
-    expect(s.ascentM).toBeGreaterThan(20);
-    expect(s.ascentM).toBeLessThan(45);
+    // Los escalones suman ~75 m de movimiento (+15, −14, −7, +7, +16, −15): con solo el GPS no se pueden distinguir de una subida real, así que el desnivel queda en ese orden.
+    // Lo que el alisado sí saca es el ruido de punto a punto: sin él sumaría varios cientos de metros.
+    expect(s.ascentM).toBeLessThan(60);
+    expect(s.descentM).toBeLessThan(60);
+    expect(s.ascentM + s.descentM).toBeLessThan(2 * 75);
   });
 });

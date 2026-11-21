@@ -28,7 +28,7 @@ describe('desnivel de los recorridos ya grabados', () => {
     expect(needsElevationFix(track({ recorded: false }))).toBe(false); // un GPX importado
   });
 
-  it('un recorrido llano con la altura ruidosa pasa de cientos de metros a casi nada y queda marcado', () => {
+  it('un recorrido llano con la altura ruidosa pasa de cientos de metros a casi nada, con altura mínima y máxima alisadas, y queda marcado', () => {
     // Un punto cada ~33 m con la altura moviéndose al azar (ruido repetible) como en una caminata real en terreno llano: error fijo, deriva lenta y ruido rápido.
     let seed = 5;
     const rnd = () => {
