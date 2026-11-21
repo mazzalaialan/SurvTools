@@ -62,7 +62,8 @@ def main():
             rows.append({'id': bj.parent.name, 'score': 99, 'flags': ['book.json ilegible']}); continue
         chs = b.get('chapters', []); pages = b.get('pages') or 0
         flags = title_flags(b.get('title', ''), b.get('author', ''))
-        if pages > 200 and len(chs) <= max(2, pages // 120):  # hasta ~200 páginas un solo capítulo es por diseño (SPLIT_PAGES) flags.append(f'pocos capítulos ({len(chs)}) para {pages} páginas')
+        # hasta ~200 páginas un solo capítulo es por diseño (SPLIT_PAGES)
+        if pages > 200 and len(chs) <= max(2, pages // 120):  flags.append(f'pocos capítulos ({len(chs)}) para {pages} páginas')
         small, frag = chapter_flags(chs, bj.parent)
         if chs and small / len(chs) >= 0.3 and small >= 3: flags.append(f'{small} de {len(chs)} capítulos casi vacíos (<300 caracteres)')
         if chs and frag / len(chs) >= 0.25 and frag >= 2: flags.append(f'{frag} de {len(chs)} títulos de capítulo parecen fragmentos')
