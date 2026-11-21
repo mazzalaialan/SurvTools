@@ -3351,6 +3351,8 @@
     "gpsError": "Couldn't read the GPS. Choose a waypoint from the list."
   },
   "knots": {
+    "pendingPill": "PENDING VERIFICATION",
+    "pendingText": "This step could not be checked against a real reference yet: the drawing or text may contain errors. Do not rely on it alone.",
     "betaPill": "BETA",
     "betaNotReviewed": "A person has not reviewed them yet: do not rely on the drawing alone, compare it with the step text or another source before trusting a knot with your life.",
     "beta": "Beta feature, under development: the steps and drawings may contain errors.",

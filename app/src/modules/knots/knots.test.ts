@@ -4,6 +4,7 @@ import { NEEDS } from './content';
 import { creditFor, KNOT_BY_ID, KNOTS, knotImages } from './knots';
 import { searchKnots } from './search';
 import DIAGRAMS from './diagrams.json';
+import { PENDING_STEPS } from './pendingSteps';
 
 const all = { query: '', use: null, type: null, props: [] };
 
@@ -109,3 +110,14 @@ describe('anclajes', () => {
     expect(Math.round(Math.PI * 30)).toBe(94);
   });
 });
+
+describe('pasos pendientes de verificar', () => {
+  it('cada nudo y cada número de paso listados existen', () => {
+    for (const [id, p] of Object.entries(PENDING_STEPS)) {
+      const k = KNOT_BY_ID.get(id);
+      expect(k, id).toBeDefined();
+      if (Array.isArray(p)) for (const n of p) expect(n >= 1 && n <= k!.steps.length, `${id} paso ${n}`).toBe(true);
+    }
+  });
+});
+

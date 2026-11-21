@@ -6801,3 +6801,20 @@ button.country-pack-del {
 :root[data-theme='red'] .scanner-video {
   filter: grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(0.8);
 }
+
+/* Paso de un nudo pendiente de verificar (pendingSteps.ts): cartel chico con ícono y texto, color de atención. */
+.step-pending {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 6px 10px;
+  border: 1px solid var(--warn, var(--accent));
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--warn, var(--accent)) 12%, transparent);
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+.step-pending svg { flex: none; margin-top: 1px; color: var(--warn, var(--accent)); }

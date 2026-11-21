@@ -3350,6 +3350,8 @@
     "gpsError": "No se pudo leer el GPS. Elegí un waypoint de la lista."
   },
   "knots": {
+    "pendingPill": "PENDIENTE DE VERIFICAR",
+    "pendingText": "Este paso todavía no se pudo comprobar contra una referencia real: el dibujo o el texto pueden tener errores. No confíes solo en él.",
     "betaPill": "BETA",
     "betaNotReviewed": "Todavía no los revisó una persona: no te guíes solo por el dibujo, comparalo con el texto del paso o con otra fuente antes de confiar tu vida a un nudo.",
     "beta": "Opción beta, en desarrollo: los pasos y los dibujos pueden contener errores.",

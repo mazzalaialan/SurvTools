@@ -13,6 +13,8 @@ import { tl } from './KnotGuidePage';
 import { KnotFigure } from './KnotFigure';
 import { Notice } from '@/ui/Notice';
 import { BetaNotice } from './BetaNotice';
+import { PendingStepNotice } from './PendingStepNotice';
+import { isStepPending } from './pendingSteps';
 
 const src = (file: string) => `${import.meta.env.BASE_URL}knots/${file}`;
 
@@ -58,6 +60,7 @@ function Practice({ knot, onClose }: { knot: Knot; onClose: () => void }) {
       {/* Los dibujos paso a paso son nuevos: se avisa que están en prueba y se puede reportar uno mal. */}
       <BetaNotice name={tl(knot.name, lang)} n={i + 1} testId="practice-beta" onNavigate={onClose} />
       {picture && <KnotFigure className="knot-practice-img" file={picture} alt={t('knots.stepAlt', { n: i + 1 })} testId="practice-figure" />}
+      {isStepPending(knot.id, i + 1) && <PendingStepNotice testId="practice-pending" />}
       <p className="knot-practice-count">{t('knots.stepOf', { n: i + 1, total: knot.steps.length })}</p>
       <p className="knot-practice-text" data-testid="practice-step">
         {tl(step.text, lang)}
@@ -215,6 +218,7 @@ export function KnotPage() {
           {knot.steps.map((s, n) => (
             <li key={n}>
               <p style={{ margin: 0 }}>{tl(s.text, lang)}</p>
+              {isStepPending(knot.id, n + 1) && <PendingStepNotice testId={`step-pending-${n + 1}`} />}
               {s.img && <KnotFigure className="knot-step-img" file={s.img} alt={t('knots.stepAlt', { n: n + 1 })} />}
             </li>
           ))}

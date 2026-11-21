@@ -4826,7 +4826,9 @@
   "gpsError": "Não foi possível ler o GPS. Escolha um waypoint da lista."
  },
  "knots": {
-  "betaPill": "BETA",
+  "pendingPill": "PENDENTE DE VERIFICAÇÃO",
+    "pendingText": "Este passo ainda não pôde ser conferido com uma referência real: o desenho ou o texto podem ter erros. Não confie só nele.",
+    "betaPill": "BETA",
   "betaNotReviewed": "Ainda não foram revisados por uma pessoa: não se guie só pelo desenho, compare-o com o texto do passo ou com outra fonte antes de confiar sua vida a um nó.",
   "beta": "Opção beta, em desenvolvimento: os passos e os desenhos podem conter erros.",
   "betaLink": "Avisar um erro",
