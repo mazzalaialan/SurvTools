@@ -39,18 +39,18 @@ test('guía de primeros auxilios: lo primero, evaluación paso a paso y entorno'
   await expect(node).toContainText('Apretá directo sobre la herida');
   await expect(page.getByTestId('guide-calls').getByRole('link', { name: '107' })).toHaveAttribute('href', 'tel:107');
   await page.getByRole('button', { name: 'Brazo o pierna' }).click();
-  await page.getByRole('button', { name: 'No, sigue saliendo en chorro o empapando' }).click();
+  await page.getByRole('button', { name: 'No cede con la presión, sigue empapando' }).click();
   await expect(node).toContainText('Torniquete');
   await expect(node).toContainText('No lo aflojes ni lo saques');
 
   // «Volver al paso anterior» deshace la última respuesta (por si se eligió mal) y se puede volver a elegir.
   await page.getByTestId('guide-back').click();
   await expect(node).not.toContainText('No lo aflojes ni lo saques');
-  await expect(page.getByRole('button', { name: 'No, sigue saliendo en chorro o empapando' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'No cede con la presión, sigue empapando' })).toBeVisible();
   await page.getByTestId('guide-back').click();
   await expect(page.getByRole('button', { name: 'Brazo o pierna' })).toBeVisible();
   await page.getByRole('button', { name: 'Brazo o pierna' }).click();
-  await page.getByRole('button', { name: 'No, sigue saliendo en chorro o empapando' }).click();
+  await page.getByRole('button', { name: 'No cede con la presión, sigue empapando' }).click();
   await expect(node).toContainText('No lo aflojes ni lo saques');
 
   // Zona agreste: aparecen los pasos de evacuación y el acceso a Mi ubicación.
@@ -62,7 +62,7 @@ test('guía de primeros auxilios: lo primero, evaluación paso a paso y entorno'
   // Volver deshace el último paso.
   await page.getByRole('button', { name: 'Volver' }).first().click();
   await expect(page.getByRole('button', { name: 'Brazo o pierna' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Sí, paró' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Poca: paró o baja con la presión' })).toBeVisible();
 
   // Buscar una situación: mordedura de serpiente, con el Centro de Intoxicaciones.
   await page.goto('/#/first-aid/guides');

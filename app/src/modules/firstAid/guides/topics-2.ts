@@ -90,9 +90,9 @@ export const TOPICS_2: Topic[] = [
         title: l('M · Torniquete y relleno', 'M · Tourniquet and packing', 'M · Torniquete e preenchimento'),
         steps: [
           s(
-            'Si no para en un brazo o pierna y sigue saliendo en chorro: torniquete 5 a 7 cm por encima de la herida, sobre la piel, y anotá la hora.',
-            'If it does not stop on an arm or leg and keeps spurting: tourniquet 5 to 7 cm above the wound, on the skin, and write down the time.',
-            'Se não parar em um braço ou perna e continuar esguichando: torniquete 5 a 7 cm acima do ferimento, sobre a pele, e anote o horário.',
+            'Sangrado grande en un brazo o pierna (chorro o charco), o que no cede con la presión: torniquete 5 a 7 cm por encima de la herida, sobre la piel, solo si hiciste un curso de primeros auxilios. Anotá la hora en que lo pusiste.',
+            'Heavy bleeding on an arm or leg (spurting or pooling), or not stopping with pressure: tourniquet 5 to 7 cm above the wound, on the skin, only if you have taken a first-aid course. Write down the time you put it on.',
+            'Sangramento grande em um braço ou perna (esguicho ou poça), ou que não cede com a pressão: torniquete 5 a 7 cm acima do ferimento, sobre a pele, só se você fez um curso de primeiros socorros. Anote o horário em que o colocou.',
           ),
           s(
             'Donde no va torniquete (ingle, axila, cuello) o si la presión no alcanza: rellená la herida con gasa hemostática y apretá al menos 3 minutos sin soltar.',
@@ -109,7 +109,7 @@ export const TOPICS_2: Topic[] = [
             'Sources differ on tourniquets for ordinary wounds (Ministry of Health manual 2016: do not use; TCCC 2026 and TECC 2024: use if severe limb bleeding does not stop). The app’s bleeding guide explains it.',
             'As fontes divergem sobre o torniquete em ferimentos comuns (manual do Ministério da Saúde 2016: não usar; TCCC 2026 e TECC 2024: usar se o sangramento grave de um membro não ceder). O guia de sangramento do app explica isso.',
           ),
-          no('No aflojes un torniquete puesto: eso lo decide el médico.', 'Do not loosen a tourniquet once applied: a doctor decides that.', 'Não afrouxe um torniquete colocado: isso quem decide é o médico.'),
+          no('No aflojes un torniquete puesto: lo saca el médico en un centro de atención.', 'Do not loosen a tourniquet once applied: the doctor takes it off at a care center.', 'Não afrouxe um torniquete colocado: quem tira é o médico em um centro de atendimento.'),
         ],
         calls: ['same', 'emergency'],
         options: [

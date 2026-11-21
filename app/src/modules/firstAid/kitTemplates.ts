@@ -65,7 +65,7 @@ export const CATALOG: Record<string, CatalogItem> = {
     group: 'bleeding',
     note: l('Para un sangrado grave de brazo o pierna que no para apretando. Se coloca 5 a 7 cm por encima de la herida. Practicá antes de necesitarlo.', 'For severe arm or leg bleeding that does not stop with pressure. Place it 5 to 7 cm above the wound. Practice before you need it.'),
     caution: l(
-      'Las fuentes difieren: el Manual de Primeros Auxilios del Ministerio de Salud de la Nación (2016) aconseja no usar torniquete en heridas comunes; las guías TCCC 2026 y TECC 2024 lo recomiendan cuando una hemorragia grave de miembro no cede con presión directa. En la guía de la app: primero presión; torniquete solo si sigue saliendo en chorro.',
+      'Las fuentes difieren: el Manual de Primeros Auxilios del Ministerio de Salud de la Nación (2016) aconseja no usar torniquete en heridas comunes; las guías TCCC 2026 y TECC 2024 lo recomiendan cuando una hemorragia grave de miembro no cede con presión directa. En la guía de la app: si la pérdida es poca, primero presión; si es grande (chorro o charco) o no cede, torniquete directo, solo con curso de primeros auxilios.',
       'Sources differ: the Argentine Ministry of Health first-aid manual (2016) advises against tourniquets for ordinary wounds; TCCC 2026 and TECC 2024 recommend them when severe limb bleeding does not respond to direct pressure. In the app guide: pressure first; tourniquet only if it keeps spurting.',
     ),
   },
