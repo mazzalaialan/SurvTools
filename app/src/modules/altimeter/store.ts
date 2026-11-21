@@ -4,7 +4,7 @@ import { addClimb, EMPTY_CLIMB, pushSample, type Alarm, type AltSample, type Cli
 /** Corrección que se suma a la altura del GPS. */
 export interface Calibration {
   offset: number;
-  kind: 'map' | 'manual';
+  kind: 'map' | 'manual' | 'baro';
   at: number;
 }
 

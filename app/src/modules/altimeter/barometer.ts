@@ -26,3 +26,12 @@ export function seaLevelPressure(hPa: number, altitudeM: number): number {
 export function plausiblePressure(hPa: number): boolean {
   return Number.isFinite(hPa) && hPa >= 280 && hPa <= 1100;
 }
+
+/**
+ * Corrección que se suma a la altura sin calibrar (la del GPS alisada o la de presión) para que coincida con la del barómetro calibrado con la presión
+ * al nivel del mar del pronóstico (`seaLevelHpa`). Es una calibración independiente del GPS y del mapa; su error es el de esa presión (±1 hPa son unos ±8 m).
+ */
+export function barometerOffset(hPa: number, seaLevelHpa: number, rawAltitudeM: number): number | null {
+  if (!plausiblePressure(hPa) || !plausiblePressure(seaLevelHpa)) return null;
+  return pressureAltitude(hPa, seaLevelHpa) - rawAltitudeM;
+}

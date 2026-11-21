@@ -17,6 +17,7 @@ import { useWaypoints } from '@/modules/waypoints/store';
 import { TrackEcoregions } from '@/modules/ecoregions/EcoregionViews';
 import { TrackGeology } from '@/modules/layers/GeologyViews';
 import { ElevationProfile } from './ElevationProfile';
+import { HeightWarning } from './HeightWarning';
 import { useRecorder } from './recorder';
 import { formatDuration } from './Recording';
 import { useTraining } from '@/modules/training/store';
@@ -195,6 +196,7 @@ function TrackDetail({ track }: { track: Track }) {
         </dl>
         {track.drive && <DriveStats track={track} />}
         <ElevationProfile track={track} />
+        <HeightWarning track={track} />
         {track.gaps && track.gaps.length > 0 && (
           <div className="stack" style={{ gap: 4 }} data-testid="track-gaps">
             <strong>{t('tracks.gapsTitle')}</strong>

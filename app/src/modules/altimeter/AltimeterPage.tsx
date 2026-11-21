@@ -11,7 +11,8 @@ import { elevationAt } from '@/modules/maps/measure';
 import { GpsStatus } from '@/modules/waypoints/components';
 import { Segmented } from '@/ui/Segmented';
 import { alarmReached, MAX_VERTICAL_ACCURACY, mapOffset, reachAlarm, smoothAltitude, type AltitudeSource, type AltSample } from './altimeter';
-import { pressureAltitude } from './barometer';
+import { barometerOffset, pressureAltitude } from './barometer';
+import { fetchForecast } from '@/modules/weather/forecast';
 import { useAltimeter } from './store';
 import { Notice } from '@/ui/Notice';
 import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
@@ -167,9 +168,25 @@ export function AltimeterPage() {
   const alarmM = num(alarmValue);
 
   const unit = altitudeUnit(units);
+  // Calibrar con el barómetro: su presión + la presión al nivel del mar del pronóstico (necesita conexión una vez; no depende del GPS ni del mapa).
+  const weatherUrl = useSettings((s) => s.settings.weatherUrl);
+  const [baroCal, setBaroCal] = useState<'idle' | 'busy' | 'failed'>('idle');
+  async function calibrateWithBarometer() {
+    if (!fix || !pressure || smoothed === null) return;
+    setBaroCal('busy');
+    try {
+      const f = await fetchForecast(weatherUrl, fix.lat, fix.lon);
+      const offset = barometerOffset(pressure.hPa, f.current.pressure, smoothed);
+      if (offset === null) throw new Error('pressure');
+      calibrate({ offset, kind: 'baro', at: Date.now() });
+      setBaroCal('idle');
+    } catch {
+      setBaroCal('failed');
+    }
+  }
   const calibrationLabel = !calibration
     ? t('altimeter.uncalibrated')
-    : t(calibration.kind === 'map' ? 'altimeter.calibratedMap' : 'altimeter.calibratedManual', {
+    : t(calibration.kind === 'map' ? 'altimeter.calibratedMap' : calibration.kind === 'baro' ? 'altimeter.calibratedBaro' : 'altimeter.calibratedManual', {
         offset: `${calibration.offset >= 0 ? '+' : '−'}${fmt(Math.abs(calibration.offset))}`,
       });
 
@@ -246,6 +263,16 @@ export function AltimeterPage() {
         >
           {t('altimeter.calMap')}
         </button>
+        {baroAvailable && (
+          <>
+            <button className="btn" type="button" disabled={!pressure || smoothed === null || !fix || baroCal === 'busy'} onClick={() => void calibrateWithBarometer()} data-testid="alt-cal-baro">
+              {t('altimeter.calBaro')}
+            </button>
+            <p className="hint" style={{ margin: 0 }} role={baroCal === 'failed' ? 'alert' : undefined}>
+              {t(baroCal === 'failed' ? 'altimeter.calBaroFailed' : 'altimeter.calBaroHint')}
+            </p>
+          </>
+        )}
         <div className="field">
           <label htmlFor="alt-known">{t('altimeter.calKnown', { unit })}</label>
           <input id="alt-known" className="input" inputMode="numeric" value={known} onChange={(e) => setKnown(e.target.value)} placeholder="1250" />

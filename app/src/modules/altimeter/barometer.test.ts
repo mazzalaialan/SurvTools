@@ -40,3 +40,21 @@ describe('altura por presión (atmósfera estándar)', () => {
     expect(plausiblePressure(NaN)).toBe(false);
   });
 });
+
+describe('calibrar con el barómetro y la presión del pronóstico', () => {
+  it('la corrección lleva la altura sin calibrar a la de presión con el nivel del mar real', async () => {
+    const { barometerOffset, pressureAltitude, seaLevelPressure } = await import('./barometer');
+    // A 1250 m con 1020 hPa al nivel del mar: la presión medida es la de esa altura.
+    const hPa = 1020 * Math.pow(1 - 1250 / 44330.77, 1 / 0.190284);
+    expect(seaLevelPressure(hPa, 1250)).toBeCloseTo(1020, 3);
+    // El GPS alisado daba 1270 m: la corrección es −20 m y la altura queda en 1250.
+    const off = barometerOffset(hPa, 1020, 1270)!;
+    expect(off).toBeCloseTo(-20, 1);
+    expect(1270 + off).toBeCloseTo(pressureAltitude(hPa, 1020), 3);
+  });
+  it('sin presiones creíbles no calibra', async () => {
+    const { barometerOffset } = await import('./barometer');
+    expect(barometerOffset(5, 1013, 100)).toBeNull();
+    expect(barometerOffset(900, 2000, 100)).toBeNull();
+  });
+});
