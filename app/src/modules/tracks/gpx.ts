@@ -151,9 +151,51 @@ export function smoothAlong(along: number[], values: (number | null)[]): (number
   return out;
 }
 
+/** Si el recorrido termina a menos de esta distancia (m) de donde empezó, es un circuito: lo que sube tiene que ser igual a lo que baja. */
+export const LOOP_MAX_GAP_M = 100;
+/** Un circuito más corto que esto no se considera (ida y vuelta de unos metros). */
+const LOOP_MIN_LENGTH_M = 400;
+
+/**
+ * Subida y bajada de una serie de alturas ya alisada: cuenta los cambios de más de `threshold` y, al final, suma lo que quedó sin contar, así que
+ * subida menos bajada es exactamente la diferencia de altura entre el primer y el último punto (el umbral solo descarta ondas, no pierde el saldo).
+ */
+export function balancedClimb(heights: number[], threshold = ELEVATION_THRESHOLD_M): { ascent: number; descent: number } {
+  let ascent = 0;
+  let descent = 0;
+  if (heights.length === 0) return { ascent, descent };
+  let ref = heights[0]!;
+  for (const h of heights.slice(1)) {
+    if (h - ref >= threshold) {
+      ascent += h - ref;
+      ref = h;
+    } else if (ref - h >= threshold) {
+      descent += ref - h;
+      ref = h;
+    }
+  }
+  const rest = heights.at(-1)! - ref;
+  if (rest > 0) ascent += rest;
+  else descent -= rest;
+  return { ascent, descent };
+}
+
+/** En un circuito (terminó donde empezó) subida y bajada son iguales: la diferencia que quede es del alisado y del error de la altura, no del terreno. */
+export function closeLoop(ascent: number, descent: number, loop: boolean): { ascent: number; descent: number } {
+  if (!loop) return { ascent, descent };
+  const both = (ascent + descent) / 2;
+  return { ascent: both, descent: both };
+}
+
+/** ¿El recorrido es un circuito? Termina cerca de donde empezó y no es cortísimo. */
+export function isLoop(first: { lat: number; lon: number } | undefined, last: { lat: number; lon: number } | undefined, lengthM: number): boolean {
+  return !!first && !!last && lengthM >= LOOP_MIN_LENGTH_M && distanceMeters(first, last) <= LOOP_MAX_GAP_M;
+}
+
 /**
  * Distancia y desnivel. El desnivel se calcula sobre la altura alisada (ver `smoothElevations`) y acumula solo cambios de más de 5 m, para no sumar
- * el ruido de la altura del GPS. La altura mínima y máxima son las medidas, sin alisar.
+ * el ruido de la altura del GPS; lo que queda sin contar al final se suma (subida menos bajada = diferencia entre el inicio y el final) y en un circuito
+ * (termina donde empezó) subida y bajada son iguales. La altura mínima y máxima son las medidas, sin alisar.
  */
 export function trackStats(segments: TrackPoint[][]): TrackStats {
   let distanceM = 0;
@@ -163,25 +205,23 @@ export function trackStats(segments: TrackPoint[][]): TrackStats {
   let maxEle: number | null = null;
   for (const seg of segments) {
     const smooth = smoothElevations(seg);
-    let ref: number | null = null;
+    const heights: number[] = [];
     for (let i = 0; i < seg.length; i++) {
       const [lat, lon, ele] = seg[i]!;
       if (i > 0) distanceM += distanceMeters({ lat: seg[i - 1]![0], lon: seg[i - 1]![1] }, { lat, lon });
       if (ele === null) continue;
       minEle = minEle === null ? ele : Math.min(minEle, ele);
       maxEle = maxEle === null ? ele : Math.max(maxEle, ele);
-      const e = smooth[i]!;
-      if (ref === null) ref = e;
-      else if (e - ref >= ELEVATION_THRESHOLD_M) {
-        ascentM += e - ref;
-        ref = e;
-      } else if (ref - e >= ELEVATION_THRESHOLD_M) {
-        descentM += ref - e;
-        ref = e;
-      }
+      heights.push(smooth[i]!);
     }
+    const c = balancedClimb(heights);
+    ascentM += c.ascent;
+    descentM += c.descent;
   }
-  return { distanceM, ascentM: Math.round(ascentM), descentM: Math.round(descentM), minEle, maxEle };
+  const first = segments.find((s) => s.length)?.[0];
+  const last = [...segments].reverse().find((s) => s.length)?.at(-1);
+  const closed = closeLoop(ascentM, descentM, isLoop(first && { lat: first[0], lon: first[1] }, last && { lat: last[0], lon: last[1] }, distanceM));
+  return { distanceM, ascentM: Math.round(closed.ascent), descentM: Math.round(closed.descent), minEle, maxEle };
 }
 
 /**

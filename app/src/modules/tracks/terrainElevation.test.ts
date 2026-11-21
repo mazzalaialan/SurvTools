@@ -7,13 +7,19 @@ import type { TrackPoint } from './gpx';
 import { needsTerrain, PROFILE_POINTS, resampleProfile, TERRAIN_V, terrainStats, withTerrain } from './terrainElevation';
 
 /** Terreno de mentira: cada píxel del mundo (a zoom 12) vale `height(gx, gy)`; las teselas se arman al pedirlas. */
-const world =
-  (height: (gx: number, gy: number) => number): HeightLoader =>
-  async (x, y) => {
-    const tile = new Float32Array(SLOPE_TILE * SLOPE_TILE);
-    for (let py = 0; py < SLOPE_TILE; py++) for (let px = 0; px < SLOPE_TILE; px++) tile[py * SLOPE_TILE + px] = height(x * SLOPE_TILE + px, y * SLOPE_TILE + py);
+const world = (height: (gx: number, gy: number) => number): HeightLoader => {
+  const tiles = new Map<string, Float32Array>();
+  return async (x, y) => {
+    const key = `${x}/${y}`;
+    let tile = tiles.get(key);
+    if (!tile) {
+      tile = new Float32Array(SLOPE_TILE * SLOPE_TILE);
+      for (let py = 0; py < SLOPE_TILE; py++) for (let px = 0; px < SLOPE_TILE; px++) tile[py * SLOPE_TILE + px] = height(x * SLOPE_TILE + px, y * SLOPE_TILE + py);
+      tiles.set(key, tile);
+    }
     return tile;
   };
+};
 
 /** Píxel del mundo (zoom 12) donde empieza el recorrido de las pruebas, y cuántos píxeles ocupa su primer kilómetro aprox. */
 const GX0 = Math.floor(((-58.63 + 180) / 360) * 2 ** 12 * SLOPE_TILE);
@@ -44,13 +50,31 @@ describe('altura del terreno de un recorrido', () => {
     expect(s!.profile[0]!).toBeLessThan(s!.profile.at(-1)!);
   });
 
-  it('el ruido del propio modelo de terreno no se suma como desnivel (pero la altura mínima y máxima son las del mapa)', async () => {
-    // Terreno llano con ±8 m de ruido de píxel a píxel: sin alisar sumaría cientos de metros de subidas y bajadas que no existen.
+  it('el ruido del propio modelo de terreno no se suma como desnivel ni da mínimas y máximas que no existen', async () => {
+    // Terreno llano a 20 m con ±8 m de ruido de píxel a píxel: sin alisar sumaría cientos de metros de desnivel y daría extremos de 12 y 28 m.
     const noisy = world((gx) => 20 + ((gx * 7919) % 17) - 8);
     const s = await terrainStats(path(), noisy);
     expect(s!.ascentM).toBeLessThan(10);
     expect(s!.descentM).toBeLessThan(10);
-    expect(s!.maxEle - s!.minEle).toBeGreaterThan(4); // el rango sale tal cual del mapa
+    expect(s!.minEle).toBeGreaterThan(16);
+    expect(s!.maxEle).toBeLessThan(24);
+  });
+
+  it('un pozo de un solo píxel no cambia la altura mínima', async () => {
+    const pit = world((gx) => (gx === GX0 + 40 ? -30 : 10));
+    const s = await terrainStats(path(), pit);
+    expect(s!.minEle).toBeGreaterThan(8);
+    expect(s!.maxEle).toBeLessThan(12);
+  });
+
+  it('en un circuito (termina donde empezó) la subida y la bajada son iguales', async () => {
+    const wavy = world((gx) => 10 + 6 * Math.sin((gx - GX0) / 18));
+    const out = await terrainStats(path(), wavy); // la ida termina lejos del inicio: no es circuito
+    const back = [...path(), ...path().reverse()];
+    const loop = await terrainStats(back, wavy);
+    expect(loop!.ascentM).toBe(loop!.descentM);
+    expect(loop!.ascentM).toBeGreaterThan(0);
+    expect(out!.ascentM).not.toBeNull();
   });
 
   it('sin datos de elevación (sin conexión y sin zona descargada): no hay valores, se queda con el GPS', async () => {

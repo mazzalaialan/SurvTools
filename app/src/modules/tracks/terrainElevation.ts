@@ -1,10 +1,10 @@
 import { repos } from '@/core/db/repository';
 import { touch } from '@/core/model/entity';
 import type { Track } from '@/core/model/types';
-import { climb, summarizePath, type HeightLoader } from '@/modules/maps/measure';
+import { summarizePath, type HeightLoader } from '@/modules/maps/measure';
 import { useTraining } from '@/modules/training/store';
 import { ELEVATION_V } from './elevationFix';
-import { smoothAlong } from './gpx';
+import { balancedClimb, closeLoop, isLoop, smoothAlong } from './gpx';
 import { useTracks } from './store';
 
 /**
@@ -16,8 +16,8 @@ import { useTracks } from './store';
 
 /** Cuántas alturas se guardan del perfil: sobra para dibujarlo (el gráfico mide ~300 px) y pesa poco. */
 export const PROFILE_POINTS = 120;
-/** Versión del cálculo de la altura del terreno: si cambia, los recorridos se recalculan una vez. 2 = desnivel sobre el terreno alisado. */
-export const TERRAIN_V = 2;
+/** Versión del cálculo de la altura del terreno: si cambia, los recorridos se recalculan una vez. 4 = todo (mínima, máxima, perfil y desnivel) sobre el terreno alisado, con el saldo cerrado y los circuitos con subida igual a bajada. */
+export const TERRAIN_V = 4;
 
 export interface TerrainStats {
   minEle: number;
@@ -51,20 +51,25 @@ export function resampleProfile(profile: [number, number][], n = PROFILE_POINTS)
 export async function terrainStats(points: { lat: number; lon: number }[], load?: HeightLoader): Promise<TerrainStats | null> {
   if (points.length < 2) return null;
   const s = await summarizePath(points, load);
-  if (s.ascent === null || s.descent === null || s.min === null || s.max === null || s.profile.length < 2) return null;
-  // El desnivel se cuenta sobre el terreno alisado como el del GPS: el modelo (~30 m por punto) también trae ruido de punto a punto, que sumado crudo
-  // inflaba el desnivel (medido: 35 m crudos contra ~20 m alisados en una caminata llana de 3,4 km). La altura mínima, la máxima y el perfil son las del mapa.
+  if (s.min === null || s.max === null || s.profile.length < 2) return null;
+  // Todo sale del terreno ALISADO (media recortada a ±100 m a lo largo del recorrido, como la altura del GPS): el modelo (~30 m por punto) tiene ruido de píxel
+  // a píxel que da mínimas y máximas que no existen (medido en una caminata llana: 2,4 y 15,3 m crudos; alisado 6,9 y 14,4 m, con un promedio de 9,8 m que coincide
+  // con el de otra fuente independiente, Copernicus: 7 a 11 m, promedio 9,4 m) y suma desnivel de más (35 m crudos contra ~20 m alisados). Una cima aguda baja unos
+  // metros, que es lo que ya pasa con el propio modelo.
   const smooth = smoothAlong(
     s.profile.map((p) => p[0]),
     s.profile.map((p) => p[1]),
   ) as number[];
-  const { ascent, descent } = climb(smooth);
+  // Lo que sube y lo que baja cierran la cuenta (y en un circuito, a la ida y a la vuelta del mismo punto, son iguales).
+  const climbed = balancedClimb(smooth);
+  const { ascent, descent } = closeLoop(climbed.ascent, climbed.descent, isLoop(points[0], points.at(-1), s.distance));
+  const along = s.profile.map((p, i) => [p[0], smooth[i]!] as [number, number]);
   return {
-    minEle: s.min,
-    maxEle: s.max,
+    minEle: Math.min(...smooth),
+    maxEle: Math.max(...smooth),
     ascentM: Math.round(ascent),
     descentM: Math.round(descent),
-    profile: resampleProfile(s.profile).map((h) => Math.round(h * 10) / 10),
+    profile: resampleProfile(along).map((h) => Math.round(h * 10) / 10),
   };
 }
 

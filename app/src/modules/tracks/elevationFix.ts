@@ -5,11 +5,12 @@ import { useTraining } from '@/modules/training/store';
 import { trackStats } from './gpx';
 import { useTracks } from './store';
 
-/** Versión actual del cálculo del desnivel (ver `trackStats`): 2 = con la altura alisada. */
-export const ELEVATION_V = 2;
+/** Versión actual del cálculo del desnivel (ver `trackStats`): 3 = con la altura alisada y el saldo cerrado (circuitos con subida igual a bajada). */
+export const ELEVATION_V = 3;
 
 /** ¿Hay que recalcular el desnivel de este recorrido? Solo los grabados con la app (con el GPS del celular, que es el ruidoso) y todavía con el cálculo viejo. */
-export const needsElevationFix = (t: Track): boolean => t.recorded === true && !t.recording && t.elevationV !== ELEVATION_V;
+// Los que tienen la altura del terreno la recalcula `terrainElevation` (no se pisa con la del GPS).
+export const needsElevationFix = (t: Track): boolean => t.recorded === true && !t.recording && !t.terrain && t.elevationV !== ELEVATION_V;
 
 /** El recorrido con el desnivel recalculado con el cálculo actual (a partir de sus puntos guardados). */
 export function withFixedElevation(t: Track): Track {

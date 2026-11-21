@@ -45,7 +45,9 @@ export function ElevationProfile({ track }: { track: Track }) {
     const span = Math.max(1, max - min);
     const total = Math.max(1, pts.at(-1)![0] - pts[0]![0]);
     const line = pts.map(([d, e]) => `${(((d - pts[0]![0]) / total) * W).toFixed(1)},${(H - ((e - min) / span) * (H - 6) - 3).toFixed(1)}`).join(' ');
-    return { line, area: `0,${H} ${line} ${W},${H}`, min, max, terrain: !!(terrain && terrain.length >= 2) };
+    const fromTerrain = !!(terrain && terrain.length >= 2);
+    // Con el terreno, el pie dice lo mismo que el resumen del recorrido (la mínima y la máxima del mapa, no las del perfil reducido a unos pocos puntos).
+    return { line, area: `0,${H} ${line} ${W},${H}`, min: fromTerrain && track.minEle !== null ? track.minEle : min, max: fromTerrain && track.maxEle !== null ? track.maxEle : max, terrain: fromTerrain };
   }, [track]);
   if (!chart) return null;
   return (
