@@ -159,7 +159,7 @@ export function KnotGuidePage() {
       {results.length === 0 ? (
         <p className="hint">{t('knots.noResults')}</p>
       ) : (
-        <ul className="list" data-testid="knot-list">
+        <ul className="list list-flat" data-testid="knot-list">
           {results.map((k) => (
             <KnotRow key={k.id} knot={k} learned={learnedSet.has(k.id)} />
           ))}

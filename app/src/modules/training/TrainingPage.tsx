@@ -175,7 +175,7 @@ export function TrainingPage() {
             {t('training.noWeight')} <Link to="/first-aid/medical">{t('training.noWeightLink')}</Link>
           </p>
         )}
-        <div className="row-end wrap">
+        <div className="row-end wrap row-fill row-fill-first">
           {def.gps ? (
             <button
               className="btn btn-primary"
@@ -201,7 +201,7 @@ export function TrainingPage() {
             </Link>
           )}
         </div>
-        <div className="row wrap">
+        <div className="row wrap row-fill">
           <button className="btn" type="button" data-testid="import-activity" onClick={() => fileInput.current?.click()}>
             <Upload size={18} /> {t('training.importFile')}
           </button>
@@ -323,10 +323,10 @@ export function TrainingPage() {
               <p className="hint" style={{ margin: 0 }}>
                 {t('training.weekOf', { date: new Date(`${w.start}T12:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) })} · {f.distance(w.totals.distanceM)} · {f.clock(w.totals.totalS)} · {f.kcal(w.totals.calories)}
               </p>
-              <ul className="list">
+              <ul className="list list-flat">
                 {w.workouts.map((x) => (
                   <li key={x.id}>
-                    <Link className="list-link" to={`/training/workouts/${x.id}`} data-testid="train-row">
+                    <Link className="list-row" to={`/training/workouts/${x.id}`} data-testid="train-row">
                       <span className="list-main">
                         <span className="list-title">{x.name}</span>
                         <span className="list-sub">

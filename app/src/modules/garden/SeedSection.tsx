@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Package } from 'lucide-react';
+import { Collapsible } from '@/ui/Collapsible';
 import { CROP_BY_ID } from './crops';
 import { SeedStockDialog } from './SeedStockDialog';
 import { loadSeeds, seedText, type SeedInfo } from './seeds';
@@ -52,12 +53,14 @@ export function SeedSection({ cropId }: { cropId: string }) {
             : t('garden.seeds.yearsOne', { n: f(yr.max ?? yr.min) });
 
   return (
-    <section className="card stack" data-testid="seed-section" data-level={info.level}>
-      <h2 className="section-title" style={{ margin: 0 }}>{t('garden.seeds.title')}</h2>
-      <p style={{ margin: 0 }}>
-        <span className={LEVEL_PILL[info.level]} data-testid="seed-level">{t(`garden.seeds.level.${info.level}`)}</span>{' '}
-        {seedText(info.why, lang)}
-      </p>
+    // Referencia de lectura ocasional: cerrada por defecto; la dificultad (lo que más importa) queda en el encabezado.
+    <Collapsible
+      id="seed"
+      testId="seed-section"
+      title={t('garden.seeds.title')}
+      summary={<span className={LEVEL_PILL[info.level]} data-testid="seed-level">{t(`garden.seeds.level.${info.level}`)}</span>}
+    >
+      <p style={{ margin: 0 }}>{seedText(info.why, lang)}</p>
       <dl className="garden-facts">
         <dt>{t('garden.seeds.cycle')}</dt>
         <dd>
@@ -110,6 +113,6 @@ export function SeedSection({ cropId }: { cropId: string }) {
         </ul>
         <p className="hint" style={{ margin: 0 }}>{t('garden.seeds.sourcesNote')}</p>
       </details>
-    </section>
+    </Collapsible>
   );
 }

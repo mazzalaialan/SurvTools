@@ -168,7 +168,7 @@ function WorkoutDetail({ id }: { id: string }) {
         </dl>
         {track && <ElevationProfile track={track} />}
         {hasGps && (
-          <div className="row-end wrap">
+          <div className="row-end wrap row-fill row-fill-first">
             <Link className="btn" to={`/orientation/maps?track=${w.trackId}`} data-testid="w-map">
               <MapIcon size={18} /> {t('training.onMap')}
             </Link>
@@ -247,7 +247,7 @@ function WorkoutDetail({ id }: { id: string }) {
         <h2 className="section-title" style={{ margin: 0 }}>{t('training.how.title')}</h2>
         <div className="field">
           <label id="w-feeling-label">{t('training.how.feeling')}</label>
-          <div className="row wrap" role="group" aria-labelledby="w-feeling-label">
+          <div className="feeling-grid" role="group" aria-labelledby="w-feeling-label">
             {([1, 2, 3, 4, 5] as const).map((n) => (
               <button key={n} className={`btn${w.feeling === n ? ' btn-primary' : ''}`} type="button" aria-pressed={w.feeling === n} data-testid={`w-feeling-${n}`} onClick={() => void save({ ...w, feeling: w.feeling === n ? null : n })}>
                 {n} · {t(`training.how.f${n}`)}

@@ -178,7 +178,7 @@ export function BedPage() {
       {current.length > 0 && (
         <section className="card stack">
           <h2 className="section-title" style={{ margin: 0 }}>{t('garden.planted')}</h2>
-          <ul className="list" data-testid="planted-list">
+          <ul className="list list-flat" data-testid="planted-list">
             {current.map((p) => {
               const crop = CROP_BY_ID.get(p.cropId);
               return (
@@ -219,7 +219,7 @@ export function BedPage() {
         {recs.length === 0 ? (
           <p className="hint">{t('garden.noRecommendations')}</p>
         ) : (
-          <ul className="list" data-testid="bed-recs-list">
+          <ul className="list list-flat" data-testid="bed-recs-list">
             {recs.slice(0, 10).map((r) => (
               <li key={r.crop.id}>
                 <Link className="list-row" to={`/garden/crops/${r.crop.id}`}>
@@ -244,7 +244,7 @@ export function BedPage() {
       {history.length > 0 && (
         <details className="card">
           <summary>{t('garden.history', { count: history.length })}</summary>
-          <ul className="list" style={{ marginTop: 8 }}>
+          <ul className="list list-flat" style={{ marginTop: 8 }}>
             {history.map((p) => {
               const crop = CROP_BY_ID.get(p.cropId);
               return (

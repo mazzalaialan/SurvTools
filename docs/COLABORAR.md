@@ -68,7 +68,7 @@ Las pruebas siempre arrancan con la base vacía, así que **no detectan** una mi
 
 ## 5. Pruebas
 
-- **Unitarias de la app:** `npx vitest run` en `app/` (~35 s; más de 550 pruebas). **Servidor:** en `server/` (más de 110). **Tipos:** `npx tsc --noEmit -p .` en cada uno.
+- **Unitarias de la app:** `npx vitest run` en `app/` (~35 s; más de 550 pruebas). **Servidor:** `npm test` en `server/` (usa `node --test`: no tiene vitest, `npx vitest run` ahí no sirve; más de 290 pruebas). **Tipos:** `npx tsc --noEmit -p .` en cada uno.
 - **e2e (Playwright, Chromium):** `npm run e2e:full` en `app/` (unas 88 pruebas, ~22 minutos). Ese script (`scripts/e2e-full.sh` → `scripts/heavy-containers.sh`) pausa los contenedores pesados (`nomad_ollama` y el conversor de la biblioteca, que se identifica por su imagen `vikarg-library-builder` y cambia de ID en cada lote; además detiene el bucle `auto-convert.sh`), verifica que de verdad estén pausados (si no, aborta) y los reanuda siempre al salir. `sh scripts/heavy-containers.sh status` muestra el estado. Cuidado: un `pgrep -f` cuyo patrón aparece en tu propio comando también encuentra tu shell (una vez se detuvo a sí mismo).
 - Una sola especificación: `npx playwright test e2e/<archivo>.spec.ts --project=desktop`.
 - **Sin pausar los contenedores pesados, las pruebas de mapas y de tracks fallan por tiempo.** En un equipo sin GPU el WebGL es por software, y alguna prueba de mapas en 3D puede fallar sola: se tratan como del entorno, no como una regresión, pero se comprueba que pasen en otro equipo.

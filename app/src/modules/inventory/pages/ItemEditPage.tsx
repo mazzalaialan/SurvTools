@@ -129,11 +129,14 @@ function ItemForm({ stored, presetBarcode }: { stored: Item | undefined; presetB
           aria-pressed={draft.favorite}
           aria-label={t('items.favorite')}
           onClick={() => set({ favorite: !draft.favorite })}
-          style={{ color: draft.favorite ? 'var(--accent)' : undefined }}
+          style={{ color: draft.favorite ? 'var(--text)' : undefined }}
         >
           <Star size={24} fill={draft.favorite ? 'currentColor' : 'none'} />
         </button>
       </div>
+
+      {/* De un artículo guardado lo que se consulta es cuánto hay y cuándo vence: los lotes van arriba; la ficha para editarlo, debajo. */}
+      {stored && <LotsSection item={stored} lang={i18n.language} />}
 
       <form className="card stack" onSubmit={handleSubmit}>
         <div className="field">
@@ -233,9 +236,8 @@ function ItemForm({ stored, presetBarcode }: { stored: Item | undefined; presetB
 
       {stored && (
         <>
-          <ItemPhoto itemId={stored.id} name={stored.name} />
-          <LotsSection item={stored} lang={i18n.language} />
           <StockMinSection item={stored} />
+          <ItemPhoto itemId={stored.id} name={stored.name} />
         </>
       )}
     </div>
@@ -331,7 +333,7 @@ function LotsSection({ item, lang }: { item: Item; lang: string }) {
       {lots.length === 0 ? (
         locationOptions.length > 0 && <p className="hint">{t('lots.empty')}</p>
       ) : (
-        <ul className="list">
+        <ul className="list list-flat">
           {lots.map((lot) => {
             const alert = lotAlert(lot, config, todayStr);
             const info = detail(lot);

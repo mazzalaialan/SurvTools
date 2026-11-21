@@ -113,10 +113,10 @@ function OutingDetail({ id }: { id: string }) {
         {list.length === 0 ? (
           <p className="empty">{t('outings.noActivities')}</p>
         ) : (
-          <ul className="list" data-testid="o-activities">
+          <ul className="list list-flat" data-testid="o-activities">
             {list.map((w) => (
               <li key={w.id}>
-                <Link className="list-link" to={`/training/workouts/${w.id}`}>
+                <Link className="list-row" to={`/training/workouts/${w.id}`}>
                   <span className="list-main">
                     <span className="list-title">{w.name}</span>
                     <span className="list-sub">

@@ -786,6 +786,34 @@ input[type='range'] {
   background: var(--surface-2);
 }
 
+/* Lista plana (dentro de una tarjeta): filas separadas por una línea fina, sin caja por fila (no anidar tarjetas). */
+.list.list-flat {
+  gap: 0;
+}
+.list-flat .list-row {
+  min-height: 56px;
+  padding: 10px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+}
+.list-flat li:last-child .list-row,
+.list-flat > .list-row:last-child {
+  border-bottom: 0;
+}
+/* Alta de un mínimo: la ubicación ocupa su propia línea (en 390 px el nombre quedaba cortado en «Elegí una ub»). */
+.stock-min-add {
+  flex-wrap: wrap;
+}
+.stock-min-add .select {
+  flex: 1 1 100%;
+}
+.stock-min-add .input {
+  flex: 1 1 0;
+  max-width: none !important;
+}
+
 a.list-row:hover,
 button.list-row:hover {
   border-color: var(--control-border);
@@ -817,7 +845,7 @@ button.list-row:hover {
 }
 
 .fav {
-  color: var(--accent);
+  color: var(--text); /* estrella rellena = favorito; el cobre queda para enlaces y foco */
   flex-shrink: 0;
 }
 
@@ -847,12 +875,18 @@ button.list-row:hover {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-ctl);
-  color: #fff;
+  /* Baldosa neutra con el ícono en el color del texto (contraste siempre ≥4,5:1; antes iba #fff sobre el color de la
+     categoría, que sobre el dorado daba ~2:1). El color de la categoría queda como una franja a la izquierda: sigue
+     identificándola sin pintar la lista de arcoíris. */
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--control-border);
+  box-shadow: inset 5px 0 0 var(--cat, transparent);
 }
 
+/* Rojo nocturno: solo rojos, sin franja de color. */
 :root[data-theme='red'] .cat-icon {
-  background: var(--surface-2) !important;
-  color: var(--text);
+  box-shadow: none;
 }
 
 /* ---------- Formularios ---------- */
@@ -1093,13 +1127,14 @@ a.module-card:active {
 
 .item-photo-empty {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 140px;
+  justify-content: flex-start;
+  gap: 12px;
+  min-height: 64px; /* compacta: una foto vacía no necesita 140 px de pantalla */
+  padding: 0 var(--sp-4);
   border: 2px dashed var(--border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-ctl);
   color: var(--text-muted);
 }
 
@@ -1119,6 +1154,15 @@ a.module-card:active {
   gap: 8px;
   padding: 12px 20px 16px;
   border-top: 1px solid var(--border);
+}
+
+/* Fila simple. Se usaba en ~20 lugares (`row`, `row wrap`) sin que la clase existiera: los botones quedaban pegados y los campos
+   apilados. Ahora es una fila que baja de línea si no entra, con 8 px entre elementos. */
+.row {
+  display: flex;
+  flex-wrap: wrap; /* nunca desborda en pt/en: baja de línea */
+  align-items: center;
+  gap: var(--sp-2);
 }
 
 .row-between {
@@ -1378,6 +1422,7 @@ a.module-card:active {
   font: inherit;
   font-size: var(--fs-sm);
   cursor: pointer;
+  text-decoration: none; /* un chip que es enlace (<a class="chip">) no va subrayado */
 }
 
 .chip[aria-pressed='true'] {
@@ -2549,6 +2594,27 @@ a.module-card:active {
   flex-wrap: wrap;
 }
 
+/* Botones de acción que se reparten el ancho (en vez de quedar escalonados a la derecha con anchos distintos). */
+.row-fill > .btn {
+  flex: 1 1 150px;
+  justify-content: center;
+}
+
+/* El primero (la acción principal) ocupa su propia línea; los demás se reparten la siguiente. */
+.row-fill.row-fill-first > .btn:first-child {
+  flex-basis: 100%;
+}
+
+/* «Cómo me sentí» (1 a 5): grilla pareja de botones de 48 px, no una tira irregular. */
+.feeling-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--sp-2);
+}
+.feeling-grid .btn {
+  justify-content: flex-start;
+}
+
 .call-911 {
   justify-content: center;
   min-height: 52px;
@@ -3644,7 +3710,6 @@ a.module-card:active {
 .garden-chip {
   text-decoration: none;
   color: inherit;
-  border-left-width: 4px;
 }
 
 .garden-dot {
@@ -3785,9 +3850,10 @@ a.module-card:active {
   border-radius: 4px;
   background: var(--surface-2);
   color: #fff;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 700;
-  text-shadow: 0 0 2px #000;
+  /* La sigla va sobre el color de la familia (claro u oscuro según el cultivo): doble sombra oscura para que se lea sobre todos. */
+  text-shadow: 0 0 2px #000, 0 0 3px #000, 0 1px 2px #000;
   cursor: pointer;
   padding: 0;
 }
@@ -3828,16 +3894,38 @@ a.module-card:active {
 
 .knot-steps {
   margin: 0;
-  padding-left: 22px;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: paso;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--sp-4);
 }
 
+/* Con `display: flex` en el <li> el navegador pierde el número de la lista: los pasos salían sin numerar. Se numeran con un
+   contador, en el mismo cuadro de 2 px que los pasos de las guías de primeros auxilios. */
 .knot-steps li {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--sp-2);
+  padding-left: 40px;
+  counter-increment: paso;
+}
+.knot-steps li::before {
+  content: counter(paso);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-ctl);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .knot-facts {
@@ -3853,14 +3941,19 @@ a.module-card:active {
   content: '• ';
 }
 
+.knot-facts li::before {
+  font-weight: 700;
+}
+
 .knot-facts li.yes::before {
   content: '✓ ';
   color: var(--ok);
 }
 
+/* Cruz roja (criterio de toda la app: tildes verdes, cruces rojas); además del color, el símbolo y el texto dicen qué pasa. */
 .knot-facts li.no::before {
   content: '✗ ';
-  color: var(--warn);
+  color: var(--danger);
 }
 
 .knot-glossary {
@@ -4558,16 +4651,21 @@ a.module-card:active {
 .live { align-items: stretch; text-align: center; }
 .live-kind { margin: 0; color: var(--text-muted, inherit); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: var(--fs-sm); }
 .live-clock { margin: 0; font-size: clamp(3.5rem, 18vw, 6rem); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-.live-clock[data-paused='true'] { opacity: 0.45; }
+.live-clock[data-paused='true'] { color: var(--text-muted); } /* en pausa: gris legible (antes opacidad .45, bajo el contraste mínimo); el rótulo de arriba dice «Pausada» */
 .live-main { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
 .live-big { font-size: clamp(3rem, 15vw, 5rem); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .live-unit { font-size: var(--fs-xl); font-weight: 600; }
 .live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .live-tile { display: flex; flex-direction: column; gap: 4px; padding: 14px 8px; border-radius: var(--radius-card); background: var(--surface-2); }
-.live-label { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; }
+.live-label { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
 .live-value { font-size: clamp(1.5rem, 7vw, 2.1rem); font-weight: 700; font-variant-numeric: tabular-nums; }
 .live-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .live-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 64px; border: 0; border-radius: var(--radius-card); font: inherit; font-size: var(--fs-lg); font-weight: 700; cursor: pointer; background: var(--surface-2); color: inherit; }
+.live-btn { text-align: center; line-height: 1.2; padding: 0 var(--sp-3); }
+/* Vuelta (si hay) arriba y a todo el ancho; Pausar y Terminar lado a lado debajo, siempre en la misma fila. */
+.live-actions .live-btn[data-testid='live-lap'] { order: -1; }
+.live-btn:not(:disabled):active { box-shadow: inset 0 0 0 3px var(--bg); }
+.live-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .live-btn-go { background: var(--ok); color: var(--bg); }
 .live-btn-stop { background: var(--danger); color: var(--on-danger); }
 
@@ -4843,7 +4941,16 @@ a.module-card:active {
   padding: 4px 0;
 }
 
-/* Rojo nocturno: todo en tonos rojos (los verdes, azules y ámbar fijos de arriba rompen la visión nocturna). */
+/* Rojo nocturno: el color de cada familia (inline) pasa a rojo: los cuadros ocupados se distinguen por su sigla y un borde grueso. */
+[data-theme='red'] .garden-cell.taken {
+  background: var(--surface-2) !important;
+  border: 2px solid var(--text);
+  color: var(--text);
+  text-shadow: none;
+}
+[data-theme='red'] .garden-dot {
+  background: var(--text) !important;
+}
 [data-theme='red'] .garden-bar.on.garden-bar-nursery {
   background: var(--scale-2);
 }

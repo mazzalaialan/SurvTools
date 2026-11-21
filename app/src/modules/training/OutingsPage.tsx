@@ -57,7 +57,7 @@ export function OutingsPage() {
             const totals = totalsOf(list);
             return (
               <li key={outing.id}>
-                <Link className="list-link" to={`/training/outings/${outing.id}`}>
+                <Link className="list-row" to={`/training/outings/${outing.id}`}>
                   <span className="list-main">
                     <span className="list-title">{outing.name}</span>
                     <span className="list-sub">

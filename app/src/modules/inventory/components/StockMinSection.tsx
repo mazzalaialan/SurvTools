@@ -44,7 +44,7 @@ export function StockMinSection({ item }: { item: Item }) {
       <h2 className="section-title" style={{ margin: 0 }}>{t('stockMin.title')}</h2>
       <p className="hint">{t('stockMin.hint')}</p>
       {rows.length > 0 && (
-        <ul className="list">
+        <ul className="list list-flat">
           {rows.map(({ stockMin, current }) => {
             const short = current < stockMin.minQuantity;
             return (
@@ -64,7 +64,7 @@ export function StockMinSection({ item }: { item: Item }) {
         </ul>
       )}
       {available.length > 0 && (
-        <div className="input-group">
+        <div className="input-group stock-min-add">
           <select className="select" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} aria-label={t('lots.location')}>
             <option value="">{t('stockMin.chooseLocation')}</option>
             {available.map((o) => (

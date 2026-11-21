@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   Activity,
@@ -75,7 +76,7 @@ export const CATEGORY_COLORS = [
 export function CategoryIcon({ category, size = 22 }: { category: Category | undefined; size?: number }) {
   const Icon = (category && CATEGORY_ICONS[category.icon]) || Package;
   return (
-    <span className="cat-icon" style={{ background: category?.color ?? 'var(--surface-2)' }} aria-hidden>
+    <span className="cat-icon" style={category?.color ? ({ '--cat': category.color } as CSSProperties) : undefined} aria-hidden>
       <Icon size={size} />
     </span>
   );

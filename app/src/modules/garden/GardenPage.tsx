@@ -10,7 +10,6 @@ import { CROP_BY_ID, cropName } from './crops';
 import { gridSize, type GardenTask } from './logic';
 import { BedDialog } from './BedDialog';
 import { NurseryDialog, PlantingDialog } from './PlantingDialog';
-import { FAMILY_COLOR } from './parts';
 import { newBed, useGarden } from './store';
 import { useGardenStatus, useZonePlace, type GardenStatus } from './status';
 import { fetchFrostDates, type FrostDates } from './frostDates';
@@ -28,7 +27,7 @@ export function GardenTaskList({ tasks, onOpen }: { tasks: GardenTask[]; onOpen:
         return (
           <li key={task.id}>
             <button className="list-row" type="button" onClick={() => onOpen(task.planting.id)}>
-              <Sprout size={20} style={{ color: FAMILY_COLOR[task.crop.family] }} aria-hidden />
+              <Sprout size={20} aria-hidden />
               <span className="list-main">
                 <span className="list-title">{t(`garden.tasks.${task.kind}`, { crop: cropName(task.crop, i18n.language) })}</span>
                 <span className="list-sub">{bed ? bed.name : t('garden.inNursery')}</span>
@@ -219,7 +218,7 @@ export function GardenPage() {
         {bedList.length === 0 ? (
           <p className="hint">{t('garden.noBeds')}</p>
         ) : (
-          <ul className="list" data-testid="bed-list">
+          <ul className="list list-flat" data-testid="bed-list">
             {bedList.map((b) => {
               const { cols, rows } = gridSize(b);
               return (
@@ -263,7 +262,7 @@ export function GardenPage() {
         {nursery.length === 0 ? (
           <p className="hint">{t('garden.noNursery')}</p>
         ) : (
-          <ul className="list" data-testid="nursery-list">
+          <ul className="list list-flat" data-testid="nursery-list">
             {nursery.map((p) => {
               const crop = CROP_BY_ID.get(p.cropId);
               return (

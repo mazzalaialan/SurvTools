@@ -30,6 +30,13 @@ function gardenWeather() {
   };
 }
 
+/** «Guardar semilla propia» arranca cerrado: se abre solo si hace falta (la ficha conserva el estado entre cultivos). */
+async function openSeeds(page: Page) {
+  const toggle = page.getByTestId('seed-toggle');
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+}
+
 async function shot(page: Page, name: string, project: string) {
   await page.screenshot({ path: `e2e-results/screens/${project}-${name}.png`, fullPage: true });
 }
@@ -239,8 +246,9 @@ test('huerta: ficha del cultivo con «guardar semilla propia» (dificultad, aisl
   await page.goto('/#/garden/crops/zanahoria');
   const seeds = page.getByTestId('seed-section');
   await expect(seeds).toBeVisible();
-  await expect(seeds.getByRole('heading', { name: 'Guardar semilla propia' })).toBeVisible();
-  await expect(page.getByTestId('seed-level')).toHaveText('Difícil');
+  await expect(seeds.getByRole('heading', { name: /Guardar semilla propia/ })).toBeVisible();
+  await expect(page.getByTestId('seed-level')).toHaveText('Difícil'); // el nivel se ve con el desplegable cerrado
+  await openSeeds(page);
   await expect(page.getByTestId('seed-isolation')).toContainText('1000 m');
   await expect(seeds).toContainText('Bienal');
   await expect(page.getByTestId('seed-caveat')).toBeVisible();
@@ -253,11 +261,13 @@ test('huerta: ficha del cultivo con «guardar semilla propia» (dificultad, aisl
 
   // Papa: no se multiplica por semilla, no lleva aislamiento.
   await page.goto('/#/garden/crops/papa');
+  await openSeeds(page);
   await expect(page.getByTestId('seed-section')).toContainText('Se multiplica por partes');
   await expect(page.getByTestId('seed-isolation')).toContainText('No aplica');
 
   // Tomate: fácil, años típicos.
   await page.goto('/#/garden/crops/tomate');
+  await openSeeds(page);
   await expect(page.getByTestId('seed-level')).toHaveText('Fácil');
   await expect(page.getByTestId('seed-section')).toContainText('4 a 6 años');
 

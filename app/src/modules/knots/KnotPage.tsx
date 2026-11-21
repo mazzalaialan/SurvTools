@@ -185,7 +185,7 @@ export function KnotPage() {
       )}
       <p style={{ margin: 0 }}>{tl(knot.purpose, lang)}</p>
 
-      <div className="row-between" style={{ flexWrap: 'wrap' }}>
+      <div className="row row-fill">
         <button className="btn btn-primary" type="button" onClick={() => setPractice(true)} data-testid="knot-practice-start">
           <Dumbbell size={18} /> {t('knots.practice')}
         </button>

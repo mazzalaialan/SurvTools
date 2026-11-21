@@ -31,7 +31,7 @@ export const MONTHS_SHORT = (lang: string) =>
 export function CropLink({ crop }: { crop: Crop }) {
   const { i18n } = useTranslation();
   return (
-    <Link className="chip garden-chip" to={`/garden/crops/${crop.id}`} style={{ borderColor: FAMILY_COLOR[crop.family] }}>
+    <Link className="chip garden-chip" to={`/garden/crops/${crop.id}`}>
       {cropName(crop, i18n.language)}
     </Link>
   );
