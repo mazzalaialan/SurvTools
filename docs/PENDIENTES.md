@@ -768,3 +768,8 @@ Hay que darles una revisada a todos los libros, con ejemplos que ya se vieron:
 - **Títulos que no dicen nada:** por ejemplo «FM 3-05.70 (FM 21-76)» (manual de supervivencia del Ejército de EE. UU.). Poner un título entendible (p. ej. «Manual de supervivencia del Ejército de EE. UU.») y dejar el código del manual como dato secundario. Revisar el resto del catálogo con el mismo criterio.
 - **Páginas casi vacías:** en ese mismo libro, las páginas 5, 6, 7 y 8 muestran solo un título y nada más. Ver si es un problema de la conversión (texto o imágenes que no se extrajeron, capítulos cortados) y regenerar el libro. Revisar también si pasa en otros libros.
 - Al terminar: revisar el catálogo completo (títulos, categorías, capítulos y páginas vacías) y regenerar los paquetes que hagan falta.
+
+### Plan de revisión de la biblioteca (2026-11-21, en curso)
+Medición con `python3 tools/library-builder/audit.py` (1731 libros): 1096 con alguna marca; 878 sin autor, 317 con un solo capítulo para muchas páginas, ~35 con capítulos casi vacíos, ~23 con títulos de capítulo que son fragmentos, 49 con título todo en minúsculas, otros con «[LIBRO]»/«PDFDrive»/códigos. Causa de «FM 3-05.70 (FM 21-76)» y páginas vacías: el conversor corta mal los capítulos (676 páginas en 10 «capítulos» de fragmentos como «May 2002»).
+Agentes: `vikarg-conversor-libros` (código del conversor + rehacer afectados) y `vikarg-catalogador-libros` (títulos/autores/categorías por lotes, en `books.yaml`). Se lanzan de a uno para no gastar todo junto.
+Etapas: 1) conversor (capítulos) → 2) rehacer libros afectados por lotes de 15 → 3) catalogar por categorías en lotes de 25 → 4) `package` y revisar en el celular.
