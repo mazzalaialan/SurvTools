@@ -103,9 +103,49 @@ export function parseGpx(text: string, fileName = ''): ParsedTrack {
   return { name, desc: tag(trk, 'desc') || tag(metadata, 'desc'), link, segments, waypoints };
 }
 
+/** Cambio mínimo de altura (m) que cuenta como subida o bajada, ya con la altura alisada. */
+const ELEVATION_THRESHOLD_M = 5;
+/** La altura de cada punto se alisa con la media recortada de los puntos a esta distancia (m) hacia cada lado a lo largo del recorrido (calibrado con una caminata real: ver `smoothElevations`). */
+const ELEVATION_SMOOTH_HALF_M = 100;
+
 /**
- * Distancia y desnivel. El desnivel acumula solo cambios de más de 5 m, para
- * no sumar el ruido de la altura del GPS (como hacen Wikiloc y otras apps).
+ * Altura alisada: la media recortada (descarta los extremos) de las alturas de los puntos a menos de `ELEVATION_SMOOTH_HALF_M` a lo largo del recorrido. La altura del GPS de un celular
+ * tiene un error de ±10 a 30 m que oscila de punto a punto (y deriva despacio); sumada tal cual, en un terreno casi llano daba cientos de metros de
+ * desnivel que no existen (medido en una caminata de 3,4 km sobre el mapa de terreno: +121 m con el GPS crudo contra ~25 m reales). Una pendiente
+ * real dura bastante más que 200 m, así que el alisado no la pierde. El error medido fue de ±4 m de ruido rápido más una deriva lenta de ±8 m. Con puntos separados por más de esa distancia no hay nada que alisar.
+ */
+function smoothElevations(seg: TrackPoint[]): (number | null)[] {
+  const along: number[] = [0];
+  for (let i = 1; i < seg.length; i++) along.push(along[i - 1]! + distanceMeters({ lat: seg[i - 1]![0], lon: seg[i - 1]![1] }, { lat: seg[i]![0], lon: seg[i]![1] }));
+  const out: (number | null)[] = [];
+  let lo = 0;
+  let hi = 0;
+  for (let i = 0; i < seg.length; i++) {
+    if (seg[i]![2] === null) {
+      out.push(null);
+      continue;
+    }
+    while (along[i]! - along[lo]! > ELEVATION_SMOOTH_HALF_M) lo++;
+    if (hi < i) hi = i;
+    while (hi + 1 < seg.length && along[hi + 1]! - along[i]! <= ELEVATION_SMOOTH_HALF_M) hi++;
+    const window: number[] = [];
+    for (let k = lo; k <= hi; k++) {
+      const e = seg[k]![2];
+      if (e !== null) window.push(e);
+    }
+    // Media de lo que queda al descartar el 40 % de cada punta: tan robusta a un valor suelto como la mediana, pero sin saltar entre dos valores
+    // cuando la altura alterna (la mediana oscila si hay dos grupos de valores).
+    window.sort((x, y) => x - y);
+    const cut = Math.floor(window.length * 0.4);
+    const kept = window.slice(cut, window.length - cut);
+    out.push(kept.reduce((a, b) => a + b, 0) / kept.length);
+  }
+  return out;
+}
+
+/**
+ * Distancia y desnivel. El desnivel se calcula sobre la altura alisada (ver `smoothElevations`) y acumula solo cambios de más de 5 m, para no sumar
+ * el ruido de la altura del GPS. La altura mínima y máxima son las medidas, sin alisar.
  */
 export function trackStats(segments: TrackPoint[][]): TrackStats {
   let distanceM = 0;
@@ -113,8 +153,8 @@ export function trackStats(segments: TrackPoint[][]): TrackStats {
   let descentM = 0;
   let minEle: number | null = null;
   let maxEle: number | null = null;
-  const THRESHOLD = 5;
   for (const seg of segments) {
+    const smooth = smoothElevations(seg);
     let ref: number | null = null;
     for (let i = 0; i < seg.length; i++) {
       const [lat, lon, ele] = seg[i]!;
@@ -122,13 +162,14 @@ export function trackStats(segments: TrackPoint[][]): TrackStats {
       if (ele === null) continue;
       minEle = minEle === null ? ele : Math.min(minEle, ele);
       maxEle = maxEle === null ? ele : Math.max(maxEle, ele);
-      if (ref === null) ref = ele;
-      else if (ele - ref >= THRESHOLD) {
-        ascentM += ele - ref;
-        ref = ele;
-      } else if (ref - ele >= THRESHOLD) {
-        descentM += ref - ele;
-        ref = ele;
+      const e = smooth[i]!;
+      if (ref === null) ref = e;
+      else if (e - ref >= ELEVATION_THRESHOLD_M) {
+        ascentM += e - ref;
+        ref = e;
+      } else if (ref - e >= ELEVATION_THRESHOLD_M) {
+        descentM += ref - e;
+        ref = e;
       }
     }
   }

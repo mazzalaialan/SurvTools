@@ -106,7 +106,9 @@ describe('estadísticas de lo grabado', () => {
     expect(s.splitsS[0]).toBeGreaterThan(660);
     expect(s.splitsS[0]).toBeLessThan(690);
     expect(s.maxSpeedKmh).toBeGreaterThan(5);
-    expect(s.ascentM).toBe(50);
+    // Una subida pareja de 50 m: el alisado de la altura achata un poco los extremos, pero no la pierde.
+    expect(s.ascentM).toBeGreaterThanOrEqual(44);
+    expect(s.ascentM).toBeLessThanOrEqual(50);
   });
 
   it('las paradas no cuentan como movimiento ni las pausas como tiempo', () => {

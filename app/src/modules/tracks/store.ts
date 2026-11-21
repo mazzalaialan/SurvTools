@@ -22,6 +22,8 @@ export const useTracks = create<TracksState>((set, get) => ({
   async load() {
     const all = await repos.tracks.loadAll();
     set({ loaded: true, tracks: new Map(all.map((t) => [t.id, t])) });
+    // Recorridos grabados con el cálculo viejo del desnivel (que sumaba el ruido del GPS): se corrigen una vez (carga diferida: evita un ciclo de importaciones).
+    void import('./elevationFix').then((m) => m.migrateElevation()).catch(() => undefined);
   },
 
   clear() {

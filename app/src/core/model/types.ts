@@ -594,6 +594,8 @@ export interface Track extends BaseEntity {
   recording?: boolean;
   /** Grabación en curso que la persona pausó a propósito: al reabrir la app sigue en pausa (si no, en la app nativa se reanuda sola). */
   recPaused?: boolean;
+  /** Versión del cálculo del desnivel (`ascentM` y `descentM`): 2 = con la altura alisada (ver `tracks/gpx.ts`). Sin este campo, es el cálculo viejo, que sumaba el ruido del GPS. */
+  elevationV?: number;
   /** Tiempo grabando, sin contar las pausas. */
   durationS?: number;
   /** Mientras se graba: clave privada para leer los puntos grabados con la app bloqueada (ver tracks/lockedBuffer). */

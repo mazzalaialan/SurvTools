@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Track } from '@/core/model/types';
 import { addPoint, closeGap, dropOpenGap, finishedTrack, firstPoints, gapLines, joinLastSegments, openGap, SAVER_STEP_M, shouldAdd } from './record';
-import { trackStats } from './gpx';
+import { trackStats, type TrackPoint } from './gpx';
 
 const track = (segments: Track['segments']): Track =>
   ({ id: 'r', name: 'R', desc: '', source: '', link: null, segments, waypoints: [], distanceM: 0, ascentM: 0, descentM: 0, minEle: null, maxEle: null, notes: '', recorded: true, recording: true }) as unknown as Track;
@@ -122,5 +122,45 @@ describe('cortes de la grabación (pantalla apagada)', () => {
     const done = finishedTrack(withGap, 900)!;
     expect(gapLines(done.gaps)).toEqual([[[-71.3, -41.101], [-71.3, -41.1065]]]);
     expect(done.distanceM).toBeGreaterThan(600);
+  });
+});
+
+describe('desnivel con la altura ruidosa del GPS', () => {
+  /** Ruido repetible (sin azar): un generador lineal simple. */
+  const noise = (seed: number) => () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296 - 0.5;
+  };
+  /** Una caminata de ~3 km hacia el sur con un punto cada ~10 m, y la altura que se le pasa a cada punto. */
+  const walk = (n: number, ele: (i: number) => number): TrackPoint[] => Array.from({ length: n }, (_, i) => [-34.58 - i * 0.00009, -58.63, ele(i), 1_000_000 + i * 8] as TrackPoint);
+
+  it('terreno casi llano con el ruido medido de un GPS (19 m de error fijo, deriva y ruido rápido): casi no suma desnivel (antes sumaba más de 100 m)', () => {
+    const rnd = noise(7);
+    // Terreno real: 12 m de ondulación suave en 3 km; el GPS agrega lo medido en una caminata real: error fijo de 19 m, deriva lenta de ±8 m y ruido rápido de ±4 m.
+    const seg = walk(300, (i) => 5 + 6 * Math.sin(i / 60) + 19 + 8 * Math.sin(i / 25 + 1) + rnd() * 14);
+    const s = trackStats([seg]);
+    expect(s.ascentM).toBeLessThan(30);
+    expect(s.descentM).toBeLessThan(30);
+  });
+
+  it('una subida real de 150 m en 3 km con el mismo error se sigue midiendo', () => {
+    const rnd = noise(11);
+    const seg = walk(300, (i) => 30 + i * 0.5 + 19 + 8 * Math.sin(i / 25 + 1) + rnd() * 14);
+    const s = trackStats([seg]);
+    expect(s.ascentM).toBeGreaterThan(120);
+    expect(s.ascentM).toBeLessThan(190);
+    expect(s.descentM).toBeLessThan(40);
+  });
+
+  it('puntos muy separados (sin nada que alisar): se cuenta cada cambio de más de 5 m, como antes', () => {
+    const seg: TrackPoint[] = [[-34.58, -58.63, 100, 0], [-34.59, -58.63, 110, 1], [-34.6, -58.63, 125, 2], [-34.61, -58.63, 120, 3]];
+    expect(trackStats([seg]).ascentM).toBe(25);
+  });
+
+  it('la altura mínima y máxima son las medidas', () => {
+    const seg = walk(50, (i) => 100 + (i % 2 ? 30 : 0));
+    const s = trackStats([seg]);
+    expect(s.minEle).toBe(100);
+    expect(s.maxEle).toBe(130);
   });
 });
