@@ -8,35 +8,38 @@ import type { CarabinerShape, LockKind } from './carabiners';
 const BODIES: Record<CarabinerShape, { body: string; gate: string; weight?: number; gateWeight?: number }> = {
   // Referencias: fotos de Wikimedia Commons (Klettern karabinerformen / genormte karabinertypen). En todos
   // el lomo es el lado de la izquierda y la boca el de la derecha (bisagra abajo, nariz arriba).
+  // La boca es SOLO el tramo recto del lado derecho (~40 % de la altura); arriba el cuerpo termina en la
+  // nariz (con un hueco chico) y abajo sigue como cuerpo hasta la bisagra, donde empalma con la boca.
   d: {
-    body: 'M52 14 H40 Q20 14 20 34 V96 Q20 112 36 112 H48 Q58 112 58 102',
-    gate: 'M58 102 L66 50 Q68 22 60 15',
+    body: 'M65 36 L66 28 Q67 14 50 14 H38 Q20 14 20 34 V94 Q20 112 38 112 H46 Q58 112 59.5 96 L60.5 86',
+    gate: 'M64.5 46 L60.5 86',
   },
   offset: {
-    body: 'M46 14 H38 Q18 14 18 38 L22 94 Q23 112 38 112 H46 Q56 112 56 100',
-    gate: 'M56 100 L68 52 Q72 24 58 15',
+    body: 'M68 34 Q70 12 50 12 H34 Q20 12 18 32 L26 92 Q28 112 42 112 H48 Q58 112 59 100 L60 90',
+    gate: 'M66 44 L60 90',
   },
+  // HMS/pera: gota con el lado de la boca recto y el lomo con la curva grande y ancha; angosta en la nariz.
   pear: {
-    body: 'M48 13 C26 10 10 28 14 50 C17 68 30 86 36 104 Q39 112 47 111',
-    gate: 'M47 111 L70 50 Q76 26 62 15',
+    body: 'M64 34 Q64 12 44 12 C22 12 8 28 14 48 L30 104 Q34 112 44 112 H48 Q58 112 59 100 L60 86',
+    gate: 'M64 46 L60 86',
   },
   oval: {
-    body: 'M38 12 C20 12 18 30 18 60 C18 90 20 108 40 108 C56 108 62 100 62 90',
-    gate: 'M62 90 L62 34 C62 18 54 12 46 12',
+    body: 'M62 38 V32 C62 18 54 12 40 12 C24 12 18 22 18 40 V84 C18 102 24 112 40 112 C54 112 62 106 62 92 V86',
+    gate: 'M62 46 V86',
   },
   wide: {
-    body: 'M46 14 H36 Q16 14 16 36 V90 Q16 112 38 112 H56 Q70 112 70 100',
-    gate: 'M70 100 L70 36 Q70 20 58 14',
+    body: 'M70 36 V32 Q70 14 52 14 H36 Q16 14 16 36 V90 Q16 112 38 112 H50 Q70 112 70 94 V86',
+    gate: 'M70 46 V86',
     gateWeight: 9,
   },
   steel: {
-    body: 'M52 14 H40 Q20 14 20 34 V96 Q20 112 36 112 H48 Q58 112 58 102',
-    gate: 'M58 102 L66 50 Q68 22 60 15',
+    body: 'M65 36 L66 28 Q67 14 50 14 H38 Q20 14 20 34 V94 Q20 112 38 112 H46 Q58 112 59.5 96 L60.5 86',
+    gate: 'M64.5 46 L60.5 86',
     weight: 11,
   },
   key: {
-    body: 'M46 40 H40 Q28 40 28 50 V84 Q28 94 38 94 H44 Q50 94 50 88',
-    gate: 'M50 88 L54 60 Q56 46 50 41',
+    body: 'M50 52 V48 Q50 40 42 40 H38 Q28 40 28 50 V84 Q28 94 38 94 H42 Q50 94 50 86 V80',
+    gate: 'M50 58 V80',
     weight: 4,
   },
 };
@@ -49,18 +52,15 @@ export function CarabinerFigure({ shape, lock = 'none', crossed = false, classNa
       <path d={b.body} strokeWidth={w} />
       <path d={b.gate} strokeWidth={b.gateWeight ?? Math.max(3, w - 3)} />
       {lock !== 'none' && (
-        <g strokeWidth={2.5} stroke="var(--accent)">
-          <rect x="48" y="8" width="26" height="30" rx="5" fill="var(--surface)" transform="rotate(6 61 23)" />
-          {lock === 'screw' && (
-            <>
-              <path d="M54 17 H68 M54 23 H68 M54 29 H68" transform="rotate(6 61 23)" />
-            </>
-          )}
-          {lock === 'twist' && <path d="M54 24 A7 7 0 1 1 61 31 M57 31 H61 V27" transform="rotate(6 61 23)" />}
+        <g stroke="var(--accent)" transform="rotate(-6 62 57)">
+          <rect x="57.5" y="49" width="9" height="16" rx="2" fill="var(--surface)" strokeWidth={2} />
+          {lock === 'screw' && <path d="M58 53 H66 M58 57 H66 M58 61 H66" strokeWidth={1.4} />}
+          {lock === 'twist' && <path d="M58.5 63 L65.5 51" strokeWidth={2} />}
           {lock === 'triple' && (
             <>
-              <path d="M54 20 A5 5 0 1 1 59 27 M56 27 H59 V24" transform="rotate(6 61 23)" />
-              <path d="M67 30 V18 M63 22 L67 18 L71 22" transform="rotate(6 61 23)" />
+              <path d="M58.5 63 L65.5 51" strokeWidth={2} />
+              {/* Pestaña que sobresale: el seguro extra de la triple acción, visible aun a tamaño chico. */}
+              <rect x="66.5" y="54" width="4" height="5" rx="1" fill="var(--accent)" strokeWidth={0.5} />
             </>
           )}
         </g>
