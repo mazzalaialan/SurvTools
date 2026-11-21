@@ -1,7 +1,24 @@
 {
   "fuente": "Slipsteek.svg, Sawims (Wikipedia en neerlandés), dominio público, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Slipsteek.svg",
   "pasos": {
-    "4": ["AABBABBAABBA"]
+    "2": [
+      "AABBABBAABBA"
+    ],
+    "3": [
+      "AABBABBAABBA"
+    ],
+    "4": [
+      "AABBABBAABBA"
+    ]
   },
-  "notas": "Leído mirando la imagen ampliada (2026-11-12, método de visión). La figura sombrea la cuerda que pasa por abajo junto al borde de la de arriba: los 6 cruces se leen sin dudas. Es el simple con un seno pasado (slip knot); el lazo (ABOK 1114) es la misma figura con los papeles cambiados: el firme es la punta que en la figura tiene el falcaceado (abajo a la izquierda) y el chicote es la punta larga de abajo. Recorrido desde el firme: por encima del lado de abajo de la vuelta (A), por encima del chicote (A), por debajo del lado derecho de la vuelta (B), da la gaza (a la derecha), vuelve por debajo del lado derecho de la vuelta (B) y por encima del chicote (A), y el chicote da el nudo simple: por debajo del firme (B), por debajo de su propio tramo que sube (B), por encima de las dos pasadas de la gaza por el lado derecho (A, A), baja por debajo de la vuelta de la gaza (B) y del firme (B) y sale por encima del lado de abajo de la vuelta (A). Mismo código de Gauss que el spec anterior, que tenía un solo cruce al revés (el primero del firme). Confianza alta. Pasos 1 a 3: sin figura en la referencia. Cerrando las puntas por afuera: sin nudo (v2 0, det 1), como corresponde."
+  "notas": "Leído mirando la imagen ampliada (2026-11-12, método de visión). La figura sombrea la cuerda que pasa por abajo junto al borde de la de arriba: los 6 cruces se leen sin dudas. Es el simple con un seno pasado (slip knot); el lazo (ABOK 1114) es la misma figura con los papeles cambiados: el firme es la punta que en la figura tiene el falcaceado (abajo a la izquierda) y el chicote es la punta larga de abajo. Recorrido desde el firme: por encima del lado de abajo de la vuelta (A), por encima del chicote (A), por debajo del lado derecho de la vuelta (B), da la gaza (a la derecha), vuelve por debajo del lado derecho de la vuelta (B) y por encima del chicote (A), y el chicote da el nudo simple: por debajo del firme (B), por debajo de su propio tramo que sube (B), por encima de las dos pasadas de la gaza por el lado derecho (A, A), baja por debajo de la vuelta de la gaza (B) y del firme (B) y sale por encima del lado de abajo de la vuelta (A). Mismo código de Gauss que el spec anterior, que tenía un solo cruce al revés (el primero del firme). Confianza alta. Pasos 1 a 3: sin figura en la referencia. Cerrando las puntas por afuera: sin nudo (v2 0, det 1), como corresponde. Pasos 2 y 3 (2026-11-21): DEDUCIDOS hacia atrás del nudo terminado (mismo recorrido: el simple flojo y apretado tienen los mismos cruces; paso 3 = el simple ya hecho, con la flecha de tirar); coinciden con la secuencia de la referencia. (2026-11-21) Pasos 3 y 4: nudo simple agrandado (k 0,42 a 0,56) para que #1 y #6 queden a 24 px (≈1,7 grosores, antes 18) sin cambiar la secuencia (AABBABBAABBA, COINCIDE); flecha del paso 3 bajada para no tocar el nudo.",
+  "recorrido": [
+    "Fuente: Slipsteek.svg (Sawims, dominio público); secuencia del paso 4 leída con visión (2026-11-12): AABBABBAABBA, 6 cruces numerados por numerado.mjs paso 4 (de izquierda a derecha en la figura). La figura de la app es el espejo de la foto corredizo-1.webp (gaza a la derecha, firme a la izquierda).",
+    "1. El firme pasa ARRIBA del chicote que vuelve (69 %). 2. Pasa ARRIBA del lado de abajo de la vuelta del nudo simple (94 %) (el chicote enlaza el firme por DENTRO de la gaza del simple). 3. Pasa ABAJO del lado derecho de la gaza (21 %) y sigue hacia la derecha: da la gaza grande y vuelve por arriba.",
+    "4. Vuelve por abajo del lado derecho de la gaza (B) y 5. por arriba del chicote (A); el chicote hace el nudo simple alrededor del firme: 6. sale por ARRIBA del lado de abajo (A, el chicote termina abajo a la izquierda). Sentido de la gaza: horario en la figura (el firme a la izquierda sale arriba de la horizontal, da la gaza por la derecha y vuelve por arriba)."
+  ],
+  "deducido": {
+    "2": true,
+    "3": true
+  }
 }

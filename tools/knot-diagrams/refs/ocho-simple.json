@@ -1,7 +1,22 @@
 {
   "fuente": "Figure-eight knot -nœud en huit.svg, Wikimedia Commons; tabla de nudos: el ocho es el 4₁ (Rolfsen; KnotInfo)",
-  "pasos": { "3": ["ABABABAB"] },
+  "pasos": {
+    "3": [
+      "ABABABAB"
+    ]
+  },
   "v2": -1,
   "det": 5,
-  "notas": "2026-11-12. La imagen es de un solo color y los cruces se distinguen poco; muestra la forma (dos lazos y las puntas cruzadas). Con 4 cruces, la única secuencia que da el ocho es la alternada (forzada por el nudo). tipo.mjs confirma que el dibujo es el 4₁ (v2 −1, det 5)."
+  "notas": "2026-11-12. La imagen es de un solo color y los cruces se distinguen poco; muestra la forma (dos lazos y las puntas cruzadas). Con 4 cruces, la única secuencia que da el ocho es la alternada (forzada por el nudo). tipo.mjs confirma que el dibujo es el 4₁ (v2 −1, det 5).",
+  "recorrido": [
+    "Paso 3 (una cuerda, firme a la izquierda, chicote a la derecha): ocho 4_1, secuencia alternada ABABABAB (forzada por el nudo, det 5).",
+    "#1: la gaza de abajo (79 %) pasa por DEBAJO del firme (15 % arriba). #2: el firme sigue ARRIBA de la otra pata de la gaza de abajo (61 % arriba, 19 % abajo).",
+    "#4: el cruce de las patas (83 % arriba) pasa ARRIBA de la pata (57 % abajo) que sube a la gaza grande. #3: el chicote (95 %, ABAJO) entra por DENTRO de la gaza grande, por debajo de ella (34 % arriba), desde adelante hacia atrás.",
+    "Sentido: la vuelta de la gaza grande va en sentido horario mirando de frente y el chicote queda a la derecha, atravesando la gaza (como el paso 2 de la lámina de la ficha: la punta que cruza el óvalo).",
+    "Los pasos 1 y 2 son DEDUCIDOS hacia atrás desde el 3 (quitar la última pasada del chicote; quitar la vuelta del lazo)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

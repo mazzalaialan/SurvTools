@@ -1,7 +1,22 @@
 {
   "fuente": "Tabla de nudos: el nudo simple es el trébol 3₁ (Rolfsen; KnotInfo). Forma confirmada con las fotos del manual de la ficha.",
-  "pasos": { "3": ["ABABAB"] },
+  "pasos": {
+    "3": [
+      "ABABAB"
+    ]
+  },
   "v2": 1,
   "det": 3,
-  "notas": "2026-11-12. Con 3 cruces, la única secuencia que da un nudo es la alternada (cualquier otra se deshace): la secuencia está forzada por el nudo, no leída de un dibujo. El archivo «Overhand knot-demi-nœud.svg» que se había bajado es en realidad un medio nudo entre dos cuerdas (otro nudo) y no se usa. tipo.mjs lo confirma con v2 y det."
+  "notas": "2026-11-12. Con 3 cruces, la única secuencia que da un nudo es la alternada (cualquier otra se deshace): la secuencia está forzada por el nudo, no leída de un dibujo. El archivo «Overhand knot-demi-nœud.svg» que se había bajado es en realidad un medio nudo entre dos cuerdas (otro nudo) y no se usa. tipo.mjs lo confirma con v2 y det.",
+  "recorrido": [
+    "Paso 3 (una cuerda, firme a la izquierda, chicote a la derecha). Cuerda de izquierda a derecha, gaza en sentido antihorario.",
+    "#1 (abajo-izquierda): la cuerda que baja de la gaza pasa ARRIBA del firme (58 % arriba, 21 % abajo).",
+    "#2: el firme que vuelve (25 %) pasa ARRIBA de la pata que baja por la gaza (70 %, ABAJO).",
+    "#3 (arriba-derecha): el chicote (82 %) pasa ARRIBA de la gaza (36 %). La secuencia es alternada ABABAB (único trébol posible con 3 cruces).",
+    "Los pasos 1 y 2 son DEDUCIDOS hacia atrás: se saca el chicote de la vuelta (paso 2) y se abre la gaza (paso 1)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

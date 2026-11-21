@@ -1,4 +1,14 @@
 {
   "fuente": "Fotos del manual: app/public/knots/machard-1.webp y machard-2.webp (imágenes propias de la app; ver sus créditos)",
-  "notas": "Revisado a ojo contra machard-1 y machard-2 (2026-11-12, método de visión). Se ve: vueltas en espiral alrededor de la cuerda, una pata del anillo sale de la vuelta de abajo y la otra de la de arriba, que baja por afuera de las vueltas hasta el mosquetón. Antes la pata de arriba bajaba en diagonal cruzando por delante las vueltas y la cuerda; ahora baja por el costado. Sin secuencia: es una foto, no un vector; en Commons no hay SVG de machard (búsqueda del 2026-11-11)."
+  "notas": "Revisado a ojo contra machard-1 y machard-2 (2026-11-12, método de visión). Se ve: vueltas en espiral alrededor de la cuerda, una pata del anillo sale de la vuelta de abajo y la otra de la de arriba, que baja por afuera de las vueltas hasta el mosquetón. Antes la pata de arriba bajaba en diagonal cruzando por delante las vueltas y la cuerda; ahora baja por el costado. Sin secuencia: es una foto, no un vector; en Commons no hay SVG de machard (búsqueda del 2026-11-11).",
+  "recorrido": [
+    "Cuerda 0 = cuerdas de rappel (vertical); cuerda 1 = anillo de cordino. Figura (paso 3), siguiendo el cordino desde la pata de abajo: sube en espiral con 7 cruces con la cuerda: #1 ARRIBA, #2 ABAJO, #3 ARRIBA, #4 ABAJO, #5 ARRIBA, #6 ABAJO, #7 ARRIBA (cuatro pasadas por delante, texto: «cuatro o cinco veces»; coincide).",
+    "Tabla figura vs foto (machard-1/2, resolución baja, vueltas apretadas): solo se leen con confianza el CONTEO (4-5 pasadas por delante, ✔ con la foto) y que la pata de arriba baja por FUERA, sin cruzar las vueltas (✔). Arriba/abajo de cada cruce individual: figura alterna por construcción; en la foto no se separa cada vuelta (SIN REFERENCIA a nivel de cruce). Sentido de giro: SIN REFERENCIA.",
+    "Paso 1 (anillo detrás de las cuerdas, una sola gaza): DEDUCIDO hacia atrás; paso 2 (vueltas sueltas sin mosquetón): DEDUCIDO del paso 3 sacando el mosquetón."
+  ],
+  "pendiente": "Cruce por cruce contra la foto: no verificable con machard-1/2 (vueltas apretadas, sin separación visible). Rediseñado solo para legibilidad (paso de vuelta 32, rope 10; 0 cruces ambiguos).",
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

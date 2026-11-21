@@ -2,8 +2,15 @@
   "fuente": "Cow hitch.svg, Whidou, CC BY-SA 4.0, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Cow_hitch.svg",
   "pasos": {
     "2": [
-      "BAAB"
+      "ABBA"
     ]
   },
-  "notas": "Leído con script sin mirar: la cuerda son 79 cuentas cuyo id sigue la cuerda (sin saltos); arriba = la que se dibuja después (votos -8 y +7). 2 cruces cuerda-cuerda: una pata sube por DEBAJO del collar (seno), el collar pasa por ENCIMA de las dos patas y la otra pata baja por DEBAJO = BAAB. Simétrico (se lee igual desde cualquier punta). Confianza alta."
+  "notas": "Leído con script sin mirar: la cuerda son 79 cuentas cuyo id sigue la cuerda (sin saltos); arriba = la que se dibuja después (votos -8 y +7). 2 cruces cuerda-cuerda: una pata sube por DEBAJO del collar (seno), el collar pasa por ENCIMA de las dos patas y la otra pata baja por DEBAJO = BAAB. Simétrico (se lee igual desde cualquier punta). Confianza alta.",
+  "recorrido": [
+    "Paso 2 (ronda 3 del crítico): una sola cuerda con las dos puntas a la izquierda, palo vertical. Pata de arriba: pasa por DETRÁS del palo hacia la derecha, sube por el costado derecho y vuelve por DELANTE del palo hacia la izquierda (collar de arriba), baja por la izquierda, cruza por DEBAJO de las dos patas (el collar es la cuerda de abajo en #1 y #2), da el collar de abajo por DELANTE del palo hacia la derecha, rodea el costado derecho y vuelve por DETRÁS del palo hasta la pata de abajo. #1: pata de arriba ARRIBA / collar ABAJO; #2: pata de abajo ARRIBA / collar ABAJO. Secuencia ABBA = espejo de BAAB de Cow hitch.svg (el nudo sin palo es el mismo; es la misma alondra vista desde el otro lado). Las patas salen de detrás del palo y atraviesan el seno del collar de atrás hacia adelante, como en la foto alondra-2 (patas colgando por delante del collar, collar rodeando el palo).",
+    "Ya no está PENDIENTE: el defecto era que las patas pasaban siempre por detrás del collar (collar ARRIBA en #1 y #2, BAAB), con lo cual no atravesaban el seno."
+  ],
+  "deducido": {
+    "1": true
+  }
 }

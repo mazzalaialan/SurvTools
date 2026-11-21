@@ -1,4 +1,20 @@
 {
-  "fuente": "Running bowline.svg, Whidou, CC BY-SA 4.0, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Running_bowline.svg (renderizado a PNG y mirado como imagen; es la misma figura que as-de-guia-corredizo-1.webp)",
-  "notas": "Revisado a ojo (2026-11-12): un as de guía con gaza chica, por la que pasa el firme (por encima de un lado y por debajo del otro), y la gaza grande corrediza. El dibujo tiene esa estructura; sin cambios. La imagen es chica y la cuerda tiene textura: no se leyó la secuencia cruce por cruce."
+  "fuente": "Running bowline.svg, Whidou, CC BY-SA 4.0, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Running_bowline.svg (leído con un script: 300 cuentas ordenadas por id, arriba = la cuenta que se dibuja después; coincide con la foto as-de-guia-corredizo-1.webp)",
+  "notas": "Figura rehecha (2026-11-21) transcribiendo el SVG; antes era el helper `bowline` con otra proyección (cuya secuencia de cruces no coincidía con la referencia). Paso 1 DEDUCIDO hacia atrás del nudo terminado: sacar el firme de la gaza chica (queda un as de guía común, con el firme libre por arriba). Paso 2 DEDUCIDO: es el nudo terminado antes de tirar del firme (misma topología; se muestra con la flecha de abrir la gaza grande). Paso 4 (soltarlo) sin figura. Falta confirmar con la foto (única, de frente) solo la dirección en que la cuerda atraviesa la gaza chica: sale de la lectura del SVG.",
+  "pasos": {
+    "3": [
+      "ABABBAABBABABABAAB"
+    ]
+  },
+  "recorrido": [
+    "TRANSCRIPTO del SVG vectorial (2026-11-21). Una sola cuerda del firme (0 %, a la derecha) al chicote (100 %, falcaceado, en el centro). 9 cruces numerados por la figura de la app (numerado.mjs paso 3). Secuencia desde el firme: ABABBAABBABABABAAB (reemplaza la de la figura anterior, que era otra proyección y NO coincidía).",
+    "1. (cruce con la gaza chica, lado de abajo-derecha) El firme pasa ARRIBA del lado de abajo de la gaza chica (68 %): el firme entra a la gaza chica por DENTRO.",
+    "2. El firme pasa ABAJO del lado de arriba de la misma gaza chica (74 %): sale de la gaza chica por el otro lado. Entre el 1 y el 2 el firme atraviesa la gaza chica: por encima de un lado y por debajo del otro.",
+    "3 a 9. El firme sigue por el arco de arriba y la gaza grande (izquierda) y vuelve al nudo por abajo: 3 ARRIBA (41 %) de la pasada que sube (87 %); 4 ARRIBA (92 %, la subida del chicote) de la pasada de abajo (44 %); 5 ARRIBA (59 %) / ABAJO (47 %); 6 ARRIBA (49 %) / ABAJO (97 %, el chicote); 7 ARRIBA (51 %) / ABAJO (78 %); 8 ARRIBA (81 %) / ABAJO (56 %); 9 ARRIBA (94 %, el chicote) / ABAJO (57 %).",
+    "Sentido: la gaza grande se recorre en sentido antihorario mirando la figura (el firme sale a la derecha, sube, va a la izquierda por arriba, baja y vuelve a la derecha por abajo hacia el nudo); la gaza chica queda a la derecha del nudo y el chicote termina adentro, al centro."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

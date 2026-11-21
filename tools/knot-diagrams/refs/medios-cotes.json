@@ -1,9 +1,25 @@
 {
   "fuente": "Dubbelehalvesteek.svg, Sawims (nl.wikipedia), dominio público, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Dubbelehalvesteek.svg",
   "pasos": {
+    "1": [
+      "BABABA"
+    ],
+    "2": [
+      "BABABABABABA"
+    ],
     "3": [
       "BABABABABABA"
     ]
   },
-  "notas": "Leído con script sin mirar (Playwright): path principal de la cuerda, autointersecciones, y en cada cruce la pieza que Sawims redibuja encima (dirección del trozo de arriba comparada con las dos tangentes; separación clara en los 6 cruces, |ci-cj|>=0.57). 6 cruces cuerda-cuerda, alternan perfecto. Firme = la pata recta que sale abajo a la derecha; sube, pasa por delante del palo una vez (no hay vuelta redonda) y la punta hace dos medios cotes iguales alrededor del firme y sale abajo a la izquierda. Confianza alta (la secuencia alternada es la esperable para dos cotes bien hechos)."
+  "notas": "Leído con script sin mirar (Playwright): path principal de la cuerda, autointersecciones, y en cada cruce la pieza que Sawims redibuja encima (dirección del trozo de arriba comparada con las dos tangentes; separación clara en los 6 cruces, |ci-cj|>=0.57). 6 cruces cuerda-cuerda, alternan perfecto. Firme = la pata recta que sale abajo a la derecha; sube, pasa por delante del palo una vez (no hay vuelta redonda) y la punta hace dos medios cotes iguales alrededor del firme y sale abajo a la izquierda. Confianza alta (la secuencia alternada es la esperable para dos cotes bien hechos).",
+  "recorrido": [
+    "Firme: sube por la izquierda-abajo, pasa por DELANTE del palo, por detrás y baja en diagonal por la izquierda del palo (sentido antihorario mirando de frente: del frente hacia la derecha, detrás del palo hacia arriba y vuelve por la izquierda).",
+    "Chicote (cada cote es un rulo alrededor del firme): #3 pasa por ARRIBA del firme, #4 pasa por DEBAJO del firme (cote entra por DENTRO de su propia vuelta), #5 vuelve a su tramo que llega pasando por ARRIBA de él; el segundo cote repite #1 (ARRIBA del firme), #2 (DEBAJO del firme), #6 (ARRIBA de su tramo que llega).",
+    "Los dos cotes tienen el mismo sentido y alternan perfecto (BABABABABABA, firme a punta). Sale por abajo a la izquierda.",
+    "Figuras (2026-11-21, alineadas con el texto): paso 1 = vuelta al palo y primer medio cote; paso 2 = segundo medio cote; paso 3 = ajustar (flecha al palo)."
+  ],
+  "deducido": {
+    "1": true
+  },
+  "notas_deducido": "Paso 1 (con un solo cote): deducido hacia atrás del nudo terminado (Dubbelehalvesteek.svg) quitando el segundo cote. La figura de la app (medios-cotes-1.webp, dibujo a mano) coincide en que son dos rulos alrededor del firme."
 }

@@ -1,4 +1,15 @@
 {
   "fuente": "Foto del manual: app/public/knots/klemheist-1.webp (tres cuadros); estructura según ABOK 1762 (imágenes propias de la app; ver sus créditos)",
-  "notas": "Revisado a ojo contra klemheist-1 (2026-11-12). Se ve: gaza corta arriba de las vueltas, la parte larga sale de la vuelta de abajo, sube por afuera, pasa por dentro de la gaza corta y se dobla hacia la carga. Antes el dibujo no mostraba la gaza corta ni el paso por dentro (la punta solo daba la vuelta por arriba). Sin secuencia (foto); sin SVG en Commons."
+  "notas": "2026-11-21 (corrector, ronda 3). Rehecho: el anillo va DOBLE (cinta de dos hebras, 4 vueltas) como en bachmann; el seno de arriba es la gaza (ojo) y el seno largo sube por dentro de ella. Número de enlace con la cuerda calculado (suma de signos de los 16 cruces cuerda-anillo / 2) = 0 en los tres pasos.",
+  "recorrido": [
+    "Cuerda 0 = cuerda; cuerda 1 = anillo CERRADO (se corta fuera de cuadro abajo). Orden del anillo: pata 1 del seno largo -> hebra B sube enroscando 4 vueltas -> gaza de arriba (brazo de abajo a la derecha, vuelve por el brazo de arriba) -> hebra A baja enroscando junto a B -> pata 2 del seno largo.",
+    "Las dos hebras dan las vueltas juntas como cinta (cuadro 1 de klemheist-1) ✔; una sube y la otra baja, por eso el enlace con la cuerda es 0 ✔ (16 cruces con la cuerda, alternados ARRIBA/ABAJO por hebra).",
+    "Paso 2-3: el seno largo (las dos patas) sube por dentro de la gaza: cruza el brazo de abajo POR ENCIMA y el de arriba POR DEBAJO (entra por delante, sale por detrás; cuadro 2 leído con confianza media). Paso 3: pasa sobre la gaza y baja doble por la derecha hasta el seno de carga (cuadro 3).",
+    "Arriba/abajo de cada vuelta con la cuerda: SIN REFERENCIA (la foto es chica); se alterna por la regla de la espiral. Paso 1: DEDUCIDO (se saca el seno largo de la gaza y cuelga). Paso 2: DEDUCIDO del 3 (se tira el seno hacia arriba)."
+  ],
+  "pendiente": "Pendiente: foto más grande para fijar arriba/abajo de cada vuelta y el orden de cruce con la gaza. check.mjs marca ambiguos solo entre las dos hebras de la cinta (9 px, igual que bachmann): es la cinta, no se pisan.",
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

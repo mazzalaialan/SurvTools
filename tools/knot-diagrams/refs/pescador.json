@@ -1,0 +1,19 @@
+{
+  "fuente": "Fotos de la app pescador-1/2/3.webp (nudo terminado flojo; en pescador-2 se ve cada simple como una gaza con la OTRA cuerda pasando por adentro) y descripcion estandar (ABoK 1414: cada chicote hace un nudo simple alrededor del firme de la otra cuerda). Las fotos no resuelven los cruces uno por uno: el arriba/abajo del enganche sale de la regla geometrica (el firme del otro atraviesa la gaza), verificada con el numero de enlace de los dos anillos.",
+  "pasos": {
+    "3": [
+      "ABBBABBAABAA",
+      "ABBBABBAABAA"
+    ]
+  },
+  "notas": "2026-11-21 (corrector, vuelta del critico). Antes el firme de la otra cuerda pasaba por ARRIBA de la gaza del simple en los dos enganches (#6 y #8), asi que no entraba en ella: se desenganchaba sin cortar. Arreglo: sumar [214,130] a `under` y sacar [186,168] (cruces #3 y #8). Verificacion por enlace: cerrando cada cuerda en un anillo propio (chicote con su firme, por afuera) el numero de enlace de los dos anillos pasa de 0 (separables) a 1 (enganchados). CIERRE / INVARIANTE: no se declaran v2/det en este archivo. Se probaron con un script las cuatro formas de cerrar la cuerda en un solo lazo: el dibujo corregido da trivial (v2 0, det 1) en las cuatro, y el anterior da v2 1-3 / det 3-15. Ademas se comprobo que det 9 / v2 2 NO distingue enganchado de no enganchado: cualquier anillo con DOS nudos simples separados (p. ej. con todos los cruces de cada firme por arriba) da det 9, v2 2. Por eso 'det 9' no sirve como prueba del pescador; se usa la regla geometrica (el firme de cada cuerda atraviesa la gaza del simple de la otra) y el enlace de anillos = 1. Con los chicotes libres, un anillo de cuerda no tiene invariante de nudo propio.",
+  "recorrido": [
+    "Paso 3 (terminado), numerado.mjs. Naranja (cuerda 0): firme a la izquierda (y=168) pasa por DENTRO de la gaza del simple azul; sus tres cruces con la azul son #1 ARRIBA de la azul (borde izquierdo de la gaza), #2 ABAJO, #3 ABAJO (borde derecho, junto a la punta azul): el firme naranja enhebra la gaza (entra por un lado y sale por el otro). Despues hace su propio simple (alrededor del firme azul, y=130): #4, #5, #7 son cruces consigo misma (alternados, trebol) y la punta sale arriba a la derecha.",
+    "Azul (cuerda 1): lo mismo girado 180: firme a la derecha (y=130) cruza la gaza del simple naranja en #6 ARRIBA de la naranja, #9 ABAJO, #8 ABAJO (el firme azul enhebra la gaza naranja); su propio simple son #10, #11, #12; la punta sale abajo a la izquierda. #3 = azul ARRIBA de naranja; #8 = naranja ARRIBA de azul (corregido 2026-11-21).",
+    "Secuencia A/B por cuerda: ABBBABBAABAA las dos (simetria de 180 grados).",
+    "Paso 1: dos cuerdas paralelas. Paso 2 (cada punta con su simple alrededor de la otra) y paso 3 (tirado): el 2 es DEDUCIDO hacia atras del 3 (aflojar); el 3 repite la figura con flechas."
+  ],
+  "deducido": {
+    "2": true
+  }
+}

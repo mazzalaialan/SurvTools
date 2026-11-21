@@ -1,4 +1,9 @@
 {
   "fuente": "Foto del manual: app/public/knots/bachmann-1.webp (tres cuadros) (imágenes propias de la app; ver sus créditos)",
-  "notas": "Revisado a ojo contra bachmann-1 (2026-11-12). Se ve: anillo colgado del mosquetón, vueltas alrededor de la cuerda y del lomo del mosquetón juntos, gaza de carga abajo. Antes la pata de abajo cruzaba la cuerda para entrar a las vueltas y la de arriba cruzaba en diagonal por delante de la última vuelta; ahora entran y salen por su lado. Sin secuencia (foto); sin SVG en Commons."
+  "notas": "2026-11-21 (corrector, ronda 2). El anillo va doble: dos hebras (cinta de dos líneas) dan las vueltas juntas y su seno enlaza la barra de arriba del mosquetón (una hebra por delante de la barra, la otra por detrás). Cruces 15-20 del paso 2 (ángulo 18-20 grados) son los bordes de la cinta donde las dos hebras dan la vuelta (una por delante, otra por detrás): ambiguos justificados.",
+  "recorrido": [
+    "Cuerda 0 = cuerda; cuerda 1 = anillo doble. Paso 2: 14 cruces de las dos hebras con la cuerda (7 por hebra: ABAJO/ARRIBA alternados, 3,5 vueltas, cuatro pasadas por delante), el seno enlaza la barra de arriba del mosquetón (hebra de la derecha por detrás de la barra, la de la izquierda por delante) y las dos salen abajo a la izquierda como gaza de carga.",
+    "Tabla figura vs foto (bachmann-1, cuadros 2-3): vueltas alrededor de cuerda y lomo juntos ✔; cinta de dos hebras ✔ (salen dos hebras abajo); vueltas 4 pasadas ✔; seno enlazado a una barra ✔ (cuadro 1 lo muestra enganchado en la barra de abajo: en el dibujo se enlaza la de arriba, DEDUCIDO); arriba/abajo individual y cruces con el lomo: SIN REFERENCIA. Paso 1 sin cambios."
+  ],
+  "pendiente": "Pendiente: la foto del cuadro 1 muestra el anillo enganchado dentro del mosquetón (barra de abajo); pasos 2-3 lo enganchan por la barra de arriba. Falta foto para decidir. Cruces 15-20 de los pasos 2-3 (cinta) siguen marcados ambiguos por diseño."
 }

@@ -1,4 +1,16 @@
 {
   "fuente": "Foto del manual: app/public/knots/clinch-1.webp (imágenes propias de la app; ver sus créditos)",
-  "notas": "Revisado a ojo contra clinch-1 (2026-11-12): por el ojo, cinco vueltas sobre la tanza alejándose del ojo, la punta por el lazo chico junto al ojo y de vuelta por el lazo grande; la estructura ya estaba bien. Solo se corrió la bajada de la punta del paso 3 para que no caiga sobre un cruce de las vueltas. Sin secuencia (foto). No se buscó SVG en Commons (presupuesto)."
+  "notas": "2026-11-21 (corrector, ronda 2). Paso 3: quitadas las pasadas sobrantes (#8 y #14 viejas): la punta pasa por el lazo chico de abajo hacia arriba (por encima de una tanza y por debajo de la otra), gira arriba y baja DIRECTO por delante a la derecha del grupo de vueltas hasta el lazo grande (cruza por delante las dos tanzas y por detrás de la pasada de abajo). Paso 4: coil con paso 22 (cruces a 11 px) y el mismo remate. Sin ambiguos. Ronda 3: zoom LC con centro en x = 285 (antes 240): la argolla queda a ~18 px del borde derecho.",
+  "recorrido": [
+    "Cuerda 0 = tanza. Paso 3: por el ojo; cinco vueltas alejándose del ojo (10 cruces ARRIBA/ABAJO alternados); la punta vuelve por abajo, atraviesa el lazo chico (#12 ABAJO de una tanza, #13 ARRIBA de la otra) y baja por delante (#11 y #14 ARRIBA de las dos tanzas) y por detrás de la pasada de abajo (#15 ABAJO) hacia el lazo grande.",
+    "Paso 4: igual al 3 con las vueltas apretadas (paso 22) y flecha de tirar. Tabla figura vs foto (clinch-1): foto de soga floja con unas 3 vueltas visibles, punta hacia arriba y lazo grande abajo; el remate por lazo chico y lazo grande queda DEDUCIDO del texto del paso (la foto no permite leer cruce por cruce): SIN REFERENCIA; número de vueltas 5 según texto (✘ con la foto, que muestra ~3).",
+    "Pasos 1 y 2: DEDUCIDOS hacia atrás del 3."
+  ],
+  "pendiente": "PENDIENTE: la foto no confirma la ruta del remate (lazo chico/lazo grande) ni el número de vueltas.",
+  "deducido": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+  }
 }

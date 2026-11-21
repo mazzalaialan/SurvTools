@@ -1,5 +1,22 @@
 {
   "fuente": "Fotos del manual vuelta-redonda-1.webp y -2.webp (ver créditos en knots.ts) y \"Rundtörn.svg\" (Der Barbar, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Rundt%C3%B6rn.svg)",
-  "pasos": {},
-  "notas": "2026-11-12, revisado a ojo (método de visión): Revisado a ojo contra las fotos del manual y Rundtörn.svg: dos pasadas completas al palo (vuelta redonda) y dos medios cotes del chicote sobre el firme, del lado del firme. El dibujo tiene esa estructura; sin cambios. Rundtörn.svg muestra solo la vuelta, sin cruces cuerda con cuerda: no hay secuencia leída (sin 'pasos')."
+  "pasos": {
+    "2": [
+      "BABABA"
+    ],
+    "3": [
+      "BABABABABABA"
+    ]
+  },
+  "notas": "2026-11-12, revisado a ojo (método de visión): Revisado a ojo contra las fotos del manual y Rundtörn.svg: dos pasadas completas al palo (vuelta redonda) y dos medios cotes del chicote sobre el firme, del lado del firme. El dibujo tiene esa estructura; sin cambios. Rundtörn.svg muestra solo la vuelta, sin cruces cuerda con cuerda: no hay secuencia leída (sin 'pasos').",
+  "recorrido": [
+    "Firme llega por la izquierda al palo, da dos pasadas completas por el palo (vuelta redonda: dos vueltas paralelas, sin cruces cuerda con cuerda) y el chicote sale del palo y vuelve hacia la izquierda por DEBAJO del firme.",
+    "Cada cote es un rulo del chicote alrededor del firme, recorrido de derecha a izquierda (del palo hacia la punta): sube por la IZQUIERDA del cote pasando por ARRIBA del firme, da la vuelta por encima, baja por la derecha pasando por DEBAJO del firme, y al volver a su propio tramo que llegaba pasa por ARRIBA de él (igual que Dubbelehalvesteek.svg de medios-cotes).",
+    "Cruces (figura paso 3): #3 (88,80) chicote ARRIBA del firme; #4 (120,80) chicote ABAJO del firme; #5 (119,144) chicote que sale ARRIBA de su tramo que llega (primer cote); #1 (30,80) chicote ARRIBA del firme; #2 (62,80) chicote ABAJO; #6 (61,143) igual que #5 (segundo cote).",
+    "Los dos cotes tienen el mismo sentido. Secuencia A/B (firme a punta): BABABABABABA; el tramo del cote cada vez alterna arriba/abajo."
+  ],
+  "deducido": {
+    "2": true
+  },
+  "notas_deducido": "Paso 2 (un cote): deducido hacia atrás del nudo terminado quitando el segundo cote. El arriba/abajo del cote se tomó de Dubbelehalvesteek.svg (vector, medios-cotes); las fotos del manual muestran el nudo apretado y no permiten leer el cruce propio del cote (SIN REFERENCIA fotográfica para ese cruce). 2026-11-21: se invirtió el cruce propio del cote (antes el chicote pasaba por DEBAJO de su tramo que llega: AABB; ahora ARRIBA: BABA)."
 }

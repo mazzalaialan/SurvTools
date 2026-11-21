@@ -17,8 +17,8 @@ const escapeBight = [[900, 335], [960, 400], [1030, 490], [1100, 580], [1180, 66
 const escapeFull = escT([...escapeBody, ...escapeBight]);
 // Dónde el firme pasa POR ENCIMA de las patas del seno (el resto lo decide el orden: lo que se hizo después va arriba).
 const escapeUnder = escT([[880, 335], [1010, 262]]);
-// Paso 1: la punta se dobla en seno, todavía sin pasar por la vuelta.
-const escapeStart = escT([...escapeBody, [900, 225], [980, 185], [1020, 150], [995, 118], [940, 135]]);
+// Paso 1: la punta se dobla en un seno (una U bien abierta, con las dos patas separadas), todavía sin pasar por la vuelta.
+const escapeStart = escT([...escapeBody, [880, 200], [925, 115], [985, 30], [1070, -25], [1150, -5], [1190, 60], [1195, 115]]);
 
 export default {
   simple: [
@@ -32,7 +32,7 @@ export default {
   // el firme pasa por debajo de la gaza y por encima del seno y de la punta; el óvalo pasa por debajo de las dos patas del seno.
   escape: [
     // 1) El nudo simple empezado (firme, óvalo y gaza); la punta se dobla en seno sin cruzar todavía.
-    { ropes: [{ ...A, path: escapeStart }], arrows: [[[262, 112], [240, 132], [222, 150]]] },
+    { ropes: [{ ...A, path: escapeStart }], arrows: [[[258, 150], [280, 164], [302, 182]]] },
     // 2) El seno pasa por dentro de la vuelta (las dos patas cruzan el firme y el óvalo): ajustar tirando del firme y del seno.
     { ropes: [{ ...A, path: escapeFull }], under: escapeUnder, arrows: [[[75, 225], [30, 225]], [[330, 262], [368, 255]]] },
     // 3) Para soltarlo, se tira de la punta: el seno sale por donde entró.

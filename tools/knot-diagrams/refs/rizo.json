@@ -1,7 +1,22 @@
 {
   "fuente": "Inkscape Square Knot.svg, Arbitrarily0, Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Inkscape_Square_Knot.svg)",
   "pasos": {
-    "3": ["ABAABA", "BABBAB"]
+    "3": [
+      "ABAABA",
+      "BABBAB"
+    ]
   },
-  "notas": "Leído mirando la imagen (2026-11-12, método de visión): cuerdas roja y azul bien diferenciadas, sin cruces dudosos. Roja desde la punta de arriba a la izquierda: sobre el lado izquierdo azul (A), bajo el arco de arriba azul (B), sobre el tramo derecho azul de arriba (A), sobre el tramo derecho azul de abajo (A), bajo el arco de abajo azul (B), sobre el lado izquierdo azul (A). La azul, los complementarios. Confianza alta."
+  "notas": "Leído mirando la imagen (2026-11-12, método de visión): cuerdas roja y azul bien diferenciadas, sin cruces dudosos. Roja desde la punta de arriba a la izquierda: sobre el lado izquierdo azul (A), bajo el arco de arriba azul (B), sobre el tramo derecho azul de arriba (A), sobre el tramo derecho azul de abajo (A), bajo el arco de abajo azul (B), sobre el lado izquierdo azul (A). La azul, los complementarios. Confianza alta.",
+  "recorrido": [
+    "Paso 3 (nudo terminado). Naranja desde el firme (izquierda abajo, 0 %) a la punta (izquierda arriba, 100 %); cada punta sale del mismo lado que su firme (rizo, no abuela).",
+    "#1 (119,187) naranja ARRIBA de la vertical azul izquierda; #2 (196,216) ABAJO del tramo azul que sube (el seno de abajo: la naranja pasa por debajo de la azul); #3 (281,187) ARRIBA del firme azul (la vertical naranja derecha sube por encima del firme azul); #4 (281,110) ARRIBA de la punta azul; #5 (197,81) ABAJO (seno de arriba, la naranja pasa por debajo de la azul); #6 (119,110) ARRIBA de la vertical azul izquierda y sale a la punta izquierda.",
+    "Azul: los complementarios (B A B B A B). Sentido: la naranja sube por la derecha y baja por la izquierda del seno de arriba; la azul al revés (cada cuerda hace un medio nudo alrededor de la otra, el segundo en sentido contrario al primero).",
+    "Comprobación de tipo (2026-11-21): cerrando punta con punta y firme con firme, v2 = 2, det = 9, y los 6 cruces tienen signos +++--- (escritura 0): dos trébol de quiralidad OPUESTA = nudo de rizo. La abuela daría +++ +++ (escritura +-6).",
+    "Foto rizo-1/2/3.webp (nudo terminado): coincide en que el anillo derecho de la cuerda que sale a la izquierda pasa por ARRIBA de las dos patas y el izquierdo por ABAJO; la foto no separa cruces uno por uno.",
+    "Paso 1 (primer medio nudo, 3 cruces: ABA/BAB) y paso 2 (el mismo nudo flojo): DEDUCIDOS hacia atrás desde el paso 3 (se deshace el segundo medio nudo, cruces #4 a #6)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

@@ -1,0 +1,15 @@
+{
+  "fuente": "Dibujo de la app escota-doble-1.webp (estilo FM 5-125: se ve el nudo con dos vueltas y la flecha de la punta), leído ampliado cruce por cruce; contrastado con «Sheet bend.svg»/«Double sheet bend.svg» (Lucasbosch, CC BY-SA 3.0) y «Doppelter Schotstek.jpg» (Markus Baerlocher, dominio público).",
+  "notas": "2026-11-21 (corrector). Las colas quedan del mismo lado (arriba) y los firmes del otro: es la escota correcta, no la zurda débil. Diferencia con el dibujo FM 5-125: la punta final cruza por debajo del tramo que sale del seno ANTES de que este pase sobre la pata de arriba (dibujo) o DESPUÉS (la figura, donde la punta sube por la izquierda y pasa por debajo del arco); son equivalentes por un movimiento de Reidemeister III (el arco pasa por encima de la pata de arriba y de la punta; la punta por encima de la pata).",
+  "recorrido": [
+    "Paso 4/5 (doble, terminado), cuerda fina (azul) desde el firme (abajo a la derecha): #5 pasa ABAJO de la curva del seno (entra por DEBAJO, de atrás hacia delante, por dentro del seno); sube por dentro del seno y #6 pasa ARRIBA de la pata de arriba.",
+    "Sale hacia arriba, arco por ENCIMA de las patas hacia la izquierda y baja por DETRAS de las dos patas (#10 ABAJO de la pata de arriba, #1 ABAJO de la de abajo), pasa por debajo del seno y sube por DELANTE de las dos patas (#2, #9 ARRIBA); segunda vuelta igual: baja por detrás (#8, #3 ABAJO) y sube por delante (#4, #7 ARRIBA).",
+    "La punta sale hacia arriba y #11 pasa ABAJO del arco de la fina (por debajo de sí misma). Sentido de giro de las vueltas: antihorario mirando de frente (suben por delante, bajan por detrás), a la izquierda de la curva.",
+    "Paso 3 (escota simple, una vuelta): DEDUCIDO hacia atrás desde la doble (se deshace la segunda vuelta). Paso 2 (la fina pasa por dentro del seno) y paso 1 (solo el seno): DEDUCIDOS."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true,
+    "3": true
+  }
+}

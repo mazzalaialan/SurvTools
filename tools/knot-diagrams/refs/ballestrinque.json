@@ -1,9 +1,31 @@
 {
   "fuente": "Mastworp.svg, Sawims (nl.wikipedia), dominio público, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Mastworp.svg; confirmado con Clove Hitch - ABoK 11 - USCG (foto, palo vertical)",
   "pasos": {
+    "1": [
+      "BA"
+    ],
+    "2": [
+      "BA"
+    ],
+    "3": [
+      "BAAB"
+    ],
     "4": [
       "BAAB"
     ]
   },
-  "notas": "Leído del SVG renderizado y ampliado (cuerda de un color sobre palo; 2 cruces cuerda-cuerda, ambos nítidos). Del firme (abajo) a la punta (arriba, con falcaceado): el firme pasa por DEBAJO de la diagonal, sube y da vuelta al palo; la diagonal (jinete) pasa por ENCIMA del firme y por ENCIMA del chicote; da la segunda vuelta por detrás y el chicote sale por DEBAJO de la diagonal, del lado opuesto al firme = BAAB. Coincide con la lectura previa de la foto USCG. Los cruces con el palo no cuentan. Confianza alta."
+  "notas": "Leído del SVG renderizado y ampliado (cuerda de un color sobre palo; 2 cruces cuerda-cuerda, ambos nítidos). Del firme (abajo) a la punta (arriba, con falcaceado): el firme pasa por DEBAJO de la diagonal, sube y da vuelta al palo; la diagonal (jinete) pasa por ENCIMA del firme y por ENCIMA del chicote; da la segunda vuelta por detrás y el chicote sale por DEBAJO de la diagonal, del lado opuesto al firme = BAAB. Coincide con la lectura previa de la foto USCG. Los cruces con el palo no cuentan. Confianza alta.",
+  "recorrido": [
+    "Palo vertical, firme entra por la izquierda (a la altura del medio). Sentido: el firme sube en diagonal hacia la derecha; la vuelta es antihoraria mirando de frente (palo vertical), el chicote sale hacia la derecha.",
+    "1. El firme pasa por DELANTE del palo subiendo en diagonal (izquierda-abajo a derecha-arriba), pasa por detrás y vuelve al frente del lado izquierdo, arriba.",
+    "2. CRUCE #1 (186,133): la segunda pasada, que baja en diagonal por delante, va por ARRIBA de la primera diagonal (firme ABAJO). Es la X del frente.",
+    "3. La segunda pasada da la vuelta por detrás del palo y vuelve al frente del lado izquierdo, abajo (queda paralela a la primera por detrás).",
+    "4. CRUCE #2 (215,179): el chicote sube en diagonal hacia la derecha y pasa por DEBAJO de la segunda diagonal (esta va ARRIBA); sale hacia la derecha, lado opuesto al firme.",
+    "Lectura por posición en la cuerda (0 % firme, 100 % punta): B A A B (firme debajo de la segunda pasada; chicote debajo de la segunda pasada). Coincide con Mastworp.svg y con la foto USCG."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  },
+  "notas_deducido": "Pasos 1 y 2 sin foto propia: deducidos hacia atrás del nudo terminado (paso 3): se saca el chicote de debajo de la segunda diagonal (paso 2) y se abre la segunda vuelta (paso 1, queda el firme y la diagonal que lo cruza por arriba)."
 }

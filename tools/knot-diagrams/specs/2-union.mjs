@@ -127,10 +127,10 @@ export default {
     return [
       { ropes: [{ ...A, path: [[-20, 168], [120, 168], [300, 168], [340, 168]] }, { ...B, path: [[420, 130], [280, 130], [100, 130], [60, 130]] }] },
       // Cada punta hace su simple alrededor de la otra cuerda (las flechas van sobre cada nudo, hacia donde pasa la punta).
-      { ropes: [{ ...A, path: [[-20, 168], [80, 168], ...oa.path, [330, 90]] }, { ...B, path: [[420, 130], [320, 130], ...ob.path, [70, 208]] }], under: [[253, 130], [147, 168], ...oa.under, ...ob.under],
+      { ropes: [{ ...A, path: [[-20, 168], [80, 168], ...oa.path, [330, 90]] }, { ...B, path: [[420, 130], [320, 130], ...ob.path, [70, 208]] }], under: [[253, 130], [111, 168], [214, 130], ...oa.under, ...ob.under],
         arrows: [[[215, 62], [262, 46], [312, 66]], [[185, 236], [138, 252], [88, 232]]] },
       // Las flechas van sobre los firmes: naranja (y = 168) a la izquierda, azul (y = 130) a la derecha.
-      { ropes: [{ ...A, path: [[-20, 168], [80, 168], ...oa.path, [330, 90]] }, { ...B, path: [[420, 130], [320, 130], ...ob.path, [70, 208]] }], under: [[253, 130], [147, 168], ...oa.under, ...ob.under],
+      { ropes: [{ ...A, path: [[-20, 168], [80, 168], ...oa.path, [330, 90]] }, { ...B, path: [[420, 130], [320, 130], ...ob.path, [70, 208]] }], under: [[253, 130], [111, 168], [214, 130], ...oa.under, ...ob.under],
         arrows: [[[75, 168], [30, 168]], [[345, 130], [392, 130]]] },
     ];
   })(),
@@ -149,7 +149,7 @@ export default {
     const W = 700, C = 149, G = 34, R = 78, P = 110, XR = 621, YS = C + G, XL = XR - 2 * P;
     const half = () => {
       // U del firme (a la derecha) hasta el fondo de la primera vuelta.
-      const path = [[-20, YS], [XR - 40, YS], [XR + 6, YS], [XR + 26, YS + 3], [XR + 41, YS + 14], [XR + 46, (YS + C + R) / 2], [XR + 38, C + R - 10], [XR + 20, C + R + 1], [XR, C + R]];
+      const path = [[-20, YS], [XR - 120, YS], [XR - 80, YS], [XR - 40, YS], [XR, YS], [XR + 30, YS + 4], [XR + 44, YS + 20], [XR + 46, (YS + C + R) / 2 + 4], [XR + 36, C + R - 6], [XR + 18, C + R + 1], [XR, C + R]];
       for (let i = 1; i <= 16; i++) {
         const th = (i / 8) * Math.PI * 2, sn = Math.sin(th);
         path.push([XR - P * (th / (2 * Math.PI)), C + R * Math.cos(th), Math.abs(sn) < 1e-9 ? 0 : sn > 0 ? 1 : -1]);

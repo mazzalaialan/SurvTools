@@ -1,4 +1,15 @@
 {
   "fuente": "Foto del manual: app/public/knots/uni-1.webp (dibujo de cuatro pasos) (imágenes propias de la app; ver sus créditos)",
-  "notas": "Revisado a ojo contra uni-1 (2026-11-12). Se ve: la punta vuelve junto a la tanza y hace una gaza que se cruza por encima de las dos tanzas; las vueltas rodean las dos tanzas dentro de la gaza, con el arco colgando debajo. Antes la gaza quedaba al costado de las vueltas, sin enlazarse (el nudo se desarmaría); ahora las vueltas están dentro de la gaza, alejándose del ojo. Sin secuencia (dibujo a mano en foto). No se buscó SVG en Commons (presupuesto)."
+  "notas": "2026-11-21 (corrector, ronda 2). Paso 3: sacado el pico de la gaza: el cruce de la gaza (por delante de las dos tanzas) es la primera pasada de la espiral y de ahí la punta sigue por detrás de las dos, alternando; tanzas separadas 32 px y paso de vuelta 34 (sin ambiguos). Paso 4: vueltas con paso 30 (cruces a 14 px, antes 2-3 px). En el paso 4 solo se dibuja una de las tanzas bajo las vueltas (simplificación, SIN REFERENCIA). Ronda 3, paso 4: dibujada la segunda tanza (la que vuelve del ojo, a 14 px de la principal) bajo las vueltas, que ahora abrazan las DOS; la gaza achicada queda a la izquierda y su otra pata vuelve por debajo y sube por delante de las dos tanzas para empezar a enroscar. Sin ambiguos.",
+  "recorrido": [
+    "Cuerda 0 = tanza. Paso 3: tanza por el ojo y vuelta junto a ella (32 px de separación); la punta hace una gaza que cruza POR DELANTE de las dos tanzas (#11 y #12, primera pasada de la espiral) con el arco por debajo; sigue por DETRÁS de las dos (#10), por delante (#8-#9)... 5 vueltas de ida y vuelta (22 cruces: 11 por tanza, alternados ARRIBA/ABAJO) y la punta queda libre hacia arriba a la izquierda.",
+    "Tabla figura vs foto (uni-1, dibujo a mano de cuatro cuadros): 5 vueltas juntas dentro de la gaza ✔; gaza que vuelve hacia el anzuelo ✔; arriba/abajo de cada cruce: el dibujo a mano no lo define (SIN REFERENCIA; se deduce de la regla de la espiral alternada).",
+    "Paso 1 y 2: DEDUCIDOS de los cuadros 1-2; paso 4: cuadros 3-4."
+  ],
+  "pendiente": "PENDIENTE: falta foto de un Uni apretado para fijar arriba/abajo de las vueltas; el recorrido de la gaza achicada en el paso 4 es DEDUCIDO.",
+  "deducido": {
+    "1": true,
+    "2": true,
+    "4": true
+  }
 }

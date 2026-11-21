@@ -1,5 +1,30 @@
 {
   "fuente": "Munter Hitch.jpg y Hitch-munter-ABoK 1818-USCG.jpg (Wikimedia Commons, CC BY-SA 4.0); foto del manual app/public/knots/dinamico-1.webp",
-  "pasos": { "1": ["AB"], "2": ["AB"], "3": ["AB"], "4": ["AB"] },
-  "notas": "Leído a 3x (2026-11-13) sobre la foto de la barra. Son DOS vueltas alrededor de la barra de MANO CONTRARIA con un solo cruce debajo: la carga sube POR DETRAS de la barra, pasa por encima y baja POR DELANTE (seno 1); cruza POR DEBAJO de su tramo ascendente; vuelve a subir POR DELANTE de la barra, pasa por encima y baja POR DETRAS: ahi sale el freno. Secuencia respecto de la barra: detras, delante, delante, detras. El dibujo anterior hacia detras, delante, detras, delante (dos vueltas de la MISMA mano: eso es un ballestrinque, no un dinamico); corregido. Con un solo cruce rope-rope, check.mjs ('AB') no distingue el espejo; la mano se controla con el orden respecto de la barra."
+  "pasos": {
+    "1": [
+      "AB"
+    ],
+    "2": [
+      "AB"
+    ],
+    "3": [
+      "AB"
+    ],
+    "4": [
+      "AB"
+    ]
+  },
+  "notas": "Leído a 3x (2026-11-13) sobre la foto de la barra. Son DOS vueltas alrededor de la barra de MANO CONTRARIA con un solo cruce debajo: la carga sube POR DETRAS de la barra, pasa por encima y baja POR DELANTE (seno 1); cruza POR DEBAJO de su tramo ascendente; vuelve a subir POR DELANTE de la barra, pasa por encima y baja POR DETRAS: ahi sale el freno. Secuencia respecto de la barra: detras, delante, delante, detras. El dibujo anterior hacia detras, delante, detras, delante (dos vueltas de la MISMA mano: eso es un ballestrinque, no un dinamico); corregido. Con un solo cruce rope-rope, check.mjs ('AB') no distingue el espejo; la mano se controla con el orden respecto de la barra.",
+  "recorrido": [
+    "Paso 3 (nudo terminado), una sola cuerda: carga abajo a la izquierda, freno abajo a la derecha. Respecto de la BARRA de abajo del mosquetón, de izquierda a derecha, las cuatro pasadas son: DELANTE, DETRAS, DELANTE, DETRAS (en la foto «Munter Hitch.jpg» se ve igual: dos tramos por delante de la barra y dos por detrás, alternados).",
+    "Carga: sube por DETRAS de la barra (x=203), pasa por encima (por dentro del mosquetón) y baja por DELANTE de la barra (x=140, a la izquierda): primer seno, el chico, del lado izquierdo, antihorario visto de frente.",
+    "Del primer seno sigue hacia abajo y a la derecha y cruza POR DEBAJO de su propio tramo ascendente (#1: ARRIBA el tramo ascendente de la carga, ABAJO el que viene del seno). Es el único cruce cuerda-cuerda.",
+    "Sube de nuevo por DELANTE de la barra (x=236), pasa por encima y baja por DETRAS (x=266): segundo seno; de ahí sale el freno hacia abajo a la derecha.",
+    "Los dos senos tienen la pata de DELANTE a la izquierda de la de detrás (foto: izquierda delante, detrás, delante, detrás). Dibujo de la app = ese orden.",
+    "Paso 1 (gaza más segundo seno, sin mosquetón; foto dinamico-1): mismo recorrido sin la barra, con el mismo cruce (carga ARRIBA). Paso 2 (plegar y meter en el mosquetón): DEDUCIDO, es el paso 3 antes de cerrar el seguro; paso 4: igual al 3 con el freno llevado paralelo a la carga (DEDUCIDO), sin cruces nuevos."
+  ],
+  "deducido": {
+    "2": true,
+    "4": true
+  }
 }

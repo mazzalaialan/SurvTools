@@ -1,0 +1,35 @@
+{
+  "fuente": "«Prusik knot.jpg» (Wikimedia Commons; licencia exacta por confirmar en la página del archivo; solo leída, no copiada al repo) y fotos de la app prusik-1..4.webp. La foto de Commons muestra el Prusik aflojado con el seno a un lado; las de la app lo muestran peinado con las patas colgando juntas.",
+  "notas": "2026-11-21 (corrector, ronda 2). Prusik de TRES vueltas: cada grupo tiene 7 cruces con la cuerda, de la D a la pata: ABAJO, ARRIBA, ABAJO, ARRIBA, ABAJO, ARRIBA, ABAJO (4 por detrás y 3 por delante; tres vueltas completas = tres pasadas por delante y tres por detrás, más la entrada por detrás). Ronda 1 tenía 5 por grupo con la secuencia invertida (equivale a 2 vueltas): corregido. Razonamiento de paridad: con la D a la izquierda y la pata a la derecha hay un número impar de medias vueltas (7); si arranca por detrás (el anillo del paso 1 está por detrás) termina por detrás. Foto de Commons «Prusik knot.jpg»: la pasada delantera es visible 3 veces en el grupo de abajo (y las de arriba, 2 delanteras con la D entrando por detrás); «Three turn Prusik knot.jpg» (cinta): 3 pasadas delanteras apiladas. Un solo cordino cerrado.",
+  "recorrido": [
+    "Cuerda 0 = cuerda vertical; cuerda 1 = cordino, de la pata de arriba (derecha) a la de abajo (derecha), pasando por la D de la izquierda.",
+    "Grupo de arriba, de la pata hacia la D: #1 ABAJO (entra por detrás hacia la izquierda), #2 ARRIBA, #3 ABAJO, #4 ARRIBA, #5 ABAJO, #6 ARRIBA, #7 ABAJO; sale a la izquierda y forma la D por FUERA de las vueltas (sin cruzar nada).",
+    "Grupo de abajo, de la D hacia la pata: #8 ABAJO, #9 ARRIBA, #10 ABAJO, #11 ARRIBA, #12 ABAJO, #13 ARRIBA, #14 ABAJO; sale a la derecha como segunda pata. Los tramos que entran a la D (#7 y #8) y las salidas a las patas (#1 y #14) van ABAJO.",
+    "Siete cruces por grupo = tres vueltas completas (tres pasadas delanteras) mas la entrada por detrás; coincide con el texto «tres vueltas» y con el anillo por detrás del paso 1.",
+    "Paso 1: el anillo pasa ABAJO de la cuerda en sus dos tramos (#1 ABAJO, #2 ABAJO). DEDUCIDO hacia atrás del paso 3 (se sacan las vueltas). Paso 2: DEDUCIDO (mismas pasadas, grupos más separados). Paso 4: igual al 3 más la flecha de carga.",
+    "Sentido de giro (horario/antihorario) de las pasadas delanteras: no se puede fijar con certeza en las fotos (cinta ancha); se dibuja con la pasada delantera yendo de izquierda a derecha al alejarse de la D (SIN REFERENCIA firme)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  },
+  "pendiente": "Las fotos de la app (prusik-3/4) muestran las patas colgando juntas hacia abajo y la de Commons un anillo con la D a un lado: el dibujo es el mismo nudo abierto. Sentido de giro (horario/antihorario) de las pasadas por delante: la foto de Commons es una cinta ancha y no permite fijarlo con certeza; se dibuja con las pasadas delanteras yendo de izquierda a derecha al alejarse de la D. Crítico independiente: falta la nueva pasada.",
+  "pasos": {
+    "1": [
+      "AA",
+      "BB"
+    ],
+    "2": [
+      "ABABABAABABABA",
+      "BABABABBABABAB"
+    ],
+    "3": [
+      "ABABABAABABABA",
+      "BABABABBABABAB"
+    ],
+    "4": [
+      "ABABABAABABABA",
+      "BABABABBABABAB"
+    ]
+  }
+}

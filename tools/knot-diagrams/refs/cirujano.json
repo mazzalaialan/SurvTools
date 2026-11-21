@@ -1,0 +1,21 @@
+{
+  "fuente": "Chirurgenknoten 08.svg (Werneuchen, dominio público, Wikimedia Commons), transcripto en specs/2-union.mjs; foto de la app cirujano-1.webp (nudo terminado, no resuelve cruces uno por uno).",
+  "v2": 4,
+  "det": 15,
+  "pasos": {
+    "3": [
+      "ABABAABA",
+      "BABABBAB"
+    ]
+  },
+  "notas": "2026-11-21 (corrector). Verificado: cerrando puntas con puntas y firmes con firmes (figura de una cuerda): v2 = 4, det = 15 (5_1 # 3_1) y signos +++++ --- (la doble vuelta de un lado y el medio nudo opuesto de otro): es el cirujano, no la abuela doble (daría +8).",
+  "recorrido": [
+    "Paso 3 (terminado), naranja desde el firme (izquierda abajo) a la punta (izquierda arriba): #1 ARRIBA, #2 ABAJO, #3 ARRIBA, #4 ABAJO, #5 ARRIBA (doble vuelta: cinco cruces alternados entre las dos cuerdas), #6 ARRIBA, #7 ABAJO, #8 ARRIBA (medio nudo opuesto, con una sola vuelta). Azul: lo contrario en cada cruce (B A B A B B A B desde su firme, a la derecha).",
+    "Cada punta sale del mismo lado que su firme (naranja a la izquierda, azul a la derecha). La doble vuelta es el cruce de las dos cuerdas con dos giros en el mismo sentido; el medio nudo de arriba gira en sentido contrario, una sola vez.",
+    "Pasos 1 y 2 (la doble vuelta sola, floja y apretada): DEDUCIDOS hacia atrás desde el paso 3 (se deshace el medio nudo de arriba, cruces #6 a #8)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
+}

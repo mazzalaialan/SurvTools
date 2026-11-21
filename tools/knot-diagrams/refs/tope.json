@@ -3,5 +3,15 @@
   "pasos": {},
   "v2": 3,
   "det": 5,
-  "notas": "2026-11-12. La referencia arma el nudo de otra forma (la punta se enrosca dos veces alrededor del firme adentro del seno: 5 cruces en cadena en su paso 2; el paso 3 es un bollo chico que no se lee), así que la secuencia de cruces no se compara: se compara el tipo de nudo. Nuestro dibujo (vueltas en barril y la punta que vuelve por adentro) da v2 3 y det 5: es el 5₁, igual que la referencia. Ojo: el doble nudo simple NO es el 5₂ (det 7); se probó y se confirmó con los dos invariantes."
+  "notas": "2026-11-12. La referencia arma el nudo de otra forma (la punta se enrosca dos veces alrededor del firme adentro del seno: 5 cruces en cadena en su paso 2; el paso 3 es un bollo chico que no se lee), así que la secuencia de cruces no se compara: se compara el tipo de nudo. Nuestro dibujo (vueltas en barril y la punta que vuelve por adentro) da v2 3 y det 5: es el 5₁, igual que la referencia. Ojo: el doble nudo simple NO es el 5₂ (det 7); se probó y se confirmó con los dos invariantes.",
+  "recorrido": [
+    "Paso 3 (barril): firme a la izquierda; la punta se enrolla dos veces alrededor del firme (de derecha a izquierda, por debajo hacia adelante: vueltas 'ABAB' 1-2 y 3-4 en la tabla) y vuelve por DENTRO de las dos vueltas hasta salir arriba a la derecha.",
+    "Cruces 1 a 4: cada vuelta cruza el firme una vez por arriba y una por abajo (alternado). Cruces 6 a 9: el retorno de la punta pasa alternado (arriba/abajo) a través de las dos vueltas. #5: el chicote sale pasando ARRIBA de la primera pasada (95 % arriba, 31 % abajo).",
+    "Se verificó con tipo.mjs: v2 3, det 5 = tórico (2,5) 5_1, que es el doble nudo simple real (no el 5_2).",
+    "Paso 1 (dos vueltas sin retorno) y paso 2 (retorno suelto): DEDUCIDOS hacia atrás desde el 3 (sacar el retorno; aflojar el barril). El paso 3 es el 2 apretado."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

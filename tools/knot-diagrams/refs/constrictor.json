@@ -5,5 +5,14 @@
       "BBAAAABB"
     ]
   },
-  "notas": "Leído con script sin mirar (método beadx): 113 cuentas verdes cuyo id sigue la cuerda sin saltos; arriba = la cuenta que se dibuja después (votos -9, -4, +24, +26). El palo (cuentas azules) no cuenta. 4 cruces cuerda-cuerda, de la punta de arriba a la de abajo: BBAAAABB (capicúa: se lee igual desde cualquier punta). Es la proyección del palo horizontal con la X (jinete) cruzando y las puntas metidas por debajo. Confianza alta; el cruce c1 tiene voto más bajo (-4) pero coherente con el dibujo."
+  "notas": "Leído con script sin mirar (método beadx): 113 cuentas verdes cuyo id sigue la cuerda sin saltos; arriba = la cuenta que se dibuja después (votos -9, -4, +24, +26). El palo (cuentas azules) no cuenta. 4 cruces cuerda-cuerda, de la punta de arriba a la de abajo: BBAAAABB (capicúa: se lee igual desde cualquier punta). Es la proyección del palo horizontal con la X (jinete) cruzando y las puntas metidas por debajo. Confianza alta; el cruce c1 tiene voto más bajo (-4) pero coherente con el dibujo.",
+  "recorrido": [
+    "Constrictor (palo vertical), numerado.mjs constrictor 3: del chicote de arriba a la izquierda a la punta de la derecha: B B A A A A B B. #1 (10 %): ABAJO de la segunda vuelta; #2 (18 %): ABAJO de la diagonal de la X; #3 (28 %): ARRIBA (va por delante, es la 1ª pasada); #4 (48 %): ARRIBA de la punta (es la diagonal de la X); #2 (59 %): ARRIBA; #1 (76 %): ARRIBA; #4 (86 %): la punta pasa por DEBAJO de la diagonal; #3 (95 %): la punta pasa por DEBAJO de la vuelta del frente. Coincide con refs (BBAAAABB, capicúa) y con la foto constrictor-1 (cuadro 3: X y punta por debajo de las dos ramas).",
+    "Topología: tipo.mjs sin el palo da nudo trivial (v2 0, det 1); no es calculable «cerrando con un lazo» con las herramientas actuales (haría falta un enlace de dos componentes). Verificado cruce por cruce, sin cambios en el dibujo. Pasos 1 y 2 sin referencia propia (deducidos de atrás hacia adelante).",
+    "2026-11-21 (ronda 3): paso 1 ahora dibuja la X (la diagonal pasa POR ENCIMA del firme en #1, 83°) y la punta sigue 40 px más allá del cruce, como en la foto constrictor-1 cuadro 1. Paso 2: la punta se alargó para que termine lejos (más de 40 px) del cruce con el firme. Pasos 1 y 2 siguen deducidos. La X queda sobre el borde derecho del palo (no centrada; centrarla obligaba a rehacer toda la vuelta)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true
+  }
 }

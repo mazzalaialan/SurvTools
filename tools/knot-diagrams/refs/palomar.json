@@ -1,4 +1,16 @@
 {
   "fuente": "Foto del manual: app/public/knots/palomar-1.webp (cinco cuadros, con argolla) (imágenes propias de la app; ver sus créditos)",
-  "notas": "Revisado a ojo contra palomar-1 (2026-11-12). Pasos 1 a 3 ya tenían la estructura (tanza doble por el ojo, simple con la tanza doble, anzuelo por el seno). El paso 4 mostraba una tanza sola por el ojo, sin nudo; ahora muestra el nudo simple doble con el seno pasado por encima del anzuelo, abrazando la pata, antes de ajustar. Sin secuencia (foto). No se buscó SVG en Commons (presupuesto)."
+  "notas": "2026-11-21 (corrector, ronda 2). Tanza doble como dos hebras de dos tonos (naranja y ocre) a 16 px, rope 8; gaza (seno) larga y abierta que sale del nudo y cuelga a la derecha (pasos 2-3) y abraza la pata del anzuelo debajo del ojo (paso 4). En los cuatro cruces del nudo simple la punta va por encima (regla del simple); el cruce #10 queda con la tanza a 82 % ABAJO del seno. 0 ambiguos. Ronda 3: el seno del nudo ahora pasa por el ojo: baja por dentro de la argolla (argolla r 15 centrada en el poste), pata izquierda POR ENCIMA del arco de arriba (z 1), pata derecha POR DEBAJO (z -1), y la punta asoma por debajo del arco de abajo. Paso 4: gaza que abraza la pata corrida hacia abajo para no pisar la punta. 0 ambiguos.",
+  "recorrido": [
+    "Cuerda 0 = hebra naranja; cuerda 1 = hebra ocre (la tanza doblada, con la gaza en la punta).",
+    "Nudo simple con la tanza doble: en los cuatro cruces del cruce principal la punta (la gaza) pasa POR ENCIMA de la pasada anterior, las dos hebras con el mismo orden. Paso 2-3: la gaza sale larga hacia la derecha para pasarla por encima del anzuelo (flecha del paso 3). Paso 4: la gaza abraza la pata, brazo de abajo por delante y el de arriba por detrás (DEDUCIDO: la foto palomar-1 chica no permite leer de qué lado).",
+    "Tabla figura vs foto (palomar-1, cuadros 4-5): simple con tanza doble a ras del ojo ✔; arriba/abajo del simple: SIN REFERENCIA a nivel de cruce; consistencia interna ✔.",
+    "Ojo del anzuelo (ronda 3): la tanza doble pasa por la argolla (una pata por delante del arco de arriba, la otra por detrás); la punta del seno asoma por debajo. DEDUCIDO de la foto palomar-1 (cuadros 1-3, la tanza atraviesa la argolla)."
+  ],
+  "pendiente": "Pendiente: foto más grande para fijar el arriba/abajo del simple y el lado por donde abraza la pata. Pasos 3 y 4 DEDUCIDOS.",
+  "deducido": {
+    "2": true,
+    "3": true,
+    "4": true
+  }
 }

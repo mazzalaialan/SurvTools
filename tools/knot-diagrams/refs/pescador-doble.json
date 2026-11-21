@@ -1,0 +1,16 @@
+{
+  "fuente": "Fotos del manual app/public/knots/pescador-doble-1/2/3.webp (propias de la app); estructura contrastada con «Double fisherman's knot cordelette.png» (ScrubbedFalcon, CC BY-SA 4.0) y la descripción estándar (ABoK 1415). Las fotos son de nudo ajustado: NO resuelven los cruces uno por uno.",
+  "notas": "2026-11-21 (corrector). Cada mitad es un doble nudo simple alrededor de TRES cuerdas: la otra cuerda, su propio firme y su propia punta. Verificado con tipo.mjs sobre cada cuerda sola: v2 = 3 y det = 5 (nudo 5_1, doble simple), las dos mitades iguales (la B es la A girada 180° en el plano, misma quiralidad). Se corrigió un rulo espurio del spline en la U del firme (cruces 10 y 24 viejos, a 7°) y ahora no quedan cruces ambiguos.",
+  "recorrido": [
+    "Paso 3 (nudo terminado), cuerda naranja (cuerda 0), del firme (0 %, izquierda, y=183) a la punta (100 %). La azul es la misma cosa girada 180° (firme a la derecha, vuelta a la izquierda).",
+    "Firme: recto hacia la derecha. Pasa ABAJO del primer tramo de la vuelta azul que sube (#1), ARRIBA del que baja (#2), ABAJO del siguiente que sube (#3) y ARRIBA del que baja (#4): la vuelta azul rodea al firme naranja (dos vueltas = cuatro cruces).",
+    "#5 el firme pasa ABAJO de la subida de la punta naranja (la punta rodea el seno por FUERA, a la izquierda de las vueltas, y sube por delante del firme); #6 ARRIBA de la vuelta que baja, #7 ABAJO de la que sube, #8 ARRIBA de la que baja, #9 ABAJO de la subida de la primera vuelta.",
+    "U del firme a la derecha (da la vuelta hacia abajo, sin cruzarse) y empieza la primera vuelta: sentido antihorario mirando de frente, sube por DELANTE (ARRIBA del firme #9, ARRIBA de su propia punta #10, ARRIBA de la azul #11), pasa por encima de la azul, baja por DETRAS (ABAJO de la azul #12, ABAJO de su punta #13, ABAJO del firme #8).",
+    "Segunda vuelta igual: sube por DELANTE (ARRIBA del firme #7, de la punta #14, de la azul #15) y baja por DETRAS (ABAJO de la azul #16, de la punta #17, del firme #6). Las dos vueltas rodean a las TRES cuerdas (azul, punta y firme).",
+    "Punta: sale de la segunda vuelta, va por fuera y pasa ARRIBA del firme (#5) y entra por el MEDIO de las dos vueltas, por DENTRO: ARRIBA de la bajada (#17), ABAJO de la subida (#14), ARRIBA de la bajada (#13), ABAJO de la subida (#10), y sale a la derecha (alterna, o sea, enhebra las dos vueltas).",
+    "Paso 2: la mitad naranja sola con la azul recta: DEDUCIDO hacia atrás desde el paso 3 (se deshace la mitad azul). Paso 1: las dos cuerdas paralelas (foto pescador-doble-1)."
+  ],
+  "deducido": {
+    "2": true
+  }
+}

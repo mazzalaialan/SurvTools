@@ -1,5 +1,14 @@
 {
   "fuente": "\"Timber Hitch HowTo.jpg\" (Commons, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Timber_Hitch_HowTo.jpg) y foto del manual lenador-1.webp",
   "pasos": {},
-  "notas": "2026-11-12, revisado a ojo (método de visión): Revisado a ojo: la cuerda rodea el tronco, el chicote rodea el firme y se enrosca tres veces sobre su propio tramo (el que vuelve del tronco). El dibujo tiene esa estructura; sin cambios. Las vueltas del enroscado están apretadas en la foto: no se leen los cruces con seguridad (sin 'pasos')."
+  "notas": "2026-11-12, revisado a ojo (método de visión): Revisado a ojo: la cuerda rodea el tronco, el chicote rodea el firme y se enrosca tres veces sobre su propio tramo (el que vuelve del tronco). El dibujo tiene esa estructura; sin cambios. Las vueltas del enroscado están apretadas en la foto: no se leen los cruces con seguridad (sin 'pasos').",
+  "recorrido": [
+    "Leñador (numerado.mjs lenador 3), del firme (arriba) a la punta: #1 (7 %/56 %): el collar pasa por DETRÁS del firme arriba; #2 (66 %/12 %): vuelve por DELANTE del firme abajo (collar). Después el chicote sigue el tramo de la gaza hacia el tronco y se enrosca tres veces: pasadas de frente (ARRIBA) en #9, #7, #5 y vueltas por detrás (ABAJO) en #8, #6, #4: alterna perfecto (A B A B A B), 3 vueltas completas como dice el texto («tres o cuatro»); la punta termina pasando por ARRIBA del tramo (#3, 59°) y queda sobre el tronco. Sentido: las pasadas de frente van de arriba-izquierda a abajo-derecha, igual que en la foto lenador-1 (cuadro de la derecha: tres pasadas «\\», punta horizontal hacia la izquierda sobre el tronco).",
+    "Topología: con tipo.mjs sin tronco, paso 3 = v2 -3, det 13 (no hay valor tabulado: sin el tronco el collar y el enroscado no son un nudo conocido). Cruces #3 de 59° y legibles el resto (>=69°). Sin cambios en el dibujo. Pasos 1, 2 y 4 deducidos del 3 (deshacer enroscado / ver nudo terminado) y el 4 sin referencia propia."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true,
+    "4": true
+  }
 }

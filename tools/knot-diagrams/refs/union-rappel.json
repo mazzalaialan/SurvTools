@@ -1,0 +1,16 @@
+{
+  "fuente": "Foto de la app union-rappel-1.webp (One_Sided_Overhand_Bend_WPK.JPG, WikipedianYknOK, CC BY-SA 3.0); animatedknots.com: 'use both ends together to form a loop, pass the two ends through the loop'",
+  "notas": "2026-11-21 (corrector). SIN REFERENCIA publicada del dibujo paso a paso: el recorrido de la cuerda B es el de A copiando en cada cruce el arriba/abajo de A (cada cruce de A se vuelve 4: AA, AB, BA, BB, con el mismo cuerpo arriba o abajo). Verificado en la tabla de numerado.mjs: las cuatro copias de cada cruce comparten el mismo lado. Las dos cuerdas van JUNTAS en el MISMO sentido (nudo simple desplazado, 'offset overhand bend'): las dos de izquierda a derecha, los dos firmes a la izquierda y los dos chicotes a la derecha, como en la foto union-rappel-1. Un cambio anterior (B de derecha a izquierda) era un error: dejaba el dibujo igual al nudo-cinta.",
+  "recorrido": [
+    "Paso 3: las dos cuerdas pegadas y paralelas, atadas juntas con UN solo simple de tres cruces (12 cruces = 3 x 4). Cuerda 0 (naranja) y cuerda 1 (azul): las dos van de izquierda a derecha, firme a la izquierda y chicote a la derecha (mismo sentido).",
+    "Cruces 1,2,10,12 / 3,4,8,11 / 5,6,9,10: los tres cruces del simple, cada uno con las cuatro copias con el mismo cuerpo arriba o abajo (tabla de numerado.mjs).",
+    "Los dos chicotes salen juntos por la derecha y los dos firmes por la izquierda; el nudo queda de un solo lado (desplazado) del eje de las cuerdas.",
+    "Pasos 1, 2 y 4: DEDUCIDOS (1: las dos cuerdas paralelas, mismo sentido, antes de atar; 2: el simple flojo; 4: un segundo simple igual pegado al primero, igual al paso 3 repetido)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true,
+    "4": true
+  },
+  "pendiente": "Ninguno por sentido: el texto del paso 1 de knots.ts ('paralelas, en el mismo sentido') es correcto. Sin referencia publicada del paso a paso (pasos 1, 2 y 4 deducidos)."
+}

@@ -37,9 +37,11 @@ const SX = 1.3, DX = 218, DY = -26;
 const T = ([x, y, z]) => [Math.round(DX + (x - DX) * SX), y + DY, ...(z === undefined ? [] : [z])];
 const WROPE = 11, GAP = 13;
 // Mismo recorrido que E8 (helpers), con la gaza chica más redonda para que la copia paralela no haga un pico.
+// Cambios respecto de E8: el lado izquierdo de la gaza grande y la diagonal que sube de la gaza chica se cruzan más arriba
+// (y ≈ 158 en vez de 182), así sus 4 x 4 copias no se amontonan con las de la base (y ≈ 220).
 const e8c = [
   [-20, 220 + DY],
-  ...[...E8.slice(1, 12), [194, 227, 0.5], [208, 246], [216, 272], [202, 300], [178, 310], [152, 300], [140, 274], [146, 247], [151, 227, -0.5], [179, 182, 0.5], ...E8.slice(18, -1)].map(T),
+  ...[...E8.slice(1, 9), [186, 76], [163, 112], [168, 150, -0.5], [188, 215, 0.5], [194, 227, 0.5], [208, 246], [216, 272], [202, 300], [178, 310], [152, 300], [140, 274], [146, 247], [151, 227, -0.5], [154, 198], [160, 176, 0.5], [172, 156], [205, 146], ...E8.slice(18, -1)].map(T),
   [372, 130 + DY],
 ];
 const e8 = dense(e8c);
@@ -88,6 +90,9 @@ export default {
     { rope: CW, ropes: [{ ...A, path: ohc }, { ...B, path: [cBeg, ...ohcb.slice(1, cCut)] }], arrows: [[ohcb[cCut].slice(0, 2).map(Math.round), [120, 70], [150, 20], [230, 8]]] },
     { rope: CW, ropes: [{ ...A, path: ohc }, { ...B, path: shortTail([cBeg, ...ohcb.slice(1)]) }], arrows: [[[70, 174], [20, 174]], [[340, 72], [392, 72]]] },
   ],
+  // Unión para rappel (nudo simple desplazado, «offset overhand bend»): las dos cuerdas van JUNTAS, en el mismo sentido
+  // (de izquierda a derecha: los dos firmes a la izquierda, los dos chicotes a la derecha) y se atan con un solo simple.
+  // `deducido`: pasos 1, 2 y 4 sin foto propia (ver refs/union-rappel.json).
   'union-rappel': [
     { ropes: [{ ...A, path: [[-20, 180], [250, 180], [330, 180]] }, { ...B, path: [[-20, 200], [250, 200], [330, 200]] }] },
     { ropes: [{ ...A, path: oh }, { ...B, path: offset(oh, -17) }] },

@@ -1,4 +1,18 @@
 {
-  "fuente": "Handcuff-knot-ABOK-1140.jpg (Wikimedia Commons, USCG, CC BY-SA 4.0), leída a 2,5x; sin SVG",
-  "notas": "2026-11-13, REVISADO PARCIAL. De la foto: son DOS gazas (izquierda y derecha) y DOS cabos que salen hacia abajo; en el centro hay un círculo (la gaza que se cierra sobre sí misma con dos cruces arriba) atravesado por los dos tramos que van de cada gaza a cada cabo. O sea: cuerda con las puntas hacia abajo, no hacia los lados como lo dibuja el spec (puntas a izquierda y derecha). El orden de pasar por arriba/abajo en los 7 cruces centrales NO se pudo leer con certeza (la lectura no dio un patrón alternado consistente), así que no se cambió el dibujo. Sin cambios."
+  "fuente": "Handcuff-knot-ABOK-1140.jpg (Wikimedia Commons, USCG, CC BY-SA 4.0), foto real de cuerda azul, leída a 4x (2026-11-21)",
+  "notas": "2026-11-21. Reescrito con las puntas hacia abajo como la foto. 6 cruces (12 pasadas), todos leídos de la foto; v2 0 / det 1 (nudo trivial de punta a punta, como corresponde). En la foto, arriba a la derecha las dos cuerdas se rozan (parecen cruzarse otra vez): por paridad (una sola cuerda abierta) se leyó como UN solo cruce arriba; sin certeza total. Paso 3 (cote en cada gaza): SIN REFERENCIA fotográfica (no se encontró foto CC de «fireman's chair knot»). Ronda 2 del crítico: se dibujó el cote de cada punta alrededor de las DOS patas de la gaza de su lado, apenas afuera del aro (ABOK 1141): sube por afuera POR ARRIBA de las dos patas, da la vuelta arriba, baja POR DEBAJO de las dos y termina POR DEBAJO de su propio tramo (5 cruces nuevos por lado, en espejo; 16 cruces en total). Deducido de la descripción, no de una foto. La foto de la app (silla-bombero-1.webp) es un dibujo a mano alzada sin detalle de cruces. RONDA 3 (crítico): paso 3 rehecho: la gaza de cada lado tiene el cuello angosto (patas casi juntas, a ~26 px) y se abre en una gaza redonda; la cola sube por afuera y hace el cote pegado a las dos patas del cuello (por ARRIBA de las dos al subir, por DEBAJO de las dos al bajar, termina por DEBAJO de su propio tramo), sin segunda U larga. Mismos cruces del nudo de esposas (#7-#9 y #13-#15 de la figura numerada); tipo.mjs v2 0 det 1. Recorrido del cote: deducido (SIN REFERENCIA).",
+  "recorrido": [
+    "Puntas hacia ABAJO. Se recorre de la punta izquierda (E1) a la derecha (E2).",
+    "1. E1 sube en diagonal a la derecha: pasa por ARRIBA del tramo que sale del costado izquierdo del aro hacia abajo-derecha (cruce 1 de la figura numerada: diagonal ARRIBA, fondo del aro ABAJO).",
+    "2. Sigue la diagonal y pasa por ARRIBA del tramo de la gaza izquierda de abajo (cruce 2).",
+    "3. Pasa por ARRIBA del costado derecho del aro (cruce 3) y entra a la gaza derecha: vuelta antihoraria (derecha, arriba, vuelve por el arco de arriba hacia la izquierda).",
+    "4. El arco de arriba pasa por ARRIBA de la cuerda que va a la gaza izquierda (cruce 4) y baja por el costado izquierdo del aro.",
+    "5. Baja por ARRIBA de la gaza izquierda de abajo (cruce 5), pasa por DEBAJO de la diagonal (cruce 1) y hace el fondo del aro hacia la derecha.",
+    "6. Sube por el costado derecho del aro: pasa por ARRIBA del tramo que baja a E2 (cruce 6) y por DEBAJO del tramo de la gaza derecha (cruce 3), y sale por arriba hacia la izquierda por DEBAJO del arco (cruce 4).",
+    "7. Gaza izquierda (antihoraria), vuelve al centro por DEBAJO del costado izquierdo del aro (cruce 5) y de la diagonal (cruce 2), por DEBAJO del fondo del aro (cruce 6) y baja a E2.",
+    "Paso 3 (SIN REFERENCIA, deducido del texto y de ABOK 1141): cada punta: cote de 5 cruces nuevos: ARRIBA de pata de abajo, ARRIBA de pata de arriba, vuelta arriba, ABAJO de pata de arriba, ABAJO de pata de abajo, ABAJO de su propio tramo; el lado derecho es el espejo."
+  ],
+  "deducido": false,
+  "v2": 0,
+  "det": 1
 }

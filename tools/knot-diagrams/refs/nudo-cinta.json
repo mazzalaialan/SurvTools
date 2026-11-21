@@ -1,0 +1,13 @@
+{
+  "fuente": "Foto de la app nudo-cinta-1.webp (nudo de agua, cinta tubular) y nudo simple de una cinta (3_1, tipo.mjs paso 1: v2 1, det 3)",
+  "notas": "2026-11-21 (corrector). SIN REFERENCIA publicada del dibujo paso a paso: el recorrido de la cuerda B es el de A al revés, copiando en cada cruce el arriba/abajo de A (cada cruce de A se vuelve 4: AA, AB, BA, BB, con el mismo cuerpo arriba o abajo). Verificado en la tabla de numerado.mjs: las cuatro copias de cada cruce comparten el mismo lado.",
+  "recorrido": [
+    "Cuerda 0 (naranja): simple flojo de tres cruces ABABAB (firme a la izquierda, chicote a la derecha). Cuerda 1 (azul): firme a la derecha, recorre el mismo simple AL REVÉS, plana junto a la naranja, chicote corto a la izquierda.",
+    "Cada cruce de la naranja se repite 4 veces (naranja/naranja, naranja/azul, azul/naranja, azul/azul) con el mismo cuerpo arriba: verificado en la tabla (cruces 1,2,7,12; 3,4,8,11; 5,6,9,10).",
+    "Sentido: los firmes salen en sentidos opuestos y cada chicote queda junto al firme de la otra (la foto muestra el nudo ya apretado, con las colas a lados opuestos).",
+    "Pasos 1 y 2: el 1 es la naranja sola; el 2 es DEDUCIDO hacia atrás (la azul a medio recorrer)."
+  ],
+  "deducido": {
+    "2": true
+  }
+}

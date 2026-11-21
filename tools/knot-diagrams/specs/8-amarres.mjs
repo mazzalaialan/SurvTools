@@ -76,18 +76,23 @@ const sqRopes = (...parts) => [{ ...A, path: parts.flat() }, tailCap([134, 316],
 // ---------------------------------------------------------------------------------------------------------------
 const X = [wood(-30, 146, 460, 48, 35), wood(-30, 146, 460, 48, -35)]; // palos en X (diagonal)
 const SH = { height: 400 };
-const shPoles = [wood(138, -10, 44, 420), wood(218, -10, 44, 420)]; // ejes en x = 160 y 240; rendija de 36
-const shClove = cloveAt(160, 100, VERT, { r: 30, h: 50 });
-const shStart = [[96, 104, 0], ...shClove.up, ...shClove.down, ...shClove.tuck, [232, 108], [270, 120]];
-const shWraps = coilV({ x: 200, y: 120, n: 8, pitch: 15, r: 70, from: 'right' });
-// Frapeo: dos vueltas por la rendija (x = 200). Cada una: baja pegada por detrás, sube por detrás, cruza arriba y baja por delante.
+const shPoles = [wood(124, -10, 44, 420), wood(232, -10, 44, 420)]; // ejes en x = 146 y 254; rendija de 64 (en la realidad es 1/3 del diámetro: se ensancha para que se vean las dos vueltas de ajuste)
+const shClove = cloveAt(146, 100, VERT, { r: 30, h: 50 });
+const shStart = [[82, 104, 0], ...shClove.up, ...shClove.down, ...shClove.tuck, [242, 108], [284, 120]];
+const shWraps = coilV({ x: 200, y: 120, n: 8, pitch: 15, r: 84, from: 'right' });
+// Frapeo: dos vueltas por la rendija, cada una un aro que rodea el atado de vueltas (eje horizontal): la tira de adelante baja (z = 2, por encima de las 8 vueltas) y la
+// de atrás sube (z = -2, por debajo), y en cada extremo giran en una U por el borde del atado. Entra por la derecha por debajo del atado, sube por detrás (x = 220),
+// baja por delante (x = 206), pasa a la otra vuelta, sube por detrás (x = 194), baja por delante (x = 180) y sale por abajo hacia el palo derecho.
 const shFrap = [
-  [262, 244, 0], [222, 262, 0], [210, 268, -1], [210, 200, -1], [210, 120, -1], [208, 98, -1], [200, 92, 0], [190, 100, 1], [190, 150, 1], [190, 220, 1], [190, 252, 1],
-  [196, 268, -1], [190, 240, -1], [190, 150, -1], [190, 100, -1], [198, 92, 0], [210, 100, 1], [210, 150, 1], [210, 220, 1], [210, 254, 1], [212, 284, 0],
+  [268, 254, 0], [246, 266, 0], [230, 268, 0],
+  [221, 262, -2], [220, 200, -2], [220, 130, -2], [220, 104, -2], [213, 92, 0],
+  [206, 104, 2], [206, 200, 2], [206, 254, 2], [200, 268, 0],
+  [194, 256, -2], [194, 200, -2], [194, 130, -2], [194, 104, -2], [187, 92, 0],
+  [180, 104, 2], [180, 200, 2], [180, 254, 2], [184, 274, 0], [196, 292, 0],
 ];
-const shEndClove = cloveAt(240, 330, VERT, { r: 30, h: 50 });
-const shEnd = [[200, 308], [178, 330], ...shEndClove.up, ...shEndClove.down, ...shEndClove.tuck];
-const shRopes = (...parts) => [{ ...A, path: parts.flat() }, tailCap([96, 104], [112, 102])];
+const shEndClove = cloveAt(254, 330, VERT, { r: 30, h: 50 });
+const shEnd = [[204, 308], [214, 328], ...shEndClove.up, ...shEndClove.down, ...shEndClove.tuck];
+const shRopes = (...parts) => [{ ...A, path: parts.flat() }, tailCap([82, 104], [98, 102])];
 
 // ---------------------------------------------------------------------------------------------------------------
 // ATADURA DE TRÍPODE (FM 5-125, 5-5/5-6, fig. 5-4; dominio público). Tres palos, el del medio al revés (las puntas del lado contrario).
@@ -98,25 +103,31 @@ const shRopes = (...parts) => [{ ...A, path: parts.flat() }, tailCap([96, 104], 
 //  + ballestrinque final en el OTRO palo de afuera (el FM lo hace así en el Método II; knots3d: «buena forma»).
 // ---------------------------------------------------------------------------------------------------------------
 const TH = { height: 420 };
-const tri = [wood(110, -10, 40, 440), wood(180, -10, 40, 440), wood(250, -10, 40, 440)]; // ejes en x = 130, 200, 270
-const trClove = cloveAt(130, 96, VERT, { r: 30, h: 50 });
-// Una vuelta entretejida: va por encima del 1.º, por debajo del 2.º, por encima del 3.º, da la vuelta al 3.º y vuelve alternando; da la vuelta al 1.º.
+// Palos más finos y más separados que antes (ejes en x = 85, 200 y 315, rendijas de 85 px): así en cada hueco entran las cuatro tiras de las dos vueltas de ajuste
+// (a 23 px una de otra) y no se pisan ni se cruzan casi paralelas.
+const P1 = 85, P2 = 200, P3 = 315, G1 = (P1 + P2) / 2, G2 = (P2 + P3) / 2;
+const tri = [wood(P1 - 15, -10, 30, 440), wood(P2 - 15, -10, 30, 440), wood(P3 - 15, -10, 30, 440)];
+const trClove = cloveAt(P1, 96, VERT, { r: 30, h: 50 });
+// Una vuelta entretejida (FM 5-125, Método II, al pie de la letra): por ENCIMA del palo del medio, por DEBAJO y alrededor del 3.º (de afuera), por DEBAJO del del medio, por ENCIMA y alrededor del 1.º.
 const trTurn = (y, first = false) => [
-  ...(first ? [] : [[130, y, 1], [165, y + 4, 1]]),
-  [200, y, -1], [235, y + 4, -1], [270, y, 1], [300, y + 8], [270, y + 12, -1], [235, y + 9, 1], [200, y + 12, 1], [165, y + 9, -1], [130, y + 12, -1], [100, y + 19],
+  ...(first ? [] : [[P1, y, -1], [G1, y + 4, -1]]),
+  [P2, y, 1], [G2, y + 4, 1], [P3, y, -1], [P3 + 30, y + 8], [P3, y + 12, 1], [G2, y + 9, -1], [P2, y + 12, -1], [G1, y + 9, 1], [P1, y + 12, 1], [P1 - 30, y + 19],
 ];
 const trWeave = (n) => Array.from({ length: n }, (_, i) => trTurn(116 + i * 22, i === 0)).flat();
-const trStart = [[60, 104, 0], ...trClove.up, ...trClove.down, ...trClove.tuck];
-// Frapeo: dos vueltas en cada hueco (x = 165 y 235): bajan por delante de las vueltas y vuelven por detrás pasando por el hueco.
-const trRing = (xb, xf) => [[xb, 304, -1], [xb, 200, -1], [xb, 110, -1], [(xb + xf) / 2, 98, 0], [xf, 106, 1], [xf, 200, 1], [xf, 292, 1], [(xb + xf) / 2, 304, -1]];
+const trStart = [[15, 104, 0], ...trClove.up, ...trClove.down, ...trClove.tuck];
+// Frapeo: dos vueltas en cada hueco. Cada vuelta es un aro que rodea las ocho vueltas: la tira de atrás sube (z = -2, por DEBAJO de todas) y la de adelante baja (z = 2, por ENCIMA
+// de todas); en cada hueco las cuatro tiras van a 23 px una de otra, de izquierda a derecha: atrás 1.ª, adelante 1.ª, atrás 2.ª, adelante 2.ª (sin tiras encimadas).
+const trRing = (xb, xf) => [[xb, 290, -2], [xb, 200, -2], [xb, 110, -2], [(xb + xf) / 2, 97, 0], [xf, 110, 2], [xf, 200, 2], [xf, 290, 2]];
+const [a1, a2, a3, a4] = [108, 131, 155, 178];
+const [c1, c2, c3, c4] = [222, 245, 269, 292];
 const trFrap = [
-  [96, 292, 0], [130, 300, 0],
-  ...trRing(174, 156), ...trRing(156, 174).slice(0, -1), [165, 312, -1], [200, 314, -1], [226, 312, -1],
-  ...trRing(244, 226), ...trRing(226, 244).slice(0, -1),
+  [76, 300, 0], [94, 308, 0], [104, 302, -2],
+  ...trRing(a1, a2), [(a2 + a3) / 2, 304, 0], ...trRing(a3, a4), [183, 306, 0], [192, 314, -1], [210, 316, -1], [217, 308, -1], [221, 300, -2],
+  ...trRing(c1, c2), [(c2 + c3) / 2, 304, 0], ...trRing(c3, c4),
 ];
-const trEndClove = cloveAt(270, 352, VERT, { r: 30, h: 50 });
-const trEnd = [[236, 322], [214, 346], ...trEndClove.up, ...trEndClove.down, ...trEndClove.tuck];
-const trRopes = (...parts) => [{ ...A, path: parts.flat() }, tailCap([60, 104], [78, 102])];
+const trEndClove = cloveAt(P3, 352, VERT, { r: 30, h: 50 });
+const trEnd = [[296, 312], [292, 332], ...trEndClove.up, ...trEndClove.down, ...trEndClove.tuck];
+const trRopes = (...parts) => [{ ...A, path: parts.flat() }, tailCap([15, 104], [33, 102])];
 
 export default {
   'atadura-cuadrada': [
@@ -128,39 +139,61 @@ export default {
   'atadura-tijera': [
     { ...SH, poles: shPoles, ropes: shRopes(shStart.slice(0, -1)) },
     { ...SH, poles: shPoles, ropes: shRopes(shStart, shWraps) },
-    { ...SH, poles: shPoles, ropes: shRopes(shStart, shWraps, shFrap, shEnd), arrows: [[[150, 372], [110, 395]], [[250, 372], [290, 395]]] },
+    { ...SH, poles: shPoles, ropes: shRopes(shStart, shWraps, shFrap, shEnd), arrows: [[[146, 372], [106, 395]], [[254, 372], [294, 395]]] },
   ],
   'atadura-diagonal': (() => {
-    // Palos en X (cruce en 200, 170). Cada vuelta pasa por delante y vuelve por detrás justo debajo de la siguiente (queda tapada).
-    const V = (i) => 170 + (i - 1.5) * 26; // x de cada vuelta vertical (primera diagonal)
-    const Hy = (i) => 170 + (i - 1.5) * 26; // y de cada vuelta horizontal (segunda diagonal)
-    const verts = [];
-    for (let i = 0; i < 3; i++) verts.push([V(i), 92], [V(i), 170, 1], [V(i), 248], [V(i) + 13, 262], [V(i + 1), 248, -1], [V(i + 1), 170, -1], [V(i + 1), 92, -1], [V(i + 1) + 6, 80]);
-    const horiz = [];
-    for (let i = 0; i < 3; i++) horiz.push([110, Hy(i)], [200, Hy(i), 2], [290, Hy(i)], [304, Hy(i) + 13], [290, Hy(i + 1), -1], [200, Hy(i + 1), -1], [110, Hy(i + 1), -1], [98, Hy(i + 1) + 6]);
-    const startV = [[40, 40], [100, 60], [V(0) - 20, 78]];
-    const toH = [[V(3) + 30, 70], [300, 100], [130, 98], [100, Hy(0) - 8]];
-    // Ajuste: entre los dos palos (se ve solo en los huecos), dos vueltas alrededor del cruce.
-    // Ajuste: dos vueltas que aprietan el atado, por delante arriba y abajo del cruce y por detrás al costado.
-    const ring = (e) => [[104 - e, 236 + e], [125, 262 + e, 3], [170, 266 + e, 3], [222, 262 + e, 3], [244 + e, 250], [250 + e, 170, -1], [244 + e, 88], [222, 76 - e, 3], [170, 72 - e, 3], [125, 76 - e, 3], [104 - e, 92]];
-    const frap = [...ring(0), ...ring(9), [92, 108]];
-    // Ballestrinque final en el brazo de arriba a la izquierda, al lado de donde termina el ajuste.
-    const dClove = cloveAt(64, 74, [Math.cos((35 * Math.PI) / 180), Math.sin((35 * Math.PI) / 180)], { r: 30, h: 46 }); // eje del palo que sube a la izquierda
-    const clove = [[84, 118, 3], [58, 118, 3], ...dClove.up, ...dClove.down, ...dClove.tuck.map(([x, y, zz]) => [x, y, (zz ?? 0) * 3])];
-    // Leñador para empezar: una vuelta y el chicote enroscado sobre sí mismo arriba.
-    const timber = [...startV, [V(0), 92], [V(0), 170, 1], [V(0), 248], [V(0) + 13, 262], [V(1), 248, -1], [V(1), 170, -1], [V(1), 92, -1], [V(1) + 10, 70], [V(0) + 5, 60], ...coilAlong([V(0) - 18, 70], [V(0) - 2, 98], 2, 9).map(([x, y, zz]) => [x, y, zz * 2])];
-    const all = (...parts) => ({ height: 340, poles: X, ropes: [{ ...A, path: parts.flat() }] });
+    // ATADURA DIAGONAL (Commons «Lashing diagonal.jpg», CC BY-SA 3.0/GFDL; guías de scouts y knots3d). Cruz: el palo horizontal queda por delante
+    // del vertical (cruce en 200, 170). Cada vuelta es un lazo cerrado alrededor de LOS DOS palos, en un plano que corta el cruce en diagonal:
+    // pasa por delante (z 1) a lo largo de una diagonal de la cruz y vuelve por detrás (z -1) por el mismo camino, rodeando el borde del cruce.
+    // Las vueltas de una diagonal quedan apiladas una al lado de otra (haz); el segundo haz va por la otra diagonal y cruza al primero casi a 90°.
+    const [CX, CY] = [200, 170];
+    const R2 = Math.SQRT1_2;
+    // Vueltas bien separadas (ronda 3 del crítico): cada tira (de adelante y de atrás de cada vuelta) a 23 px de la siguiente, para contar las tres de cada haz.
+    const L = 92, CAP = 16, PITCH = 52, BACK = 26;
+    const pole1 = wood(176, -10, 48, 410), pole2 = wood(-10, 146, 420, 48); // el horizontal se dibuja después: queda por delante
+    const P = (d, n, e, o, zz) => (zz === undefined ? [CX + e * d[0] + o * n[0], CY + e * d[1] + o * n[1]] : [CX + e * d[0] + o * n[0], CY + e * d[1] + o * n[1], zz]);
+    /** Haz de `k` vueltas: s = +1 empieza por el extremo + (la vuelta sale por delante desde ahí), o0 = offset de la primera, paso `dir * PITCH`. */
+    const bundle = (d, n, s, o0, dir, k, zf = 1, zb = -1) => {
+      const out = [];
+      for (let i = 0; i < k; i++) {
+        const of = o0 + dir * PITCH * i, ob = of + dir * BACK;
+        const onext = o0 + dir * PITCH * (i + 1);
+        out.push(P(d, n, s * L, of, zf), P(d, n, 0, of, zf), P(d, n, -s * L, of, zf));
+        out.push(P(d, n, -s * (L + CAP), (of + ob) / 2, 0.5));
+        out.push(P(d, n, -s * L, ob, zb), P(d, n, 0, ob, zb), P(d, n, s * L, ob, zb));
+        if (i < k - 1) out.push(P(d, n, s * (L + CAP), (ob + onext) / 2, 0.5));
+      }
+      return out;
+    };
+    const D1 = [R2, -R2], N1 = [R2, R2]; // diagonal 1: abajo-izquierda a arriba-derecha
+    const D2 = [R2, R2], N2 = [R2, -R2]; // diagonal 2: arriba-izquierda a abajo-derecha
+    const startClove = cloveAt(200, 336, VERT, { r: 32, h: 44 });
+    const startRope = [[134, 340, 0], ...startClove.up, ...startClove.down, ...startClove.tuck, [263, 336], [280, 290, 1], [306, 240, 1], [326, 196, 1], [332, 166, 1], [324, 148, 1]];
+    const b1 = bundle(D1, N1, 1, 65, -1, 3);
+    const link = [P(D1, N1, L + CAP, -65, 0.5), [200, 30, -1], P(D2, N2, -L - CAP, 65, 0.5)];
+    // Segundo haz: va por fuera del primero, así que por delante queda encima (z 1,5) y por detrás queda debajo (z -2) de las vueltas del primero.
+    const b2 = bundle(D2, N2, -1, 65, -1, 3, 1.5, -2);
+    // Ajuste (frapeo): dos vueltas horizontales alrededor del palo vertical y de los dos haces, justo encima del palo horizontal, entre los palos:
+    // por delante de todo (z 2) hacia la derecha y por detrás de todo (z -3) de vuelta.
+    // Cada vuelta de ajuste es un aro: la tira de adelante (z 2) va hacia la derecha y la de atrás (z -3) vuelve; las cuatro tiras van a 24 px una de otra
+    // (adelante 1.ª y 2.ª arriba del todo, atrás debajo de cada una), así no se pisan.
+    const fr = (yf, yb, x0 = 100, x1 = 300) => [[x0, yf, 2], [200, yf, 2], [x1, yf, 2], [x1 + 16, (yf + yb) / 2, 0.5], [x1, yb, -3], [200, yb, -3], [x0, yb, -3]];
+    const frap = [[108, 168, -1], [96, 156, 0], ...fr(142, 118), [80, 106, 0.5], ...fr(94, 70)];
+    // Ballestrinque final en el palo OPUESTO al del comienzo (el horizontal), en su brazo izquierdo, lejos de las vueltas.
+    const endClove = cloveAt(46, 170, HORIZ, { r: 28, h: 46, flip: true });
+    const fin = [[88, 78, 0], [66, 108, 1], ...endClove.up, ...endClove.down, ...endClove.tuck];
+    const mk = (...parts) => ({ height: 420, poles: [pole1, pole2], ropes: [{ ...A, path: parts.flat() }, tailCap([134, 340], [150, 340])] });
     return [
-      { ...all(timber), arrows: [[[V(1) + 30, 120], [V(1) + 30, 220]]] },
-      all(startV, verts),
-      all(startV, verts, toH, horiz),
-      all(startV, verts, toH, horiz, frap),
-      all(startV, verts, toH, horiz, frap, clove),
+      mk(startRope.slice(0, -1)),
+      mk(startRope, b1),
+      mk(startRope, b1, link, b2),
+      mk(startRope, b1, link, b2, frap),
+      mk(startRope, b1, link, b2, frap, fin),
     ];
   })(),
   'atadura-tripode': [
     { ...TH, poles: tri },
     { ...TH, poles: tri, ropes: trRopes(trStart, trWeave(8)) },
-    { ...TH, poles: tri, ropes: trRopes(trStart, trWeave(8), trFrap, trEnd), arrows: [[[110, 395], [70, 415]], [[290, 395], [330, 415]]] },
+    { ...TH, poles: tri, ropes: trRopes(trStart, trWeave(8), trFrap, trEnd), arrows: [[[85, 395], [45, 415]], [[315, 395], [355, 415]]] },
   ],
 };

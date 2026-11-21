@@ -1,5 +1,23 @@
 {
   "fuente": "Overhand-slip-noose.png («slip knot»), Buz11, CC BY-SA 4.0, Wikimedia Commons; foto ABOK 529 (USCG, CC BY-SA 4.0)",
-  "pasos": { "2": ["BAABBABAAB"], "3": ["BAABBABAAB"] },
-  "notas": "Leído a 3x: el firme pasa por debajo de la gaza, por encima de las dos patas del seno, y el óvalo pasa por debajo de las dos patas."
+  "pasos": {
+    "2": [
+      "BAABBABAAB"
+    ],
+    "3": [
+      "BAABBABAAB"
+    ]
+  },
+  "notas": "Leído a 3x: el firme pasa por debajo de la gaza, por encima de las dos patas del seno, y el óvalo pasa por debajo de las dos patas.",
+  "recorrido": [
+    "Paso 2 (una cuerda: firme a la izquierda; punta arriba). Recorrido: firme -> sube a la derecha formando el óvalo -> baja y cierra el óvalo por abajo -> pasa a las patas del seno (bight) -> vuelta abajo a la derecha -> vuelve hasta la punta (arriba).",
+    "#1: el costado izquierdo del óvalo (54 %) pasa ARRIBA del firme (15 %).",
+    "#2 y #3: las dos patas del seno pasan POR DEBAJO del arco de arriba del óvalo/firme (patas 65 % y 94 % ABAJO; arco 23 % y 26 % ARRIBA): el seno entra por DENTRO de la vuelta, desde adelante hacia atrás.",
+    "#4 y #5: las dos patas del seno pasan POR ENCIMA del óvalo (patas 86 % y 72 % ARRIBA; óvalo 37 % y 40 % ABAJO): el seno sale de la vuelta por debajo y vuelve por delante, como una pasada tejida abajo-arriba, las dos patas en paralelo.",
+    "La foto de la ficha (escape-1) es el nudo ya cerrado, con el seno (el lazo) a un lado y el firme y el chicote saliendo juntos por el otro: es la figura espejada (el lazo a la izquierda, firme y chicote a la derecha), y como el firme sale de un lado del nudo y el seno del otro lado, coincide. El paso 1 muestra la misma pasada sin cruzar el seno.",
+    "Pasos 1 y 3: el 3 es el mismo dibujo que el 2 con la flecha de soltar; el 1 es DEDUCIDO hacia atrás (sacar el seno de la vuelta)."
+  ],
+  "deducido": {
+    "1": true
+  }
 }
