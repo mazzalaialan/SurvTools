@@ -40,8 +40,8 @@ export interface GeoData {
   neighbors: { code: string; rings: number[][] }[];
   /** Frontera y costa de nuestros países (para dibujarlas distinto de los límites internos). */
   borders: { code: GeoCountry; rings: number[][] }[];
-  /** Nombre de cada país de América del Sur y dónde escribirlo ([lon, lat]). */
-  countries: { code: string; name: { es: string; en: string }; label: [number, number] }[];
+  /** Nombre de cada país de América (es, en y pt) y dónde escribirlo ([lon, lat]). */
+  countries: { code: string; name: { es: string; en: string; pt?: string }; label: [number, number] }[];
   capitals: Capital[];
   volcanoes: Volcano[];
   /** Ríos de América del Sur (Natural Earth): `rank` 1 es el mayor; cada línea es [lon, lat, lon, lat, …]. */

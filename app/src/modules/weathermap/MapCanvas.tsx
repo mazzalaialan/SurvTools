@@ -864,14 +864,19 @@ function draw(el: HTMLCanvasElement, size: Size, view: View, p: Props, tick: num
   }
 
   // Nombre de cada país, al final: si se pisa con algo más importante, no se escribe.
-  const lang = i18n.language.startsWith('en') ? 'en' : 'es';
+  const lang = i18n.language.startsWith('en') ? 'en' : i18n.language.startsWith('pt') ? 'pt' : 'es';
   ctx.globalAlpha = 0.85;
-  for (const country of p.geo.countries) {
+  // Los países grandes primero: si se pisan, que se quede sin nombre la isla chica y no el país.
+  const ordered = [...p.geo.countries].sort((x, y) => Number(SMALL_COUNTRIES.has(x.code)) - Number(SMALL_COUNTRIES.has(y.code)));
+  for (const country of ordered) {
     const s = proj(country.label[0], country.label[1]);
-    text(country.name[lang].toLocaleUpperCase(i18n.language), s.x, s.y, c.mapCountry!, true);
+    text((country.name[lang] ?? country.name.es).toLocaleUpperCase(i18n.language), s.x, s.y, c.mapCountry!, true);
   }
   ctx.globalAlpha = 1;
 }
+
+/** Islas y países chicos del Caribe y de América Central: su nombre se escribe último, porque a poco zoom se pisa con el de países grandes. */
+const SMALL_COUNTRIES = new Set(['AG', 'AW', 'BB', 'BS', 'BZ', 'CW', 'DM', 'GD', 'JM', 'KN', 'LC', 'SV', 'SX', 'TT', 'VC']);
 
 function isNational(z: ZoneWeather, geo: GeoData): boolean {
   return geo.capitals.some((c) => c.national && c.name === z.name);

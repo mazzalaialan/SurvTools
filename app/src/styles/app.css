@@ -2260,6 +2260,19 @@ a.module-card:active {
   margin: 0;
 }
 
+/* Ficha de lo seleccionado (alerta, sismo, río…) sobre el mapa en pantalla completa: arriba de la línea de tiempo y sin tapar los botones de zoom. */
+.wmap-feature-fs {
+  position: absolute;
+  left: 8px;
+  right: 64px;
+  bottom: calc(max(8px, env(safe-area-inset-bottom)) + 56px);
+  max-height: 46%;
+  overflow-y: auto;
+  z-index: 3;
+  max-width: 560px;
+  pointer-events: auto;
+}
+
 .wmap-legend {
   display: grid;
   gap: 6px;

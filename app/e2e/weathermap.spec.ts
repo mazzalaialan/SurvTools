@@ -191,6 +191,16 @@ test('mapa de tiempo: capas, animación, tocar un sismo o una alerta, y sin cone
   await expect(card).toContainText('12000 ha');
   await page.screenshot({ path: `e2e-results/screens/${testInfo.project.name}-17-weather-map.png`, fullPage: true });
 
+  // En pantalla completa la misma ficha se ve sobre el mapa y se cierra ahí (como el cartel de las ecorregiones del mapa offline).
+  await page.getByRole('button', { name: 'Pantalla completa' }).click();
+  const fsCard = page.getByTestId('fs-map-feature');
+  await expect(fsCard).toContainText('Incendio en Chaco');
+  await expect(fsCard.getByRole('link', { name: 'Más información' })).toBeVisible();
+  await fsCard.getByTestId('fs-map-feature-close').click();
+  await expect(fsCard).toHaveCount(0);
+  await page.getByRole('button', { name: 'Salir de pantalla completa' }).click();
+  await expect(page.getByTestId('map-feature')).toHaveCount(0); // cerrar en pantalla completa cierra la selección también afuera
+
   // Las capas quedan guardadas.
   await page.getByRole('button', { name: 'Sismos' }).click();
   await expect(page.getByRole('button', { name: 'Sismos' })).toHaveAttribute('aria-pressed', 'false');

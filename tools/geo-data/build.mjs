@@ -19,6 +19,8 @@
  * - `node build.mjs --solo-brasil` suma Brasil (27 estados, frontera, capitales) al archivo ya generado.
  * - `node build.mjs --solo-mundo` genera aparte `world-borders.json`: el contorno de todos los países del mundo (Natural Earth 1:50m) para el mapa del clima.
  * - `node build.mjs --solo-contornos` suma al archivo ya generado el contorno de América Central y de la Antártida (sector de la Península).
+ * - `node build.mjs --solo-nombres` suma al archivo ya generado el nombre (es, en, pt) y el lugar donde escribirlo de los países de América del Norte y
+ *   del Caribe que faltaban (México, Canadá, Estados Unidos, Cuba, etc.), y el nombre en portugués de los que ya estaban. No toca los contornos.
  *   `node build.mjs --solo-rios` reemplaza solo los ríos en el archivo ya generado (sin volver a bajar volcanos ni provincias).
  *
  * Las geometrías se simplifican (Douglas-Peucker) y se redondean: el mapa es un
@@ -316,6 +318,33 @@ if (process.argv.includes('--solo-mundo')) {
   const out = { source: 'Natural Earth 1:50m (dominio público), simplificado a ~10 km', countries };
   await writeFile(WORLD_OUT, JSON.stringify(out));
   console.log(`mundo: ${countries.length} países → ${WORLD_OUT} (${JSON.stringify(out).length} bytes)`);
+  process.exit(0);
+}
+
+if (process.argv.includes('--solo-nombres')) {
+  // Nombres de los países de América (sin contornos: el contorno del mundo ya está en world-borders.json).
+  const data = JSON.parse(await readFile(OUT, 'utf8'));
+  const admin0 = await get(`${NE}/ne_50m_admin_0_countries.geojson`);
+  const byCode = new Map(admin0.features.map((f) => [f.properties.ISO_A2_EH, f.properties]));
+  const americas = admin0.features.filter(
+    (f) => ['North America', 'South America'].includes(f.properties.CONTINENT) && /^Sovereign|^Country/i.test(f.properties.TYPE ?? '') && f.properties.ISO_A2_EH !== '-99',
+  );
+  const have = new Set(data.countries.map((c) => c.code));
+  const added = [];
+  for (const f of americas) {
+    if (have.has(f.properties.ISO_A2_EH)) continue;
+    const en = f.properties.ISO_A2_EH === 'US' ? 'United States' : f.properties.NAME_EN; // el nombre largo de Natural Earth no entra en el mapa
+    data.countries.push({ code: f.properties.ISO_A2_EH, name: { es: f.properties.NAME_ES, en, pt: f.properties.NAME_PT }, label: label(f.properties) });
+    added.push(f.properties.ISO_A2_EH);
+  }
+  // Los que ya estaban suman el portugués (los de Brasil se escriben distinto: «Bolívia», «Perú» → «Peru»).
+  for (const c of data.countries) {
+    const pt = byCode.get(c.code)?.NAME_PT;
+    if (pt && !c.name.pt) c.name.pt = pt;
+  }
+  data.countries.sort((a, b) => a.code.localeCompare(b.code));
+  await writeFile(OUT, JSON.stringify(data));
+  console.log(`nombres: +${added.length} (${added.join(', ')}) → ${OUT}`);
   process.exit(0);
 }
 

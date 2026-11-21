@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { OfficialWeatherNotice } from '@/ui/OfficialWeatherNotice';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Locate, Minus, Pause, Play, Plus, RefreshCw, Scan } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Locate, Minus, Pause, Play, Plus, RefreshCw, Scan, X } from 'lucide-react';
 import { currentPosition } from '@/core/geo/useGeolocation';
 import { useBatterySaver } from '@/core/power/saver';
 import { useSettings, type WeatherMapLayers, type WeatherMapValue } from '@/core/settings/settings';
@@ -558,6 +558,11 @@ export function WeatherMapPage() {
       <FullscreenStage
         className="wmap"
         fullOnly={
+          <>
+          {/* La ficha de lo que se toca también se ve en pantalla completa (y se cierra ahí), como el cartel de las ecorregiones del mapa offline. */}
+          {selected && (
+            <FeatureCard floating feature={selected} u={u} now={now} volcanoAlerts={showOfficial ? official?.volcanoes : undefined} firesFetchedAt={fires.data?.fetchedAt} onClose={() => setSelected(null)} />
+          )}
           <FsMapTools
             layers={layers}
             effective={{ ...layers, lightning: showLightning, satRain: showSatRain, official: showOfficial, waves: layers.waves && sourceEnabled('open-meteo') }}
@@ -571,6 +576,7 @@ export function WeatherMapPage() {
             setQuickRef={(on) => void update({ weatherMapQuickRef: on })}
             options={{ zoneValue, windUnit: u.windUnit, firmsFires: layers.fires && !gibsFires, satNoaa: satSource === 'noaa' }}
           />
+          </>
         }
         overlay={<MapTimes sat={layers.satellite ? satTime : undefined} satNoaa={satSource === 'noaa'} stale={layers.satellite && satStale} rain={satRainTime} radar={layers.radar ? (showSinarame && sinaTime ? sinaTime : radarTime) : undefined} fires={firesTime} fmt={timeFmt} />}
       >
@@ -784,6 +790,7 @@ function FeatureCard({
   volcanoAlerts,
   firesFetchedAt,
   onClose,
+  floating = false,
 }: {
   feature: MapFeature;
   u: ReturnType<typeof useUnits>;
@@ -792,6 +799,8 @@ function FeatureCard({
   /** Cuándo bajó el teléfono los focos de FIRMS (ms), para decir hace cuánto fue la última detección. */
   firesFetchedAt?: number;
   onClose: () => void;
+  /** En pantalla completa: ficha sobre el mapa, con su propia cruz para cerrar y desplazable si es larga (las alertas oficiales traen mucho texto). */
+  floating?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const n1 = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
@@ -961,12 +970,23 @@ function FeatureCard({
       break;
   }
   return (
-    <section className="card stack" data-testid="map-feature" aria-live="polite">
+    <section
+      className={floating ? 'card stack wmap-feature-fs' : 'card stack'}
+      data-testid={floating ? 'fs-map-feature' : 'map-feature'}
+      aria-live="polite"
+      onPointerDown={floating ? (e) => e.stopPropagation() : undefined}
+    >
       <div className="row-between">
         <h2 className="section-title" style={{ margin: 0 }}>{title}</h2>
-        <button className="btn" type="button" onClick={onClose}>
-          {t('common.close')}
-        </button>
+        {floating ? (
+          <button className="icon-btn" type="button" onClick={onClose} aria-label={t('common.close')} title={t('common.close')} data-testid="fs-map-feature-close">
+            <X size={20} />
+          </button>
+        ) : (
+          <button className="btn" type="button" onClick={onClose}>
+            {t('common.close')}
+          </button>
+        )}
       </div>
       {lines.map((l) => (
         <p key={l} className="hint" style={{ margin: 0 }}>
