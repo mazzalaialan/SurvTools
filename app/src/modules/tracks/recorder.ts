@@ -278,6 +278,8 @@ export const useRecorder = create<RecorderState>((set, get) => ({
         });
       }
     }
+    // La altura del terreno (mínima, máxima, desnivel y perfil) se lee del mapa después, sin demorar: si hay datos de elevación, queda en el recorrido.
+    void import('./terrainElevation').then((m) => m.ensureTerrain(done.id)).catch(() => undefined);
     return done.id;
   },
 }));

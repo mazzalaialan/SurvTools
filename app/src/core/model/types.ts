@@ -596,6 +596,12 @@ export interface Track extends BaseEntity {
   recPaused?: boolean;
   /** Versión del cálculo del desnivel (`ascentM` y `descentM`): 2 = con la altura alisada (ver `tracks/gpx.ts`). Sin este campo, es el cálculo viejo, que sumaba el ruido del GPS. */
   elevationV?: number;
+  /**
+   * Altura del TERRENO a lo largo del recorrido, leída del mapa de elevación (descargado, del servidor propio o público): `profile` son alturas (m) a
+   * intervalos iguales de distancia, de ahí salen el gráfico, `minEle`, `maxEle` y el desnivel del recorrido. Se calcula una vez (ver `tracks/terrainElevation.ts`);
+   * la altura del GPS de un celular tiene ~20 m de error fijo, el terreno no. Sin esto, se usa la altura del GPS alisada.
+   */
+  terrain?: { profile: number[] };
   /** Tiempo grabando, sin contar las pausas. */
   durationS?: number;
   /** Mientras se graba: clave privada para leer los puntos grabados con la app bloqueada (ver tracks/lockedBuffer). */

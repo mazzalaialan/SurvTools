@@ -114,7 +114,7 @@ const ELEVATION_SMOOTH_HALF_M = 100;
  * desnivel que no existen (medido en una caminata de 3,4 km sobre el mapa de terreno: +121 m con el GPS crudo contra ~25 m reales). Una pendiente
  * real dura bastante más que 200 m, así que el alisado no la pierde. El error medido fue de ±4 m de ruido rápido más una deriva lenta de ±8 m. Con puntos separados por más de esa distancia no hay nada que alisar.
  */
-function smoothElevations(seg: TrackPoint[]): (number | null)[] {
+export function smoothElevations(seg: TrackPoint[]): (number | null)[] {
   const along: number[] = [0];
   for (let i = 1; i < seg.length; i++) along.push(along[i - 1]! + distanceMeters({ lat: seg[i - 1]![0], lon: seg[i - 1]![1] }, { lat: seg[i]![0], lon: seg[i]![1] }));
   const out: (number | null)[] = [];

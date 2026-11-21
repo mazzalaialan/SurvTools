@@ -2367,6 +2367,8 @@
     "maxEle": "Highest point",
     "profile": "Elevation profile",
     "profileRange": "Elevation between {{min}} and {{max}}",
+    "profileTerrain": "height from the terrain map",
+    "profileGps": "GPS height (smoothed)",
     "onMap": "Show on map",
     "source": "Source: {{source}}",
     "original": "See the original trail",

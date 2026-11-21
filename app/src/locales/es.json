@@ -2366,6 +2366,8 @@
     "maxEle": "Altura máxima",
     "profile": "Perfil de altura",
     "profileRange": "Altura entre {{min}} y {{max}}",
+    "profileTerrain": "altura del mapa de terreno",
+    "profileGps": "altura del GPS (alisada)",
     "onMap": "Ver en el mapa",
     "source": "Fuente: {{source}}",
     "original": "Ver la ruta original",
