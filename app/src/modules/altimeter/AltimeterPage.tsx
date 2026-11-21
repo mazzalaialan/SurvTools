@@ -15,6 +15,7 @@ import { barometerOffset, pressureAltitude } from './barometer';
 import { fetchForecast } from '@/modules/weather/forecast';
 import { useAltimeter } from './store';
 import { Notice } from '@/ui/Notice';
+import { Collapsible } from '@/ui/Collapsible';
 import { canShowLocal, notificationBackend } from '@/core/notifications/backend';
 
 type AlarmKind = 'reach' | 'climb';
@@ -370,16 +371,14 @@ export function AltimeterPage() {
         </p>
       </section>
 
-      <section className="card stack" aria-labelledby="alt-about">
-        <h2 id="alt-about" className="section-title" style={{ margin: 0 }}>
-          {t('altimeter.aboutTitle')}
-        </h2>
+      {/* Texto de referencia: se lee una vez, por eso queda plegado. */}
+      <Collapsible id="alt-about" title={t('altimeter.aboutTitle')}>
         <ul className="alt-about">
           {['gps', 'android', 'map', 'tips', 'barometer'].map((k) => (
             <li key={k}>{t(`altimeter.about.${k}`)}</li>
           ))}
         </ul>
-      </section>
+      </Collapsible>
     </div>
   );
 }

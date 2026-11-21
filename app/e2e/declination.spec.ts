@@ -52,6 +52,7 @@ test('declinómetro: lugar, cambio anual, convertir rumbos, mapa viejo y machete
   await expect(page.getByTestId('decl-value')).toContainText('° Este');
 
   // Machete.
+  await page.getByTestId('decl-cheat-toggle').click();
   const cheat = page.getByTestId('decl-cheat');
   await expect(cheat).toContainText('Geográfico = Magnético + Declinación');
   await expect(cheat).toContainText('De la brújula al mapa (magnético → geográfico): Este se suma, Oeste se resta.');

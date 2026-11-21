@@ -198,6 +198,7 @@ test('Navegación: pronóstico marítimo de la Armada de Chile para tu zona y li
   await expect(page.getByTestId('chile-zone-4')).toBeVisible();
   await expect(page.getByTestId('chile-source')).toContainText('Armada de Chile');
   // Lista de fuentes con licencia.
+  await page.getByTestId('sources-toggle').click();
   const sources = page.getByTestId('sources-card');
   await expect(sources).toContainText('CC BY 4.0');
   await expect(page.getByTestId('source-open-meteo')).toContainText('solo para uso no comercial');

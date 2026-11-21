@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
 import { Segmented } from '@/ui/Segmented';
+import { Collapsible } from '@/ui/Collapsible';
 import {
   declinationInfo,
   degMin,
@@ -224,11 +225,9 @@ export function DeclinationPage() {
         )}
       </section>
 
-      <section className="card stack decl-cheat" aria-labelledby="decl-cheat" data-testid="decl-cheat">
-        <h2 id="decl-cheat" className="section-title" style={{ margin: 0 }}>
-          {t('declination.cheatTitle')}
-        </h2>
-        <dl>
+      {/* Texto de referencia: plegado (el contenedor conserva la clase y el testid del machete). */}
+      <Collapsible id="decl-cheat" title={t('declination.cheatTitle')} testId="decl-cheat">
+        <dl className="decl-cheat">
           <dt>{t('declination.cheat.what.term')}</dt>
           <dd>{t('declination.cheat.what.text')}</dd>
           <dt>{t('declination.cheat.formula.term')}</dt>
@@ -285,7 +284,7 @@ export function DeclinationPage() {
             {t('declination.cheat.app.text')} <Link to="/orientation/compass">{t('modules.compass.title')}</Link>
           </dd>
         </dl>
-      </section>
+      </Collapsible>
     </div>
   );
 }

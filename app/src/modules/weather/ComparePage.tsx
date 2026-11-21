@@ -8,6 +8,7 @@ import { agreementOf, cellColor, daySky, type DaySky, compareKey, sourceOf, WET_
 import { WeatherError } from './forecast';
 import { toFahrenheit, kmhToMph, mmToInch } from './forecast';
 import { useUnits, WindArrow, type Units } from './parts';
+import { Collapsible } from '@/ui/Collapsible';
 
 /**
  * «Comparación de pronósticos»: qué dice cada modelo meteorológico para el mismo lugar (el GPS, un waypoint o coordenadas, como en Clima).
@@ -440,15 +441,14 @@ export function ComparePage() {
             <p className="hint" style={{ margin: 0 }}>{t(`compare.dayHint.${v}`)}</p>
           </section>
 
-          <section className="card stack">
-            <h2 className="section-title" style={{ margin: 0 }}>{t('compare.aboutTitle')}</h2>
+          <Collapsible id="compare-about" title={t('compare.aboutTitle')}>
             <ul className="hint" style={{ margin: 0, paddingLeft: '1.2rem' }}>
               {MODELS.map((m) => (
                 <li key={m.id}>{t('compare.modelLine', { label: m.label, by: m.by, days: m.days })}</li>
               ))}
             </ul>
             <p className="hint" style={{ margin: 0 }}>{t('compare.note', { elevation: data.elevation === null ? '–' : imperial ? `${Math.round(data.elevation * 3.28084)} ft` : `${Math.round(data.elevation)} m` })}</p>
-          </section>
+          </Collapsible>
         </>
       )}
     </div>

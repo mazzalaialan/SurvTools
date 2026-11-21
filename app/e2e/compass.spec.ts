@@ -55,7 +55,7 @@ test('brújula: norte geográfico con declinación y magnético', async ({ page 
   await setOrientation(page, 0, 0);
   await expect(page.getByTestId('declination')).toHaveText(/Declinación en tu ubicación: \d+,\d° O/);
   await expect(page.getByTestId('compass-heading')).toHaveText(/^35\d° N$/);
-  await page.getByRole('button', { name: 'Magnético' }).click();
+  await page.getByRole('button', { name: 'Magnético', exact: true }).click();
   await expect(page.getByTestId('compass-heading')).toHaveText('0° N');
   await setOrientation(page, 90, 0); // girado 90° a la izquierda → oeste
   await expect(page.getByTestId('compass-heading')).toHaveText('270° O');

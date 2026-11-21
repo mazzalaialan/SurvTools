@@ -4898,13 +4898,36 @@ a.module-card:active {
   padding-top: 8px;
 }
 
+/* Con `display: flex` el navegador pierde su triángulo: se dibuja una flecha propia (abajo = cerrado, arriba = abierto), como la de «Collapsible». */
 .more-options > summary {
   min-height: 44px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   cursor: pointer;
+  list-style: none;
   color: var(--text); /* desplegable: neutro (el cobre es de enlaces) */
   font-weight: 600;
+}
+
+.more-options > summary::-webkit-details-marker {
+  display: none;
+}
+
+.more-options > summary::after {
+  content: '';
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-right: 4px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.more-options[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
 }
 
 /* Transiciones suaves en botones y chips (apagadas con "reducir movimiento" y en el ahorro de batería, que ya las anula arriba). */

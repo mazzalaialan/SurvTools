@@ -11,6 +11,7 @@ import { useFormatBearing } from '@/modules/waypoints/components';
 import { Segmented } from '@/ui/Segmented';
 import { CalibrationDrawing } from './CalibrationDrawing';
 import { CompassRose } from './CompassRose';
+import { Collapsible } from '@/ui/Collapsible';
 
 export function CompassPage() {
   const { t, i18n } = useTranslation();
@@ -64,9 +65,7 @@ export function CompassPage() {
       )}
 
       {/* Lo que casi nadie cambia (norte verdadero o magnético, declinación, calibrar) queda plegado debajo de la brújula. */}
-      <details className="card more-options" data-testid="compass-advanced">
-        <summary>{t('compass.advanced')}</summary>
-        <div className="stack" style={{ marginTop: 12 }}>
+      <Collapsible id="compass-advanced" title={t('compass.advanced')} testId="compass-advanced">
         <Segmented<NorthReference>
           label={t('compass.reference')}
           value={reference}
@@ -94,8 +93,7 @@ export function CompassPage() {
           <li>{t('compass.calibStep2')}</li>
           <li>{t('compass.calibStep3')}</li>
         </ol>
-        </div>
-      </details>
+      </Collapsible>
     </div>
   );
 }

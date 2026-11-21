@@ -1,14 +1,12 @@
 import { useTranslation } from 'react-i18next';
+import { Collapsible } from '@/ui/Collapsible';
 import { visibleSources } from './sources';
 
 /** Las fuentes de Navegación con su licencia y la cita que corresponde. */
 export function SourcesCard() {
   const { t } = useTranslation();
   return (
-    <section className="card stack" aria-labelledby="sources-title" data-testid="sources-card">
-      <h2 id="sources-title" className="section-title" style={{ margin: 0 }}>
-        {t('navigation.sources.title')}
-      </h2>
+    <Collapsible id="sources" title={t('navigation.sources.title')} testId="sources-card">
       <p className="hint" style={{ margin: 0 }}>
         {t('navigation.sources.intro')}
       </p>
@@ -30,6 +28,6 @@ export function SourcesCard() {
           </li>
         ))}
       </ul>
-    </section>
+    </Collapsible>
   );
 }
