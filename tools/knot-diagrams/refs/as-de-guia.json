@@ -3,7 +3,31 @@
   "pasos": {
     "4": [
       "ABBAABABBABAAB"
+    ],
+    "5": [
+      "ABBAABABBABABAABBABA"
     ]
   },
-  "notas": "Leído mirando la imagen ampliada (2026-11-12, método de visión): línea con huecos en los cruces, los 7 cruces nítidos. Recorrido desde el firme (b, arriba): pasa por encima del cuello (A), por debajo de la vuelta de la gaza chica que se cruza sobre él (B), por debajo de la pasada del chicote que baja (B), da la gaza chica (lado izquierdo, abajo: por encima del chicote que sale, A; lado derecho: por encima del chicote que sube, A; arriba: por debajo del chicote que sube, B), cierra la gaza chica pasando por encima del firme (A) y por debajo del chicote que baja (B), da la gaza grande, sube por dentro de la gaza chica (por debajo del lado derecho, B; por encima del lado de arriba, A), rodea el firme por detrás (B), baja por dentro de la gaza chica por encima de los dos tramos del cruce (A, A) y sale por debajo del lado de abajo (B) hasta el chicote (a). Confianza alta. El paso 4 es el nudo terminado. Los pasos 1 a 3 no tienen figura propia en la referencia: son el mismo recorrido cortado (gaza chica; más la gaza grande y la subida del chicote; más la vuelta alrededor del firme), que es como se ata. El paso 5 (seguro con un nudo simple, FM 3-97.61) no está en esta referencia. No se cargan v2/det: el chicote termina adentro de la gaza (el det supone las puntas afuera). (2026-11-12, revisión: se sacaron los pasos 1 a 3, que no tienen figura propia en la referencia: solo se compara el paso 4.)"
+  "notas": "Leído mirando la imagen ampliada (2026-11-12, método de visión): línea con huecos en los cruces, los 7 cruces nítidos. Recorrido desde el firme (b, arriba): pasa por encima del cuello (A), por debajo de la vuelta de la gaza chica que se cruza sobre él (B), por debajo de la pasada del chicote que baja (B), da la gaza chica (lado izquierdo, abajo: por encima del chicote que sale, A; lado derecho: por encima del chicote que sube, A; arriba: por debajo del chicote que sube, B), cierra la gaza chica pasando por encima del firme (A) y por debajo del chicote que baja (B), da la gaza grande, sube por dentro de la gaza chica (por debajo del lado derecho, B; por encima del lado de arriba, A), rodea el firme por detrás (B), baja por dentro de la gaza chica por encima de los dos tramos del cruce (A, A) y sale por debajo del lado de abajo (B) hasta el chicote (a). Confianza alta. El paso 4 es el nudo terminado. Los pasos 1 a 3 no tienen figura propia en la referencia: son el mismo recorrido cortado (gaza chica; más la gaza grande y la subida del chicote; más la vuelta alrededor del firme), que es como se ata. El paso 5 (seguro con un nudo simple, FM 3-97.61) no está en esta referencia. No se cargan v2/det: el chicote termina adentro de la gaza (el det supone las puntas afuera). (2026-11-12, revisión: se sacaron los pasos 1 a 3, que no tienen figura propia en la referencia: solo se compara el paso 4.)",
+  "recorrido": [
+    "Fuente: Bowline (standard).svg (Commons, Hella/Tescobar, CC BY-SA 3.0); el dibujo de la app es su espejo. Recorrido del firme (0 %) a la punta (100 %), paso 4.",
+    "1. El firme pasa ARRIBA del cuello (el chicote que rodea al firme pasa por detrás de él).",
+    "2. Baja y pasa ABAJO del tramo que cierra la gaza chica.",
+    "3. Pasa ABAJO del chicote que baja.",
+    "4. Da la gaza chica (en la foto, antihoraria); abajo pasa ARRIBA del chicote que sale.",
+    "5. Del otro lado de la gaza chica pasa ARRIBA del chicote que sube.",
+    "6. Arriba de la gaza chica pasa ABAJO del chicote que sube.",
+    "7. Cierra la gaza chica pasando ARRIBA del firme.",
+    "8. Pasa ABAJO del chicote que baja y forma la gaza grande.",
+    "9. El chicote sube por dentro de la gaza chica: ABAJO del lado de abajo, ARRIBA del lado de arriba, y rodea al firme por DETRÁS.",
+    "10. Baja por DENTRO de la gaza chica: ARRIBA del cierre y del firme, y sale ABAJO del lado de abajo. La punta queda dentro de la gaza grande, entre sus dos ramas (as de guía normal, no zurdo).",
+    "Corrección 2026-11-21: la gaza chica se agrandó hacia arriba (cruces del chicote con el arco y la diagonal del firme ya no están a menos de 1,6 grosores); no cambió ningún arriba/abajo.",
+    "Pasos 1 a 3: DEDUCIDOS hacia atrás desde el paso 4 (se deshace el último movimiento: se saca el chicote de la gaza, se desarma la vuelta por detrás, se saca de la gaza chica). Paso 5 (seguro): DEDUCIDO de FM 3-97.61, as-de-guia-1.webp, 4.ª figura: el chicote sale del nudo y hace un nudo simple alrededor de la pata de la gaza grande: ARRIBA de la pata, ABAJO de la pata, y ARRIBA de su propio tramo (B A B A, alterna)."
+  ],
+  "deducido": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "5": true
+  }
 }

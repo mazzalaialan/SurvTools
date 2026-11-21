@@ -4,10 +4,10 @@ import { A, E8, move, offset, overhand, rev, scale } from '../helpers.mjs';
 // de más abajo; el chicote sube por debajo de la gaza chica y baja por encima.
 const base = { width: 400, height: 420, rope: 14 };
 const baseD = { width: 440, height: 540 };
-const small = [[200, -20], [200, 60, 0.5], [203, 108, -0.5], [255, 142, -0.5], [260, 205, 0.5], [200, 240, 0.5], [138, 212], [130, 150], [165, 116, -0.5], [215, 110, 0.5], [262, 118], [290, 145]];
+const small = [[200, -20], [200, 56, 0.5], [203, 94, -0.5], [258, 150, -0.5], [262, 208, 0.5], [200, 242, 0.5], [138, 212], [130, 150], [165, 100, -0.5], [215, 88, 0.5], [262, 96], [296, 132]];
 const big = [[308, 220], [310, 320], [250, 395], [160, 388], [112, 330], [125, 282], [168, 262], [169, 234, -0.5], [168, 205], [164, 150], [158, 100, 0.5], [160, 65]];
 const around = [[175, 32], [200, 22, -0.5], [226, 32], [240, 66]];
-const down = [[238, 112, 1], [232, 170], [230, 235, -0.5], [238, 290]];
+const down = [[240, 92, 1], [236, 170], [231, 235, -0.5], [238, 290]];
 export const bowline = [...small, ...big, ...around, ...down];
 
 /** Cuerda doble: ida por `p` y vuelta en paralelo (el seno queda en la punta). */
@@ -30,7 +30,7 @@ export default {
     (() => {
       // Seguro (FM 3-97.61, último cuadro): el chicote sale del nudo y se ata un nudo simple chico alrededor de la pata de la
       // gaza que queda al lado: da una vuelta a la pata (por delante y por detrás) y vuelve a cruzarse bajo sí mismo.
-      const hitch = [[230, 235, -0.5], [244, 256], [278, 264], [309, 270, 0.5], [338, 278], [344, 300], [326, 318], [309, 312, -0.5], [286, 298], [272, 284], [268, 262, -0.5], [282, 236]];
+      const hitch = [[230, 235, -0.5], [244, 256], [268, 262, -0.5], [284, 266], [309, 270, 0.5], [338, 278], [344, 300], [326, 318], [309, 312, -0.5], [286, 298], [272, 284], [268, 262, 0.5], [282, 236]];
       return { ...base, height: 440, ropes: [{ ...A, path: [...bowline.slice(0, -1), ...hitch] }] };
     })(),
   ],
@@ -72,14 +72,17 @@ export default {
   'ocho-gaza': (() => {
     // Ocho sobre seno (ABOK 1085 sin la segunda gaza): el ocho de siempre (4 cruces alternados, "FigureOfEightLoop.jpg",
     // CC BY-SA 3.0) hecho con la cuerda doble; el par se dibuja con 18 px entre cuerdas para que cada cruce de pares se lea.
-    const rope = 10, d = 20, g = { width: 480, rope };
-    const e8h = e8.slice(0, 19); // hasta justo antes del último cruce: el seno todavía no terminó de pasar
-    const eyeD = [[385, 148], [418, 164], [452, 160], [476, 133], [452, 104], [418, 100], [385, 114]];
-    const full = [...e8, ...eyeD, ...rev(offset(e8, d))];
+    const rope = 10, d = 20, g = { width: 540, rope };
+    // Paso 2: el seno ya pasó POR DEBAJO del lado derecho de la gaza (último cruce) y asoma por la derecha; todavía no se tiró de él.
+    const e8c = e8.slice(0, 20); // hasta el lado derecho de la gaza (296,135); de ahí la gaza sale redonda, sin onda
+    const e8r = rev(offset(e8, d)).slice(1); // vuelta paralela (sin la punta, que se dibuja a mano)
+    const tip = [[330, 142], [352, 138], [352, 112], [330, 111]];
+    const eyeD = [[335, 142], [380, 150], [425, 153], [466, 146], [484, 130], [466, 113], [425, 107], [380, 107], [335, 111]];
+    const full = [...e8c, ...eyeD, ...e8r];
     return [
       { ...g, ropes: [{ ...A, path: [[-20, 190], [200, 190], [380, 190], ...rev(offset([[-20, 190], [200, 190], [380, 190]], d))], end: false }] },
-      { ...g, ropes: [{ ...A, path: [...e8h, ...rev(offset(e8h, d))], end: false }], arrows: [[[268, 131], [330, 128], [400, 140]]] },
-      { ...g, ropes: [{ ...A, path: full, end: false }], arrows: [[[40, 235], [5, 235]], [[470, 175], [478, 215]]] },
+      { ...g, ropes: [{ ...A, path: [...e8c, ...tip, ...e8r], end: false }], arrows: [[[330, 70], [385, 62], [440, 75]]] },
+      { ...g, ropes: [{ ...A, path: full, end: false }], arrows: [[[40, 235], [5, 235]], [[488, 132], [528, 132]]] },
     ];
   })(),
 
@@ -88,15 +91,15 @@ export default {
     // a la primera cuerda (mismas profundidades en cada cruce, par a 18 px). El ocho es el mismo que el de ocho-gaza
     // ("FigureOfEightLoop.jpg", CC BY-SA 3.0).
     const rope = 10, d = 20;
-    const bulb = [[385, 148], [418, 164], [452, 160, 0], [476, 133, -1], [452, 104, -1], [418, 100], [385, 114]];
+    const bulb = [[335, 142], [380, 150], [425, 154], [457, 152, 0], [482, 133, -1], [457, 112, -1], [425, 107], [380, 107], [335, 111]];
     const ring = { kind: 'ring', x: 474, y: 133, r: 26 };
-    const back = rev(offset(e8, d));
-    const head = [...e8.slice(0, -1), [350, 142]];
+    const back = rev(offset(e8, d)).slice(1);
+    const head = e8.slice(0, 20);
     const g = { width: 520, rope, poles: [ring] };
     return [
-      { width: 520, rope, ropes: [{ ...A, path: [...head, [395, 160], [440, 190], [500, 200]] }] },
-      { ...g, ropes: [{ ...A, path: [...head, ...bulb.slice(0, 6)] }] },
-      { ...g, ropes: [{ ...A, path: [...head, ...bulb, ...back.slice(0, 12)] }] },
+      { width: 520, rope, ropes: [{ ...A, path: [...head, [335, 142], [390, 158], [450, 190], [500, 200]] }] },
+      { ...g, ropes: [{ ...A, path: [...head, ...bulb.slice(0, 8)] }] },
+      { ...g, ropes: [{ ...A, path: [...head, ...bulb, ...back.slice(0, 11)] }] },
       { ...g, ropes: [{ ...A, path: [...head, ...bulb, ...back.slice(0, -1), [70, 172]] }], arrows: [[[40, 140], [5, 140]]] },
     ];
   })(),

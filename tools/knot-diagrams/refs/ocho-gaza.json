@@ -1,4 +1,20 @@
 {
   "fuente": "fotos del manual en app/public/knots/ocho-gaza-1..3.webp (FM 3-97.61)",
-  "notas": "Revisado a ojo contra ocho-gaza-1..3.webp (2026-11-12): un ocho simple hecho con la cuerda doble, el seno sale como gaza; el dibujo tiene esa estructura (cada cruce de pares con las cuatro letras iguales al ocho simple doble). Sin secuencia leída de una figura real: no hay SVG legible del ocho sobre seno. El texto del paso 3 se cambió para que diga de qué se tira (gaza para un lado, firme y chicote para el otro), igual que las flechas."
+  "notas": "Revisado a ojo contra ocho-gaza-1..3.webp (2026-11-12): un ocho simple hecho con la cuerda doble, el seno sale como gaza; el dibujo tiene esa estructura (cada cruce de pares con las cuatro letras iguales al ocho simple doble). Sin secuencia leída de una figura real: no hay SVG legible del ocho sobre seno. El texto del paso 3 se cambió para que diga de qué se tira (gaza para un lado, firme y chicote para el otro), igual que las flechas.",
+  "recorrido": [
+    "DEDUCIDO de la topología del nudo ocho (4_1, confirmada con tipo.mjs); fuentes de forma: FM 3-97.61 y FigureOfEightLoop.jpg (Commons, CC BY-SA 3.0). Cruces de pares numerados 1 a 4 (el ocho tiene 4 cruces; cada uno es un cruce de dos pares de cuerda).",
+    "Ida (firme hacia el seno/anillo): 1 ARRIBA, 2 ABAJO, 3 ARRIBA, 4 ABAJO, 2 ARRIBA, 1 ABAJO, 4 ARRIBA, 3 ABAJO.",
+    "Vuelta paralela: 3 ABAJO, 4 ARRIBA, 1 ABAJO, 2 ARRIBA, 4 ABAJO, 3 ARRIBA, 2 ABAJO, 1 ARRIBA.",
+    "En cada cruce de pares los 4 sub-cruces tienen el mismo arriba/abajo (las dos cuerdas de un par pasan juntas).",
+    "Gaza: el seno pasa por ABAJO del lado derecho de la gaza (cruce de pares 3) y asoma por la derecha; después se tira de la gaza hacia la derecha y de firme y chicote juntos hacia la izquierda."
+  ],
+  "deducido": {
+    "2": true,
+    "3": true
+  },
+  "pasos": {
+    "3": [
+      "AABBAABBAABBAABBBBAABBAABBAABBAA"
+    ]
+  }
 }
