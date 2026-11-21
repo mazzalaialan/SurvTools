@@ -59,6 +59,44 @@ def _wrap_lists(parts: list[str]) -> list[str]:
     return out
 
 
+_MONTHS = ("january|february|march|april|may|june|july|august|september|october|november|december|"
+           "enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre")
+MIN_CHAPTER_CHARS = 300
+
+
+def _fragment_title(t: str) -> bool:
+    """Títulos que no son de capítulo: fechas, números, una letra suelta, «... V» (restos de tablas)."""
+    t = t.strip()
+    return bool(
+        re.fullmatch(rf"(?:{_MONTHS})?\s*\d{{0,4}}", t, re.I)
+        or len(t) <= 2
+        or (re.search(r"\s[A-ZÇ]$", t) and len(t) < 40)
+        or re.fullmatch(r"[\d\W]+", t)
+    )
+
+
+def _text_len(c: "Chapter") -> int:
+    return len(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", "".join(c.html))).strip())
+
+
+def _merge_tiny(chapters: list["Chapter"]) -> list["Chapter"]:
+    """Un capítulo que es solo un título (menos de MIN_CHAPTER_CHARS de texto) se une con el siguiente (el último, con el anterior)."""
+    out: list[Chapter] = []
+    carry: list[str] = []
+    for c in chapters:
+        if _text_len(c) < MIN_CHAPTER_CHARS and not any("<img" in h for h in c.html):
+            carry += c.html
+            continue
+        out.append(Chapter(c.title, carry + c.html))
+        carry = []
+    if carry:
+        if out:
+            out[-1].html += carry
+        else:
+            out.append(Chapter(chapters[0].title, carry))
+    return out
+
+
 def chapters_from_blocks(blocks: list[Block], toc: list[tuple[int, str, int]], pages: int) -> list[Chapter]:
     """Separa por el índice del PDF, si no por los títulos, si no cada tantas páginas. Libros chicos: un solo capítulo."""
     total = sum(len(b.text) + 60 for b in blocks)
@@ -66,34 +104,57 @@ def chapters_from_blocks(blocks: list[Block], toc: list[tuple[int, str, int]], p
         return [Chapter("", [block_html(b) for b in blocks])]
 
     starts: list[tuple[int, str]] = []  # (índice de bloque, título)
-    top = [t for t in toc if t[0] == 1 and t[2] > 0]
-    if len(top) >= 3:
+    # Índice del PDF: se usa el nivel más alto que tenga al menos 3 entradas con página
+    # (hay PDF cuyo único nivel 1 es el título del libro y los capítulos están en el 2).
+    valid = [t for t in toc if t[2] > 0 and not _fragment_title(t[1])]
+    for level in sorted({t[0] for t in valid}):
+        top = [t for t in valid if t[0] == level]
+        if len(top) < 3:
+            continue
+        cand: list[tuple[int, str]] = []
         for _, title, page in top:
             idx = next((i for i, b in enumerate(blocks) if b.page >= page), None)
-            if idx is not None and (not starts or idx > starts[-1][0]):
-                starts.append((idx, title))
+            if idx is not None and (not cand or idx > cand[-1][0]):
+                cand.append((idx, title))
+        if len(cand) >= 3:
+            starts = cand
+            break
     if len(starts) < 3:
         for level in ("h1", "h2"):
-            heads = [(i, b.text) for i, b in enumerate(blocks) if b.kind == level]
+            heads = [(i, b.text) for i, b in enumerate(blocks) if b.kind == level and not _fragment_title(b.text)]
             if 3 <= len(heads) <= 200:
                 starts = heads
                 break
     if len(starts) < 3:
-        starts = []
-        last = -FALLBACK_PAGES
-        for i, b in enumerate(blocks):
-            if b.page - last >= FALLBACK_PAGES:
-                starts.append((i, f"Páginas {b.page}–{min(pages, b.page + FALLBACK_PAGES - 1)}"))
-                last = b.page
+        starts = _by_pages(blocks, pages)
+    chapters = _cut(blocks, starts)
+    if len(chapters) < 3:
+        # Los títulos que había eran casi todos tramos vacíos: se corta por tramos de páginas.
+        starts = _by_pages(blocks, pages)
+        chapters = _cut(blocks, starts)
+    return chapters
+
+
+def _by_pages(blocks: list[Block], pages: int) -> list[tuple[int, str]]:
+    starts: list[tuple[int, str]] = []
+    last = -FALLBACK_PAGES
+    for i, b in enumerate(blocks):
+        if b.page - last >= FALLBACK_PAGES:
+            starts.append((i, f"Páginas {b.page}–{min(pages, b.page + FALLBACK_PAGES - 1)}"))
+            last = b.page
+    return starts
+
+
+def _cut(blocks: list[Block], starts: list[tuple[int, str]]) -> list[Chapter]:
     if not starts or starts[0][0] > 0:
-        starts.insert(0, (0, "Inicio"))
+        starts = [(0, "Inicio")] + starts
     chapters = []
     for n, (idx, title) in enumerate(starts):
         end = starts[n + 1][0] if n + 1 < len(starts) else len(blocks)
         chunk = blocks[idx:end]
         if chunk:
             chapters.append(Chapter(title, [block_html(b) for b in chunk]))
-    return chapters
+    return _merge_tiny(chapters)
 
 
 def chapters_from_html(fragment: str, size_hint_pages: int = 0) -> list[Chapter]:
@@ -109,7 +170,7 @@ def chapters_from_html(fragment: str, size_hint_pages: int = 0) -> list[Chapter]
                 title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else "Inicio"
                 if p.strip():
                     chapters.append(Chapter(html.unescape(title)[:120] or "Inicio", [p]))
-            return chapters
+            return _merge_tiny(chapters)
     # Sin títulos: en partes parejas, cortando entre párrafos.
     chunks, cur = [], ""
     for p in re.split(r"(?<=</p>)", fragment):
