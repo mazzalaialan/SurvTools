@@ -1233,6 +1233,34 @@
     },
     "source": "Pronóstico de Open-Meteo para {{place}}. Se guarda en el dispositivo para verlo sin conexión."
   },
+  "pressureAlerts": {
+    "title": "Avisos por la presión (barómetro)",
+    "enable": "Avisarme de posible mal tiempo o mejora por los cambios de presión",
+    "how": "Cada 5 minutos, con la app abierta (o grabando un recorrido), lee la presión de tu celular y la altura del GPS, y descuenta lo que subiste o bajaste: bajar de 3,5 a 6 hPa en 3 horas suele anticipar mal tiempo o tormenta, y subir lo mismo, mejoría. Necesita unas 2 horas seguidas de lecturas.",
+    "limits": "Es un aviso informativo, no un pronóstico oficial: un cambio de presión no siempre trae tormenta. Con la app cerrada no lee nada. Si en esas horas subiste o bajaste más de 100 m, no opina; entre 30 y 100 m exige un cambio mayor. Necesita el GPS con altura.",
+    "state": {
+      "learning": "Juntando lecturas: hacen falta unas 2 horas seguidas con la app abierta y el GPS.",
+      "steady": "Presión estable ({{change}} hPa en 3 h, sin contar la altura).",
+      "falling": "Baja rápido ({{change}} hPa en 3 h, sin contar la altura): puede venir mal tiempo.",
+      "fastFalling": "Baja muy rápido ({{change}} hPa en 3 h, sin contar la altura): es probable una tormenta o un frente.",
+      "rising": "Sube ({{change}} hPa en 3 h, sin contar la altura): el tiempo tiende a mejorar.",
+      "moving": "Estás subiendo o bajando mucho: no se puede separar el cambio de clima del de altura. Se retoma al estabilizarte."
+    },
+    "notify": {
+      "falling": {
+        "title": "La presión baja rápido",
+        "body": "Bajó {{change}} hPa en 3 horas, sin contar la altura. Puede venir mal tiempo. Aviso informativo, no un pronóstico oficial."
+      },
+      "fastFalling": {
+        "title": "La presión baja muy rápido",
+        "body": "Bajó {{change}} hPa en 3 horas, sin contar la altura. Es probable una tormenta o un frente: buscá abrigo. Aviso informativo, no un pronóstico oficial."
+      },
+      "rising": {
+        "title": "La presión sube",
+        "body": "Subió {{change}} hPa en 3 horas, sin contar la altura. El tiempo tiende a mejorar. Aviso informativo, no un pronóstico oficial."
+      }
+    }
+  },
   "rainAlerts": {
     "foldTitle": "Configurar avisos de lluvia, rayos y peligros",
     "backgroundOn": "Con la app cerrada te avisa el servidor de lluvia, de rayos a menos de 30 km y de peligros naturales cerca (sismos, incendios, inundaciones, ciclones y erupciones), en estos waypoints y, si está activado en Ajustes → Notificaciones, donde estás.",

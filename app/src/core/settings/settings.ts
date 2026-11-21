@@ -56,6 +56,8 @@ export interface Settings {
   placeWaypointId: string | null;
   /** Avisar si va a llover donde estoy (GPS con la app abierta; última ubicación conocida en segundo plano). */
   rainAlertsHere: boolean;
+  /** Avisar de posible mal tiempo o mejora por los cambios de presión del barómetro (solo teléfonos que lo tienen; ver `modules/weather/pressureTrend.ts`). */
+  pressureAlerts: boolean;
   /**
    * Con el servidor propio y las notificaciones activadas: mandarle la última
    * ubicación conocida (~1 km) para avisar de lluvia y rayos cerca con la app
@@ -303,6 +305,7 @@ export const DEFAULT_SETTINGS: Settings = {
   northReference: 'true',
   placeWaypointId: null,
   rainAlertsHere: false,
+  pressureAlerts: false,
   serverLocation: true,
   updateNotices: true,
   hazardNotices: true,

@@ -26,6 +26,7 @@ import { useRainServerSync } from '@/modules/weather/rainServer';
 import { useGardenServerSync } from '@/modules/garden/serverSync';
 import { useStockServerSync } from '@/modules/inventory/stockServer';
 import { useRainWatcher } from '@/modules/weather/rainWatch';
+import { usePressureWatcher } from '@/modules/weather/pressureWatch';
 import { PortableUpdateNotice } from './PortableUpdateNotice';
 
 // En el celular entran seis botones: cinco secciones y "Más" con el resto.
@@ -60,6 +61,7 @@ export function Shell() {
   const [moreOpen, setMoreOpen] = useState(false);
   const inMore = MORE.some((m) => pathname.startsWith(m.to));
   useRainWatcher();
+  usePressureWatcher();
   useRainServerSync();
   useGardenServerSync();
   useStockServerSync();

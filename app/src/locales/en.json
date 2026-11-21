@@ -1233,6 +1233,34 @@
     },
     "source": "Open-Meteo forecast for {{place}}. Saved on this device to view offline."
   },
+  "pressureAlerts": {
+    "title": "Pressure alerts (barometer)",
+    "enable": "Alert me to possible bad weather or improvement from pressure changes",
+    "how": "Every 5 minutes, with the app open (or recording a track), it reads your phone’s pressure and the GPS altitude, and subtracts what you climbed or descended: a drop of 3.5 to 6 hPa in 3 hours usually signals bad weather or a storm, and a rise of the same size, improvement. It needs about 2 hours of continuous readings.",
+    "limits": "This is an informational alert, not an official forecast: a pressure change does not always bring a storm. With the app closed it reads nothing. If you climbed or descended more than 100 m in that time, it gives no opinion; between 30 and 100 m it asks for a bigger change. It needs GPS with altitude.",
+    "state": {
+      "learning": "Collecting readings: about 2 hours in a row with the app open and GPS are needed.",
+      "steady": "Pressure steady ({{change}} hPa in 3 h, excluding altitude).",
+      "falling": "Falling fast ({{change}} hPa in 3 h, excluding altitude): bad weather may be coming.",
+      "fastFalling": "Falling very fast ({{change}} hPa in 3 h, excluding altitude): a storm or front is likely.",
+      "rising": "Rising ({{change}} hPa in 3 h, excluding altitude): the weather tends to improve.",
+      "moving": "You are climbing or descending a lot: weather change cannot be separated from altitude change. It resumes once you settle."
+    },
+    "notify": {
+      "falling": {
+        "title": "Pressure is falling fast",
+        "body": "It dropped {{change}} hPa in 3 hours, excluding altitude. Bad weather may be coming. Informational alert, not an official forecast."
+      },
+      "fastFalling": {
+        "title": "Pressure is falling very fast",
+        "body": "It dropped {{change}} hPa in 3 hours, excluding altitude. A storm or front is likely: find shelter. Informational alert, not an official forecast."
+      },
+      "rising": {
+        "title": "Pressure is rising",
+        "body": "It rose {{change}} hPa in 3 hours, excluding altitude. The weather tends to improve. Informational alert, not an official forecast."
+      }
+    }
+  },
   "rainAlerts": {
     "foldTitle": "Set up rain, lightning and hazard alerts",
     "backgroundOn": "With the app closed the server warns you about rain, lightning within 30 km and nearby natural hazards (earthquakes, wildfires, floods, cyclones and eruptions), at these waypoints and, if enabled in Settings → Notifications, where you are.",

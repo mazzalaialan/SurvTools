@@ -13,6 +13,7 @@ import { useWaypoints } from '@/modules/waypoints/store';
 import { cachedForecast, placeKey, storeForecast } from './cache';
 import { RAIN_MM_PER_SLOT, rainOutlook, type RainSlot } from './nowcast';
 import { HERE_ID, useRainWatch } from './rainWatch';
+import { PressureAlerts } from './PressureAlerts';
 import { fetchForecast, HOURLY_DETAIL_DAYS, mmToInch, placeNow, RELIABLE_DAYS, skyOf, warningsOf, WeatherError, type Forecast } from './forecast';
 import { pressureLevel } from './levels';
 import { DayHoursDialog, DayList, DayPeriodsDialog, HourStripItem, Lvl, SkyIcon, useUnits, WindArrow, type Units } from './parts';
@@ -191,6 +192,7 @@ export function WeatherPage() {
       <details className="more-options" data-testid="weather-alerts">
         <summary>{t('rainAlerts.foldTitle')}</summary>
         <RainAlertsSettings />
+        <PressureAlerts />
       </details>
       <OfficialWeatherNotice />
     </div>
