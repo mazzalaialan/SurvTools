@@ -293,6 +293,9 @@ if (process.argv.includes('--solo-mundo')) {
   const WORLD_OUT = fileURLToPath(new URL('../../app/src/modules/weathermap/world-borders.json', import.meta.url));
   const WORLD_TOLERANCE = 0.1;
   const WORLD_MIN_AREA = 0.02;
+  const WORLD_SMALL_TOTAL = 1;
+  const WORLD_SMALL_MIN_AREA = 0.002;
+  const WORLD_SMALL_TOLERANCE = 0.01;
   const base = JSON.parse(await readFile(OUT, 'utf8'));
   const skip = new Set(['AQ', 'FK', 'GS', ...base.neighbors.map((n) => n.code), ...base.regions.map((r) => r.country), ...base.borders.map((b) => b.code)]);
   const admin0 = await get(`${NE}/ne_50m_admin_0_countries.geojson`);
@@ -306,12 +309,18 @@ if (process.argv.includes('--solo-mundo')) {
     const code = f.properties.ISO_A2_EH;
     if (f.properties.ADM0_A3 === 'ATA' || skip.has(code)) continue;
     const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
-    const rs = polys
-      .map((poly) => poly[0])
-      .filter((ring) => !(code === 'FR' && inGuiana(ring)) && area(ring) >= WORLD_MIN_AREA)
-      .map((ring) => simplify(ring, WORLD_TOLERANCE))
+    const all = polys.map((poly) => poly[0]).filter((ring) => !(code === 'FR' && inGuiana(ring)));
+    // Un país chico (Antigua y Barbuda, Barbados, Granada…, de menos de ~1 grado cuadrado en total) se perdía entero con el umbral de los países
+    // grandes: se le deja cada isla con más detalle y sin el redondeo grueso.
+    const small = all.reduce((sum, ring) => sum + area(ring), 0) < WORLD_SMALL_TOTAL;
+    const minArea = small ? WORLD_SMALL_MIN_AREA : WORLD_MIN_AREA;
+    const tolerance = small ? WORLD_SMALL_TOLERANCE : WORLD_TOLERANCE;
+    const decimals = small ? 1000 : 100;
+    const rs = all
+      .filter((ring) => area(ring) >= minArea)
+      .map((ring) => simplify(ring, tolerance))
       .filter((ring) => ring.length >= 4)
-      .map((ring) => ring.flatMap(([lon, lat]) => [Math.round(lon * 100) / 100, Math.round(lat * 100) / 100]));
+      .map((ring) => ring.flatMap(([lon, lat]) => [Math.round(lon * decimals) / decimals, Math.round(lat * decimals) / decimals]));
     if (rs.length) countries.push({ code, rings: rs });
   }
   countries.sort((a, b) => a.code.localeCompare(b.code));

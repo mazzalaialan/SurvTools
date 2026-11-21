@@ -20,6 +20,18 @@ describe('contorno de todos los países del mundo (mapa del clima)', () => {
     for (const code of ['FK', 'GS', 'AQ']) expect(codes).not.toContain(code);
   });
 
+  it('todo país de América con nombre en el mapa tiene también su contorno, islas chicas incluidas (Antigua y Barbuda, Barbados, Granada…)', () => {
+    const outlined = new Set([...world.countries.map((c) => c.code), ...geo.neighbors.map((n) => n.code), ...geo.borders.map((b) => b.code), ...geo.regions.map((r) => r.country)]);
+    const missing = geo.countries.map((c) => c.code).filter((code) => !outlined.has(code));
+    expect(missing).toEqual([]);
+    // Cada isla de un país chico se dibuja con detalle (no como un cuadradito) y bien ubicada.
+    const ag = world.countries.find((c) => c.code === 'AG')!;
+    expect(ag.rings.length).toBeGreaterThanOrEqual(2); // Antigua y Barbuda
+    const lon = ag.rings[0]!.filter((_, i) => i % 2 === 0);
+    expect(Math.min(...lon)).toBeGreaterThan(-62.2);
+    expect(Math.max(...lon)).toBeLessThan(-61.4);
+  });
+
   it('las coordenadas son válidas y entran en el mapa (la proyección Mercator no llega a los polos)', () => {
     for (const c of world.countries) {
       expect(c.rings.length).toBeGreaterThan(0);
