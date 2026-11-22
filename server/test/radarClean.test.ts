@@ -65,16 +65,28 @@ test('conserva el centro si trae un núcleo intenso', () => {
   const img = vacia();
   const c = Math.round((N - 1) / 2);
   disco(img, c, c, 30, AZUL);
-  pinta(img, c + 5, c + 3, ROJO);
+  disco(img, c + 8, c + 3, 8, ROJO); // núcleo grande: más de 100 píxeles intensos
   const { img: out, stats } = cleanRadarImage(img);
   assert.equal(stats.centro, 0);
   assert.equal(alfa(out, c, c), 255);
 });
 
-test('conserva lo que se extiende más allá del centro', () => {
+test('quita un disco azul centrado de ~85 km con restos de rayas finas', () => {
   const img = vacia();
   const c = Math.round((N - 1) / 2);
   disco(img, c, c, CLUTTER_RADIO_PX + 40, AZUL);
+  pinta(img, c + 20, c + 10, VERDE);
+  for (let r = 100; r < 240; r++) pinta(img, c + r, c, AZUL); // raya fina pegada al disco
+  const { img: out, stats } = cleanRadarImage(img);
+  assert.ok(stats.centro > 5000);
+  assert.equal(alfa(out, c + 20, c + 10), 0);
+  assert.equal(alfa(out, c + 200, c), 0);
+});
+
+test('conserva una nube azul grande centrada que llega más allá de ~127 km', () => {
+  const img = vacia();
+  const c = Math.round((N - 1) / 2);
+  disco(img, c, c, 170, AZUL);
   const { stats } = cleanRadarImage(img);
   assert.equal(stats.centro, 0);
 });

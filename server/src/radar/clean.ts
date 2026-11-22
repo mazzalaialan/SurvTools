@@ -14,14 +14,18 @@ import type { Rgba } from './pixels.ts';
  */
 
 /** El radar está en el centro de la imagen de 512 × 512 (240 km de radio): cada píxel ≈ 0,94 km. */
-const MAX_RAYA_ANGULO_BINS = 36; // ancho angular máximo de una raya o cuña (en bins de 1°)
+const MAX_RAYA_ANGULO_BINS = 75; // ancho angular máximo de una raya o cuña (en bins de 1°)
 const MIN_RAYA_LARGO_PX = 90; // largo radial mínimo
-const MIN_ALARGADA = 1.2; // largo radial / ancho del arco a la distancia media: tiene que ser bastante más larga que ancha
+const MIN_ALARGADA = 1.0; // largo radial / ancho del arco a la distancia media: tiene que ser bastante más larga que ancha
 const CENTRO_TOCA_PX = 12; // un componente que llega hasta aquí del radar «toca» el radar
 const MAX_RESTOS_AFUERA_PX = 1500; // superficie máxima, fuera del disco del centro, para seguir tratándolo como clutter
 const MAX_COSTADOS = 0.35; // fracción tolerada de eco en los costados de una raya (más que eso: es parte de una nube)
-const MAX_FUERTES = 0.02; // fracción tolerada de píxeles no débiles adentro (puntitos verdes sueltos de la cuña)
+const MAX_FUERTES = 0.05; // fracción tolerada de píxeles no débiles adentro (puntitos verdes sueltos de la cuña)
 export const CLUTTER_RADIO_PX = 50; // ≈ 47 km: el centro donde se busca clutter, y desde donde se buscan rayas
+const DISCO_RADIO_MAX_PX = 135; // ≈ 127 km: un disco de eco débil centrado en el radar que no pasa de aquí es clutter o propagación anómala
+const DISCO_COBERTURA_MIN = 0.85; // fracción de los 36 sectores de 10° que ocupa: un disco rodea al radar, la lluvia real casi nunca
+const DISCO_MAX_FUERTES = 0.08; // fracción tolerada de píxeles no débiles (puntos verdes sueltos)
+const DISCO_MAX_INTENSOS = 100; // píxeles amarillos o rojos tolerados (núcleos fijos chicos) y, además, como mucho el 2 % del área
 const BINS = 360;
 
 /** Color débil: azules y turquesas (la lluvia flojísima y el ruido). Verde, amarillo y rojo son «fuertes». */
@@ -175,13 +179,18 @@ export function cleanRadarImage(img: Rgba): { img: Rgba; stats: CleanStats } {
     let rMin = Infinity;
     let afuera = 0;
     let intenso = false;
+    let nIntensos = 0;
+    let fuertes = 0;
+    const sectores = new Set<number>();
     while (pila.length) {
       const i = pila.pop()!;
       pixeles.push(i);
       if (radius[i]! > rMax) rMax = radius[i]!;
       if (radius[i]! < rMin) rMin = radius[i]!;
       if (radius[i]! > R0 + 2) afuera++;
-      if (esIntenso(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) intenso = true;
+      if (esIntenso(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) (intenso = true, nIntensos++);
+      if (!esDebil(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) fuertes++;
+      sectores.add(Math.floor(bin[i]! / 10));
       const x = i % w;
       const y = (i - x) / w;
       for (let dy = -1; dy <= 1; dy++) {
@@ -198,7 +207,17 @@ export function cleanRadarImage(img: Rgba): { img: Rgba; stats: CleanStats } {
     }
     // Chico y pegado al centro: o no sale del disco, o toca el radar y lo que asoma afuera son restos finos de rayas (poca superficie).
     const pegadoAlRadar = rMin <= CENTRO_TOCA_PX && afuera < MAX_RESTOS_AFUERA_PX;
-    if ((rMax <= R0 + 2 || pegadoAlRadar) && !intenso) {
+    // Disco centrado: rodea al radar, no pasa de ~127 km, es casi todo débil y casi sin núcleos intensos.
+    // Radio que deja afuera el 3 % más lejano: unas rayas finas pegadas al disco no lo convierten en una nube grande.
+    const radios = pixeles.map((i) => radius[i]!).sort((a, b) => a - b);
+    const radioP97 = radios[Math.floor(0.97 * (radios.length - 1))]!;
+    const disco =
+      rMin <= CENTRO_TOCA_PX &&
+      radioP97 <= DISCO_RADIO_MAX_PX &&
+      sectores.size >= DISCO_COBERTURA_MIN * (BINS / 10) &&
+      fuertes <= DISCO_MAX_FUERTES * pixeles.length &&
+      nIntensos <= Math.min(DISCO_MAX_INTENSOS, 0.02 * pixeles.length);
+    if (disco || ((rMax <= R0 + 2 || pegadoAlRadar) && !intenso)) {
       for (const i of pixeles) {
         d[i * 4 + 3] = 0;
         stats.centro++;
