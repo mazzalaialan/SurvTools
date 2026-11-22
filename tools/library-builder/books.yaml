@@ -218,3 +218,107 @@
   title: Receta de hard tack (galleta de marinero)
   lang: en
   category: Cocina
+
+# Lote 3 de catalogación (Alimento: conservas, ahumados, embutidos, cerveza)
+"Alimento/Conservas/A4 - INTA Conservas.pdf":
+  title: "Conservación de frutas y hortalizas"
+  author: "INTA EEA Colonia Benítez (Zunilda Ibañez y otras)"
+  year: 2010
+  lang: es
+"Alimento/Conservas/Ahumado/ahumado-carnes.pdf":
+  title: "Ahumado de carnes (proceso y ahumaderos)"
+  lang: es
+"Alimento/Conservas/Ahumado/Ahumado de carnes - Monografias.pdf":
+  title: "Ahumado de carnes (proceso y ahumaderos), versión Monografias"
+  lang: es
+"Alimento/Conservas/Ahumado/ahumado.pdf":
+  title: "Ahumado de carnes y aves"
+  author: "USDA - Servicio de Inocuidad e Inspección de los Alimentos (FSIS)"
+  lang: es
+"Alimento/Conservas/Ahumado/AHUMADOS AMERICANO Y EUROPEO.docm":
+  title: "Ahumados estilo americano y europeo"
+  lang: es
+"Alimento/Conservas/Ayers_Preserve_Book.pdf":
+  title: "Ayer's Preserve Book"
+  author: "J. C. Ayer & Co."
+  lang: en
+"Alimento/Panificados/Barriga Xavier - Recetas Caseras Con Pan De Ayer.pdf":
+  title: "Recetas caseras con pan de ayer"
+  author: "Xavier Barriga"
+  year: 2011
+  lang: es
+"Alimento/Panificados/Bolleria - Barriga Xavier.pdf":
+  title: "Bollería hecha en casa y con el sabor de siempre"
+  author: "Xavier Barriga"
+  year: 2013
+  lang: es
+"Alimento/Conservas/Butchering.pdf":
+  title: "Butchering (guía de carneo casero)"
+  lang: en
+"Alimento/Conservas/canning complete guide usda.pdf":
+  title: "Guía completa de conservas caseras del USDA (Complete Guide to Home Canning)"
+  author: "USDA / Utah State University Extension"
+  year: 1994
+  lang: en
+"Alimento/Conservas/Charcuterie.pdf":
+  title: "Charcuterie: the craft of salting, smoking and curing"
+  author: "Michael Ruhlman y Brian Polcyn"
+  year: 2005
+  lang: en
+"Alimento/Cerveza/Como Hacer Cerveza de la Manera Incorrecta - Anibal Loggia.pdf":
+  title: "Cómo hacer cerveza de la manera incorrecta"
+  author: "Aníbal Loggia"
+  lang: es
+"Alimento/Cerveza/Designing great beers.pdf":
+  title: "Designing Great Beers (Diseñando grandes cervezas)"
+  author: "Ray Daniels"
+  year: 1996
+  lang: es
+"Alimento/edible-wild-plants.pdf":
+  title: "Edible Wild Plants"
+  author: "Oliver Perry Medsger"
+  year: 1939
+  lang: en
+"Alimento/FEMA - Agua y alimentos en una emergencia.pdf":
+  title: "Agua y alimentos en una emergencia"
+  author: "FEMA"
+  lang: es
+"Alimento/Conservas/Conserva en Frasco/Guia de Conservas de Alta Acidez Paso a Paso - Ball.pdf":
+  title: "Conservas de alimentos de alta acidez, paso a paso (Ball)"
+  author: "Ball Fresh Preserving"
+  lang: en
+"Alimento/Conservas/Conserva en Frasco/GUIDE 1 USDA Principles homecanning.pdf":
+  title: "Principios del enlatado casero (Guía 1 del USDA)"
+  author: "USDA"
+  lang: en
+"Alimento/Conservas/Disecado o deshidratado/dehydration_vegetables.pdf":
+  title: "Secado de verduras"
+  author: "P. Kendall, P. DiPersio y J. Sofos (Colorado State University Extension)"
+  lang: en
+"Alimento/Conservas/freezingeggplant.pdf":
+  title: "Cómo congelar berenjenas"
+  author: "PickYourOwn.org"
+  lang: en
+"Alimento/catalogo plantas silvestres comestibles_001-083.pdf":
+  title: "Plantas silvestres comestibles: catálogo"
+  author: "Dirección de Víveres, Fuerzas Armadas Revolucionarias (Cuba)"
+  year: 1987
+  lang: es
+"Alimento/Conservas/Chacinados jamones/arte da charcutaria.pdf":
+  title: "A arte da charcutaria"
+  author: "John Kowalski (Culinary Institute of America)"
+  year: 2011
+  lang: pt
+"Alimento/Conservas/Chacinados jamones/Como Fazer Embutidos.pdf":
+  title: "Como fazer embutidos"
+  lang: pt
+"Alimento/Cerveza/Elaboracion Casera de Cerveza - Manual Practico.pdf":
+  title: "Elaboración casera de cerveza: manual práctico"
+  author: "Wolfgang Vogel"
+  lang: es
+"Alimento/ALIMENTO PARA LA SUPERVIVENCIA.doc":
+  title: "Alimento para la supervivencia (receta de granos tostados y miel)"
+  lang: es
+"Alimento/Conservas/Jerky Charky carne seca/Elaboración artesanal de tasajo.pdf":
+  title: "Elaboración artesanal de tasajo"
+  lang: es
