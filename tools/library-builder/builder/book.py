@@ -62,6 +62,7 @@ def _wrap_lists(parts: list[str]) -> list[str]:
 _MONTHS = ("january|february|march|april|may|june|july|august|september|october|november|december|"
            "enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre")
 MIN_CHAPTER_CHARS = 300
+MAX_SPAN_PAGES = 150
 
 
 def _fragment_title(t: str) -> bool:
@@ -72,6 +73,8 @@ def _fragment_title(t: str) -> bool:
         or len(t) <= 2
         or (re.search(r"\s[A-ZÇ]$", t) and len(t) < 40)
         or re.fullmatch(r"[\d\W]+", t)
+        or t[0] in "“\"«'"  # arranca con comilla: es una cita, no un título
+        or re.search(r"\b(publishing|publishers|editorial|ediciones|copyright|isbn|all rights reserved)\b", t, re.I)
     )
 
 
@@ -84,7 +87,8 @@ def _merge_tiny(chapters: list["Chapter"]) -> list["Chapter"]:
     out: list[Chapter] = []
     carry: list[str] = []
     for c in chapters:
-        if _text_len(c) < MIN_CHAPTER_CHARS and not any("<img" in h for h in c.html):
+        # Un tramo con título y hasta 3 imágenes sueltas (láminas) también se une: las imágenes se conservan en el siguiente.
+        if _text_len(c) < MIN_CHAPTER_CHARS and sum(h.count("<img") for h in c.html) <= 3:
             carry += c.html
             continue
         out.append(Chapter(c.title, carry + c.html))
@@ -107,6 +111,7 @@ def chapters_from_blocks(blocks: list[Block], toc: list[tuple[int, str, int]], p
     # Índice del PDF: se usa el nivel más alto que tenga al menos 3 entradas con página
     # (hay PDF cuyo único nivel 1 es el título del libro y los capítulos están en el 2).
     valid = [t for t in toc if t[2] > 0 and not _fragment_title(t[1])]
+    best: list[tuple[int, str]] = []
     for level in sorted({t[0] for t in valid}):
         top = [t for t in valid if t[0] == level]
         if len(top) < 3:
@@ -117,11 +122,23 @@ def chapters_from_blocks(blocks: list[Block], toc: list[tuple[int, str, int]], p
             if idx is not None and (not cand or idx > cand[-1][0]):
                 cand.append((idx, title))
         if len(cand) >= 3:
-            starts = cand
-            break
+            # Un nivel con tramos de más de MAX_SPAN_PAGES páginas (p. ej. solo las «Partes») es demasiado grueso: se prueba el siguiente.
+            pgs = [blocks[i].page for i, _ in cand] + [blocks[-1].page]
+            if max(b - a for a, b in zip(pgs, pgs[1:])) <= MAX_SPAN_PAGES:
+                best = cand
+                break
+            if len(cand) > len(best):
+                best = cand
+    starts = best
     if len(starts) < 3:
         for level in ("h1", "h2"):
-            heads = [(i, b.text) for i, b in enumerate(blocks) if b.kind == level and not _fragment_title(b.text)]
+            seen: set[str] = set()
+            heads = []
+            for i, b in enumerate(blocks):
+                key = re.sub(r"\W+", " ", b.text.lower()).strip()
+                if b.kind == level and not _fragment_title(b.text) and key not in seen:
+                    seen.add(key)
+                    heads.append((i, b.text))
             if 3 <= len(heads) <= 200:
                 starts = heads
                 break
