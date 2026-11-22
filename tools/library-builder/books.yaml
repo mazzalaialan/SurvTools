@@ -531,3 +531,112 @@
   title: "Surgical Notes: A Pocket Survival Guide for the Operating Room"
   author: "Susan D. Sheets"
   lang: en
+
+# Lote 6 de catalogación (autores de libros de más de 100 páginas)
+"Animales e insectos/Mascotas/Cirugia en pequeños animales.pdf":
+  title: "Cirugía en pequeños animales (3.ª ed.)"
+  author: "Theresa Welch Fossum"
+  lang: es
+"Defensa y entrenamiento/Manual de Soporte Vital Avanzado en Combate - Ministerio de Defensa.pdf":
+  title: "Manual de soporte vital avanzado en combate"
+  author: "Ministerio de Defensa (España)"
+  year: 2014
+  lang: es
+"Medicina y Primeros Auxilios/Guía para manejo de urgencias Medicas -Tomo I.pdf":
+  title: "Guía para el manejo de urgencias, tomo I (3.ª ed.)"
+  author: "Ministerio de la Protección Social (Colombia) y FEPAFEM"
+  lang: es
+"Medicina y Primeros Auxilios/Air Force - Diccionario de terminos tecnicos y militares. Ingles-español.PDF":
+  title: "Diccionario de términos técnicos y militares inglés-español"
+  author: "Inter-American Air Forces Academy"
+  lang: es
+  category: Defensa y entrenamiento
+"Medicina y Primeros Auxilios/salud prohibida PDF.pdf":
+  title: "Salud prohibida: incurable era ayer"
+  author: "Andreas Ludwig Kalcker"
+  year: 2016
+  lang: es
+"Medicina y Primeros Auxilios/Enciclopedia Bovina (UNAM).pdf":
+  title: "Enciclopedia bovina"
+  author: "UNAM, Facultad de Medicina Veterinaria y Zootecnia"
+  lang: es
+"Medicina y Primeros Auxilios/Seal Survival Guide -  TRADUCIDO.pdf":
+  title: "Guía de supervivencia SEAL"
+  author: "Cade Courtley"
+  year: 2011
+  lang: es
+"Mochilas kits y preparacion hogar/Facility Manager_s Guide to Security - Protecting Your Assets.pdf":
+  title: "Facility Manager's Guide to Security: Protecting Your Assets"
+  author: "Robert N. Reid"
+  lang: en
+"Cultivo/Plantas Comestibles de Centroamerica.pdf":
+  title: "Plantas comestibles de Centroamérica"
+  author: "Carla Chízmar Fernández et al. (INBio)"
+  year: 2009
+  lang: es
+"Cultivo/Seymour_John-Guia_practica_ilustrada_para_la_vida_en_el_campo ASDF.pdf":
+  title: "Guía práctica ilustrada para la vida en el campo"
+  author: "John Seymour"
+  lang: es
+"Mochilas kits y preparacion hogar/The Art and Science of Dumpster Diving.pdf":
+  title: "The Art and Science of Dumpster Diving"
+  author: "John Hoffman"
+  year: 1993
+  lang: en
+"Construcciones y herramientas/Making Heirloom Toys.pdf":
+  title: "Making Heirloom Toys"
+  author: "Jim Makowicki"
+  year: 1996
+  lang: en
+"Construcciones y herramientas/Bushcraft8.pdf":
+  title: "Bush Leatherwork"
+  author: "Ron Edwards"
+  lang: en
+"Animales e insectos/cria de conejos naciones unidas.pdf":
+  title: "El conejo: cría y patología"
+  author: "Lebas, Coudert, de Rochambeau y Thébault (FAO)"
+  year: 1996
+  lang: es
+"Cultivo/Permacultura en Español-Senderos-mas-alla-de-la-sustentabilidad.pdf":
+  title: "Permacultura: principios y senderos más allá de la sustentabilidad"
+  author: "David Holmgren"
+  lang: es
+"Orientacion/Bitacora_Rumbo_y_Travesia.pdf":
+  title: "Bitácora: rumbo y travesía"
+  author: "Oficina Scout Mundial, Región Interamericana"
+  lang: es
+"Medicina y Primeros Auxilios/MANUAL DE ODONTOLOGIA DE CAMPO ,SUPERVIVENCIA.pdf":
+  title: "Donde no hay dentista"
+  author: "Murray Dickson (Fundación Hesperian)"
+  year: 2005
+  lang: es
+"Defensa y entrenamiento/Defensa personal Jintai_Kyusho.pdf":
+  title: "Jintai Kyusho: los puntos vulnerables del cuerpo humano"
+  author: "Pau-Ramon Planellas Vidal"
+  lang: es
+"Defensa y entrenamiento/JINTAI KYUSHO Puntos vulnerables del cuerpo humano.pdf":
+  title: "Jintai Kyusho: los puntos vulnerables del cuerpo humano"
+  author: "Pau-Ramon Planellas Vidal"
+  lang: es
+"Literatura General/PATRIOTAS - JAMES WESLEY RAELES.pdf":
+  title: "Patriotas"
+  author: "James Wesley Rawles"
+  lang: es
+"Literatura General/SUPERVIVIENTES - JAMES WESLEY RAWLES.pdf":
+  title: "Supervivientes"
+  author: "James Wesley Rawles"
+  lang: es
+"Literatura General/FUNDADORES - JAMES WELEY RAWLES.pdf":
+  title: "Fundadores"
+  author: "James Wesley Rawles"
+  lang: es
+"Energia/Solar/Earthbag Building - The Tools, Tricks and Techniques.pdf":
+  title: "Earthbag Building: The Tools, Tricks and Techniques"
+  author: "Kaki Hunter y Doni Kiffmeyer"
+  year: 2004
+  lang: en
+"Alimento/Wild Fermentation.pdf":
+  title: "Wild Fermentation"
+  author: "Sandor Ellix Katz"
+  year: 2003
+  lang: en
