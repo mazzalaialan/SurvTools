@@ -98,6 +98,13 @@ export const useLibrary = create<LibraryState>((set, get) => ({
     try {
       const r = await loadCatalog(serverUrl);
       set({ catalog: r?.catalog ?? null, offline: r?.offline ?? true });
+      // Libros bajados cuyo id ya no existe en el catálogo del servidor (se renombraron al corregir títulos): quedarían huérfanos,
+      // sin poder actualizarse ni bajarse de nuevo. Solo con el catálogo vivo (no el guardado) y con libros adentro.
+      if (r && !r.offline) {
+        const vigentes = catalogBooks(r.catalog);
+        const huerfanos = [...get().installed.keys()].filter((id) => !vigentes.has(id));
+        if (vigentes.size > 0 && huerfanos.length > 0) await get().removeMany(huerfanos);
+      }
       // Clave recordada: se deriva cuando ya está el catálogo (la sal viene con él).
       const { passphrase, key } = get();
       if (r?.catalog.encryption && passphrase && !key) {
