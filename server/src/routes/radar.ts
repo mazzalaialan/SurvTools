@@ -7,6 +7,7 @@ import {
   stateOf,
   stampToUtcMs,
   type RadarStore,
+  RADAR_IMAGE_VERSION,
 } from '../radar/sinarame.ts';
 import { checkRadar, type RadarCheckDeps } from '../rain/radarCheck.ts';
 
@@ -38,7 +39,7 @@ export function radarRoutes(app: FastifyInstance, store: RadarStore, enabled = t
           lat: r.lat,
           lon: r.lon,
           bounds: radarBounds(r),
-          frames: frames.map((f) => ({ at: new Date(f.at).toISOString(), url: `/api/radar/${r.id}/${f.stamp}.png` })),
+          frames: frames.map((f) => ({ at: new Date(f.at).toISOString(), url: `/api/radar/${r.id}/${f.stamp}.png?v=${RADAR_IMAGE_VERSION}.${f.rev ?? 0}` })),
         };
       }),
     };
@@ -66,7 +67,7 @@ export function radarRoutes(app: FastifyInstance, store: RadarStore, enabled = t
     if (!enabled || !RADARS.some((r) => r.id === id) || stampToUtcMs(stamp) === null) return reply.code(404).send({ error: 'not-found' });
     const frame = stateOf(store, id).frames.find((f) => f.stamp === stamp);
     if (!frame) return reply.code(404).send({ error: 'not-found' });
-    // Cada imagen tiene su propia hora en el nombre y no cambia: se puede guardar mucho tiempo.
+    // Cada versión de cada imagen tiene su propia dirección (hora en el nombre y `?v=` con la versión): se puede guardar mucho tiempo.
     reply.header('cache-control', 'public, max-age=86400, immutable').type('image/png');
     return reply.send(frame.png);
   });

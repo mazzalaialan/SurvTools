@@ -17,6 +17,12 @@ import { decodePng } from './pixels.ts';
 import { packStrong, removeStaticEchoes } from './static.ts';
 export const RADAR_RANGE_KM = 240;
 export const RADAR_FRAMES = 12;
+/**
+ * Versión de las imágenes que se sirven: va en la dirección de cada cuadro (`?v=`) junto con las veces que el servidor lo corrigió. Los cuadros se
+ * guardan un día en el celular y el navegador (`immutable`), pero un cuadro se puede limpiar DESPUÉS de haberse servido (los ecos fijos se detectan
+ * con las imágenes de ±30 y ±60 min) y cada mejora del filtro cambia el resultado: sin esto se seguía viendo la copia vieja, sucia. Subila al cambiar el filtro.
+ */
+export const RADAR_IMAGE_VERSION = 2;
 export const RADAR_STEP_MS = 10 * 60_000;
 /** Cuántos pasos de 10 minutos hacia atrás se prueban al buscar imágenes (2 horas y media). */
 export const RADAR_LOOKBACK_STEPS = 15;
@@ -97,6 +103,8 @@ export interface RadarFrame {
   strong?: Uint8Array;
   /** Ya se la comparó con las imágenes de ±30 y ±60 minutos. */
   staticChecked?: boolean;
+  /** Cuántas veces cambió la imagen después de guardarla (ecos fijos quitados). */
+  rev?: number;
 }
 
 export interface RadarState {
@@ -191,6 +199,7 @@ export function removeStaticFromFrames(frames: RadarFrame[]): number {
       const r = removeStaticEchoes(img, refs);
       if (r.removed > 0) {
         f.png = encodePng(r.img.width, r.img.height, r.img.data);
+        f.rev = (f.rev ?? 0) + 1;
         quitados += r.removed;
       }
       if (refs.length === STATIC_LAGS_MIN.length) f.staticChecked = true;

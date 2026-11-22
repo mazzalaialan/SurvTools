@@ -143,7 +143,7 @@ describe('radares argentinos (SINARAME)', () => {
 
     const one = (await app.inject('/api/radar?ids=rma10,RMA999')).json() as typeof all;
     const r = one.radars.find((x) => x.id === 'RMA10')! as { frames: { at: string; url: string }[] };
-    assert.deepEqual(r.frames, [{ at: new Date(NOW).toISOString(), url: '/api/radar/RMA10/20261119101000.png' }]);
+    assert.deepEqual(r.frames, [{ at: new Date(NOW).toISOString(), url: '/api/radar/RMA10/20261119101000.png?v=2.0' }]);
 
     const img = await app.inject('/api/radar/RMA10/20261119101000.png');
     assert.equal(img.statusCode, 200);
