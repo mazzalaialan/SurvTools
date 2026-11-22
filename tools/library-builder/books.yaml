@@ -640,3 +640,362 @@
   author: "Sandor Ellix Katz"
   year: 2003
   lang: en
+
+# Lote 7 de catalogación (libros de más de 100 páginas con autor vacío)
+"Alimento/Hecho a Mano - Recetas de Pan - Dan Lepard.pdf":
+  title: "Hecho a mano: recetas de pan"
+  author: "Dan Lepard"
+  year: 2004
+  lang: es
+"Alimento/Hojas-para-la-vida-David-Kennedy.pdf":
+  title: "Cuaderno de Hoja para la Vida: cultivos de hoja verde contra la desnutrición"
+  author: "David Kennedy (Leaf for Life)"
+  year: 2012
+  lang: es
+"Alimento/Cerveza/Hops español.pdf":
+  title: "For the Love of Hops: guía práctica del aroma, el amargor y la cultura del lúpulo"
+  author: "Stan Hieronymus"
+  year: 2012
+  lang: es
+"Alimento/Cerveza/La Cerveza Poesia Liquida - Steve Huxley.pdf":
+  title: "La cerveza: poesía líquida (un manual para cervesiáfilos)"
+  author: "Steve Huxley"
+  year: 2006
+  lang: es
+"Alimento/Cerveza/libro_elaboracion casera de la cerveza_wolfgang vogel.pdf":
+  title: "Elaboración casera de cerveza"
+  author: "Wolfgang Vogel"
+  lang: es
+"Alimento/STHF Supervivencia - guerra Balcanes.pdf":
+  title: "SHTF: antología de lecciones de supervivencia de las guerras de los Balcanes"
+  author: "Selco Begovic"
+  year: 2018
+  lang: es
+  category: Supervivencia General
+"Alimento/Conservas/Chacinados jamones/The art of the Charcuterie.pdf":
+  title: "The Art of Charcuterie"
+  author: "John Kowalski y The Culinary Institute of America"
+  year: 2011
+  lang: en
+"Animales e insectos/Caza/Guia De Pesca En El Mar.pdf":
+  title: "Guía de pesca en el mar"
+  lang: es
+"Animales e insectos/Caza/MANUAL (EXAMEN CAZADOR).pdf":
+  title: "Manual del cazador: pruebas de aptitud para el ejercicio de la caza en Canarias"
+  author: "Gobierno de Canarias (Consejería de Medio Ambiente y Ordenación Territorial)"
+  lang: es
+"Cabuyeria/nudosmarineros.pdf":
+  title: "Manual de nudos marineros"
+  author: "Marina de Guerra del Perú (Dirección de Intereses Marítimos e Información)"
+  year: 2008
+  lang: es
+"Catastrofes/Manual de procedimientos ante caída de cenizas volcánicas.pdf":
+  author: "Alberto T. Caselli, María L. Vélez y Mariano R. Agusto (Universidad de Buenos Aires)"
+  year: 2011
+  lang: es
+"Cocina/Recetario Familiar - Family Friends and Food.pdf":
+  title: "Family, Friends and Food (recetario familiar)"
+  author: "Family Cookbook Project"
+  year: 2013
+  lang: en
+"Construcciones y herramientas/405-Planos-de-Juguetes-de-Madera.pdf":
+  title: "405 planos de juguetes de madera"
+  author: "Editores de FC&A Craft Publishing"
+  lang: en
+"Construcciones y herramientas/aplicaciones-manual-construccion-general.pdf":
+  title: "Manual del constructor (aplicaciones de construcción general)"
+  lang: es
+"Construcciones y herramientas/Carpintería de Armar. Pequeña Enciclopedia Práctica de Construcción ( PDFDrive ).pdf":
+  title: "Carpintería de armar (Pequeña enciclopedia práctica de construcción, n.º 4)"
+  author: "L.-A. Barré (dir.); traducción de Luis Gaztelu"
+  lang: es
+"Construcciones y herramientas/Herramientas/DUELO Guia Duelo Adulto Para Profesionales SocioSanitarios.pdf":
+  title: "Guía de duelo adulto para profesionales sociosanitarios"
+  author: "Sara Losantos"
+  lang: es
+  category: Medicina y Primeros Auxilios
+"Construcciones y herramientas/Refugio/La casa ecológica Como construirla.pdf":
+  title: "La casa ecológica: cómo construirla"
+  author: "José Luis Palacios Blanco (CIATEC)"
+  year: 2008
+  lang: es
+"Construcciones y herramientas/MAESTRO TORNERO.pdf":
+  title: "Maestro tornero (curso por lecciones)"
+  lang: es
+"Construcciones y herramientas/Manos Habiles - Trabajos con leña y madera.pdf":
+  title: "Manos hábiles: trabajos con leña y manualidades para campamentos"
+  author: "Albert Boekholt"
+  year: 1964
+  lang: es
+"Construcciones y herramientas/Herramientas/Manual Basico de Contingencias.(Defensa Civil).pdf":
+  title: "Manual básico de contingencias (Defensa Civil)"
+  lang: es
+  category: Catastrofes
+"Construcciones y herramientas/Manual de Herreria - Universidad del Trabajo del Uruguay.pdf":
+  title: "Manual de herrería (curso de capacitación)"
+  author: "Universidad del Trabajo del Uruguay (CETP-UTU)"
+  year: 2011
+  lang: es
+"Construcciones y herramientas/Herramientas/Plantillas de cuchillos.pdf":
+  title: "Plantillas de cuchillos (escala 1:1)"
+  lang: es
+"Construcciones y herramientas/trituradora.pdf":
+  title: "Diseño de trituradora de botellas PET"
+  author: "Rodrigo Bruna Tapia y Javier Suárez Coca (Universidad Técnica Federico Santa María)"
+  year: 2016
+  lang: es
+"Construcciones y herramientas/tutorial cutting board.pdf":
+  title: "The Basics of Making End Grain Cutting Boards (tutorial)"
+  author: "MTM Wood"
+  lang: en
+"Cultivo/Composting.pdf":
+  title: "Composting: Easy Methods for Every Gardener"
+  lang: en
+"Cultivo/Cultivo Biologico hortalizas y frutales(delta tactical gear).PDF":
+  title: "El cultivo biológico de hortalizas y frutales"
+  lang: es
+"Cultivo/Plantas medicinales/Grandez-Flores-Gilberto-La-planta-de-la-vida-Synadenium-grantii-hook.pdf":
+  title: "La planta de la vida (Synadenium grantii Hook)"
+  author: "Gilberto Grández Flores"
+  year: 2010
+  lang: es
+"Cultivo/Guia-practica-de-fertilizacion-pdf.pdf":
+  title: "Guía práctica de la fertilización racional de los cultivos en España"
+  author: "Ministerio de Medio Ambiente y Medio Rural y Marino (España)"
+  year: 2010
+  lang: es
+"Cultivo/Plantas medicinales/libro-botanica-mapuche.pdf":
+  title: "Botánica indígena de Chile"
+  author: "Ernesto Wilhelm de Mösbach"
+  year: 1992
+  lang: es
+"Cultivo/libro_fungi_austral.pdf":
+  title: "Fungi Austral: guía de campo de los hongos más vistosos de Chile"
+  author: "Giuliana Furci"
+  year: 2007
+  lang: es
+"Cultivo/Plantas medicinales/Libro MHT 2010.compressed.pdf":
+  title: "Medicamentos herbarios tradicionales de Chile (MHT)"
+  year: 2010
+  lang: es
+"Cultivo/Plantas medicinales/Los secretos de las plantas - 50 plantas medicinales en su huerta.pdf":
+  title: "Los secretos de las plantas: 50 plantas medicinales en su huerta"
+  author: "Fundación Secretos para Contar"
+  year: 2014
+  lang: es
+"Cultivo/Manual de Cultivos para la huerta organica familiar - Cerbas.pdf":
+  title: "Manual de cultivos para la huerta orgánica familiar"
+  author: "Enrique David Goites (INTA, Pro Huerta)"
+  year: 2008
+  lang: es
+"Cultivo/Plantas medicinales/Plantas medicinales - cultivo y conservación.pdf":
+  title: "Manual de cultivo y conservación de plantas medicinales"
+  author: "Rafael Ángel Ocampo Sánchez y Ricardo Valverde (Enda-Caribe, TRAMIL)"
+  year: 2000
+  lang: es
+"Cultivo/Plantas medicinales/Plantas Medicinales de Durango - Instituto Politecnico Nacional.pdf":
+  title: "Plantas medicinales del estado de Durango y zonas aledañas"
+  author: "Martha González Elizondo, I. Lorena López Enríquez, M. Socorro González Elizondo y Jorge A. Tena Flores (CIIDIR Durango, IPN)"
+  year: 2004
+  lang: es
+"Cultivo/plantas nativas de colombia.pdf":
+  title: "Pautas para el conocimiento, conservación y uso sostenible de las plantas medicinales nativas en Colombia"
+  author: "Henry Yesid Bernal, Hernando García Martínez y Germán Felipe Quevedo Sánchez (eds.)"
+  year: 2011
+  lang: es
+"Cultivo/PLANTAS SILVESTRES COMESTIBLES, COMPILADO.pdf":
+  title: "Compilado de plantas silvestres comestibles"
+  lang: es
+"Cultivo/Plantas Silvestres Comestibles y Medicinales de Chile y el Mundo.pdf":
+  title: "Plantas silvestres comestibles y medicinales de Chile y otras partes del mundo"
+  author: "Sebastián Cordero R., Lucía Abello A. y Francisca Galvez L. (CORMA)"
+  year: 2017
+  lang: es
+"Cultivo/Plantas medicinales/Plantas y Flores Medicinales I.pdf":
+  title: "Plantas y flores medicinales I"
+  author: "Aldo Poletti"
+  lang: es
+"Cultivo/Ultimate_Iowa_Fruit_and_Berry_Growing_Guide.pdf":
+  title: "Ultimate Iowa Fruit and Berry Growing Guide"
+  author: "Paul Domoto, Richard Jauron y Gail Nonnecke (Iowa State University)"
+  lang: en
+"Cultivo/Plantas medicinales/VADEMÉCUM COLOMBIANO D PLANTAS MEDICINALES.pdf":
+  title: "Vademécum colombiano de plantas medicinales"
+  author: "Ministerio de la Protección Social (Colombia)"
+  year: 2008
+  lang: es
+"Defensa y entrenamiento/manual_basico_del_baston_telescopico.pdf":
+  title: "Manual básico del bastón telescópico"
+  author: "Junta de Extremadura (Academia de Seguridad Pública de Extremadura)"
+  lang: es
+"Defensa y entrenamiento/Marine Combat Water Survival Course.pdf":
+  title: "Marine Combat Water Survival (MCRP 3-02C)"
+  author: "U.S. Marine Corps"
+  year: 2003
+  lang: en
+"Defensa y entrenamiento/Tactical Advantage.pdf":
+  author: "Gabriel Suarez"
+  year: 1998
+  lang: en
+"Defensa y entrenamiento/Weapons Caching - DoomzDay Preppers ( PDFDrive ).pdf":
+  title: "Modern Weapons Caching: A Down-to-Earth Approach to Beating the Government Gun Grab"
+  author: "Ragnar Benson"
+  year: 1990
+  lang: en
+"Energia/Cursos de mecanica y electricidad del automovil.pdf":
+  title: "Cursos de mecánica y electricidad del automóvil"
+  lang: es
+"Energia/Eolica/Urquia Lus (1982) - Energia Eolica.pdf":
+  title: "Energía eólica: manual práctico para la construcción de molinos de viento"
+  author: "Juan Ignacio y Sebastián Urquía Lus (Grupo Ecologista de Tafalla)"
+  year: 1982
+  lang: es
+"Higiene/wtndentist_2010_Web_Full_Book.pdf":
+  title: "Where There Is No Dentist"
+  author: "Murray Dickson (Hesperian)"
+  year: 1983
+  lang: en
+"Medicina y Primeros Auxilios/libro_botiquin_casero_emergencia.pdf":
+  title: "Botiquín casero de emergencia"
+  author: "Karim Raad"
+  lang: es
+"Medicina y Primeros Auxilios/FA-CPR-AED-Spanish-Manual.pdf":
+  title: "Primeros auxilios, RCP y DEA: manual del participante"
+  author: "Cruz Roja Americana"
+  year: 2011
+  lang: es
+"Medicina y Primeros Auxilios/Fisioterapia - Vendaje Funcional.pdf":
+  title: "El vendaje funcional"
+  author: "Toni Bové"
+  year: 2000
+  lang: es
+"Medicina y Primeros Auxilios/Guia Farmacologica.pdf":
+  title: "Guía farmacológica (EPES)"
+  author: "Empresa Pública de Emergencias Sanitarias (Andalucía)"
+  year: 2012
+  lang: es
+"Medicina y Primeros Auxilios/LAS-CAUSAS-ANÍMICAS-DE-LAS-ENFERMEDADES-Traducido-del-alemán-por-Antonio-Toro-Durán.pdf":
+  title: "Las causas anímicas de las enfermedades"
+  author: "Björn Eybl"
+  lang: es
+"Medicina y Primeros Auxilios/libro_helechos_2009.pdf":
+  title: "Helechos nativos del centro y sur de Chile (guía de campo)"
+  author: "Roberto Rodríguez Ríos, Diego Alarcón Abarca y Jaime Espejo Cardemil (CORMA)"
+  year: 2009
+  lang: es
+"Medicina y Primeros Auxilios/libro_primeros_auxilios.pdf":
+  title: "Manual de primeros auxilios con plantas medicinales, homeopatía, reflexología y tratamientos convencionales"
+  author: "Karim Raad"
+  lang: es
+"Medicina y Primeros Auxilios/medicina-ancestral-delos-amaicha.pdf":
+  title: "Medicina ancestral de los Amaichas"
+  author: "Comunidad Indígena Amaicha del Valle"
+  lang: es
+"Medicina y Primeros Auxilios/Medicina_natural_al_alcance_de_todos (1).pdf":
+  title: "La medicina natural al alcance de todos"
+  author: "Manuel Lezaeta Acharán"
+  lang: es
+"Medicina y Primeros Auxilios/Diccionario médico.pdf":
+  title: "Pequeño diccionario médico etimológico"
+  lang: es
+"Medicina y Primeros Auxilios/supervivencia ( PDFDrive ).pdf":
+  title: "Manual de supervivencia (MCP-110-12)"
+  author: "Ejército Ecuatoriano (Comando General del Ejército)"
+  year: 1990
+  lang: es
+"Medicina y Primeros Auxilios/tactical medicine.pdf":
+  title: "Ranger Medic Handbook"
+  author: "Ranger medics, 75th Ranger Regiment (EE. UU.)"
+  year: 2007
+  lang: en
+"Mochilas kits y preparacion hogar/Estas+listo.pdf":
+  title: "¿Está listo? Una guía completa para la preparación ciudadana (FEMA IS-22)"
+  author: "FEMA"
+  year: 2004
+  lang: es
+"Mochilas kits y preparacion hogar/LDSPrep-V8 (1).pdf":
+  title: "LDSPrep, versión 8.0 (edición 15.º aniversario)"
+  author: "LDSPrep.com"
+  year: 2012
+  lang: en
+"Orientacion/Guia De Escalada Desnivel.pdf":
+  title: "Andalucía: guía de escalada deportiva"
+  author: "David Munilla Fauró"
+  year: 2005
+  lang: es
+"Orientacion/Guia de Huellas.pdf":
+  title: "Guía de huellas de los mamíferos de Misiones y otras áreas del subtrópico de Argentina"
+  author: "Carlos De Angelo, Agustín Paviolo, Yamil Di Blanco y Mario Di Bitetti"
+  year: 2008
+  lang: es
+"Orientacion/Manual_busqueda_y_salvamento_terrestre.pdf":
+  title: "Manual de búsqueda y salvamento terrestre"
+  author: "José Vicente Romero Ballestero y Manuel Jabalera Rodríguez (coord.)"
+  lang: es
+"Orientacion/Manual de tecnicas de montaña e interpretacion de la naturaleza.pdf":
+  title: "Manual de técnicas de montaña e interpretación de la naturaleza"
+  author: "Javier A. Melendo Soler, Nieves Arbonés Cobos, Luis Cáncer Pomar, Pilar Maza Rodríguez y Fernando Lampre Vitaller"
+  year: 2002
+  lang: es
+"Supervivencia General/American Survival Guide - January 2015  USA.pdf":
+  title: "American Survival Guide (enero de 2015)"
+  author: "Engaged Media"
+  year: 2015
+  lang: en
+"Supervivencia General/como-sobrevivir-con-dos-piedras-y-un-cerebro.pdf":
+  title: "Cómo sobrevivir con dos piedras y un cerebro: manual práctico de arqueología experimental"
+  author: "J. Carlos Díez y Javier Nastri (eds.), Fundación Atapuerca"
+  year: 2011
+  lang: es
+"Supervivencia General/Fuerzas Armadas - Manual De Enseñanza Supervivencia Tomo 1 (318pag).pdf":
+  title: "Manual de enseñanza de supervivencia, Tomo I (ME6-003)"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
+  year: 1992
+  lang: es
+"Supervivencia General/Fuerzas Armadas - Me6 003 Manual De Enseñanza Supervivencia Tomo 2 (190pag).pdf":
+  title: "Manual de enseñanza de supervivencia, Tomo II (ME6-003)"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
+  year: 1992
+  lang: es
+"Supervivencia General/Manual de Enseñanza Supervivencia.pdf":
+  title: "Manual de enseñanza de supervivencia, Tomo I (ME6-003)"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
+  year: 1992
+  lang: es
+"Supervivencia General/464109247-1-Manual-de-Supervivencia-pdf.pdf":
+  title: "Manual de supervivencia: habilidades para la aventura en exteriores"
+  author: "Colin Towell"
+  year: 2010
+  lang: es
+"Supervivencia General/Manual de Supervivencia  de las fuerzas armadas estadounidenses.pdf":
+  title: "Manual de supervivencia de las Fuerzas Armadas estadounidenses"
+  lang: es
+"Supervivencia General/Manual De Supervivencia Y Preparacionismo, Escuela Española De Supervivencia & Bushcraft.pdf":
+  title: "Manual de supervivencia y preparacionismo: introducción a la supervivencia"
+  author: "Escuela Española de Supervivencia & Bushcraft"
+  lang: es
+"Supervivencia General/Manual del Aventurero 2.pdf":
+  author: "Rüdiger Nehberg"
+  lang: es
+"Supervivencia General/Manual-Supervivencia-01.pdf":
+  title: "Manual de enseñanza de supervivencia, Tomo I, parte A (ME6-003)"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
+  year: 1992
+  lang: es
+"Supervivencia General/Manual Supervivencia II ejercito español.pdf":
+  title: "Manual de enseñanza de supervivencia, Tomo II (ME6-003)"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
+  year: 1992
+  lang: es
+"Supervivencia General/Survival, Evasion and Recovery.pdf":
+  title: "Survival, Evasion, and Recovery (MCRP 3-02H)"
+  author: "U.S. Marine Corps"
+  lang: en
+"Supervivencia General/Supervivencia Manuales Ejercito.T92.tomos I y II(pag319) y Manual Scout(pag509).pdf":
+  title: "Manual de enseñanza de supervivencia (ME6-003) y Manual scout: recopilación"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército), en la parte del ME6-003"
+  year: 1992
+  lang: es
+"Vehiculos y Movilidad/Patron de Embarcaciones de Recreo (PER) - Tecnologia Naval.pdf":
+  title: "Patrón de embarcaciones de recreo (PER): tecnología naval"
+  lang: es
