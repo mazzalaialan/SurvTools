@@ -121,3 +121,100 @@
   title: Sillas multiuso con un solo tablero (Serie Cómo Hacer)
   author: Arauco
   lang: es
+
+# Lote 2 de catalogación (títulos de nombre de archivo, autores vacíos)
+"Construcciones y herramientas/170 plantillas de cuchillos.pdf":
+  title: 170 plantillas de cuchillos a escala 1:1
+  lang: es
+"Construcciones y herramientas/compilacion_de_tratamientos_de_metal,_pavonado,_fosfatado_y_anodizado[1].doc":
+  title: Compilación de tratamientos de metal (pavonado, fosfatado y anodizado)
+  lang: es
+"Cultivo/poda_en_frutales-intasp-valentini.pdf":
+  title: La poda en frutales y ornamentales
+  author: Gabriel Valentini y Luis Arroyo (INTA)
+  lang: es
+"Energia/Combustible/2 base del combustible.pdf":
+  title: Molde de la base del combustible para estufa cohete de barro
+  author: Jon y Flip (Rechoroket)
+  lang: es
+"Energia/Termotanque o Colector solar/manual_calefon_solar.pdf":
+  title: Manual de instalación del calefón solar de tubos de vacío
+  lang: es
+"Higiene/3m-respiratory-protection-guide-colombia-pdf.pdf":
+  title: Guía para la selección y control de protección respiratoria
+  author: 3M Colombia
+  lang: es
+"Medicina y Primeros Auxilios/Microbiótica.pdf":
+  title: "Microbiótica: nutrición simbiótica y microorganismos regeneradores"
+  author: Luis Antonio Lázaro (coord.) y otros autores
+  year: 2014
+  lang: es
+"Medicina y Primeros Auxilios/RCP.pdf":
+  title: Aspectos destacados de las guías de RCP y ACE 2010
+  author: American Heart Association
+  year: 2010
+  lang: es
+"Mochilas kits y preparacion hogar/52 PREPPER PROJECTS (ESPAÑOL) DAVID NASH.pdf":
+  title: "52 proyectos de preparación: un proyecto por semana"
+  author: David Nash
+  year: 2013
+  lang: es
+"Mochilas kits y preparacion hogar/kit_adicionales.pdf":
+  title: Kit adicional de supervivencia
+  lang: es
+"Mochilas kits y preparacion hogar/kit_basico.pdf":
+  title: Kit básico de emergencias
+  lang: es
+"Mochilas kits y preparacion hogar/Supply_Kit[1].pdf":
+  title: Your Family Disaster Supplies Kit
+  author: American Red Cross
+  lang: en
+"Revista Comando/79 correajes y equipos.pdf":
+  title: Correajes y equipos personales (Revista Comando n.º 79)
+  lang: es
+"Supervivencia General/fm3-05-70.pdf":
+  title: Manual de supervivencia del Ejército de EE. UU. (FM 3-05.70)
+  author: Ejército de los Estados Unidos
+  year: 2002
+  lang: en
+"Agua y aguas negras/A_LIST_OF_ITEMS_AND_EQUIPMENT_FOR_BUGGING_OUT_AND_FOR_HOLING_UP_IN_THE_WILDERNESS[1].pdf":
+  title: A list of items and equipment for bugging out and holing up in the wilderness
+  lang: en
+  category: Mochilas kits y preparacion hogar
+"Agua y aguas negras/ARC__-_Family_Disaster_Plan[1].pdf":
+  title: Your Family Disaster Plan
+  author: American Red Cross
+  lang: en
+  category: Catastrofes
+"Agua y aguas negras/Filtro y obtencion de agua/como almacenar y filtrar agua de lluvia.pdf":
+  title: Cómo almacenar y filtrar agua de lluvia
+  lang: es
+"Agua y aguas negras/Bomba de agua/Construccion-de-bicibomba-movil.pdf":
+  title: Construcción de una bicibomba móvil
+  lang: es
+"Agua y aguas negras/Bomba de agua/Construccion-de-bicibomba-para-pozo.pdf":
+  title: Construcción de una bicibomba para pozo
+  lang: es
+"Agua y aguas negras/Bomba de agua/Diferentes sistemas para bombeo de agua.pdf":
+  title: Diferentes sistemas para bombeo de agua
+  lang: es
+"Agua y aguas negras/Filtro y obtencion de agua/Drip Irrigation.pdf":
+  title: Drip irrigation (Complete Home How-To Guides, n.º 3123)
+  lang: en
+  category: Cultivo
+"Agua y aguas negras/Egg Rolls.docx":
+  title: Receta de egg rolls
+  lang: en
+  category: Cocina
+"Agua y aguas negras/Filtro y obtencion de agua/Encontrar y potabilizar agua_ técnicas de supervivencia - Vive la Naturaleza.PDF":
+  title: Encontrar y potabilizar agua (técnicas de supervivencia)
+  author: Vive la Naturaleza
+  lang: es
+"Agua y aguas negras/Filtro y obtencion de agua/filtrado de metales pesados con banana.docx":
+  title: Filtrado de metales pesados con cáscara de banana
+  year: 2011
+  lang: es
+"Agua y aguas negras/Hard Tack.txt":
+  title: Receta de hard tack (galleta de marinero)
+  lang: en
+  category: Cocina
