@@ -14,6 +14,7 @@ import { encodePng } from '../rain/map.ts';
 import { cleanRadarImage, cleanWithSatellite } from './clean.ts';
 import { createGibsSatellite, type SatelliteSource } from './satellite.ts';
 import { decodePng } from './pixels.ts';
+import { packStrong, removeStaticEchoes } from './static.ts';
 export const RADAR_RANGE_KM = 240;
 export const RADAR_FRAMES = 12;
 export const RADAR_STEP_MS = 10 * 60_000;
@@ -92,6 +93,10 @@ export interface RadarFrame {
   /** Instante de la imagen (ms UTC). */
   at: number;
   png: Buffer;
+  /** Píxeles fuertes de la imagen original (1 bit por píxel), para comparar con las de otros momentos (`static.ts`). */
+  strong?: Uint8Array;
+  /** Ya se la comparó con las imágenes de ±30 y ±60 minutos. */
+  staticChecked?: boolean;
 }
 
 export interface RadarState {
@@ -156,6 +161,44 @@ export async function cleanRadarPng(png: Buffer, extra?: { radar: RadarSite; at:
   } catch {
     return png;
   }
+}
+
+/** Distancias (minutos) de las imágenes contra las que se compara para detectar lo que no se mueve. */
+const STATIC_LAGS_MIN = [30, 60];
+
+/**
+ * Quita los ecos que no se mueven (ver `static.ts`) comparando cada imagen con las de ±30 y ±60 minutos que ya se tienen. Una imagen se marca
+ * como revisada cuando tuvo las dos referencias; si faltan (recién arrancó), se intenta de nuevo en la vuelta siguiente. Nunca tira una imagen.
+ */
+export function removeStaticFromFrames(frames: RadarFrame[]): number {
+  let quitados = 0;
+  for (const f of frames) {
+    if (f.staticChecked || !f.strong) continue;
+    try {
+      const refs: Uint8Array[] = [];
+      for (const lag of STATIC_LAGS_MIN) {
+        const cand = frames
+          .filter((o) => o !== f && o.strong && Math.abs(Math.abs(o.at - f.at) - lag * 60_000) <= 5 * 60_000)
+          .sort((a, b) => Math.abs(Math.abs(a.at - f.at) - lag * 60_000) - Math.abs(Math.abs(b.at - f.at) - lag * 60_000))[0];
+        if (cand) refs.push(cand.strong!);
+      }
+      if (!refs.length) continue;
+      const img = decodePng(f.png);
+      if (!img) {
+        f.staticChecked = true;
+        continue;
+      }
+      const r = removeStaticEchoes(img, refs);
+      if (r.removed > 0) {
+        f.png = encodePng(r.img.width, r.img.height, r.img.data);
+        quitados += r.removed;
+      }
+      if (refs.length === STATIC_LAGS_MIN.length) f.staticChecked = true;
+    } catch {
+      f.staticChecked = true;
+    }
+  }
+  return quitados;
 }
 
 /** Satélite para confirmar el radar en producción; se apaga con `RADAR_SATELLITE=off`. En las pruebas (con `fetchFn` propio) no se usa. */
@@ -239,13 +282,21 @@ export async function refreshRadar(store: RadarStore, radar: RadarSite, opts: Ra
     const png = await cleanRadarPng(original, { radar, at, satellite: opts.satellite !== undefined ? opts.satellite : opts.fetchFn ? null : defaultSatellite() });
     store.backoffMs = 0;
     store.bytes += png.length;
-    state.frames.push({ stamp, at, png });
+    let strong: Uint8Array | undefined;
+    try {
+      const raw = decodePng(original);
+      if (raw) strong = packStrong(raw);
+    } catch {
+      /* sin comparación temporal para esta imagen */
+    }
+    state.frames.push({ stamp, at, png, strong });
     have.add(stamp);
     downloaded++;
     if (pauseMs) await sleep(pauseMs);
   }
   state.frames.sort((a, b) => a.at - b.at);
   if (state.frames.length > RADAR_FRAMES) state.frames.splice(0, state.frames.length - RADAR_FRAMES);
+  if (process.env.RADAR_STATIC !== 'off' && state.frames.some((f) => !f.staticChecked)) removeStaticFromFrames(state.frames);
   return downloaded;
 }
 
