@@ -773,3 +773,13 @@ Hay que darles una revisada a todos los libros, con ejemplos que ya se vieron:
 Medición con `python3 tools/library-builder/audit.py` (1731 libros): 1096 con alguna marca; 878 sin autor, 317 con un solo capítulo para muchas páginas, ~35 con capítulos casi vacíos, ~23 con títulos de capítulo que son fragmentos, 49 con título todo en minúsculas, otros con «[LIBRO]»/«PDFDrive»/códigos. Causa de «FM 3-05.70 (FM 21-76)» y páginas vacías: el conversor corta mal los capítulos (676 páginas en 10 «capítulos» de fragmentos como «May 2002»).
 Agentes: `vikarg-conversor-libros` (código del conversor + rehacer afectados) y `vikarg-catalogador-libros` (títulos/autores/categorías por lotes, en `books.yaml`). Se lanzan de a uno para no gastar todo junto.
 Etapas: 1) conversor (capítulos) → 2) rehacer libros afectados por lotes de 15 → 3) catalogar por categorías en lotes de 25 → 4) `package` y revisar en el celular.
+
+**Avance (2026-11-22):** etapas 1 y 2 hechas (capítulos), etapa 3 con 228 libros catalogados en `books.yaml` (lotes 1–7: los de más de 100 páginas), `package` corrido: catálogo de 1736 libros. El conversor ahora actualiza título/autor/categoría sin reconvertir (`update_metadata` en `convert.py`) y el OCR salta páginas colgadas (`PAGE_TIMEOUT` en `ocr.py`). Arquitecto descalzo rehecho con OCR (95 capítulos).
+Falta decidir/hacer:
+- **Ids de libros cambiaron** (177 con título nuevo): quien ya tiene un libro instalado con id viejo queda con una entrada huérfana (índice en `library/store.ts`), y algún id pasó a apuntar a otro libro. Hay que hacer que la app limpie o avise por los ids que ya no están en el catálogo.
+- Autor «Technic» del arquitecto descalzo (es Johan van Lengen); bicibombas con texto casi ilegible.
+- 11 libros con error de origen (9 epub, 1 mobi, 1 pps) + docx de plantas silvestres + «10 Tips» (`ord()`): conseguir otra copia.
+- Duplicados sin excluir (Tomos I y II del Ejército español, Zombie Survival Guide ×2, Jintai Kyusho ×2, ahumado de carnes ×2, USDA enlatado).
+- Licencias a decidir: CC BY-NC-ND «Dos piedras y un cerebro», Where There Is No Dentist (Hesperian), tesis trituradora, MCRP 3-02H, Ranger Medic Handbook, FM 3-05.70. Salud prohibida (MMS): decidir si queda.
+- Categorías propuestas sin aplicar: helechos → Cultivo, curso mecánica → Vehículos, Anarchist/Alarm Cookbook fuera de Cocina, Marines → Supervivencia, Ultraligero → Mochilas; «Prensa vertical» y «Placard» a excluir.
+- ~650 libros cortos aún sin autor (~150–200 resolubles por título); probar en el celular.

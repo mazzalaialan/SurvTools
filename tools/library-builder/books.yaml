@@ -192,9 +192,11 @@
 "Agua y aguas negras/Bomba de agua/Construccion-de-bicibomba-movil.pdf":
   title: Construcción de una bicibomba móvil
   lang: es
+  mode: ocr
 "Agua y aguas negras/Bomba de agua/Construccion-de-bicibomba-para-pozo.pdf":
   title: Construcción de una bicibomba para pozo
   lang: es
+  mode: ocr
 "Agua y aguas negras/Bomba de agua/Diferentes sistemas para bombeo de agua.pdf":
   title: Diferentes sistemas para bombeo de agua
   lang: es
@@ -999,3 +1001,6 @@
 "Vehiculos y Movilidad/Patron de Embarcaciones de Recreo (PER) - Tecnologia Naval.pdf":
   title: "Patrón de embarcaciones de recreo (PER): tecnología naval"
   lang: es
+# Escaneado: la capa de texto del PDF está vacía, se necesita OCR.
+"Construcciones y herramientas/MANUAL DEL ARQUITECTO DESCALZO.pdf":
+  mode: ocr

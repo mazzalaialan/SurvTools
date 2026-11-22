@@ -16,7 +16,7 @@ import zipfile
 from . import license as lic
 from . import pdftext
 from .meta import guess_lang
-from .book import chapters_from_blocks, chapters_from_html, clean_html, write_book
+from .book import _esc, chapters_from_blocks, chapters_from_html, clean_html, write_book
 from .images import ImageStore
 from .scan import Entry
 
@@ -142,6 +142,89 @@ def convert_one(e: Entry, src_root: str, out_root: str, ocr: bool) -> dict:
     }
 
 
+def _rewrite_html(folder: str, old: dict, new: dict) -> None:
+    """Cambia título y autor dentro de los HTML de un libro ya convertido (sin reconvertir)."""
+    ot, nt = _esc(old.get("title") or ""), _esc(new["title"])
+    oa, na = _esc(old.get("author") or ""), _esc(new.get("author") or "")
+    for f in os.listdir(folder):
+        if not f.endswith(".html"):
+            continue
+        p = os.path.join(folder, f)
+        h = open(p, encoding="utf-8").read()
+        o = h
+
+        def title_tag(m):
+            t = m.group(1)
+            return "<title>" + (t[: -len(ot)] + nt if ot and t.endswith(ot) else t) + "</title>"
+
+        h = re.sub(r"<title>(.*?)</title>", title_tag, h, count=1, flags=re.S)
+        h = h.replace(f'index.html">{ot}</a>', f'index.html">{nt}</a>')
+        if f == "index.html":
+            h = h.replace(f"<h1>{ot}</h1>", f"<h1>{nt}</h1>", 1)
+            multi = "<ol>" in h
+            if multi and oa != na:
+                if oa and f"<p>{oa}</p>" in h:
+                    h = h.replace(f"<p>{oa}</p>\n", f"<p>{na}</p>\n" if na else "", 1)
+                elif na:
+                    h = h.replace(f"<h1>{nt}</h1>\n", f"<h1>{nt}</h1>\n<p>{na}</p>\n", 1)
+        if h != o:
+            open(p, "w", encoding="utf-8").write(h)
+
+
+def update_metadata(entries: list[Entry], out: str) -> int:
+    """Aplica título, autor, categoría y sección de books.yaml a libros ya convertidos, sin reconvertir.
+
+    Solo si el archivo (md5), el formato y la licencia son los mismos que en la conversión. El id sale del
+    título: si cambia, se renombra la carpeta y el registro. Devuelve cuántos libros tocó.
+    """
+    status_path = os.path.join(out, "conversion.json")
+    if not os.path.exists(status_path):
+        return 0
+    status: dict = json.load(open(status_path))
+    books_dir = os.path.join(out, BOOKS_DIR)
+    by_source: dict[str, str] = {}
+    for d in os.listdir(books_dir):
+        try:
+            by_source.setdefault(json.load(open(os.path.join(books_dir, d, "book.json")))["source"], d)
+        except Exception:
+            pass
+    touched = 0
+    for e in entries:
+        if e.exclude_reason or e.duplicate_of or e.kind in ("archive", "skip"):
+            continue
+        old_id = by_source.get(e.path)
+        st = status.get(old_id or "")
+        if not old_id or not st or st.get("error") or st.get("skipped"):
+            continue
+        parts = st.get("key", "").split("|", 3)
+        if len(parts) != 4 or (parts[0], parts[2], parts[3]) != (e.md5, e.license, e.kind):
+            continue  # cambió el archivo, la licencia o el modo: se reconvierte
+        folder = os.path.join(books_dir, old_id)
+        meta = json.load(open(os.path.join(folder, "book.json")))
+        want = {k: v for k, v in {"title": e.title, "author": e.author, "category": e.category, "section": e.section}.items() if k != "author" or v}
+        newkey = f"{e.md5}|{e.title}|{e.license}|{e.kind}"
+        if old_id == e.id and all(meta.get(k) == v for k, v in want.items()) and st["key"] == newkey:
+            continue
+        if e.id != old_id and os.path.exists(os.path.join(books_dir, e.id)):
+            continue  # el id nuevo ya está ocupado: que lo resuelva una reconversión
+        new = {**meta, **want, "id": e.id}
+        if len(meta["chapters"]) == 1 and meta["chapters"][0]["title"] == meta["title"]:
+            new["chapters"] = [{**meta["chapters"][0], "title": e.title}]
+        _rewrite_html(folder, meta, new)
+        json.dump(new, open(os.path.join(folder, "book.json"), "w"), ensure_ascii=False, indent=1)
+        if e.id != old_id:
+            os.rename(folder, os.path.join(books_dir, e.id))
+            status.pop(old_id)
+            by_source[e.path] = e.id
+        st["key"] = newkey
+        status[e.id] = st
+        touched += 1
+    if touched:
+        json.dump(status, open(status_path + ".tmp", "w"), ensure_ascii=False, indent=1)
+        os.replace(status_path + ".tmp", status_path)
+    return touched
+
+
 def convert(entries: list[Entry], src: str, out: str, categories: list[str], all_: bool, books: list[str], ocr: bool, limit: int | None = None) -> int:
     """Convierte lo pendiente y devuelve cuántos libros convirtió.
 
@@ -151,6 +234,9 @@ def convert(entries: list[Entry], src: str, out: str, categories: list[str], all
     seguido).
     """
     status_path = os.path.join(out, "conversion.json")
+    n_meta = update_metadata(entries, out)
+    if n_meta:
+        print(f"{n_meta} libros con título/autor actualizado sin reconvertir")
     status: dict = json.load(open(status_path)) if os.path.exists(status_path) else {}
     wanted = [
         e

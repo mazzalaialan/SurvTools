@@ -23,6 +23,9 @@ LANGS = "spa+eng"
 WORKERS = 2
 # Menos confianza que esto en una palabra (0–100): se descarta (manchas, bordes).
 MIN_CONF = 30
+# Tiempo máximo por página; si se pasa, la página se saltea y el libro sigue.
+PAGE_TIMEOUT = 300
+SKIPPED_PAGES: list[int] = []
 
 
 class _Hocr(HTMLParser):
@@ -70,7 +73,11 @@ def _ocr_page(path: str, pno: int, work: str) -> tuple[int, list[dict], tuple[in
     pix.save(img)
     base = os.path.join(work, f"p{pno}")
     env = {**os.environ, "OMP_THREAD_LIMIT": "1"}
-    subprocess.run(["tesseract", img, base, "-l", LANGS, "--psm", "1", "hocr"], capture_output=True, timeout=600, env=env)
+    try:
+        subprocess.run(["tesseract", img, base, "-l", LANGS, "--psm", "1", "hocr"], capture_output=True, timeout=PAGE_TIMEOUT, env=env)
+    except subprocess.TimeoutExpired:
+        # Una página que se cuelga no corta el libro: se saltea (queda sin texto, con sus imágenes).
+        SKIPPED_PAGES.append(pno + 1)
     pars: list[dict] = []
     try:
         parser = _Hocr()
@@ -89,6 +96,7 @@ def _ocr_page(path: str, pno: int, work: str) -> tuple[int, list[dict], tuple[in
 def extract(path: str, images: ImageStore, work: str) -> Extracted:
     out = Extracted()
     doc = fitz.open(path)
+    SKIPPED_PAGES.clear()
     with ThreadPoolExecutor(WORKERS) as ex:
         results = list(ex.map(lambda n: _ocr_page(path, n, work), range(doc.page_count)))
 
@@ -144,6 +152,8 @@ def extract(path: str, images: ImageStore, work: str) -> Extracted:
         out.blocks.extend(b for _, b in items)
 
     out.blocks = merge_paragraphs(out.blocks)
+    if SKIPPED_PAGES:
+        out.warnings.append(f"OCR: páginas salteadas por tiempo: {sorted(SKIPPED_PAGES)}")
     if low_conf_pages > doc.page_count * 0.3:
         out.warnings.append(f"OCR de baja confianza en {low_conf_pages} de {doc.page_count} páginas: revisar")
     return out
