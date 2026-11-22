@@ -15,3 +15,109 @@
   author: Clifford W. Ashley
   year: 1944
   lang: en
+
+# Lote 1 de catalogación (fichas ONEMI Chile, trituradora Precious Plastic, varios)
+"Catastrofes/Guia Oficial Que Hacer en Caso de Aluvion.pdf":
+  title: Qué hacer en caso de aluvión
+  author: ONEMI (Chile)
+  lang: es
+"Catastrofes/erupcion.pdf":
+  title: Qué hacer en caso de erupción volcánica
+  author: ONEMI (Chile)
+  lang: es
+"Catastrofes/Guia de Prevencion y Actuacion ante Incendios.pdf":
+  title: Prevención y actuación ante incendios
+  author: ONEMI (Chile)
+  lang: es
+"Catastrofes/incendio_forestal.pdf":
+  title: Qué hacer en caso de incendio forestal
+  author: ONEMI (Chile)
+  lang: es
+"Catastrofes/inundacion.pdf":
+  title: Qué hacer en caso de inundación
+  author: ONEMI (Chile)
+  lang: es
+"Catastrofes/tsunami.pdf":
+  title: Qué hacer en caso de tsunami
+  author: ONEMI (Chile)
+  lang: es
+"Catastrofes/7evacuacion_de_la_poblacion.pdf":
+  title: Evacuación de la población (Defensa Civil de Cuba)
+  lang: es
+"Construcciones y herramientas/00_shredder overview.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): vista general"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/01_shredding overview.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): conjunto de trituración"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/02_shredding laser overview.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): conjunto de trituración, piezas cortadas a láser"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/Herramientas/03_shredding axe.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): eje de cuchillas"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/04_shredding bracket top.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): soporte superior"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/05_shredding bracket bottom.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): soporte inferior"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/06_shredding sieve.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): tamiz"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/07_framework.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): bastidor"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/08_electronics box.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): caja de electrónica"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/08_electronics connector.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): conector del motor"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/09_hopper assambled.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): tolva armada"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/09_hopper sheets.pdf":
+  title: "Trituradora de plástico (Precious Plastic V2.0): chapas de la tolva"
+  author: Dave Hakkens (Precious Plastic)
+  year: 2016
+  lang: en
+"Construcciones y herramientas/1 mezcla de arcilla.pdf":
+  title: Mezcla de arcilla aislante para estufa cohete
+  author: Aprovecho Research Center
+  lang: es
+"Construcciones y herramientas/4 falda de la olla.pdf":
+  title: Falda de la olla para estufa cohete
+  author: Aprovecho Research Center
+  lang: es
+"Construcciones y herramientas/6_MANUAL_REFUGIOS.pdf":
+  title: Los refugios (Coloquios sobre Protección Civil)
+  author: Dirección General de Protección Civil (España)
+  year: 1989
+  lang: es
+"Construcciones y herramientas/12_15955_foll_web_muebleria_silla_multiuso_arar_23_sep_15_1271.pdf":
+  title: Sillas multiuso con un solo tablero (Serie Cómo Hacer)
+  author: Arauco
+  lang: es
