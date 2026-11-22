@@ -783,3 +783,11 @@ Falta decidir/hacer:
 - Licencias a decidir: CC BY-NC-ND «Dos piedras y un cerebro», Where There Is No Dentist (Hesperian), tesis trituradora, MCRP 3-02H, Ranger Medic Handbook, FM 3-05.70. Salud prohibida (MMS): decidir si queda.
 - Categorías propuestas sin aplicar: helechos → Cultivo, curso mecánica → Vehículos, Anarchist/Alarm Cookbook fuera de Cocina, Marines → Supervivencia, Ultraligero → Mochilas; «Prensa vertical» y «Placard» a excluir.
 - ~650 libros cortos aún sin autor (~150–200 resolubles por título); probar en el celular.
+
+## Pendiente: MIDI de la canción en el metrónomo de RCP (2026-11-22)
+
+El metrónomo de compresiones (`app/src/modules/firstAid/guides/CprMetronome.tsx`) tiene pitido y base rítmica propia (`cprGroove.ts`). Falta, a pedido del dueño del proyecto, una opción **«MIDI de la canción»** para «Another One Bites the Dust» (110/min) y «Stayin' Alive» (103/min). Decisión: por ahora no se hace.
+- Lo que haría falta: lector de archivos MIDI (SMF 0/1) y sintetizador con el audio del dispositivo, con el tempo ajustado al ritmo elegido (110, 103, 100 o 120 por minuto); el selector se oculta si el archivo no está (quedan pitido y base rítmica).
+- Los archivos MIDI los consigue y copia el dueño del proyecto (no se transcriben las canciones); van en una carpeta de la app (por ejemplo `app/public/cpr/`) y se incluyen en el APK y en la PWA.
+- Estimación: 1 a 2 horas.
+
