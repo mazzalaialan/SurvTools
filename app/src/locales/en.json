@@ -2606,7 +2606,11 @@
       "stop": "Stop the metronome",
       "count": "Compression {{n}} of 30",
       "breaths": "That is 30: if you know rescue breaths, give 2 now. If not, keep going without stopping.",
-      "sound": "Sound",
+      "mode": "Sound",
+      "modeBeep": "Beep",
+      "modeGroove": "Rhythm track",
+      "modeBoth": "Both",
+      "modeOff": "No sound",
       "vibrate": "Vibrate on every beep"
     },
     "optionsSpoken": "Options: {{options}}.",

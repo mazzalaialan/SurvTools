@@ -372,6 +372,7 @@ test('RCP: el ritmo con dos canciones y el metrónomo de compresiones, que sigue
   await expect(page.getByTestId('cpr-bpm')).toContainText('110');
   await metronome.getByRole('button', { name: /Bee Gees/ }).click();
   await expect(page.getByTestId('cpr-bpm')).toContainText('103');
+  await metronome.getByRole('button', { name: 'Base rítmica' }).click();
   await page.getByTestId('cpr-toggle').click();
   await expect(page.getByTestId('cpr-count')).toContainText('Compresión 1 de 30');
   // Al contestar «sí, hay desfibrilador» sigue sonando (no se reinicia).

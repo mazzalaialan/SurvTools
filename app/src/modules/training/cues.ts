@@ -7,6 +7,17 @@ import { forSpeech } from '@/core/speech/speech';
 
 let ctx: AudioContext | null = null;
 
+/** El contexto de audio compartido (se crea la primera vez, tras un toque en pantalla); `null` si el dispositivo no tiene. */
+export function audioContext(): AudioContext | null {
+  try {
+    ctx ??= new AudioContext();
+    if (ctx.state === 'suspended') void ctx.resume();
+    return ctx;
+  } catch {
+    return null;
+  }
+}
+
 export function beep(freq = 880, ms = 150): void {
   try {
     ctx ??= new AudioContext();

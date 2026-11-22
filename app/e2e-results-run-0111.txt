@@ -1,0 +1,82 @@
+
+> vikarg-survival@0.111.0 e2e:full
+> sh scripts/e2e-full.sh
+
+en pausa: 33c82ddd7d6e /nomad_ollama
+[WebServer] [plugin builtin:vite-reporter] 
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] src/modules/garden/GardenPage.tsx is dynamically imported by src/app/App.tsx but also statically imported by src/app/pages/HomePage.tsx, dynamic import will not move module into another chunk.
+[WebServer] 
+[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] src/core/incomingFile.ts is dynamically imported by src/main.tsx but also statically imported by src/app/IncomingFileHandler.tsx, src/app/screens/SetupScreen.tsx, src/modules/backup/RestoreForm.tsx, dynamic import will not move module into another chunk.
+[WebServer] 
+[WebServer] 
+[WebServer]  WARN  inlineDynamicImports option is deprecated, please use codeSplitting: false instead.
+[WebServer] 
+
+Running 186 tests using 4 workers
+
+  ✓    2 [android] › e2e/compass.spec.ts:46:1 › brújula: norte geográfico con declinación y magnético (7.8s)
+  ✓    1 [android] › e2e/declination.spec.ts:9:1 › declinómetro: lugar, cambio anual, convertir rumbos, mapa viejo y machete (9.5s)
+  ✓    4 [android] › e2e/emergency.spec.ts:52:1 › contactos: números nacionales, buscar cercanos (oficial + OpenStreetMap), guardar, editar y borrar (15.9s)
+  ✘    7 [android] › e2e/emergency.spec.ts:138:1 › mi ubicación para socorristas y radio (392ms)
+  ✓    6 [android] › e2e/inclinometer.spec.ts:26:1 › inclinómetro: zonas de avalancha, fijar medida y modo apuntando (10.1s)
+  ✓    5 [android] › e2e/compass.spec.ts:64:1 › ir al punto: dos opciones (mapa o vista 3D sin cámara), flecha acostado y horizonte parado (12.4s)
+  ✓    3 [android] › e2e/garden.spec.ts:44:1 › huerta: calendario por zona, canteros con waypoint, grilla, avisos por lugar, cosecha al inventario y almácigo (20.8s)
+  ✓    8 [android] › e2e/emergency.spec.ts:357:1 › un aviso se da por leído con «Entendido», no vuelve y Ajustes lo trae de nuevo (6.8s)
+  ✓   10 [android] › e2e/compass.spec.ts:113:1 › ahorro de batería: negro puro, sin animaciones y ir al punto no prende la cámara (8.3s)
+  ✓   11 [android] › e2e/garden.spec.ts:183:1 › huerta: sol del cantero según su entorno y distribución de varias plantas sin que una tape a otra (8.7s)
+  ✓   14 [android] › e2e/layout.spec.ts:17:1 › las pantallas entran en el ancho del celular, con el menú de abajo a la vista (8.1s)
+  ✓   13 [android] › e2e/garden.spec.ts:236:1 › huerta: ficha del cultivo con «guardar semilla propia» (dificultad, aislamiento, cuánto dura y fuentes), en español e inglés (9.7s)
+  ✓   12 [android] › e2e/emergency.spec.ts:382:1 › buscar cercanos: Salud y Vehículos con sus opciones, estaciones de servicio con bandera y combustibles (15.6s)
+  ✓    9 [android] › e2e/inventory.spec.ts:16:1 › configuración inicial, ubicaciones, artículo con lote y alerta (22.3s)
+  ✓   15 [android] › e2e/photo.spec.ts:6:1 › la foto del artículo se comprime a 1280 px y sobrevive al bloqueo (8.3s)
+  ✓   17 [android] › e2e/emergency.spec.ts:424:1 › buscar cercanos: Náutica con sus tipos, que se pueden sacar y poner para ver solo lo que sirve (9.2s)
+  ✓   16 [android] › e2e/starmap.spec.ts:27:1 › mapa estelar: cielo completo, guía al Sur, búsqueda, hora y rojo nocturno (12.1s)
+  ✓   20 [desktop] › e2e/about.spec.ts:5:1 › acerca de: versión, reportar un problema o sugerencia y cafecito (7.5s)
+  ✓   21 [android] › e2e/starmap.spec.ts:83:1 › rojo nocturno automático: horario fijo y al anochecer (6.8s)
+  ✓   19 [android] › e2e/tracks.spec.ts:27:1 › tracks de Wikiloc: importar, ver datos y perfil, ir a un punto y copiarlo o sacarlo de mis waypoints (11.5s)
+  ✓   18 [android] › e2e/topo-print.spec.ts:23:1 › mapa topográfico: opciones antes de generar (las escalas que no entran, grisadas) y PDF A4 vertical y horizontal, también sin conexión (16.7s)
+  ✓   22 [desktop] › e2e/about.spec.ts:54:1 › licencias y créditos: licencia de la app, fuentes de datos y componentes de terceros con su texto (7.7s)
+  ✓   23 [android] › e2e/starmap.spec.ts:108:1 › mapa estelar: apuntar al cielo con la brújula del celular (11.4s)
+  ✓   26 [desktop] › e2e/altimeter.spec.ts:35:1 › altímetro: aclaración, calibrar con altura conocida, subida y alarma (8.8s)
+  ✓   27 [desktop] › e2e/astronomy.spec.ts:7:1 › sol y luna: horarios del día, cambio de fecha y coordenadas a mano (6.5s)
+  ✓   25 [desktop] › e2e/account.spec.ts:8:1 › eliminar mi cuenta: pide la contraseña y borra el dispositivo del servidor (19.5s)
+  ✓   28 [desktop] › e2e/backup-reminder.spec.ts:14:1 › recordatorio de backup: aparece a los 3 días de uso sin backup, se pospone una semana y vuelve (7.3s)
+  ✓   24 [android] › e2e/tracks.spec.ts:110:1 › grabar mi recorrido: sigue con la app bloqueada, pausa, mapa, volver al origen, pantalla negra y guardado (30.3s)
+  ✓   31 [desktop] › e2e/backup-reminder.spec.ts:48:1 › recordatorio de backup: el botón lleva a Backup, y con un backup hecho no aparece hasta pasados 14 días (7.8s)
+  ✓   33 [desktop] › e2e/compass-ios.spec.ts:46:1 › iPhone: la brújula pide permiso con un toque y después muestra el rumbo de webkitCompassHeading (5.2s)
+  ✓   30 [desktop] › e2e/account.spec.ts:79:1 › desactivar las notificaciones sin conexión deja el borrado de la cuenta pendiente y se completa al reintentar (19.0s)
+  ✓   34 [desktop] › e2e/compass-ios.spec.ts:63:1 › iPhone: el toque en cualquier parte de una pantalla con sensores también pide el permiso, y si se niega se explica (4.4s)
+  ✓   29 [desktop] › e2e/backup.spec.ts:16:1 › exportar en un dispositivo y restaurar en otro, con todo lo cargado (23.9s)
+  ✓   35 [desktop] › e2e/account.spec.ts:135:1 › Ajustes: «Conexiones» no se muestra; se abre con 7 toques en la versión o con el enlace interno (8.8s)
+  ✓   36 [desktop] › e2e/country-detect.spec.ts:28:1 › estás en otro país: se pregunta si querés cambiarlo, sin bajar nada de ese país y con los números del país elegido (12.0s)
+  ✓   37 [desktop] › e2e/country-pack.spec.ts:19:1 › Ajustes: cada país dice si su paquete está sin bajar, se baja con el ícono sin elegir el país y queda con el tilde verde (10.6s)
+  ✓   39 [desktop] › e2e/country-detect.spec.ts:63:1 › aceptar el cambio pasa a Perú como país elegido y baja su paquete; los números pasan a ser los de Perú (8.4s)
+  ✓   40 [desktop] › e2e/country-pack.spec.ts:46:1 › Ajustes: el mapa de países muestra el estado de cada uno y baja el que se toca (7.7s)
+  ✓   38 [desktop] › e2e/country-sector.spec.ts:36:1 › estás en Brasil sin Wi-Fi seguro: pregunta por el sector donde estás (Sul), lo baja y no baja los otros (14.5s)
+  ✓   41 [desktop] › e2e/country-detect.spec.ts:80:1 › con Wi-Fi tampoco se baja nada de un país que no elegiste (7.9s)
+  ✓   42 [desktop] › e2e/country-pack.spec.ts:76:1 › Ajustes: un país con datos viejos se ve en ámbar con «Actualizar» y vuelve al verde al actualizarlo (9.1s)
+  ✓   43 [desktop] › e2e/country-sector.spec.ts:74:1 › estás en Brasil con Wi-Fi: baja el sector donde estás sin preguntar (6.5s)
+  ✓   44 [desktop] › e2e/country-detect.spec.ts:90:1 › Buscar cercanos usa el país del lugar elegido: en un lugar de Perú, los servicios son los de Perú (5.0s)
+  ✓   45 [desktop] › e2e/country-pack.spec.ts:110:1 › Mapa de países: el primer toque marca, el segundo baja y el tercero lo pone como país activo (7.7s)
+  ✓   46 [desktop] › e2e/country-sector.spec.ts:84:1 › estás en Brasil con otro país elegido: se pregunta si querés cambiarlo y, al aceptar, baja el sector donde estás (8.8s)
+  ✓   47 [desktop] › e2e/country-detect.spec.ts:99:1 › al llegar a otro país se ofrece bajar el mapa del lugar: «Ver mapas» abre el panel de zona ahí (9.0s)
+  ✓   48 [desktop] › e2e/country-pack.spec.ts:156:1 › Mapa de países: se puede acercar, alejar y arrastrar sin marcar nada por error (7.7s)
+  ✓   49 [desktop] › e2e/declination.spec.ts:9:1 › declinómetro: lugar, cambio anual, convertir rumbos, mapa viejo y machete (6.6s)
+  ✓   50 [desktop] › e2e/country-detect.spec.ts:111:1 › «No, gracias» a la oferta de mapas se recuerda y no vuelve a aparecer (6.1s)
+  ✓   51 [desktop] › e2e/country-pack.spec.ts:205:3 › Mapa de países: pellizco con dos dedos › acerca y aleja alrededor de los dedos sin correrse (6.3s)
+  ✓   52 [desktop] › e2e/documents.spec.ts:6:1 › documento con varias fotos: agregar, ver, reordenar y quitar (8.2s)
+  ✓   54 [desktop] › e2e/country-pack.spec.ts:251:1 › Ajustes: los países van en un marco por continente (América del Sur) y en orden alfabético (4.6s)
+  ✓   56 [desktop] › e2e/country-pack.spec.ts:264:1 › Ajustes: los continentes arrancan cerrados, «País actual» muestra siempre el país y el continente que lo contiene lleva la marca (4.1s)
+  ✓   53 [desktop] › e2e/emergency.spec.ts:52:1 › contactos: números nacionales, buscar cercanos (oficial + OpenStreetMap), guardar, editar y borrar (11.7s)
+  ✓   57 [desktop] › e2e/country-pack.spec.ts:282:1 › Ajustes: se puede borrar el paquete de un país bajado, pero no el del país activo (7.9s)
+  ✓   55 [desktop] › e2e/garden.spec.ts:44:1 › huerta: calendario por zona, canteros con waypoint, grilla, avisos por lugar, cosecha al inventario y almácigo (16.6s)
+  ✓   59 [desktop] › e2e/country-pack.spec.ts:313:1 › Ajustes: Brasil se baja por sectores (cinco macrorregiones), cada uno con su estado (4.4s)
+  ✓   58 [desktop] › e2e/emergency.spec.ts:138:1 › mi ubicación para socorristas y radio (12.8s)
+  ✓   60 [desktop] › e2e/garden.spec.ts:183:1 › huerta: sol del cantero según su entorno y distribución de varias plantas sin que una tape a otra (6.8s)
+  ✓   62 [desktop] › e2e/emergency.spec.ts:357:1 › un aviso se da por leído con «Entendido», no vuelve y Ajustes lo trae de nuevo (6.0s)
+  ✓   61 [desktop] › e2e/country-pack.spec.ts:341:1 › Mapa de países: Brasil se divide en sus cinco sectores y se baja (o se borra) el que se toca (10.1s)
+  ✓   63 [desktop] › e2e/garden.spec.ts:236:1 › huerta: ficha del cultivo con «guardar semilla propia» (dificultad, aislamiento, cuánto dura y fuentes), en español e inglés (7.1s)

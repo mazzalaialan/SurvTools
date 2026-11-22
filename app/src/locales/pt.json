@@ -3966,7 +3966,11 @@
    "stop": "Parar o metrônomo",
    "count": "Compressão {{n}} de 30",
    "breaths": "Foram 30: se você sabe dar respirações, dê 2 agora. Se não, continue sem parar.",
-   "sound": "Som",
+   "mode": "Som",
+   "modeBeep": "Bipe",
+   "modeGroove": "Base rítmica",
+   "modeBoth": "Os dois",
+   "modeOff": "Sem som",
    "vibrate": "Vibrar a cada bipe"
   },
   "optionsSpoken": "Opções: {{options}}.",
