@@ -2592,6 +2592,22 @@
   "guides": {
     "voice": "Leer los pasos en voz alta",
     "voiceRepeat": "Repetir en voz alta",
+    "cprMetronome": {
+      "title": "Metrónomo de compresiones",
+      "intro": "Un pitido por compresión, al ritmo de la canción elegida (sin melodía ni letra). Apretá el botón y hundí el pecho con cada pitido.",
+      "rhythm": "Ritmo",
+      "queen": "Queen · 110",
+      "beegees": "Bee Gees · 103",
+      "min": "Mínimo · 100",
+      "max": "Máximo · 120",
+      "unit": "compresiones por minuto",
+      "start": "Empezar el metrónomo",
+      "stop": "Parar el metrónomo",
+      "count": "Compresión {{n}} de 30",
+      "breaths": "Van 30: si sabés dar respiraciones, ahora 2. Si no, seguí sin parar.",
+      "sound": "Sonido",
+      "vibrate": "Vibrar con cada pitido"
+    },
     "optionsSpoken": "Opciones: {{options}}.",
     "title": "Primeros auxilios",
     "start": "Empezar evaluación",

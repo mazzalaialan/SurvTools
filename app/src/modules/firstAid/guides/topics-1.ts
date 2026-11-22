@@ -257,9 +257,9 @@ export const TOPICS_1: Topic[] = [
             'Uma mão sobre a outra, no centro do peito. Braços esticados.',
           ),
           s(
-            'Hundí el pecho 5 a 6 cm, rápido: 100 a 120 por minuto (al ritmo de «Another One Bites the Dust», de Queen). Dejá que el pecho vuelva a subir.',
-            'Push down 5 to 6 cm, fast: 100 to 120 per minute (the beat of “Another One Bites the Dust” by Queen). Let the chest come back up.',
-            'Comprima o peito 5 a 6 cm, rápido: 100 a 120 por minuto (no ritmo de “Another One Bites the Dust”, do Queen). Deixe o peito voltar a subir.',
+            'Hundí el pecho 5 a 6 cm, rápido: 100 a 120 por minuto (al ritmo de «Another One Bites the Dust», de Queen, o de «Stayin\' Alive», de los Bee Gees). Dejá que el pecho vuelva a subir.',
+            'Push down 5 to 6 cm, fast: 100 to 120 per minute (the beat of “Another One Bites the Dust” by Queen, or “Stayin\' Alive” by the Bee Gees). Let the chest come back up.',
+            'Comprima o peito 5 a 6 cm, rápido: 100 a 120 por minuto (no ritmo de “Another One Bites the Dust”, do Queen, ou de “Stayin\' Alive”, dos Bee Gees). Deixe o peito voltar a subir.',
           ),
           s(
             'Si sabés dar respiraciones: 30 compresiones y 2 respiraciones. Si no, solo compresiones sin parar.',
@@ -269,6 +269,7 @@ export const TOPICS_1: Topic[] = [
           s('Si son varios, túrnense cada 2 minutos sin frenar.', 'If there are several of you, swap every 2 minutes without stopping.', 'Se forem várias pessoas, revezem a cada 2 minutos sem parar.'),
         ],
         calls: ['same', 'emergency'],
+        tool: 'cprMetronome',
         question: l('¿Tienen un desfibrilador (DEA)?', 'Do you have a defibrillator (AED)?', 'Vocês têm um desfibrilador (DEA)?'),
         options: [
           { answer: 'yes', label: l('Sí', 'Yes', 'Sim'), next: 'aed' },
@@ -291,6 +292,7 @@ export const TOPICS_1: Topic[] = [
             'Depois do choque (ou se ele não indicar), volte às compressões imediatamente.',
           ),
         ],
+        tool: 'cprMetronome',
         options: [{ label: l('Seguir', 'Continue', 'Continuar'), next: 'continue' }],
       },
       continue: {
@@ -319,6 +321,7 @@ export const TOPICS_1: Topic[] = [
           WILD_RESCUE,
         ],
         calls: ['same', 'emergency'],
+        tool: 'cprMetronome',
       },
     },
   },

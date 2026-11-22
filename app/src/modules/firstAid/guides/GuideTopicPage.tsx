@@ -1,3 +1,4 @@
+import { CprMetronome } from './CprMetronome';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, type MouseEvent } from 'react';
@@ -169,6 +170,8 @@ export function GuideTopicPage() {
             ))}
           </ol>
         )}
+
+        {node.tool === 'cprMetronome' && <CprMetronome />}
 
         {/* Panel de respuestas: pegado abajo (sticky, encima de la barra de navegación), así la pregunta y las respuestas
             quedan siempre a la vista aunque los pasos sean largos. Si hay muchas opciones, scroll propio (máx. ~50 % de la pantalla). */}

@@ -354,3 +354,31 @@ test('guías MARCH (trauma grave) y mal de altura: se recorren paso a paso y lle
   await page.getByRole('button', { name: /Sí: confusión/ }).click();
   await expect(node).toContainText('Bajar de inmediato');
 });
+
+test('RCP: el ritmo con dos canciones y el metrónomo de compresiones, que sigue andando al pasar al desfibrilador', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+
+  await page.goto('/#/first-aid/guides/cpr');
+  const node = page.getByTestId('guide-node');
+  await expect(node).toContainText('Another One Bites the Dust');
+  await expect(node).toContainText("Stayin' Alive");
+  const metronome = page.getByTestId('cpr-metronome');
+  await expect(page.getByTestId('cpr-bpm')).toContainText('110');
+  await metronome.getByRole('button', { name: /Bee Gees/ }).click();
+  await expect(page.getByTestId('cpr-bpm')).toContainText('103');
+  await page.getByTestId('cpr-toggle').click();
+  await expect(page.getByTestId('cpr-count')).toContainText('Compresión 1 de 30');
+  // Al contestar «sí, hay desfibrilador» sigue sonando (no se reinicia).
+  await page.getByRole('button', { name: 'Sí', exact: true }).click();
+  await expect(node).toContainText('Usar el desfibrilador');
+  await expect(page.getByTestId('cpr-count')).toBeVisible();
+  await expect(page.getByTestId('cpr-count')).not.toContainText('Compresión 1 de 30', { timeout: 5000 });
+  await page.getByTestId('cpr-toggle').click();
+  await expect(page.getByTestId('cpr-count')).toHaveCount(0);
+});

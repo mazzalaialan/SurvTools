@@ -42,6 +42,8 @@ export interface GuideNode {
   steps: Step[];
   /** Botones para llamar (en zona agreste se suma "Mi ubicación" para dar las coordenadas). */
   calls?: CallKey[];
+  /** Herramienta que se muestra después de los pasos (hoy: el metrónomo de compresiones de la RCP). */
+  tool?: 'cprMetronome';
   question?: LG;
   options?: Option[];
 }

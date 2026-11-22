@@ -2593,6 +2593,22 @@
   "guides": {
     "voice": "Read the steps aloud",
     "voiceRepeat": "Repeat aloud",
+    "cprMetronome": {
+      "title": "Compression metronome",
+      "intro": "One beep per compression at the tempo of the chosen song (no melody or lyrics). Tap the button and push down on every beep.",
+      "rhythm": "Tempo",
+      "queen": "Queen · 110",
+      "beegees": "Bee Gees · 103",
+      "min": "Lowest · 100",
+      "max": "Highest · 120",
+      "unit": "compressions per minute",
+      "start": "Start the metronome",
+      "stop": "Stop the metronome",
+      "count": "Compression {{n}} of 30",
+      "breaths": "That is 30: if you know rescue breaths, give 2 now. If not, keep going without stopping.",
+      "sound": "Sound",
+      "vibrate": "Vibrate on every beep"
+    },
     "optionsSpoken": "Options: {{options}}.",
     "title": "First aid",
     "start": "Start assessment",

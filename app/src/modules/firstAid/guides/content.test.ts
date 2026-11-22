@@ -123,11 +123,17 @@ describe('guía de primeros auxilios', () => {
     expect(fillGuideText('Ligue para {poison}.', 'UY', 'pt')).toBe('Ligue para o CIAT (centro toxicológico).');
   });
 
-  it('la canción del ritmo de RCP es una sola, en los tres idiomas, y también se da el ritmo en números', () => {
+  it('el ritmo de RCP se da con dos canciones (Queen y Bee Gees) en los tres idiomas, y también en números', () => {
     const cpr = JSON.stringify(TOPIC_BY_ID.get('cpr'));
-    expect(cpr).not.toMatch(/Bamba|Stayin/);
+    expect(cpr).not.toMatch(/Bamba/);
     expect(cpr.match(/Another One Bites the Dust/g)).toHaveLength(3);
+    expect(cpr.match(/Stayin\\' Alive|Stayin' Alive/g)).toHaveLength(3);
     expect(TOPIC_BY_ID.get('cpr')!.nodes.start!.steps.map((s) => s.text.es).join(' ')).toContain('100 a 120 por minuto');
+  });
+
+  it('el metrónomo de compresiones está en los tres pasos de la RCP (así sigue sonando al pasar del desfibrilador a seguir)', () => {
+    const nodes = TOPIC_BY_ID.get('cpr')!.nodes;
+    for (const k of ['start', 'aed', 'continue']) expect(nodes[k]!.tool).toBe('cprMetronome');
   });
 
   it('el portugués no repite el español por descuido (salvo siglas, números y nombres)', () => {
