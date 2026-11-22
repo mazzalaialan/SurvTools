@@ -421,3 +421,113 @@
   title: "11 pasos para sobrevivir a la radiación atómica (11 Steps to Survival)"
   author: "Departamento de Defensa Nacional de Canadá"
   lang: en
+
+# Lote 5 de catalogación (libros comerciales con autor vacío)
+"Cultivo/[LIBRO] Introduccion a la Permacultura - Bill Mollison.pdf":
+  title: "Introducción a la permacultura"
+  author: "Bill Mollison y Reny Mia Slay"
+  year: 1991
+  lang: es
+"Construcciones y herramientas/la_casa_autonoma-BrendayRobertVale-1978.pdf":
+  title: "La casa autónoma: diseño y planificación para la autosuficiencia"
+  author: "Brenda y Robert Vale"
+  lang: es
+"Construcciones y herramientas/La Casa de Fardos de Paja - Athena y Bill Steen.pdf":
+  title: "La casa de fardos de paja (traducción resumida de The Straw Bale House)"
+  author: "Athena Swentzell Steen, Bill Steen y David Bainbridge"
+  year: 1994
+  lang: es
+"Catastrofes/Nuclear War Survival Skills book - Preppers Info.pdf":
+  title: "Nuclear War Survival Skills"
+  author: "Cresson H. Kearny"
+  lang: en
+"Supervivencia General/SAS Survival Handbook.pdf":
+  title: "SAS Survival Handbook (3.ª edición)"
+  author: "John \"Lofty\" Wiseman"
+  year: 2014
+  lang: en
+"Medicina y Primeros Auxilios/Donde No hay Doctor - David Werner.pdf":
+  title: "Donde no hay doctor"
+  author: "David Werner (con Carol Thuman y Jane Maxwell)"
+  lang: es
+"Medicina y Primeros Auxilios/IVAN ILLICH - NEMESIS MEDICA.pdf":
+  title: "Némesis médica"
+  author: "Ivan Illich"
+  lang: es
+"Literatura General/Zombie.Survival.Guide.pdf":
+  title: "The Zombie Survival Guide"
+  author: "Max Brooks"
+  year: 2003
+  lang: en
+"Literatura General/Zombie.Survival.Guide-USA-INGLES - Desconocido.pdf":
+  title: "The Zombie Survival Guide"
+  author: "Max Brooks"
+  year: 2003
+  lang: en
+"Literatura General/Apocalipsis Z - Tomo 2 Los Días Oscuros - Manel Loureiro.pdf":
+  title: "Apocalipsis Z, tomo 2: Los días oscuros"
+  author: "Manel Loureiro"
+  lang: es
+"Literatura General/Apocalipsis Z - Tomo 3 La Ira de los justos - Manel Loureiro.pdf":
+  title: "Apocalipsis Z, tomo 3: La ira de los justos"
+  author: "Manel Loureiro"
+  lang: es
+"Literatura General/Matthew Mather - Cibertormenta.pdf":
+  title: "Cibertormenta"
+  author: "Matthew Mather"
+  lang: es
+"Defensa y entrenamiento/TÉCNICAS DE RESISTENCIA. (CHRIS MCNAB).pdf":
+  title: "Técnicas de resistencia"
+  author: "Chris McNab"
+  year: 2002
+  lang: es
+"Supervivencia General/manual de supervivencia - Colin Towell.pdf":
+  title: "Manual de supervivencia: habilidades para la aventura en exteriores"
+  author: "Colin Towell"
+  lang: es
+"Orientacion/Map Reading & Land Navigation.pdf":
+  title: "Lectura de mapas y navegación terrestre (Map Reading and Land Navigation)"
+  author: "Departamento del Ejército de EE. UU."
+  lang: en
+"Mochilas kits y preparacion hogar/Physical Security - FM 3-19.30.pdf":
+  title: "Seguridad física (Physical Security, FM 3-19.30)"
+  author: "Departamento del Ejército de EE. UU."
+  year: 2001
+  lang: en
+"Cocina/anarchist-cookbook-william-powell.pdf":
+  title: "The Anarchist Cookbook"
+  author: "William Powell"
+  year: 1971
+  lang: en
+"Cocina/The Alarm, Sensor & Security Circuit Cookbook by Thomas Petruzzellis.pdf":
+  title: "The Alarm, Sensor & Security Circuit Cookbook"
+  author: "Thomas Petruzzellis"
+  lang: en
+"Defensa y entrenamiento/KRAV MAGA for women.pdf":
+  title: "Krav Maga para mujeres"
+  author: "Darren Levine, Ryan Hoover y Kelly Campbell"
+  lang: es
+"Construcciones y herramientas/The Ten Bushcraft Books by Robert Graves.pdf":
+  title: "The Ten Bushcraft Books"
+  author: "Richard Graves"
+  lang: en
+"Construcciones y herramientas/The Bushcraft Book - DoomzDay Preppers ( PDFDrive ).pdf":
+  title: "The Bushcraft Book"
+  author: "Richard Graves"
+  lang: en
+"Psicologia/LIBRO EL CODIGO CURATIVO DE ALEX LOID.pdf":
+  title: "Los códigos curativos"
+  author: "Alex Loyd (con Ben Johnson)"
+  lang: es
+"Energia/Solar/EVANS- SCHILLER, Diseño Bioambiental y arquitectura solar.pdf":
+  title: "Diseño bioambiental y arquitectura solar"
+  author: "Martín Evans y Silvia de Schiller"
+  lang: es
+"Medicina y Primeros Auxilios/Wound_Closure_Manual.pdf":
+  title: "Wound Closure Manual"
+  author: "Ethicon"
+  lang: en
+"Medicina y Primeros Auxilios/Surgical Notes - Sheets, Susan [SRG].pdf":
+  title: "Surgical Notes: A Pocket Survival Guide for the Operating Room"
+  author: "Susan D. Sheets"
+  lang: en
