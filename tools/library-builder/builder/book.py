@@ -174,19 +174,47 @@ def _cut(blocks: list[Block], starts: list[tuple[int, str]]) -> list[Chapter]:
     return _merge_tiny(chapters)
 
 
+def _plain(h: str) -> str:
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", h))).strip()
+
+
+def _better_title(title: str, body: str, first: bool) -> str:
+    """Título que es solo un número (o «Inicio» repetido): se completa con el primer encabezado de texto que sigue → «N. Texto»."""
+    num = re.fullmatch(r"\d{1,3}", title)
+    if not (num or (title == "Inicio" and not first)):
+        return title
+    heads: list[str] = []
+    for lvl in "234":  # el nivel más alto presente (a veces un h4 suelto aparece antes que el h2 real)
+        heads = [h for h in (_plain(m) for m in re.findall(rf"<h{lvl}[^>]*>(.*?)</h{lvl}>", body, re.S)) if h]
+        if heads:
+            break
+    if not heads:
+        return title
+    text = heads[0]
+    # Título partido en dos encabezados («Cómo medir y dar» / «las medicinas 8»): se une si el segundo sigue en minúscula.
+    if len(heads) > 1 and heads[1][0].islower():
+        text += " " + heads[1]
+    text = re.sub(r"\s+\d{1,3}$", "", text).rstrip(" ,;")  # número de página pegado al final
+    text = text[:120]
+    return f"{title}. {text}" if num else text
+
+
 def chapters_from_html(fragment: str, size_hint_pages: int = 0) -> list[Chapter]:
     """Para lo que viene de Pandoc o LibreOffice (ya es HTML): se separa por <h1>, si no por <h2>."""
     if len(fragment) <= SPLIT_BYTES:
         return [Chapter("", [fragment])]
     for tag in ("h1", "h2"):
-        parts = re.split(rf"(?=<{tag}[\s>])", fragment)
+        # Encabezados vacíos (Pandoc los deja tras un número) no son capítulos.
+        frag = re.sub(rf"<{tag}[^>]*>\s*</{tag}>", "", fragment)
+        parts = re.split(rf"(?=<{tag}[\s>])", frag)
         if len(parts) >= 3:
             chapters = []
             for p in parts:
                 m = re.match(rf"<{tag}[^>]*>(.*?)</{tag}>", p, re.S)
                 title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else "Inicio"
                 if p.strip():
-                    chapters.append(Chapter(html.unescape(title)[:120] or "Inicio", [p]))
+                    t = html.unescape(title)[:120] or "Inicio"
+                    chapters.append(Chapter(_better_title(t, p, not chapters), [p]))
             return _merge_tiny(chapters)
     # Sin títulos: en partes parejas, cortando entre párrafos.
     chunks, cur = [], ""
