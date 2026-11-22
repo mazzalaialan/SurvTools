@@ -10,6 +10,9 @@
  * Cómo se consulta (cortesía con un servicio público): solo mientras alguien mira el radar, de a un pedido por vez y con una pausa entre
  * pedidos, con un identificador propio, y con espera creciente si contesta 403, 429 o un error de servidor.
  */
+import { encodePng } from '../rain/map.ts';
+import { cleanRadarImage } from './clean.ts';
+import { decodePng } from './pixels.ts';
 export const RADAR_RANGE_KM = 240;
 export const RADAR_FRAMES = 12;
 export const RADAR_STEP_MS = 10 * 60_000;
@@ -123,6 +126,22 @@ export function stateOf(store: RadarStore, id: string): RadarState {
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
+/**
+ * Quita el ruido (rayas del sol y clutter del centro, ver `clean.ts`) de la imagen antes de guardarla. Si no se puede leer o algo falla,
+ * se devuelve la imagen tal cual: nunca se pierde un cuadro por esto.
+ */
+export function cleanRadarPng(png: Buffer): Buffer {
+  try {
+    const img = decodePng(png);
+    if (!img) return png;
+    const { img: limpia, stats } = cleanRadarImage(img);
+    if (stats.rayas + stats.centro === 0) return png;
+    return encodePng(limpia.width, limpia.height, limpia.data);
+  } catch {
+    return png;
+  }
+}
+
 /** ¿Es un PNG de 512×512 de tamaño razonable? (el servicio devuelve a veces una página de error con código 200). */
 export function validRadarPng(buf: Buffer): boolean {
   if (buf.length < 100 || buf.length > MAX_PNG_BYTES) return false;
@@ -190,8 +209,9 @@ export async function refreshRadar(store: RadarStore, radar: RadarSite, opts: Ra
       break;
     }
     if (!res.ok) continue;
-    const png = Buffer.from(await res.arrayBuffer());
-    if (!validRadarPng(png)) continue;
+    const original = Buffer.from(await res.arrayBuffer());
+    if (!validRadarPng(original)) continue;
+    const png = cleanRadarPng(original);
     store.backoffMs = 0;
     store.bytes += png.length;
     state.frames.push({ stamp, at, png });
