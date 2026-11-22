@@ -11,7 +11,8 @@
  * pedidos, con un identificador propio, y con espera creciente si contesta 403, 429 o un error de servidor.
  */
 import { encodePng } from '../rain/map.ts';
-import { cleanRadarImage } from './clean.ts';
+import { cleanRadarImage, cleanWithSatellite } from './clean.ts';
+import { createGibsSatellite, type SatelliteSource } from './satellite.ts';
 import { decodePng } from './pixels.ts';
 export const RADAR_RANGE_KM = 240;
 export const RADAR_FRAMES = 12;
@@ -130,16 +131,38 @@ const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0
  * Quita el ruido (rayas del sol y clutter del centro, ver `clean.ts`) de la imagen antes de guardarla. Si no se puede leer o algo falla,
  * se devuelve la imagen tal cual: nunca se pierde un cuadro por esto.
  */
-export function cleanRadarPng(png: Buffer): Buffer {
+export async function cleanRadarPng(png: Buffer, extra?: { radar: RadarSite; at: number; satellite: SatelliteSource | null }): Promise<Buffer> {
   try {
     const img = decodePng(png);
     if (!img) return png;
     const { img: limpia, stats } = cleanRadarImage(img);
-    if (stats.rayas + stats.centro === 0) return png;
-    return encodePng(limpia.width, limpia.height, limpia.data);
+    let quitados = stats.rayas + stats.centro;
+    let result = limpia;
+    // Con el satélite: lo que no tiene nube fría encima no es lluvia. Si el satélite falla, se sigue sin él.
+    if (extra?.satellite) {
+      try {
+        const mask = await extra.satellite.maskFor(extra.at);
+        if (mask) {
+          const c = cleanWithSatellite(limpia, radarBounds(extra.radar), mask);
+          result = c.img;
+          quitados += c.removed;
+        }
+      } catch {
+        /* sin satélite */
+      }
+    }
+    if (quitados === 0) return png;
+    return encodePng(result.width, result.height, result.data);
   } catch {
     return png;
   }
+}
+
+/** Satélite para confirmar el radar en producción; se apaga con `RADAR_SATELLITE=off`. En las pruebas (con `fetchFn` propio) no se usa. */
+let satelliteDefault: SatelliteSource | null | undefined;
+function defaultSatellite(): SatelliteSource | null {
+  if (satelliteDefault === undefined) satelliteDefault = process.env.RADAR_SATELLITE === 'off' ? null : createGibsSatellite();
+  return satelliteDefault;
 }
 
 /** ¿Es un PNG de 512×512 de tamaño razonable? (el servicio devuelve a veces una página de error con código 200). */
@@ -160,6 +183,8 @@ export interface RadarFetchOptions {
   sleep?: (ms: number) => Promise<void>;
   /** Cuánto se descuenta al reloj antes de buscar imágenes (el servicio publica con atraso); 0 por defecto. */
   lagMs?: number;
+  /** Satélite para confirmar el radar; `null` lo apaga. Por defecto, GIBS en producción y nada en las pruebas. */
+  satellite?: SatelliteSource | null;
 }
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -211,7 +236,7 @@ export async function refreshRadar(store: RadarStore, radar: RadarSite, opts: Ra
     if (!res.ok) continue;
     const original = Buffer.from(await res.arrayBuffer());
     if (!validRadarPng(original)) continue;
-    const png = cleanRadarPng(original);
+    const png = await cleanRadarPng(original, { radar, at, satellite: opts.satellite !== undefined ? opts.satellite : opts.fetchFn ? null : defaultSatellite() });
     store.backoffMs = 0;
     store.bytes += png.length;
     state.frames.push({ stamp, at, png });

@@ -1,4 +1,5 @@
 import type { Rgba } from './pixels.ts';
+import { SAT_BOUNDS, SAT_SIZE, type SatMask } from './satellite.ts';
 
 /**
  * Limpieza del ruido de las imágenes de radar (SINARAME). Dos tipos de ruido que no son lluvia:
@@ -225,4 +226,75 @@ export function cleanRadarImage(img: Rgba): { img: Rgba; stats: CleanStats } {
     }
   }
   return { img: out, stats };
+}
+
+/** Fracción mínima de un eco que tiene que estar sobre nube fría para tomarlo como lluvia. */
+const SAT_MIN_FRIO = 0.2;
+/** Un eco con tantos píxeles intensos se conserva siempre: una tormenta nueva puede no verse todavía en un satélite atrasado. */
+const SAT_MAX_INTENSOS = 1500;
+
+/**
+ * Confirmación con el satélite: cada eco (mancha conexa) cuya superficie casi no tiene nube fría encima (ni a ~18 km) se quita. Ecos
+ * chicos sobre suelo despejado (clutter, propagación anómala) caen acá aunque tengan puntos verdes o amarillos. Lo que sale de la
+ * zona del satélite se conserva. Devuelve una copia y los píxeles quitados.
+ */
+export function cleanWithSatellite(
+  img: Rgba,
+  bounds: { south: number; west: number; north: number; east: number },
+  sat: SatMask,
+): { img: Rgba; removed: number } {
+  const { width: w, height: h } = img;
+  const out = { width: w, height: h, data: new Uint8Array(img.data) };
+  const d = out.data;
+  const etiqueta = new Int32Array(w * h);
+  const satIdx = (x: number, y: number): number => {
+    const lat = bounds.north - ((y + 0.5) / h) * (bounds.north - bounds.south);
+    const lon = bounds.west + ((x + 0.5) / w) * (bounds.east - bounds.west);
+    const sx = Math.floor(((lon - SAT_BOUNDS.west) / (SAT_BOUNDS.east - SAT_BOUNDS.west)) * SAT_SIZE);
+    const sy = Math.floor(((SAT_BOUNDS.north - lat) / (SAT_BOUNDS.north - SAT_BOUNDS.south)) * SAT_SIZE);
+    return sx < 0 || sy < 0 || sx >= SAT_SIZE || sy >= SAT_SIZE ? -1 : sy * SAT_SIZE + sx;
+  };
+  let removed = 0;
+  let n = 0;
+  for (let s0 = 0; s0 < w * h; s0++) {
+    if (d[s0 * 4 + 3]! === 0 || etiqueta[s0]) continue;
+    n++;
+    const pila = [s0];
+    etiqueta[s0] = n;
+    const pixeles: number[] = [];
+    let frio = 0;
+    let conocido = 0;
+    let intensos = 0;
+    while (pila.length) {
+      const i = pila.pop()!;
+      pixeles.push(i);
+      const x = i % w;
+      const y = (i - x) / w;
+      if (esIntenso(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) intensos++;
+      const k = satIdx(x, y);
+      if (k >= 0) {
+        conocido++;
+        if (sat.cold[k]) frio++;
+      }
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if ((!dx && !dy) || nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const j = ny * w + nx;
+          if (etiqueta[j] || d[j * 4 + 3]! === 0) continue;
+          etiqueta[j] = n;
+          pila.push(j);
+        }
+      }
+    }
+    if (conocido < pixeles.length * 0.5) continue; // casi todo fuera de la zona del satélite: no se puede juzgar
+    if (frio / conocido < SAT_MIN_FRIO && intensos <= SAT_MAX_INTENSOS) {
+      for (const i of pixeles) {
+        d[i * 4 + 3] = 0;
+        removed++;
+      }
+    }
+  }
+  return { img: out, removed };
 }
