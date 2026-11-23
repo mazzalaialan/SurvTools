@@ -30,8 +30,8 @@ _US_FEDERAL = [
 
 _FREE_LICENSE = [
     # La licencia del propio libro, no una cita: "bajo licencia Creative Commons", "licensed under CC BY-SA 4.0"…
-    (re.compile(r"(licen[cs]\w*|bajo|under|distribu\w+)[^.\n]{0,80}creative\s*commons|creative\s*commons[^.\n]{0,60}"
-                r"(licen|attribution|atribuci|reconocimiento)|\bcc[\s-]by(-nc)?(-sa|-nd)?\s*[1-4]\.0", re.I), "Licencia Creative Commons declarada en el libro"),
+    (re.compile(r"(licen[cçs]\w*|bajo|under|distribu\w+)[^.\n]{0,80}creative\s*commons|creative\s*commons[^.\n]{0,80}"
+                r"(licen|attribution|atribui[cç]|atribuci|reconocimiento)|\bcc[\s-]by(-nc)?(-sa|-nd)?\s*[1-4]\.0", re.I), "Licencia Creative Commons declarada en el libro"),
     (re.compile(r"gnu free documentation license", re.I), "Licencia GFDL declarada en el libro"),
     (re.compile(r"(this (book|work|document) is in the public domain|released into the public domain|"
                 r"(obra|libro|documento) (de|en el) dominio p[uú]blico)", re.I), "Declarado de dominio público en el libro"),
@@ -50,11 +50,36 @@ COVER_CHARS = 4000
 _NOT_FEDERAL = re.compile(r"american red cross|cruz roja|redalyc|scielo|elsevier|springer|wiley|catalog(ue)?\b", re.I)
 
 
+def cc_variant(text: str) -> str:
+    """Nombre de la licencia Creative Commons declarada («CC BY-NC-SA 3.0»), o «» si no se reconoce cuál."""
+    m = re.search(r"\bcc[\s-]*by((?:[\s-]*(?:nc|nd|sa)){0,2})[\s-]*(\d\.\d)?", text, re.I)
+    if m:
+        mods = "-".join(re.findall(r"nc|nd|sa", m.group(1), re.I)).upper()
+        return " ".join(x for x in ("CC BY" + (f"-{mods}" if mods else ""), m.group(2)) if x)
+    t = text.lower()
+    if not re.search(r"atribui[cç][aã]o|atribuci[oó]n|reconocimiento|attribution", t):
+        return ""
+    mods = []
+    if re.search(r"no[\s-]*comercial|n[aã]o[\s-]*comercial|noncommercial|non-commercial", t):
+        mods.append("NC")
+    if re.search(r"sin[\s-]*obras?[\s-]*derivadas?|no[\s-]*derivative|sem[\s-]*deriva", t):
+        mods.append("ND")
+    if re.search(r"compartir[\s-]*igual|compartilha[\s-]*igual|share[\s-]*alike|misma licencia", t):
+        mods.append("SA")
+    v = re.search(r"\b(\d\.\d)\b", t[t.find("creative commons") :] if "creative commons" in t else "")
+    return " ".join(x for x in ("CC BY" + ("".join("-" + m for m in mods)), v.group(1) if v else "") if x)
+
+
 def classify(text: str) -> tuple[str, str]:
     """(“public” | “private”, motivo). `text`: primeras páginas (desde la portada) y las últimas."""
     sample = text[:60000]
     for pattern, why in _FREE_LICENSE:
         if pattern.search(sample):
+            if why.startswith("Licencia Creative Commons"):
+                near = sample[max(0, pattern.search(sample).start() - 200) :][:600]
+                variant = cc_variant(near)
+                if variant:
+                    why = f"Licencia {variant} declarada en el libro"
             return "public", why
     cover = text[:COVER_CHARS]
     for pattern, why in _US_FEDERAL:

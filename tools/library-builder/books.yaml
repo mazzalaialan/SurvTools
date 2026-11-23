@@ -1401,6 +1401,8 @@
   author: "Instituto Kairós"
   year: 2017
   lang: pt
+  license: public
+  license_note: "Licencia CC BY-NC-SA 3.0 (Atribuição-Não Comercial-CompartilhaIgual 3.0, Prefeitura de São Paulo) declarada en el libro"
 "Construcciones y herramientas/manual_bioconstruccion.pdf":
   title: "Manual de construcción (bioconstrucción) con costales de tierra y pacas de paja"
   author: "Leticia Oseguera Figueroa (Instituto Tecnológico Superior de Pátzcuaro)"
@@ -1580,6 +1582,8 @@
 "Medicina y Primeros Auxilios/Hierbas contra la tristeza .pdf":
   author: "Yadira López"
   year: 2018
+  license: public
+  license_note: "Licencia de Producción de Pares (atribución, compartir bajo la misma licencia, no capitalista) declarada en el libro; share-alike aceptado por decisión del dueño"
 "Medicina y Primeros Auxilios/Remedios-del-monte.pdf":
   author: "Paulina Noza (Organización de Mujeres del TIM Bosque de Chimanes)"
 "Alimento/Nitratos en Alimentos CODEX ALIMENTARIUS.pdf":
@@ -2158,3 +2162,6 @@
   title: "Cálculo de correas y poleas"
   author: "A. González Rey, T. García Toll, T. Ortiz Cárdenas"
   lang: es
+"Cultivo/plantas_multifuncionales_ecoherencia.pdf":
+  license: public
+  license_note: "Licencia Creative Commons Reconocimiento–CompartirIgual (BY-SA) declarada en el libro (Ediciones Ecoherentes); share-alike aceptado por decisión del dueño"
