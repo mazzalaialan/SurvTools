@@ -15,6 +15,8 @@ import { useFishData } from './useFishData';
 const NONE: never[] = [];
 /** Color de los tramos en «Todos» (neutro: cada tramo lleva el número de especies). */
 const ALL_COLOR = '#5b6b7a';
+/** Pesca prohibida: rojo, y punteado para que se distinga también en el tema rojo. */
+const FORBIDDEN_COLOR = '#c62828';
 
 type Bounds = [number, number, number, number];
 
@@ -65,7 +67,8 @@ function FishingMap({ data }: { data: FishData }) {
   // Con peces elegidos, un color y un trazo por pez; si no, todos los tramos en un color neutro con su número de especies.
   const shown = useMemo(() => (chosen.length ? [...new Set(chosen.flatMap((id) => sectorsWithSpecies(data, id)))] : data.sectors), [data, chosen.join(',')]);
   const fc = useMemo<FeatureCollection>(() => {
-    if (!chosen.length) return { type: 'FeatureCollection', features: data.sectors.map((s) => feature(s, { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })) };
+    // En «Todos», los tramos con la pesca prohibida van en rojo (y sin número).
+    if (!chosen.length) return { type: 'FeatureCollection', features: data.sectors.map((s) => feature(s, s.closed ? { color: FORBIDDEN_COLOR, dash: 'dot' } : { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })) };
     return {
       type: 'FeatureCollection',
       // Con varios peces, cada uno corrido unos píxeles (0, +4, −4, +8): en los tramos que comparten se ven todas las líneas.

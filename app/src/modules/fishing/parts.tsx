@@ -49,14 +49,41 @@ export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: Fi
   return <SeasonBadge season={sectorSeason(data, sector)} />;
 }
 
+/**
+ * Qué se puede hacer con una especie en un tramo: «forbidden» (pesca prohibida en el tramo), «release» (captura y devolución), «keep» (se puede sacrificar hasta el cupo), «free»
+ * (sin límite, p. ej. la carpa) o «unknown» (el texto no lo dice: rige el cupo general).
+ */
+export type KeepRule = 'forbidden' | 'release' | 'keep' | 'free' | 'unknown';
+export function keepRule(sp: SectorSpecies | undefined, sector: FishSector): KeepRule {
+  if (sector.closed) return 'forbidden';
+  if (!sp) return 'unknown';
+  if (sector.catchAndRelease || sp.limit === 0) return 'release';
+  if (sp.limit === null) return 'free';
+  if (sp.limit && sp.limit > 0) return 'keep';
+  return 'unknown';
+}
+
 /** Cupo y talla de una especie en un tramo, en una línea. */
 export function speciesRules(t: (k: string, o?: Record<string, unknown>) => string, sp: SectorSpecies, sector: FishSector): string[] {
   const out: string[] = [];
   if (sector.catchAndRelease || sp.limit === 0) out.push(t('fishing.rules.release'));
   else if (sp.limit) out.push(t('fishing.rules.limit', { n: sp.limit }));
+  else if (sp.limit === null) out.push(t('fishing.rules.free'));
+  else out.push(t('fishing.rules.general'));
   if (sp.minSizeCm) out.push(t('fishing.rules.minSize', { cm: sp.minSizeCm }));
   if (sp.maxSizeCm) out.push(t('fishing.rules.maxSize', { cm: sp.maxSizeCm }));
   return out;
+}
+
+/** Grupos que nombra el reglamento sin detallar («salmónidos»): se aclara qué especies son. */
+export function GroupHint({ text }: { text?: string }) {
+  const { t } = useTranslation();
+  if (!text || !/salm[oó]nid/i.test(text)) return null;
+  return (
+    <p className="fish-hint" data-testid="fish-group-hint">
+      {t('fishing.salmonids')}
+    </p>
+  );
 }
 
 /** Aviso fijo: los datos son informativos y hay que consultar el reglamento vigente. */

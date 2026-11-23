@@ -5,7 +5,7 @@ import { LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import { isStale, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
-import { FishDataGate, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
+import { FishDataGate, GroupHint, keepRule, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
 import { useFishData } from './useFishData';
 
 const NEAR_RADIUS_M = 30_000;
@@ -154,6 +154,7 @@ export function FishPage() {
             <Baits sp={sp} />
             <h2 className="section-title">{t('fishing.sectorsFor', { count: sectors.length })}</h2>
             <SectorList data={data} sectors={sectors} speciesId={sp.id} />
+            <p className="muted small">{t('fishing.colorsHint')}</p>
             <RulesNotice data={data} />
           </div>
         );
@@ -174,7 +175,7 @@ export function SectorList({ data, sectors, speciesId, distances }: { data: Fish
         const d = distances?.get(s.id);
         return (
           <li key={s.id}>
-            <Link className="list-row" to={`/fishing/sector/${s.id}`}>
+            <Link className={sp || s.closed ? 'list-row fish-rule' : 'list-row'} data-rule={sp || s.closed ? keepRule(sp, s) : undefined} to={`/fishing/sector/${s.id}`}>
               <span className="list-main">
                 <span className="list-title">{s.water}</span>
                 <span className="list-sub">{s.name}</span>
@@ -255,6 +256,11 @@ export function FishSectorPage() {
               {region && ` · ${region.name}`}
             </p>
             {s.approx && <p className="fish-stale">{t('fishing.approx', { what: s.approx })}</p>}
+            {s.closed && (
+              <p className="card fish-rule" data-rule="forbidden" data-testid="fish-forbidden">
+                <strong>{t('fishing.season.forbidden')}</strong>
+              </p>
+            )}
             {(s.modality?.length || s.catchAndRelease) && (
               <p>
                 {s.modality?.map((m) => t(`fishing.modality.${m}`)).join(' · ')}
@@ -268,7 +274,7 @@ export function FishSectorPage() {
                 const rules = speciesRules(t, x, s);
                 return (
                   <li key={x.id}>
-                    <Link className="list-row" to={`/fishing/fish/${x.id}`}>
+                    <Link className="list-row fish-rule" data-rule={keepRule(x, s)} to={`/fishing/fish/${x.id}`}>
                       <span className="list-main">
                         <span className="list-title">{sp ? speciesName(sp, i18n.language) : x.id}</span>
                         {rules.length > 0 && <span className="list-sub">{rules.join(' · ')}</span>}
@@ -278,10 +284,12 @@ export function FishSectorPage() {
                 );
               })}
             </ul>
+            <p className="muted small">{t('fishing.colorsHint')}</p>
             {s.notes && (
               <section className="card stack">
                 <h2 className="section-title">{t('fishing.ruleText')}</h2>
                 <p className="fish-rule-text">{s.notes}</p>
+                <GroupHint text={s.notes} />
               </section>
             )}
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>

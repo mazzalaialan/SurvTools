@@ -25,8 +25,8 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
 
   // Mapa: todos los tramos; con la perca, uno solo.
   await page.getByTestId('fish-open-map').click();
-  await expect(page.getByTestId('fish-count')).toHaveText('2 tramos');
-  await expect(page.getByTestId('fish-map').locator('[data-fishing]')).toHaveAttribute('data-fishing', '2');
+  await expect(page.getByTestId('fish-count')).toHaveText('3 tramos');
+  await expect(page.getByTestId('fish-map').locator('[data-fishing]')).toHaveAttribute('data-fishing', '3');
   await page.getByTestId('fish-chip-perca').click();
   await expect(page.getByTestId('fish-count')).toHaveText('1 tramo con Perca criolla');
   await page.getByRole('button', { name: 'Ver lista' }).click();
@@ -35,10 +35,19 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   // Ficha del tramo: peces con sus reglas.
   await expect(page.getByTestId('fish-sector-page')).toBeVisible();
   await expect(page.getByTestId('fish-sector-species')).toContainText('Cupo: 2 por día · Talla mínima: 30 cm');
+  // Colores: verde la perca (cupo), y el texto que nombra a los salmónidos los aclara.
+  await expect(page.getByTestId('fish-sector-species').getByRole('link', { name: /Perca criolla/ })).toHaveAttribute('data-rule', 'keep');
+  await expect(page.getByTestId('fish-group-hint')).toContainText('truchas (arcoíris, marrón');
   await page.getByTestId('fish-sector-species').getByRole('link', { name: /Trucha arcoíris/ }).click();
 
   // Ficha del pez: carnadas y tramos.
   await expect(page.getByTestId('fish-baits')).toContainText('Woolly Bugger');
   await expect(page.getByTestId('fish-page')).toContainText('2 tramos donde se pesca');
   await expect(page.getByTestId('fish-sector-list')).toContainText('Captura y devolución');
+  // Amarillo donde es con devolución.
+  await expect(page.getByTestId('fish-sector-list').getByRole('link', { name: /Río Chimehuín/ })).toHaveAttribute('data-rule', 'release');
+
+  // Rojo donde la pesca está prohibida.
+  await page.goto('/#/fishing/sector/neuquen-pocahullo');
+  await expect(page.getByTestId('fish-forbidden')).toHaveText('Pesca no autorizada');
 });

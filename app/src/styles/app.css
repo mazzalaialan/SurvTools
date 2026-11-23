@@ -6991,3 +6991,24 @@ button.country-pack-del {
 .fish-sheet-list {
   margin-top: var(--sp-2);
 }
+/* Peces de un tramo: amarillo = captura y devolución; verde = se puede sacrificar (con cupo o sin límite). Borde y fondo, no solo color de texto. */
+.fish-rule[data-rule='release'] {
+  border-left: 6px solid var(--warn);
+  background: color-mix(in srgb, var(--warn) 22%, var(--surface));
+}
+.fish-rule[data-rule='keep'],
+.fish-rule[data-rule='free'] {
+  border-left: 6px solid var(--ok);
+  background: color-mix(in srgb, var(--ok) 22%, var(--surface));
+}
+.fish-hint {
+  font-size: var(--fs-sm);
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--info, var(--accent)) 12%, var(--surface));
+}
+.fish-rule[data-rule='forbidden'] {
+  border-left: 6px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 22%, var(--surface));
+}
