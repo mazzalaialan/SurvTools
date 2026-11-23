@@ -7146,3 +7146,24 @@ button.country-pack-del {
 .fish-survival {
   border-left: 6px solid var(--warn);
 }
+.fish-tech summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.fish-tech-steps {
+  margin: var(--sp-2) 0 0;
+  padding-left: 1.3em;
+}
+.fish-tech-steps li + li {
+  margin-top: 6px;
+}
+.fish-tech-dont {
+  margin: var(--sp-2) 0 0;
+  padding: 6px 10px;
+  border-left: 4px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+}

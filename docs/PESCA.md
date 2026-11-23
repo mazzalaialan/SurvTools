@@ -81,3 +81,8 @@ Trabajo en `~/vikarg-fishing-work/` (fuera del repo, con las fuentes descargadas
 
 - **Vigilancia diaria en el servidor** (`server/src/fishing/watch.ts`, cada 24 h y a los 2 minutos de arrancar): baja el reglamento vigente (`FISHING_DOCS`) y compara su huella (sha256, guardada en `settings` como `fishing-watch:<url>`); si cambió, o si ya existe el PDF de la temporada siguiente (mismo nombre con los años nuevos), manda un mail al correo de contacto. Agregar en `FISHING_DOCS` las páginas oficiales de cada jurisdicción nueva (por ejemplo, la de permisos).
 - **No regenera solo:** la transcripción se revisa a mano (`tools/fishing-data`, README). Al regenerar `app/public/data/fish-AR.json` y publicar, los teléfonos lo bajan solos (el archivo tiene `generatedAt` y la app trae el más nuevo del servidor; ver `modules/emergency/dataFile.ts`). Mientras tanto la app muestra los datos anteriores con su fecha y el aviso de consultar el reglamento vigente.
+
+## Supervivencia
+
+- En cada pez, «En supervivencia: qué come» (`tools/fishing-data/survival.json`): carnadas naturales según la dieta, aparte de lo reglamentario y con la aclaración de que hoy están prohibidas.
+- Módulo «Pesca de supervivencia» (`/fishing/survival`, `app/src/modules/fishing/survival.ts`): dónde y cuándo pescar, anzuelos improvisados, línea de mano, líneas fijas, trampas para peces, fija y pesca a mano, y limpiar/cocinar/guardar. Texto propio basado en FM 3-05.70 (dominio público). Sin venenos ni explosivos.

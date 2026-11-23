@@ -184,6 +184,9 @@ export function FishPage() {
                   ))}
                 </ul>
                 {sp.survival.tip && <p>{sp.survival.tip}</p>}
+                <Link to="/fishing/survival" data-testid="fish-survival-link">
+                  {t('fishing.survival.techLink')}
+                </Link>
               </section>
             )}
             <h2 className="section-title">{t('fishing.sectorsFor', { count: sectors.length })}</h2>

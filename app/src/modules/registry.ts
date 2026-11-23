@@ -32,7 +32,7 @@ import {
   Sprout,
   Tags,
   Triangle,
-  Warehouse, Fish, ListChecks, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
+  Warehouse, Fish, ListChecks, LifeBuoy, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
 import type { Capability, CapabilityMap } from '@/core/capabilities/capabilities';
 
 /** En el orden en que se muestran en Inicio. */
@@ -99,6 +99,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'fishingSpecies', section: 'fishing', icon: Fish, implemented: true, path: '/fishing/species' },
   { id: 'fishingWaters', section: 'fishing', icon: Waves, implemented: true, path: '/fishing/waters', degradesWithout: ['geolocation'] },
   { id: 'fishingRules', section: 'fishing', icon: ListChecks, implemented: true, path: '/fishing/rules' },
+  { id: 'fishingSurvival', section: 'fishing', icon: LifeBuoy, implemented: true, path: '/fishing/survival' },
   { id: 'gardenCalendar', section: 'garden', icon: CalendarDays, implemented: true, path: '/garden/calendar' },
   { id: 'gardenBeds', section: 'garden', icon: Sprout, implemented: true, path: '/garden/beds' },
   { id: 'libraryBooks', section: 'library', icon: BookOpen, implemented: true, path: '/library/books' },

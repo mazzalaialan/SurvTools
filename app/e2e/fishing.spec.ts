@@ -48,6 +48,12 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   // Para una emergencia: lo que come, aparte y con la aclaración del reglamento.
   await expect(page.getByTestId('fish-survival')).toContainText('Lombriz de tierra');
   await expect(page.getByTestId('fish-survival')).toContainText('prohibida');
+  // Y de ahí, las técnicas de pesca de supervivencia.
+  await page.getByTestId('fish-survival-link').click();
+  await expect(page.getByTestId('fish-survival-warning')).toContainText('emergencia real');
+  await page.getByTestId('fish-tech-hooks').locator('summary').click();
+  await expect(page.getByTestId('fish-tech-hooks')).toContainText('Anzuelo de tranca');
+  await page.goBack();
   await expect(page.getByTestId('fish-page')).toContainText('2 tramos donde se pesca');
   await expect(page.getByTestId('fish-sector-list')).toContainText('Captura y devolución');
   // Amarillo donde es con devolución.
