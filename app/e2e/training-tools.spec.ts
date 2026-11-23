@@ -46,7 +46,7 @@ test('entrenamiento: cronómetro, temporizador, herramientas y cuenta regresiva'
 
   // Herramientas: ritmo (10 km en 55:00 = 5:30 /km), zonas de pulso y metrónomo.
   await page.goto('/#/training');
-  await page.getByRole('link', { name: /Herramientas/ }).click();
+  await page.locator('main').getByRole('link', { name: /Herramientas/ }).click();
   await expect(page.getByTestId('pace-result')).toContainText('5:30 /km');
   await expect(page.getByTestId('pace-predict')).toContainText('21,1 km');
   await page.getByLabel('Edad').fill('40');
