@@ -1,6 +1,6 @@
 # Sección Pesca (diseño y datos)
 
-Estado: **en diseño** (2026-11-23). Decisiones del dueño del proyecto: empezar por **Patagonia**, **tramos ubicados a mano** en el mapa (no el río entero) y **tabla propia orientativa de carnadas**.
+Estado: **app hecha, faltan los datos reales** (2026-11-23). La sección funciona con datos de prueba (`app/e2e/fixtures/fish-AR.json`, e2e `fishing.spec.ts`); falta generar `public/data/fish-AR.json`. Decisiones del dueño del proyecto: empezar por **Patagonia**, **tramos ubicados a mano** en el mapa (no el río entero) y **tabla propia orientativa de carnadas**.
 
 ## Qué hace
 
@@ -64,3 +64,14 @@ Formato propuesto de `fish-<CC>.json`:
 2. Ubicar cada tramo en OSM entre sus puntos de referencia (`tools/fishing-data/`), con fuente y página por tramo.
 3. Tabla de carnadas por especie (10–15 peces).
 4. App: portada, mapa, fichas, paquete por país, textos es/en/pt, pruebas.
+
+## Avance de los datos (2026-11-23)
+
+Trabajo en `~/vikarg-fishing-work/` (fuera del repo, con las fuentes descargadas y su sha256):
+
+- **Reglamento vigente:** el de la temporada **2026/2027** (cuadernillo de 104 págs. de la Comisión Consultiva, publicado por Chubut: `https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf`, generado el 2026-10-20). Temporada del 01/11/2026 al 01/05/2027, con excepciones por ambiente. No se encontró la resolución APN de 2026/27 (la 417/2025 era de 2025/26).
+- `ambientes.json`: 366 tramos (Chubut 87, Neuquén 97, Río Negro 39, Parques Nacionales del Sur 143) con el texto literal del tramo y la página. Los campos estructurados (cupo, talla, devolución) salieron por patrones y **hay que revisarlos a mano**; en varios lagos de PN el cupo cambia por fecha (Nahuel Huapi, Gutiérrez, Mascardi, Traful, Limay).
+- `reglas_generales.json` (55 reglas), `especies.json` (18), `carnadas.json` (13 especies, con confianza).
+- **Carnada natural:** casi no se permite en Patagonia (señuelo artificial de un anzuelo; art. 13 y 15). Excepciones: pejerrey en ambientes autorizados de Neuquén («carnada viva», sin aclarar) y pasta de harinas vegetales para carpa y pejerrey en Neuquén y Río Negro. Contradicciones anotadas: art. 15 contra el anexo de Neuquén, y art. 22 (cebado) contra la pasta vegetal.
+- **A confirmar:** Aquihueco (Neuquén) trae fechas de la temporada anterior; Santa Cruz y Tierra del Fuego tienen reglamento propio (fuera de este documento).
+- **Falta:** ubicar los 366 tramos en el mapa (OSM) y revisar los campos de cada tramo.
