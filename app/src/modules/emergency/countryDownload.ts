@@ -24,6 +24,8 @@ export function countryFiles(country: Country): string[] {
   if (country === 'AR' || country === 'UY') files.push('tides-official.json');
   // Pisos de vegetación de Chile (Luebert y Pliscoff, ~3,5 MB): ecorregión fina de Chile.
   if (country === 'CL') files.push('vegetation-CL.json');
+  // Pesca (tramos, vedas y carnadas): solo los países que ya tienen paquete (ver modules/fishing).
+  if (fileBytes(`fish-${country}.json`) > 0) files.push(`fish-${country}.json`);
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).
   if (country === 'AR' || country === 'CL') files.push('parks-CL.json', 'repeaters-CL.json');

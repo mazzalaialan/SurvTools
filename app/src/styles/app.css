@@ -6880,3 +6880,112 @@ button.country-pack-del {
   gap: 8px;
   min-height: 44px;
 }
+
+/* ---- Pesca (modules/fishing) ---- */
+.fish-season {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.fish-season[data-state='open'] {
+  color: var(--ok);
+}
+.fish-season[data-state='closed'] {
+  color: var(--danger);
+}
+.fish-season[data-state='unknown'] {
+  color: var(--text-muted);
+}
+.fish-notice {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+.fish-stale {
+  color: var(--warn);
+  font-weight: 700;
+  margin: 0;
+}
+.fish-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--sp-2) var(--sp-3);
+  margin: 0;
+}
+.fish-facts dt {
+  color: var(--text-muted);
+}
+.fish-facts dd {
+  margin: 0;
+}
+.fish-bait-title {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0 0 4px;
+}
+.fish-baits {
+  margin: 0;
+  padding-left: 1.2em;
+}
+/* El mapa de pesca ocupa casi toda la pantalla: los peces arriba y la hoja abajo, al alcance del pulgar. */
+.fish-map.maps-stage {
+  height: min(78dvh, 820px);
+  position: relative;
+}
+.fish-chips {
+  position: absolute;
+  top: 8px;
+  left: 56px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.fish-chips .chip {
+  flex: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+}
+.fish-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 4px solid currentColor;
+}
+.fish-swatch-dash {
+  border-top-style: dashed;
+}
+.fish-swatch-dot {
+  border-top-style: dotted;
+}
+.fish-swatch-dashdot {
+  border-top-style: double;
+  border-top-width: 6px;
+}
+.fish-sheet {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  max-width: 560px;
+  margin: 0 auto;
+  max-height: 50%;
+  overflow-y: auto;
+  padding: 10px 12px;
+}
+.fish-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  min-height: 48px;
+}
+.fish-sheet-list {
+  margin-top: var(--sp-2);
+}

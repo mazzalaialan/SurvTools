@@ -1,7 +1,7 @@
 import { circleBounds } from './tiles';
 import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
+import type { ExpressionSpecification, GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import { TRACK_PALETTE } from './trackSelect';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -84,6 +84,13 @@ interface Props {
   onContextMenu?: (p: { lat: number; lon: number }, x: number, y: number, width: number, height: number) => void;
   /** Se movió el mapa: se cierra el menú. */
   onMoveStart?: () => void;
+  /**
+   * Tramos de pesca (ver modules/fishing): cada feature con `id`, `color`, `dash` («solid», «dash», «dashdot» o «dot») y,
+   * opcional, `label` (p. ej. cuántas especies). Los lagos van como polígono.
+   */
+  fishing?: FeatureCollection | null;
+  /** Toque sobre uno o más tramos de pesca (todos los que hay a 22 px del dedo); si no hay ninguno, va a `onPick`. */
+  onFishingPick?: (ids: string[]) => void;
 }
 
 export interface MapTrack {
@@ -154,6 +161,7 @@ function data(p: Props) {
     outline: p.outline ?? EMPTY,
     ecoregions: p.ecoregions ?? EMPTY,
     geology: p.geology ?? EMPTY,
+    fishing: p.fishing ?? EMPTY,
     'measure-line': (p.measure && p.measure.length > 1
       ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: p.measure } }] }
       : EMPTY) as FeatureCollection,
@@ -207,6 +215,36 @@ function ensureAreaLayers(map: MlMap, c: MapColors, p: Props) {
   }
 }
 
+/** Trazos de los tramos de pesca: el color no alcanza solo (tema rojo, daltonismo), así que cada pez lleva además su trazo. */
+const FISHING_DASH: Record<string, number[] | null> = { solid: null, dash: [2.4, 1.4], dashdot: [3, 1.2, 0.6, 1.2], dot: [0.4, 1.4] };
+export const FISHING_LAYERS = ['fishing-fill', ...Object.keys(FISHING_DASH).map((d) => `fishing-line-${d}`)];
+
+function addFishingLayers(map: MlMap, c: MapColors) {
+  const width: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 6, 2.5, 12, 5, 16, 8];
+  const casing: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 6, 5, 12, 9, 16, 13];
+  map.addLayer({ id: 'fishing-fill', type: 'fill', source: 'fishing', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.28, 'fill-outline-color': ['get', 'color'] } });
+  // Borde claro debajo de la línea, para que se lea sobre el agua y el relieve.
+  map.addLayer({ id: 'fishing-casing', type: 'line', source: 'fishing', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.bg, 'line-width': casing, 'line-opacity': 0.9 } });
+  for (const [dash, pattern] of Object.entries(FISHING_DASH)) {
+    map.addLayer({
+      id: `fishing-line-${dash}`,
+      type: 'line',
+      source: 'fishing',
+      filter: ['==', ['coalesce', ['get', 'dash'], 'solid'], dash],
+      layout: { 'line-cap': dash === 'dot' ? 'round' : 'butt', 'line-join': 'round' },
+      paint: { 'line-color': ['get', 'color'], 'line-width': width, ...(pattern ? { 'line-dasharray': pattern } : {}) },
+    });
+  }
+  map.addLayer({
+    id: 'fishing-label',
+    type: 'symbol',
+    source: 'fishing',
+    filter: ['has', 'label'],
+    layout: { 'text-field': ['get', 'label'], 'text-font': ['Noto Sans Regular'], 'text-size': 13, 'symbol-placement': 'line-center', 'text-allow-overlap': false },
+    paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2.5 },
+  });
+}
+
 /** Capas propias encima del estilo base; se vuelven a agregar cada vez que cambia el estilo (tema). */
 function addOverlays(map: MlMap, c: MapColors, p: Props) {
   const d = data(p);
@@ -229,6 +267,7 @@ function addOverlays(map: MlMap, c: MapColors, p: Props) {
   );
   map.addLayer({ id: 'zones-fill', type: 'fill', source: 'zones', paint: { 'fill-color': c.info, 'fill-opacity': 0.07 } });
   map.addLayer({ id: 'zones', type: 'line', source: 'zones', paint: { 'line-color': c.info, 'line-width': 1.5, 'line-dasharray': [3, 2] } });
+  addFishingLayers(map, c);
   map.addLayer({ id: 'preview-fill', type: 'fill', source: 'preview', paint: { 'fill-color': c.accent, 'fill-opacity': 0.12 } });
   map.addLayer({ id: 'preview-line', type: 'line', source: 'preview', paint: { 'line-color': c.accent, 'line-width': 2 } });
   // Tracks importados: en otro color, para no confundirlos con las rutas propias.
@@ -386,8 +425,16 @@ export function MapView(props: Props) {
     m.on('movestart', () => latest.current.onMoveStart?.());
     // Con una herramienta activa, el toque marca un punto.
     m.on('click', (e) => {
-      if (latest.current.tool) latest.current.onMapClick?.({ lat: e.lngLat.lat, lon: e.lngLat.lng });
-      else latest.current.onPick?.({ lat: e.lngLat.lat, lon: e.lngLat.lng });
+      if (latest.current.tool) return latest.current.onMapClick?.({ lat: e.lngLat.lat, lon: e.lngLat.lng });
+      if (latest.current.onFishingPick) {
+        // Un dedo tapa unos 44 px: se devuelven todos los tramos que hay debajo (donde se cruzan ríos, más de uno).
+        const r = 22;
+        const layers = FISHING_LAYERS.filter((id) => m.getLayer(id));
+        const hits = layers.length ? m.queryRenderedFeatures([[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]], { layers }) : [];
+        const ids = [...new Set(hits.map((f) => f.properties?.id as string).filter(Boolean))];
+        if (ids.length) return latest.current.onFishingPick(ids);
+      }
+      latest.current.onPick?.({ lat: e.lngLat.lat, lon: e.lngLat.lng });
     });
     m.on('click', 'mine-waypoints', (e) => {
       if (latest.current.tool) return;
@@ -450,7 +497,8 @@ export function MapView(props: Props) {
     // Rectas de corte y recorridos guardados a la vista (para las pruebas).
     container.current?.setAttribute('data-gap-lines', String(props.gapLines?.length ?? 0));
     container.current?.setAttribute('data-tracks-shown', String(props.tracks.length));
-  }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.geology, props.measure, props.target]);
+    container.current?.setAttribute('data-fishing', String(props.fishing?.features.length ?? 0));
+  }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.geology, props.measure, props.target, props.fishing]);
 
   useEffect(() => {
     const m = map.current;

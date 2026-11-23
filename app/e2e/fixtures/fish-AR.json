@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-23",
+  "seasonLabel": "2026/2027",
+  "sources": [{ "id": "pdcp-2026-27", "name": "Reglamento de Pesca Deportiva Continental Patagónico 2026/2027", "url": "https://example.org/reglamento.pdf", "license": "Sin licencia declarada (atribución)", "date": "2026-10-20" }],
+  "species": [
+    { "id": "trucha-arcoiris", "scientific": "Oncorhynchus mykiss", "native": false, "name": { "es": "Trucha arcoíris", "en": "Rainbow trout", "pt": "Truta arco-íris" }, "size": "30–50 cm", "baits": { "lures": ["Cucharas ondulantes de 10 a 25 g"], "fly": ["Woolly Bugger", "Ninfas"], "confidence": "high" } },
+    { "id": "perca", "scientific": "Percichthys trucha", "native": true, "name": { "es": "Perca criolla", "en": "Creole perch", "pt": "Perca-crioula" }, "baits": { "fly": ["Alevinos chicos"], "confidence": "medium" } }
+  ],
+  "regions": [{ "id": "neuquen", "name": "Neuquén", "season": { "from": "11-01", "to": "05-01" }, "rules": ["Señuelo artificial de un solo anzuelo"], "source": "pdcp-2026-27" }],
+  "sectors": [
+    { "id": "neuquen-chimehuin", "region": "neuquen", "water": "Río Chimehuín", "name": "Desde la boca del lago Huechulafquen hasta el puente de la ruta 40", "geometry": { "type": "LineString", "coordinates": [[-71.2, -39.8], [-71.05, -39.88]] }, "modality": ["fly"], "catchAndRelease": true, "species": [{ "id": "trucha-arcoiris", "limit": 0 }], "source": "pdcp-2026-27", "ref": "pág. 52" },
+    { "id": "neuquen-alumine", "region": "neuquen", "water": "Río Aluminé", "name": "Todo el río", "geometry": { "type": "LineString", "coordinates": [[-71.0, -39.2], [-70.9, -39.4]] }, "modality": ["fly", "spinning"], "species": [{ "id": "trucha-arcoiris", "limit": 1 }, { "id": "perca", "limit": 2, "minSizeCm": 30 }], "source": "pdcp-2026-27", "ref": "pág. 48" }
+  ]
+}

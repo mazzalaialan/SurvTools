@@ -1,0 +1,91 @@
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { seasonStatus, sectorSeason, type FishData, type FishSector, type Season, type SectorSpecies } from './fishing';
+import type { FishDataState } from './useFishData';
+
+/** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
+export const FISH_STYLES = [
+  { color: '#0072B2', dash: 'solid' },
+  { color: '#D55E00', dash: 'dash' },
+  { color: '#009E73', dash: 'dashdot' },
+  { color: '#CC79A7', dash: 'dot' },
+] as const;
+export const MAX_FISH = FISH_STYLES.length;
+
+const fmt = (d: Date, lang: string) => d.toLocaleDateString(lang, { day: 'numeric', month: 'long' });
+
+/** «Abierta hasta el 1 de mayo» / «En veda hasta el 1 de noviembre» / «Temporada: ver reglamento». */
+export function SeasonBadge({ season, now }: { season: Season | undefined; now?: Date }) {
+  const { t, i18n } = useTranslation();
+  const s = seasonStatus(season, now);
+  if (s.state === 'open')
+    return (
+      <span className="fish-season" data-state="open">
+        {s.until ? t('fishing.season.openUntil', { date: fmt(s.until, i18n.language) }) : t('fishing.season.allYear')}
+      </span>
+    );
+  if (s.state === 'closed')
+    return (
+      <span className="fish-season" data-state="closed">
+        {s.from ? t('fishing.season.closedUntil', { date: fmt(s.from, i18n.language) }) : t('fishing.season.closed')}
+      </span>
+    );
+  return (
+    <span className="fish-season" data-state="unknown">
+      {t('fishing.season.unknown')}
+    </span>
+  );
+}
+
+export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: FishSector }) {
+  return <SeasonBadge season={sectorSeason(data, sector)} />;
+}
+
+/** Cupo y talla de una especie en un tramo, en una línea. */
+export function speciesRules(t: (k: string, o?: Record<string, unknown>) => string, sp: SectorSpecies, sector: FishSector): string[] {
+  const out: string[] = [];
+  if (sector.catchAndRelease || sp.limit === 0) out.push(t('fishing.rules.release'));
+  else if (sp.limit) out.push(t('fishing.rules.limit', { n: sp.limit }));
+  if (sp.minSizeCm) out.push(t('fishing.rules.minSize', { cm: sp.minSizeCm }));
+  if (sp.maxSizeCm) out.push(t('fishing.rules.maxSize', { cm: sp.maxSizeCm }));
+  return out;
+}
+
+/** Aviso fijo: los datos son informativos y hay que consultar el reglamento vigente. */
+export function RulesNotice({ data }: { data: FishData }) {
+  const { t } = useTranslation();
+  const src = data.sources[0];
+  return (
+    <p className="fish-notice" data-testid="fish-notice">
+      {t('fishing.notice', { season: data.seasonLabel ?? '', date: data.generatedAt })}{' '}
+      {src && (
+        <a href={src.url} target="_blank" rel="noreferrer">
+          {src.name}
+        </a>
+      )}
+    </p>
+  );
+}
+
+/** Lo que se muestra mientras no hay datos (cargando, país sin datos, sin bajar). */
+export function FishDataGate({ state, children }: { state: FishDataState; children: (data: FishData) => ReactNode }) {
+  const { t } = useTranslation();
+  if (state.status === 'loading') return <p className="muted">{t('fishing.loading')}</p>;
+  if (state.status === 'none')
+    return (
+      <div className="card" data-testid="fish-none">
+        <p>{t('fishing.noCountry')}</p>
+      </div>
+    );
+  if (state.status === 'missing')
+    return (
+      <div className="card" data-testid="fish-missing">
+        <p>{t('fishing.missing')}</p>
+        <Link className="btn" to="/settings">
+          {t('fishing.download')}
+        </Link>
+      </div>
+    );
+  return <>{children(state.data)}</>;
+}

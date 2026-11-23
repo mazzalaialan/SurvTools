@@ -32,11 +32,11 @@ import {
   Sprout,
   Tags,
   Triangle,
-  Warehouse, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
+  Warehouse, Fish, ListChecks, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
 import type { Capability, CapabilityMap } from '@/core/capabilities/capabilities';
 
 /** En el orden en que se muestran en Inicio. */
-export const SECTIONS = ['firstAid', 'orientation', 'weather', 'training', 'documents', 'inventory', 'knots', 'garden', 'library'] as const;
+export const SECTIONS = ['firstAid', 'orientation', 'weather', 'training', 'documents', 'inventory', 'knots', 'garden', 'fishing', 'library'] as const;
 export type Section = (typeof SECTIONS)[number];
 
 export interface ModuleDef {
@@ -95,6 +95,10 @@ export const MODULES: ModuleDef[] = [
   { id: 'ropes', section: 'knots', icon: Spool, implemented: true, path: '/knots/ropes' },
   { id: 'carabiners', section: 'knots', icon: Link2, implemented: true, path: '/knots/carabiners' },
   { id: 'knotGlossary', section: 'knots', icon: BookA, implemented: true, path: '/knots/glossary' },
+  { id: 'fishingMap', section: 'fishing', icon: MapIcon, implemented: true, path: '/fishing/map' },
+  { id: 'fishingSpecies', section: 'fishing', icon: Fish, implemented: true, path: '/fishing/species' },
+  { id: 'fishingWaters', section: 'fishing', icon: Waves, implemented: true, path: '/fishing/waters', degradesWithout: ['geolocation'] },
+  { id: 'fishingRules', section: 'fishing', icon: ListChecks, implemented: true, path: '/fishing/rules' },
   { id: 'gardenCalendar', section: 'garden', icon: CalendarDays, implemented: true, path: '/garden/calendar' },
   { id: 'gardenBeds', section: 'garden', icon: Sprout, implemented: true, path: '/garden/beds' },
   { id: 'libraryBooks', section: 'library', icon: BookOpen, implemented: true, path: '/library/books' },

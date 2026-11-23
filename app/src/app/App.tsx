@@ -101,6 +101,13 @@ const WorkoutPage = page(() => import('@/modules/training/WorkoutPage').then((m)
 const WorkoutEditPage = page(() => import('@/modules/training/WorkoutEditPage').then((m) => ({ default: m.WorkoutEditPage })));
 const OutingsPage = page(() => import('@/modules/training/OutingsPage').then((m) => ({ default: m.OutingsPage })));
 const OutingPage = page(() => import('@/modules/training/OutingPage').then((m) => ({ default: m.OutingPage })));
+const FishingHomePage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishingHomePage })));
+const FishSpeciesPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishSpeciesPage })));
+const FishPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishPage })));
+const FishWatersPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishWatersPage })));
+const FishSectorPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishSectorPage })));
+const FishRulesPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishRulesPage })));
+const FishingMapPage = page(() => import('@/modules/fishing/FishingMapPage').then((m) => ({ default: m.FishingMapPage })));
 const GardenPage = page(() => import('@/modules/garden/GardenPage').then((m) => ({ default: m.GardenPage })));
 const SettingsPage = page(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
 const AboutPage = page(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
@@ -202,6 +209,13 @@ const router = createHashRouter([
       { path: '/garden/beds/:id', element: <BedPage /> },
       // Ruta de la sección "Campo" (v0.3), dividida en Orientación y Meteorología.
       { path: '/field', element: <Navigate to="/orientation" replace /> },
+      { path: '/fishing', element: <FishingHomePage /> },
+      { path: '/fishing/map', element: <FishingMapPage /> },
+      { path: '/fishing/species', element: <FishSpeciesPage /> },
+      { path: '/fishing/fish/:id', element: <FishPage /> },
+      { path: '/fishing/waters', element: <FishWatersPage /> },
+      { path: '/fishing/sector/:id', element: <FishSectorPage /> },
+      { path: '/fishing/rules', element: <FishRulesPage /> },
       { path: '/library', element: <SectionPage section="library" /> },
       { path: '/library/books', element: <LibraryPage /> },
       { path: '/library/search', element: <LibrarySearchPage /> },
