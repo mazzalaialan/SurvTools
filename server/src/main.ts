@@ -36,6 +36,7 @@ import { brRiverLevels, brRiverStations as toRiverStations } from './rivers/brWa
 import { loadRiverCatalog, RIVER_EVERY_MS, runRiverForecastWatch, runRiverWatch, stationsToWatch, type RiverLevel, type RiverStation } from './rivers/watch.ts';
 import { runVolcanoWatch, volcanoReadStamp, VOLCANO_EVERY_MS } from './volcanoes/watch.ts';
 import { createMailNotifier, createSourceMonitor } from './monitor/sources.ts';
+import { runFishingWatch } from './fishing/watch.ts';
 
 const config = loadConfig();
 const db = openDb(config.dataDir);
@@ -52,9 +53,10 @@ if (config.fcmServiceAccountFile) {
 }
 const push = createPushSender(db, config.vapidSubject, fcm);
 // Fuentes externas caídas: un mail al correo de contacto por caída (y otro cuando vuelve).
+const adminMail = await createMailNotifier(config.smtpUrl, config.adminEmail, config.mailFrom);
 const monitor = createSourceMonitor(
   db,
-  await createMailNotifier(config.smtpUrl, config.adminEmail, config.mailFrom),
+  adminMail,
   (msg, data) => console.warn(JSON.stringify({ msg, ...data })),
   { minFailures: 3, minDownMs: 30 * 60_000, publicUrl: config.publicUrl ?? undefined },
 );
@@ -432,6 +434,18 @@ async function outingTick() {
 }
 const outingTimer = setInterval(() => void outingTick(), 60_000);
 
+// Normativa de pesca: una vez por día se revisa si cambió el reglamento (o salió el de la temporada siguiente) y se avisa por mail.
+async function fishingWatchTick() {
+  try {
+    const r = await runFishingWatch(db, adminMail, (msg, data) => app.log.warn(data ?? {}, msg));
+    if (r.changed.length || r.found.length) app.log.info(r, 'cambió la normativa de pesca');
+  } catch (err) {
+    app.log.error(err, 'falló la revisión de la normativa de pesca');
+  }
+}
+const fishingWatchTimer = setInterval(() => void fishingWatchTick(), 24 * 3_600_000);
+setTimeout(() => void fishingWatchTick(), 120_000);
+
 // Cada 15 minutos: la helada se avisa a partir de las 17 y el riego y las tareas a la hora de aviso de cada uno.
 const gardenTimer = setInterval(() => void gardenTick(), 15 * 60_000);
 setTimeout(() => void hazardTick(), 30_000);
@@ -448,6 +462,7 @@ void rainTick();
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, async () => {
     clearInterval(timer);
+    clearInterval(fishingWatchTimer);
     clearInterval(rainTimer);
     clearInterval(rainMapTimer);
     clearInterval(observedRainTimer);
