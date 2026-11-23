@@ -1,0 +1,6 @@
+{
+  "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23. Fuente, autor y licencia verificados en Wikimedia Commons.",
+  "trucha-arcoiris": { "file": "trucha-arcoiris.webp", "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)", "license": "Dominio público", "url": "https://commons.wikimedia.org/wiki/File:Oncorhynchus_mykiss_mid_res_150dpi_whiteBG.jpg" },
+  "trucha-marron": { "file": "trucha-marron.webp", "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)", "license": "Dominio público", "url": "https://commons.wikimedia.org/wiki/File:Brown_trout_FWS_white_background.jpg" },
+  "trucha-arroyo": { "file": "trucha-arroyo.webp", "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons). Macho en época de desove", "license": "Dominio público", "url": "https://commons.wikimedia.org/wiki/File:Brook_trout.jpg" }
+}

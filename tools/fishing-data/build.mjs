@@ -21,6 +21,7 @@ const carnadas = read('carnadas.json');
 const reglas = read('reglas_generales.json');
 const cuts = JSON.parse(readFileSync(fileURLToPath(new URL('./cuts.json', import.meta.url)), 'utf8'));
 const permits = JSON.parse(readFileSync(fileURLToPath(new URL('./permits.json', import.meta.url)), 'utf8'));
+const images = JSON.parse(readFileSync(fileURLToPath(new URL('./images.json', import.meta.url)), 'utf8'));
 
 const SOURCE = {
   id: 'pdcp-2026-27',
@@ -181,7 +182,7 @@ for (const jur of jurs.split(',')) {
   }
 }
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
-const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id)));
+const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => (images[sp.id] ? { ...sp, image: images[sp.id] } : sp));
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 10), seasonLabel: '2026/2027', sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);
