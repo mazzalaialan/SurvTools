@@ -1230,3 +1230,148 @@
   title: "Soporte vital cardiovascular avanzado (ACLS) 2020"
   author: "Satori Continuum Publishing"
   lang: es
+
+# Lote 3 (autores de libros sin autor)
+"Animales e insectos/La cría de codornices.pdf":
+  title: "La cría de codornices (coturnicultura)"
+  author: "Rodrigo Efrén Vásquez Romero y Hugo Humberto Ballesteros Chavarro (Produmedios)"
+  lang: es
+"Construcciones y herramientas/Guia Practica de Fontaneria.pdf":
+  title: "Guía práctica de fontanería"
+  author: "René Hiller (Editorial Everest)"
+  lang: es
+"Cultivo/inta_-_mi_casa-_mi_huerta.pdf":
+  title: "Mi casa, mi huerta: técnicas de agricultura urbana"
+  author: "Janine Schonwald y Francisco Pescio (INTA)"
+  year: 2015
+  lang: es
+"Cultivo/Plantas medicinales/Plantas que curam - Hugo de Caravaca.pdf":
+  title: "Plantas que curam"
+  author: "Hugo de Caravaca"
+  year: 2000
+  lang: pt
+"Alimento/Los-grupos-sanguíneos-y-la-alimentación_KM.pdf":
+  title: "Los grupos sanguíneos y la alimentación"
+  author: "Peter J. D'Adamo"
+  lang: es
+"Catastrofes/Manual Primer Ataque Completo(1).pdf":
+  title: "Manual del primer ataque a un incendio forestal"
+  author: "Víctor Fernández Huertas, José Ignacio Rodríguez de la Fuente y F. Aguirre (Junta de Castilla y León)"
+  year: 2002
+  lang: es
+"Cultivo/Plantas medicinales/103 hierbas medicinales fucoa 2018.pdf":
+  title: "103 hierbas medicinales"
+  author: "FUCOA (Ministerio de Agricultura, Chile)"
+  year: 2018
+  lang: es
+"Cultivo/Plantas medicinales/Hierbas medicinales.pdf":
+  title: "Hierbas medicinales"
+  author: "FUCOA (Ministerio de Agricultura, Chile)"
+  lang: es
+"Cultivo/Plantas medicinales/Aloe Vera-La planta que cura.pdf":
+  title: "Aloe vera: la planta que cura"
+  author: "Marc Schweizer"
+  year: 1994
+  lang: es
+"Agua y aguas negras/Aguas negras y baño seco/Manual de Autoconstruccion de Tratamiento de Aguas Residuales.pdf":
+  title: "Manual de autoconstrucción de sistemas de tratamiento de aguas residuales domiciliarias"
+  author: "Mariñelarena (Proyecto FREPLATA)"
+  year: 2006
+  lang: es
+"Animales e insectos/Mascotas/Primeros auxilios para mascotas.pdf":
+  title: "Primeros auxilios para mascotas"
+  author: "Academia Nacional de Bomberos de Chile"
+  year: 2019
+  lang: es
+"Cultivo/CODEX ALIMENTARIUS cantidades permitidas Aditivos Productos Cárnicos.pdf":
+  title: "Codex Alimentarius: aditivos permitidos en productos cárnicos elaborados"
+  author: "Comisión del Codex Alimentarius (FAO/OMS)"
+  year: 1991
+  lang: es
+"Catastrofes/Cómo sobrevivir a un desastre.pdf":
+  title: "Cómo sobrevivir a los desastres: manual de emergencias para los ciudadanos"
+  author: "Departamento de Salud Pública de Illinois"
+  lang: es
+"Defensa y entrenamiento/death by deception - advanced improvised booby traps - jo jo gonzales(2).pdf":
+  title: "Death by Deception: Advanced Improvised Booby Traps"
+  author: "Jo Jo Gonzales"
+  year: 1992
+  lang: en
+"Medicina y Primeros Auxilios/Manual de primeros auxilios para perros.pdf":
+  title: "Manual de primeros auxilios para perros"
+  author: "Sol Adriana Atencio Vela (Solaavela)"
+  lang: es
+"Animales e insectos/Granja/conceptos_basicos_en_el_ganado_caprino.pdf":
+  title: "Conceptos básicos en el ganado caprino"
+  author: "Aldo Smeriglio, Melisa Bogarin y Sebastián López (INTA)"
+  year: 2016
+  lang: es
+"Construcciones y herramientas/Carpinteria rural - Guia Practica.pdf":
+  title: "Carpintería: guía práctica para negocios rurales"
+  author: "Soluciones Prácticas (Practical Action, Perú)"
+  year: 2011
+  lang: es
+"Defensa y entrenamiento/Anarchist Arsenal.pdf":
+  title: "Anarchist Arsenal: Improvised Incendiary and Explosives Techniques"
+  author: "David Harber"
+  lang: en
+"Energia/Soldador por arco con electrodo revestido.pdf":
+  title: "Soldador por arco con electrodo revestido"
+  author: "Ministerio de Trabajo, Empleo y Seguridad Social (Argentina)"
+  lang: es
+"Medicina y Primeros Auxilios/Splint (user guide).pdf":
+  title: "SAM Splint: guía del usuario"
+  author: "Sam Scheinberg, M.D. (SAM Medical Products)"
+  year: 2014
+  lang: en
+"Cultivo/manual_bosque_comestble_2011.pdf":
+  title: "Manual del curso de bosque comestible"
+  author: "Ricardo Romero (Centro de Agroecología y Vida Sostenible Las Cañadas)"
+  year: 2011
+  lang: es
+"Catastrofes/manejo_de_cadaveres.pdf":
+  title: "Manejo seguro de cadáveres: desastres, cólera y otras infecciones"
+  author: "Ministerio de Salud de la Nación (Argentina)"
+  year: 2011
+  lang: es
+"Alimento/Cerveza/Manual Practico Del Cervecero - Boris de Mesones.pdf":
+  title: "Manual práctico del cervecero"
+  author: "Boris de Mesones"
+  lang: es
+"Alimento/recetario_de_frutos_nativos_del_uruguay.pdf":
+  title: "Recetario de frutos nativos del Uruguay"
+  author: "Laura Rosano"
+  year: 2012
+  lang: es
+"Orientacion/Técnicas de navegación terrestre y levantamiento cartográfico.pdf":
+  title: "Técnicas de navegación terrestre y levantamiento cartográfico"
+  author: "Benjamín Álvarez Garay (UNED, Costa Rica)"
+  lang: es
+"Defensa y entrenamiento/Tiro con arco/manual de tiro con arco - cerra gonzález.pdf":
+  title: "Manual de tiro con arco: iniciación, puesta a punto y técnica"
+  author: "Tomás Cerra González"
+  lang: es
+"Cultivo/Semillas y Germinados - Dr Jensen.pdf":
+  title: "Semillas y germinados"
+  author: "Bernard Jensen"
+  lang: es
+"Alimento/Conservas/Chacinados jamones/SAUSAGE MAKING.PDF":
+  title: "Basics of Sausage Making: Formulation, Processing & Safety"
+  author: "Anand Mohan"
+  lang: en
+"Cocina/Frutos silvestres del Gran_Chaco.pdf":
+  title: "Frutos silvestres del Gran Chaco"
+  author: "Fabiana Menna y Valentina Bianco (Slow Food)"
+  lang: es
+"Cultivo/Plantas medicinales/Plantas aromáticas y medicinales.pdf":
+  title: "Plantas aromáticas y medicinales: enfermedades de importancia y sus usos terapéuticos"
+  author: "Ministerio de Agricultura y Desarrollo Rural (Colombia)"
+  lang: es
+"Medicina y Primeros Auxilios/Guía práctica de primeros auxilios para padres.pdf":
+  title: "Guía práctica de primeros auxilios para padres"
+  author: "Juan Casado Flores y Raquel Jiménez García"
+  lang: es
+"Medicina y Primeros Auxilios/Manual de Primeros Auxilios.pdf":
+  title: "Manual de primeros auxilios (nivel básico)"
+  author: "Cruz Roja Mexicana"
+  lang: es
