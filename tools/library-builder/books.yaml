@@ -736,6 +736,7 @@
   lang: es
 "Construcciones y herramientas/Herramientas/Manual Basico de Contingencias.(Defensa Civil).pdf":
   title: "Manual básico de contingencias (Defensa Civil)"
+  author: "Dirección Provincial de Defensa Civil de Neuquén"
   lang: es
   category: Catastrofes
 "Construcciones y herramientas/Manual de Herreria - Universidad del Trabajo del Uruguay.pdf":
@@ -2077,4 +2078,77 @@
   lang: es
 "Revista Comando/comando+99.pdf":
   title: "Revista Comando n.º 99"
+  lang: es
+
+# Lote 8
+"Supervivencia General/Manual de Supervivencia II relato.pdf":
+  title: "Manual de supervivencia"
+"Supervivencia General/Combat Survival Envasion.pdf":
+  title: "Combat Survival Evasion"
+  lang: en
+"Construcciones y herramientas/Manual-para-Fabricar-Prensa-hidráulica-12-a-25-Toneladas-EN-PDF.pdf":
+  title: "Manual para fabricar una prensa hidráulica de 12 a 25 toneladas"
+  author: "INVEMEC Guárico"
+  lang: es
+"Animales e insectos/avesmarinas.pdf":
+  title: "Distribución otoñal de aves marinas y terrestres en los canales chilenos"
+  author: "Santiago Imberti"
+  year: 2005
+  lang: es
+"Animales e insectos/Caza/curtido art.pdf":
+  title: "Curtido artesanal de pieles"
+  author: "PROIDEC (Fundación W. K. Kellogg)"
+  lang: es
+"Construcciones y herramientas/Instrucciones heladera silvercrest.pdf":
+  title: "Máquina de helados Silvercrest SECM 12 A1 (instrucciones)"
+"Medicina y Primeros Auxilios/Fortalecimiento muscular en rehabilitacion.pdf":
+  title: "Fortalecimiento muscular en rehabilitación"
+  author: "H. Gain, J. M. Hervé, R. Hignet, R. Deslandes"
+  year: 2003
+  lang: es
+"Medicina y Primeros Auxilios/Primeros Auxilios CRA.pdf":
+  title: "Primeros auxilios (Cruz Roja Argentina)"
+  author: "Cruz Roja Argentina"
+  lang: es
+"Catastrofes/GUIA PLAN DE EMERGENCIA FAMILIAR ISP.pdf":
+  title: "Guía para elaborar el plan de emergencias familiar"
+  author: "ISP y Ecoexploratorio (Puerto Rico); Benjamin Nieves"
+  lang: es
+"Catastrofes/Nuevo coronavirus 2019 NCoV - Gobierno de México.pdf":
+  title: "Nuevo coronavirus 2019-nCoV (Mensajero de la salud)"
+  author: "Secretaría de Salud (México)"
+  year: 2020
+  lang: es
+"Catastrofes/Correos electrónicos Plan Familiar de Desastres.pdf · versión 1.pdf":
+  title: "Plan familiar de desastres y guía de supervivencia personal"
+  author: "Oficina de Servicios de Emergencia del Condado de San Diego"
+  lang: es
+"Catastrofes/campana_invierno_0.pdf":
+  title: "Prepárate para este invierno (campaña de invierno)"
+  author: "ONEMI (Chile)"
+  lang: es
+"Catastrofes/Prepárate con la Cruz Roja.pdf":
+  title: "Prepárate con la Cruz Roja"
+  author: "Cruz Roja Americana"
+  lang: es
+"Cultivo/Greenhouses. Planning A Home Greenhouse.pdf":
+  title: "Greenhouses: planning a home greenhouse"
+  author: "University of Maryland Cooperative Extension"
+  lang: en
+"Cultivo/Greenhouses. The Hobby Greenhouse.pdf":
+  title: "Greenhouses: the hobby greenhouse"
+  author: "Michael A. Schnelle, Steven H. Dobbs, Douglas C. Needham (Oklahoma Cooperative Extension Service)"
+  lang: en
+"Cultivo/Plantas medicinales/Physalis peruviana L.  Aguaymanto tratamineto en pacientes con hipercolesterolemia.pdf":
+  title: "Efecto del consumo de Physalis peruviana L. (aguaymanto) sobre el perfil lipídico de pacientes con hipercolesterolemia"
+  author: "María E. D. Reyes-Beltrán et al."
+  year: 2015
+  lang: es
+"Defensa y entrenamiento/Tiro con arco/Arcos naturales - Alfonso García-Oliva, Luthier.pdf":
+  title: "Arcos naturales"
+  author: "Alfonso García-Oliva"
+  lang: es
+"Construcciones y herramientas/Herramientas/Calculo De Correas Y Poleas.pdf":
+  title: "Cálculo de correas y poleas"
+  author: "A. González Rey, T. García Toll, T. Ortiz Cárdenas"
   lang: es
