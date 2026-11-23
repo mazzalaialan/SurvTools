@@ -114,7 +114,7 @@ export function Shell() {
       <div className="shell-main">
         <header className="topbar">
           <BackButton />
-          <Link className="topbar-home" to="/" aria-label={t('nav.home')} data-testid="topbar-home">
+          <Link className="topbar-home" to="/" data-testid="topbar-home">
             <BrandMark />
             <p className="topbar-title">{t('app.name')}</p>
           </Link>
