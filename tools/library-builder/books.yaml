@@ -860,6 +860,7 @@
   lang: es
   author: "MECANICAVirtual (Dani Meganeboy)"
   year: 2005
+  category: Vehiculos y Movilidad
 "Energia/Eolica/Urquia Lus (1982) - Energia Eolica.pdf":
   title: "Energía eólica: manual práctico para la construcción de molinos de viento"
   author: "Juan Ignacio y Sebastián Urquía Lus (Grupo Ecologista de Tafalla)"
@@ -898,6 +899,7 @@
   author: "Roberto Rodríguez Ríos, Diego Alarcón Abarca y Jaime Espejo Cardemil (CORMA)"
   year: 2009
   lang: es
+  category: Cultivo
 "Medicina y Primeros Auxilios/libro_primeros_auxilios.pdf":
   title: "Manual de primeros auxilios con plantas medicinales, homeopatía, reflexología y tratamientos convencionales"
   author: "Karim Raad"
