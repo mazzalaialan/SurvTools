@@ -1101,3 +1101,132 @@
   title: "Sobrevivir a una catástrofe urbana"
   author: "Richard Duarte"
   lang: "es"
+
+# Lote 2 de autores (libros largos sin autor)
+"Mochilas kits y preparacion hogar/preparados parte 1preppers.pdf":
+  title: "Preparados (parte 1)"
+  author: "Mario Pérez"
+  year: 2015
+  lang: es
+"Mochilas kits y preparacion hogar/preparados parte 2 preppers.pdf":
+  title: "Preparados (parte 2)"
+  author: "Mario Pérez"
+  year: 2015
+  lang: es
+"Construcciones y herramientas/Diseño de una embarcación de 7 metros de LOA.pdf":
+  title: "Diseño de una embarcación de 7 metros de eslora"
+  author: "Pablo Sánchez Rodríguez"
+  year: 2013
+  lang: es
+"Cultivo/Biopreparados-FAO.pdf":
+  title: "Biopreparados para el manejo sostenible de plagas y enfermedades en la agricultura urbana y periurbana"
+  author: "IPES / FAO"
+  year: 2010
+  lang: es
+"Construcciones y herramientas/ALBAÑILERIAS.pdf":
+  title: "Albañilería: conceptos generales"
+  author: "Luis Goldsack Jarpa (Universidad de Chile)"
+  lang: es
+"Cultivo/La Reproducción de las Plantas, Semillas y Meristemos.pdf":
+  title: "La reproducción de las plantas: semillas y meristemos"
+  author: "Carlos Vázquez-Yanes, Alma Orozco, Mariana Rojas, María Esther Sánchez y Virginia Cervantes"
+  lang: es
+"Construcciones y herramientas/Manual para la Protección contra el deterioro de la Madera.pdf":
+  title: "Manual para la protección contra el deterioro de la madera"
+  author: "José Cruz de León (CONAFOR / Universidad Michoacana)"
+  lang: es
+"Cultivo/Plantas medicinales/botiq-ancestral-tilcara.pdf":
+  title: "Botiquín ancestral de la Municipalidad Indígena de Tilcara"
+  author: "Karim Raad (Municipalidad Indígena de Tilcara)"
+  lang: es
+"Alimento/Manual para ver cortes cárnicos. INAC, Uruguay.pdf":
+  title: "Manual de cortes de carnes alternativas para abasto: conejo, cerdo, pollo, ovinos"
+  author: "Instituto Nacional de Carnes (INAC, Uruguay)"
+  lang: es
+"Animales e insectos/Granja/La granja familiar.pdf":
+  title: "La granja familiar"
+  author: "ProHuerta (INTA)"
+  year: 2003
+  lang: es
+"Construcciones y herramientas/PLANOS-DE-TUBULARES.pdf":
+  title: "Diseño de un chasis tubular para un carcross"
+  author: "Igor Martínez Fernández"
+  year: 2017
+  lang: es
+"Psicologia/El principio de Peter.pdf":
+  title: "El principio de Peter"
+  author: "Laurence J. Peter y Raymond Hull"
+  year: 1969
+  lang: es
+"Construcciones y herramientas/Manual_de_Soldadura_INDURA.pdf":
+  title: "Manual de soldadura INDURA"
+  author: "INDURA S.A. (Chile)"
+  lang: es
+"Construcciones y herramientas/Techos Verdes - Minke.pdf":
+  title: "Techos verdes: planificación, ejecución, consejos prácticos"
+  author: "Gernot Minke"
+  lang: es
+"Alimento/pate de conejo.pdf":
+  title: "Desarrollo de productos cárnicos con carne de conejo (paté de conejo)"
+  author: "Alicia Pérez Morales (UNAM, FES Cuautitlán)"
+  year: 2010
+  lang: es
+"Defensa y entrenamiento/david harber - guerrillas arsenal (paladin press].pdf":
+  title: "Guerrillas' Arsenal: advanced techniques for making explosives and time-delay bombs"
+  author: "David Harber (Paladin Press)"
+  year: 1993
+  lang: en
+"Energia/Solar/ar_33.pdf QUE HACER (1).pdf":
+  title: "¿Qué hacer? El mundo sin electricidad: guía de supervivencia ante una tormenta solar"
+  author: "Adrián Z. Sánchez"
+  year: 2011
+  lang: es
+"Cultivo/Lo que Ud. debe saber sobre plantas útiles.pdf":
+  title: "Lo que usted debe saber sobre plantas útiles"
+  author: "Félix Llamas y Carmen Acedo"
+  year: 2002
+  lang: es
+"Cultivo/El Huerto Medicinal - Guia de Plantas Medicinales (Tierramor).pdf":
+  title: "El huerto medicinal: guía de plantas medicinales"
+  author: "Granja Familiar Tierramor (Erongarícuaro, Michoacán)"
+  year: 2010
+  lang: es
+"Defensa y entrenamiento/GUÍA ILUSTRADA DE LAS PISTOLAS Y REVÓLVERES. (FREDERICK MYATT).pdf":
+  title: "Guía ilustrada de las pistolas y revólveres"
+  author: "Frederick Myatt"
+  lang: es
+"Construcciones y herramientas/Elias Ricardo Miguel - El Gran Libro De Los Hornos De Barro.PDF.pdf":
+  title: "El gran libro de los hornos de barro"
+  author: "Ricardo Miguel Elías"
+  lang: es
+"Construcciones y herramientas/manual_de_carpinteria.pdf":
+  title: "Manual de carpintería (curso básico)"
+  author: "Instituto Nacional para la Educación de los Adultos (INEA, México)"
+  lang: es
+"Supervivencia General/supervivencia antardida.pdf":
+  title: "Manual de supervivencia en la Antártica"
+  author: "National Science Foundation (EE. UU.); traducción del Instituto Antártico Chileno"
+  year: 1969
+  lang: es
+"Construcciones y herramientas/basico estructuras.pdf":
+  title: "Curso básico de estructuras metálicas"
+  author: "Carlos Alberto Bermúdez Mejía (Universidad Nacional de Colombia, Manizales)"
+  year: 2005
+  lang: es
+"Construcciones y herramientas/Manual-Construccion-Bambu.pdf":
+  title: "Construir con bambú: manual de construcción"
+  author: "Jorge Morán Ubidia (INBAR)"
+  lang: es
+"Agua y aguas negras/Aguas negras y baño seco/Manual de Sistemas de Tratamiento de Aguas Residuales Domiciliarias.pdf":
+  title: "Manual de autoconstrucción de sistemas de tratamiento de aguas residuales domiciliarias"
+  author: "Mariñelarena (Proyecto FREPLATA)"
+  year: 2006
+  lang: es
+"Medicina y Primeros Auxilios/manual-de vendajes.pdf":
+  title: "Manual de vendajes"
+  author: "Bernardo Fco. Fernández Martos (Consejo de Enfermería de la Comunidad Valenciana)"
+  lang: es
+"Medicina y Primeros Auxilios/Advanced Cardial Life Support 2020.en.pdf":
+  title: "Soporte vital cardiovascular avanzado (ACLS) 2020"
+  author: "Satori Continuum Publishing"
+  lang: es
