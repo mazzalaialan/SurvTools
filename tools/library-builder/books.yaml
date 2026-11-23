@@ -188,6 +188,7 @@
   category: Catastrofes
 "Agua y aguas negras/Filtro y obtencion de agua/como almacenar y filtrar agua de lluvia.pdf":
   title: Cómo almacenar y filtrar agua de lluvia
+  author: "OPS/OMS Colombia"
   lang: es
 "Agua y aguas negras/Bomba de agua/Construccion-de-bicibomba-movil.pdf":
   title: Construcción de una bicibomba móvil
@@ -1518,3 +1519,65 @@
   author: "Aasmund Ryningen"
   year: 2019
   lang: en
+
+# Lote 5
+"Medicina y Primeros Auxilios/PRIMEROS AUXILIOS Y RCP.pdf":
+  author: "Dra. Camila Minniti"
+"Animales e insectos/lombriz.pdf":
+  author: "José Luis Fuentes Yagüe (Ministerio de Agricultura, Pesca y Alimentación, España)"
+  year: 1987
+"Catastrofes/Recomendaciones antes, durante y después de sismos y terremotos.pdf":
+  author: "ONEMI (Chile), con mesa técnica interinstitucional"
+"Cultivo/Manual de poda de cítricos.pdf":
+  author: "UNODC (Oficina de las Naciones Unidas contra la Droga y el Delito)"
+  year: 2017
+"Medicina y Primeros Auxilios/alta ESTUDIO ACCIDENTALIDAD FEDME sin marcas.pdf":
+  author: "Comité de Seguridad de la FEDME"
+  year: 2018
+"Mochilas kits y preparacion hogar/Urban Bug Out Bag - TheUrbanPrepper.pdf":
+  author: "TheUrbanPrepper"
+"Alimento/Conservas/Conserva en Frasco/GUIDE 3 USDA TOMATOES Can.pdf":
+  author: "USDA (Departamento de Agricultura de EE. UU.)"
+"Alimento/Conservas/Conserva en Frasco/GUIDE 4 USDA VEGGIES Can.pdf":
+  author: "USDA (Departamento de Agricultura de EE. UU.)"
+"Higiene/jabon-artesano-elaboracion-23114.pdf":
+  author: "Marisa Neila"
+"Construcciones y herramientas/Manual construccion con adobe.pdf":
+  author: "Roberto Morales, Rafael Torres, Luis Rengifo y Carlos Irala (Universidad Nacional de Ingeniería, Perú)"
+  year: 1993
+"Orientacion/Introduccion_a_la_Meteorologia_I.pdf":
+  author: "Horacio E. Sarochar"
+"Catastrofes/Guía sobre ceniza volcánica.pdf":
+  author: "Consejo de Salud Ocupacional (MTSS) y Ministerio de Salud de Costa Rica"
+"Construcciones y herramientas/How-to-Make-a-Resin-River-Table-Handbook.pdf":
+  author: "Exotic Hardwoods UK"
+"Construcciones y herramientas/Manual Cocinas mejoradas para zonas altoandinas.pdf":
+  author: "Carlos Hadzich Marín y Omar Gonzales Arcondo (Grupo PUCP)"
+  year: 2009
+"Medicina y Primeros Auxilios/socorrismo.pdf":
+  author: "Francisco José Armada Muñoz (Scouts de Andalucía)"
+  year: 1999
+"Energia/Combustible/Como hacer biodiesel.pdf":
+  author: "Mike Pelly (Journey to Forever)"
+"Alimento/Conservas/Conserva en Frasco/Consejos y recetas para conservas caseras.pdf":
+  author: "Semillería Beitia"
+"Alimento/Las Plantas Comestibles en las Yungas Meridionales - Norma Ines Hilgert.pdf":
+  author: "Norma Inés Hilgert"
+  year: 1999
+"Catastrofes/Guía seal de supervivencia.pdf":
+  author: "Clint Emerson"
+"Medicina y Primeros Auxilios/Hierbas contra la tristeza .pdf":
+  author: "Yadira López"
+  year: 2018
+"Medicina y Primeros Auxilios/Remedios-del-monte.pdf":
+  author: "Paulina Noza (Organización de Mujeres del TIM Bosque de Chimanes)"
+"Alimento/Nitratos en Alimentos CODEX ALIMENTARIUS.pdf":
+  author: "Comité del Codex sobre Aditivos Alimentarios (FAO/OMS), preparado por los Países Bajos"
+  year: 2016
+"Alimento/Recetas del maestro Francisco Izarduy.pdf":
+  author: "Francisco Izarduy"
+"Catastrofes/Cruz Roja - Recomendaciones para situaciones de emergencia colectiva.pdf":
+  author: "Cruz Roja Española y Dirección General de Protección Civil (España)"
+"Construcciones y herramientas/Refugio/Atlas-Catalogue-2018.pdf":
+  author: "Atlas Survival Shelters"
+  year: 2018
