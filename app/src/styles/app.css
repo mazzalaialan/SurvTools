@@ -7012,3 +7012,24 @@ button.country-pack-del {
   border-left: 6px solid var(--danger);
   background: color-mix(in srgb, var(--danger) 22%, var(--surface));
 }
+.fish-figure {
+  margin: 0;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: #f4f1ea;
+}
+.fish-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+}
+.fish-figure figcaption {
+  padding: 4px 8px;
+  background: var(--surface);
+}
+.fish-permit-list {
+  margin: 0;
+  padding-left: 1.2em;
+}

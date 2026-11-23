@@ -30,6 +30,27 @@ function boundsOf(sectors: FishSector[]): Bounds | undefined {
 
 const feature = (s: FishSector, props: Record<string, unknown>): Feature => ({ type: 'Feature', id: s.id, properties: { id: s.id, ...props }, geometry: s.geometry as Feature['geometry'] });
 
+/** Dónde escribir el nombre de un tramo: el punto del medio de su línea más larga, o el centro del lago. */
+function labelPoint(s: FishSector): [number, number] | null {
+  const g = s.geometry;
+  if (g.type === 'Polygon') {
+    const ring = g.coordinates[0] ?? [];
+    if (!ring.length) return null;
+    return [ring.reduce((n, c) => n + c[0], 0) / ring.length, ring.reduce((n, c) => n + c[1], 0) / ring.length];
+  }
+  const lines = g.type === 'LineString' ? [g.coordinates] : g.coordinates;
+  const longest = lines.reduce((a, b) => (b.length > a.length ? b : a), lines[0] ?? []);
+  return longest.length ? longest[Math.floor(longest.length / 2)]! : null;
+}
+
+/** Un punto con el nombre del río o lago por cada tramo (el mapa descarta solo los que se pisan). */
+function nameFeatures(sectors: FishSector[]): Feature[] {
+  return sectors.flatMap((s) => {
+    const p = labelPoint(s);
+    return p ? [{ type: 'Feature', properties: { water: s.water }, geometry: { type: 'Point', coordinates: p } } as Feature] : [];
+  });
+}
+
 /** Mapa de pesca: los tramos de los peces elegidos (o todos) y, al tocar, los peces de cada tramo. */
 export function FishingMapPage() {
   const state = useFishData();
@@ -68,11 +89,11 @@ function FishingMap({ data }: { data: FishData }) {
   const shown = useMemo(() => (chosen.length ? [...new Set(chosen.flatMap((id) => sectorsWithSpecies(data, id)))] : data.sectors), [data, chosen.join(',')]);
   const fc = useMemo<FeatureCollection>(() => {
     // En «Todos», los tramos con la pesca prohibida van en rojo (y sin número).
-    if (!chosen.length) return { type: 'FeatureCollection', features: data.sectors.map((s) => feature(s, s.closed ? { color: FORBIDDEN_COLOR, dash: 'dot' } : { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })) };
+    if (!chosen.length) return { type: 'FeatureCollection', features: [...data.sectors.map((s) => feature(s, s.closed ? { color: FORBIDDEN_COLOR, dash: 'dot' } : { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })), ...nameFeatures(data.sectors)] };
     return {
       type: 'FeatureCollection',
       // Con varios peces, cada uno corrido unos píxeles (0, +4, −4, +8): en los tramos que comparten se ven todas las líneas.
-      features: chosen.flatMap((id, i) => sectorsWithSpecies(data, id).map((s) => feature(s, { color: FISH_STYLES[i]!.color, dash: FISH_STYLES[i]!.dash, offset: chosen.length > 1 ? [0, 4, -4, 8][i] : 0 }))),
+      features: [...chosen.flatMap((id, i) => sectorsWithSpecies(data, id).map((s) => feature(s, { color: FISH_STYLES[i]!.color, dash: FISH_STYLES[i]!.dash, offset: chosen.length > 1 ? [0, 4, -4, 8][i] : 0 }))), ...nameFeatures(shown)],
     };
   }, [data, chosen.join(',')]);
 

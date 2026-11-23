@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { seasonStatus, sectorSeason, type FishData, type FishSector, type Season, type SectorSpecies } from './fishing';
+import { seasonStatus, sectorSeason, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
 /** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
@@ -122,4 +122,46 @@ export function FishDataGate({ state, children }: { state: FishDataState; childr
       </div>
     );
   return <>{children(state.data)}</>;
+}
+
+/** Permiso de pesca de una jurisdicción: que es obligatorio, cuánto sale y dónde se saca (enlace oficial). */
+export function PermitCard({ region }: { region: FishRegion | undefined }) {
+  const { t } = useTranslation();
+  const p = region?.permit;
+  if (!region) return null;
+  return (
+    <section className="card stack fish-permit" data-testid="fish-permit">
+      <h2 className="section-title">{t('fishing.permit.title', { region: region.name })}</h2>
+      <p>{t('fishing.permit.required')}</p>
+      {p?.items.length ? (
+        <ul className="fish-permit-list">
+          {p.items.map((x) => (
+            <li key={`${x.type}-${x.who ?? ''}`}>
+              <strong>{x.type}</strong>
+              {x.who && ` · ${x.who}`}
+              {x.price && ` · ${x.price}`}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {p?.extra?.map((x) => (
+        <p key={x} className="small">
+          {x}
+        </p>
+      ))}
+      {p?.requirements && <p className="small">{p.requirements}</p>}
+      {p?.buyUrl && (
+        <a className="btn btn-primary btn-block" href={p.buyUrl} target="_blank" rel="noreferrer" data-testid="fish-permit-buy">
+          {t('fishing.permit.buy')}
+        </a>
+      )}
+      {p?.infoUrl && (
+        <a href={p.infoUrl} target="_blank" rel="noreferrer">
+          {t('fishing.permit.info')}
+        </a>
+      )}
+      {p?.where && <p className="small muted">{p.where}</p>}
+      {p?.date && <p className="small muted">{t('fishing.permit.asOf', { date: p.date })}</p>}
+    </section>
+  );
 }

@@ -5,7 +5,7 @@ import { LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import { isStale, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
-import { FishDataGate, GroupHint, keepRule, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
+import { FishDataGate, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
 import { useFishData } from './useFishData';
 
 const NEAR_RADIUS_M = 30_000;
@@ -117,6 +117,17 @@ export function FishPage() {
         return (
           <div className="stack" data-testid="fish-page">
             <h1 className="page-title">{speciesName(sp, i18n.language)}</h1>
+            {sp.image && (
+              <figure className="fish-figure" data-testid="fish-image">
+                <img src={`${import.meta.env.BASE_URL}fish/${sp.image.file}`} alt={speciesName(sp, i18n.language)} loading="lazy" />
+                <figcaption className="muted small">
+                  <a href={sp.image.url} target="_blank" rel="noreferrer">
+                    {sp.image.credit}
+                  </a>{' '}
+                  · {sp.image.license}
+                </figcaption>
+              </figure>
+            )}
             <p className="muted">
               <i>{sp.scientific}</i> · {sp.native ? t('fishing.native') : t('fishing.introduced')}
             </p>
@@ -292,6 +303,7 @@ export function FishSectorPage() {
                 <GroupHint text={s.notes} />
               </section>
             )}
+            {!s.closed && <PermitCard region={region} />}
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>
@@ -330,6 +342,7 @@ export function FishRulesPage() {
                     <SeasonBadge season={r.season} />
                   </p>
                 )}
+                <PermitCard region={r} />
                 {r.rules?.length ? (
                   <ul>
                     {r.rules.map((x) => (

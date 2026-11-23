@@ -86,7 +86,7 @@ interface Props {
   onMoveStart?: () => void;
   /**
    * Tramos de pesca (ver modules/fishing): cada feature con `id`, `color`, `dash` («solid», «dash», «dashdot» o «dot») y,
-   * opcional, `label` (p. ej. cuántas especies). Los lagos van como polígono.
+   * opcional, `label` (p. ej. cuántas especies). Los lagos van como polígono. Los puntos con `water` son el nombre del río o lago.
    */
   fishing?: FeatureCollection | null;
   /** Toque sobre uno o más tramos de pesca (todos los que hay a 22 px del dedo); si no hay ninguno, va a `onPick`. */
@@ -236,6 +236,17 @@ function addFishingLayers(map: MlMap, c: MapColors) {
       paint: { 'line-color': ['get', 'color'], 'line-width': width, 'line-offset': ['coalesce', ['get', 'offset'], 0], ...(pattern ? { 'line-dasharray': pattern } : {}) },
     });
   }
+  // Nombre del río o lago: en un punto propio de cada tramo (el medio del cauce o el centro del lago). A lo largo de la línea no entra:
+  // los ríos patagónicos tienen muchas curvas y el mapa descarta la etiqueta (probado).
+  map.addLayer({
+    id: 'fishing-name',
+    type: 'symbol',
+    source: 'fishing',
+    minzoom: 6,
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['has', 'water']],
+    layout: { 'text-field': ['get', 'water'], 'text-font': ['Noto Sans Regular'], 'text-size': ['interpolate', ['linear'], ['zoom'], 6, 11, 10, 13, 14, 15], 'text-max-width': 9, 'text-anchor': 'top', 'text-offset': [0, 0.4], 'text-padding': 4 },
+    paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2 },
+  });
   map.addLayer({
     id: 'fishing-label',
     type: 'symbol',
@@ -498,7 +509,7 @@ export function MapView(props: Props) {
     // Rectas de corte y recorridos guardados a la vista (para las pruebas).
     container.current?.setAttribute('data-gap-lines', String(props.gapLines?.length ?? 0));
     container.current?.setAttribute('data-tracks-shown', String(props.tracks.length));
-    container.current?.setAttribute('data-fishing', String(props.fishing?.features.length ?? 0));
+    container.current?.setAttribute('data-fishing', String(props.fishing?.features.filter((f) => f.geometry.type !== 'Point').length ?? 0));
   }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.geology, props.measure, props.target, props.fishing]);
 
   useEffect(() => {

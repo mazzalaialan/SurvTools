@@ -30,6 +30,8 @@ export interface FishSpecies {
   diet?: string;
   bestSeason?: string;
   bestTime?: string;
+  /** Imagen del pez (ilustración o foto con licencia libre, en `public/fish/`), con su crédito. */
+  image?: { file: string; credit: string; license: string; url: string };
   /** Carnadas orientativas (tabla propia de VikArg: dieta de FishBase y experiencia de pescadores). */
   baits?: { natural?: string[]; lures?: string[]; fly?: string[]; confidence?: 'high' | 'medium' | 'low' };
 }
@@ -72,9 +74,18 @@ export interface FishSector {
   ref?: string;
 }
 
+/** Un permiso de pesca de la jurisdicción (tipo, quién, precio). */
+export interface FishPermit {
+  type: string;
+  who?: string;
+  price?: string;
+}
+
 export interface FishRegion {
   id: string;
   name: string;
+  /** Cómo sacar el permiso de pesca: tipos y precios, enlace oficial de compra y otros lugares de venta. */
+  permit?: { items: FishPermit[]; extra?: string[]; buyUrl?: string; infoUrl?: string; where?: string; requirements?: string; source?: string; date?: string };
   /** Reglas generales de la jurisdicción (texto del reglamento, resumido). */
   rules?: string[];
   season?: Season;
