@@ -1,6 +1,45 @@
 {
-  "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23. Fuente, autor y licencia verificados en Wikimedia Commons.",
-  "trucha-arcoiris": { "file": "trucha-arcoiris.webp", "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)", "license": "Dominio público", "url": "https://commons.wikimedia.org/wiki/File:Oncorhynchus_mykiss_mid_res_150dpi_whiteBG.jpg" },
-  "trucha-marron": { "file": "trucha-marron.webp", "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)", "license": "Dominio público", "url": "https://commons.wikimedia.org/wiki/File:Brown_trout_FWS_white_background.jpg" },
-  "trucha-arroyo": { "file": "trucha-arroyo.webp", "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons). Macho en época de desove", "license": "Dominio público", "url": "https://commons.wikimedia.org/wiki/File:Brook_trout.jpg" }
+ "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Provisorias: perca (foto chica, dorsales plegadas) y pejerrey (foto con mano; buscar ilustración de perfil).",
+ "trucha-arcoiris": {
+  "file": "trucha-arcoiris.webp",
+  "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Oncorhynchus_mykiss_mid_res_150dpi_whiteBG.jpg"
+ },
+ "trucha-marron": {
+  "file": "trucha-marron.webp",
+  "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Brown_trout_FWS_white_background.jpg"
+ },
+ "trucha-arroyo": {
+  "file": "trucha-arroyo.webp",
+  "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons). Macho en época de desove",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Brook_trout.jpg"
+ },
+ "carpa": {
+  "file": "carpa.webp",
+  "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons); espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Common_carp_(white_background).jpg"
+ },
+ "salmon-atlantico": {
+  "file": "salmon-atlantico.webp",
+  "credit": "Timothy Knepp, U.S. Fish and Wildlife Service (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Atlantic_salmon_fish.jpg"
+ },
+ "perca": {
+  "file": "perca.webp",
+  "credit": "Pablo Reyes Lobao-Tello (Wikimedia Commons), río Manso; recortada",
+  "license": "CC BY 3.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Percichthys_trucha.png"
+ },
+ "pejerrey": {
+  "file": "pejerrey.webp",
+  "credit": "Uli7 (Wikimedia Commons). Pejerrey bonaerense (Odontesthes bonariensis); el patagónico es muy parecido",
+  "license": "CC0",
+  "url": "https://commons.wikimedia.org/wiki/File:Pejerrey_Odontesthes_Bonariensis.jpg"
+ }
 }
