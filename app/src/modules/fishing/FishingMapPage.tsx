@@ -30,25 +30,57 @@ function boundsOf(sectors: FishSector[]): Bounds | undefined {
 
 const feature = (s: FishSector, props: Record<string, unknown>): Feature => ({ type: 'Feature', id: s.id, properties: { id: s.id, ...props }, geometry: s.geometry as Feature['geometry'] });
 
-/** Dónde escribir el nombre de un tramo: el punto del medio de su línea más larga, o el centro del lago. */
-function labelPoint(s: FishSector): [number, number] | null {
-  const g = s.geometry;
-  if (g.type === 'Polygon') {
-    const ring = g.coordinates[0] ?? [];
-    if (!ring.length) return null;
-    return [ring.reduce((n, c) => n + c[0], 0) / ring.length, ring.reduce((n, c) => n + c[1], 0) / ring.length];
+const rad = (d: number) => (d * Math.PI) / 180;
+/** Distancia aproximada en metros (equirrectangular). */
+const meters = (a: [number, number], b: [number, number]) => rad(Math.hypot((a[0] - b[0]) * Math.cos(rad((a[1] + b[1]) / 2)), a[1] - b[1])) * 6_371_000;
+const lengthOf = (l: [number, number][]) => l.reduce((n, c, i) => (i ? n + meters(l[i - 1]!, c) : 0), 0);
+
+/** Une en cadenas largas los pedazos de un río que comparten un extremo (en OSM un río son muchos tramos cortos). */
+function chains(lines: [number, number][][]): [number, number][][] {
+  const key = (c: [number, number]) => `${c[0]},${c[1]}`;
+  const pool = lines.filter((l) => l.length > 1).map((l) => [...l]);
+  const out: [number, number][][] = [];
+  while (pool.length) {
+    let cur = pool.pop()!;
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (let i = 0; i < pool.length; i++) {
+        const l = pool[i]!;
+        const [h, t] = [key(cur[0]!), key(cur[cur.length - 1]!)];
+        const [lh, lt] = [key(l[0]!), key(l[l.length - 1]!)];
+        if (t === lh) cur = [...cur, ...l.slice(1)];
+        else if (t === lt) cur = [...cur, ...[...l].reverse().slice(1)];
+        else if (h === lt) cur = [...l, ...cur.slice(1)];
+        else if (h === lh) cur = [...[...l].reverse(), ...cur.slice(1)];
+        else continue;
+        pool.splice(i, 1);
+        grew = true;
+        break;
+      }
+    }
+    out.push(cur);
   }
-  const lines = g.type === 'LineString' ? [g.coordinates] : g.coordinates;
-  const longest = lines.reduce((a, b) => (b.length > a.length ? b : a), lines[0] ?? []);
-  return longest.length ? longest[Math.floor(longest.length / 2)]! : null;
+  return out;
 }
 
-/** Un punto con el nombre del río o lago por cada tramo (el mapa descarta solo los que se pisan). */
+/**
+ * Nombres en el mapa: en los ríos, sobre el mismo dibujo del cauce, con los pedazos de OSM unidos en líneas largas (en pedazos cortos
+ * el nombre no entra y el mapa lo descarta). En los lagos, en el centro.
+ */
 function nameFeatures(sectors: FishSector[]): Feature[] {
-  return sectors.flatMap((s) => {
-    const p = labelPoint(s);
-    return p ? [{ type: 'Feature', properties: { water: s.water }, geometry: { type: 'Point', coordinates: p } } as Feature] : [];
-  });
+  const out: Feature[] = [];
+  for (const s of sectors) {
+    const g = s.geometry;
+    if (g.type === 'Polygon') {
+      const ring = g.coordinates[0] ?? [];
+      if (ring.length) out.push({ type: 'Feature', properties: { water: s.water }, geometry: { type: 'Point', coordinates: [ring.reduce((n, c) => n + c[0], 0) / ring.length, ring.reduce((n, c) => n + c[1], 0) / ring.length] } });
+      continue;
+    }
+    const all = chains(g.type === 'LineString' ? [g.coordinates] : g.coordinates);
+    // Sobre el mismo dibujo del río (sin suavizar): los pedazos unidos en una sola línea larga, así entra el nombre.
+    for (const line of all.filter((l) => lengthOf(l) > 2000)) out.push({ type: 'Feature', properties: { water: s.water, nameLine: 'on' }, geometry: { type: 'LineString', coordinates: line } });
+  }
+  return out;
 }
 
 /** Mapa de pesca: los tramos de los peces elegidos (o todos) y, al tocar, los peces de cada tramo. */

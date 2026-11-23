@@ -224,29 +224,34 @@ function addFishingLayers(map: MlMap, c: MapColors) {
   const casing: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 6, 5, 12, 9, 16, 13];
   map.addLayer({ id: 'fishing-fill', type: 'fill', source: 'fishing', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.28, 'fill-outline-color': ['get', 'color'] } });
   // Borde claro debajo de la línea, para que se lea sobre el agua y el relieve.
-  map.addLayer({ id: 'fishing-casing', type: 'line', source: 'fishing', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.bg, 'line-width': casing, 'line-opacity': 0.9, 'line-offset': ['coalesce', ['get', 'offset'], 0] } });
+  map.addLayer({ id: 'fishing-casing', type: 'line', source: 'fishing', filter: ['!', ['has', 'nameLine']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.bg, 'line-width': casing, 'line-opacity': 0.9, 'line-offset': ['coalesce', ['get', 'offset'], 0] } });
   for (const [dash, pattern] of Object.entries(FISHING_DASH)) {
     map.addLayer({
       id: `fishing-line-${dash}`,
       type: 'line',
       source: 'fishing',
-      filter: ['==', ['coalesce', ['get', 'dash'], 'solid'], dash],
+      filter: ['all', ['!', ['has', 'nameLine']], ['==', ['coalesce', ['get', 'dash'], 'solid'], dash]],
       layout: { 'line-cap': dash === 'dot' ? 'round' : 'butt', 'line-join': 'round' },
       // `offset` (px): cuando varios peces comparten un tramo, cada uno va corrido a un costado y se ven todos.
       paint: { 'line-color': ['get', 'color'], 'line-width': width, 'line-offset': ['coalesce', ['get', 'offset'], 0], ...(pattern ? { 'line-dasharray': pattern } : {}) },
     });
   }
-  // Nombre del río o lago: en un punto propio de cada tramo (el medio del cauce o el centro del lago). A lo largo de la línea no entra:
-  // los ríos patagónicos tienen muchas curvas y el mapa descarta la etiqueta (probado).
+  // Nombre del río o lago (ver nameFeatures en modules/fishing/FishingMapPage.tsx): en los ríos, sobre el cauce; en los lagos, en el centro.
+  const nameLayout: maplibregl.SymbolLayerSpecification['layout'] = { 'text-field': ['get', 'water'], 'text-font': ['Noto Sans Regular'], 'text-size': ['interpolate', ['linear'], ['zoom'], 5, 10, 8, 12, 12, 14] };
+  const namePaint = { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2 };
+  // Sobre el cauce, siguiendo sus curvas: los ríos patagónicos zigzaguean y con menos giro permitido el mapa descarta casi todos los
+  // nombres (probado: con 70° no sale ninguno y con 120° la mitad). De lejos (zoom < 9) igual no entran: aparecen al acercarse.
+  const along: maplibregl.SymbolLayerSpecification['layout'] = { 'symbol-placement': 'line', 'symbol-spacing': 250, 'text-max-angle': 180, 'text-keep-upright': true };
+  map.addLayer({ id: 'fishing-name-line', type: 'symbol', source: 'fishing', minzoom: 5, filter: ['==', ['get', 'nameLine'], 'on'], layout: { ...nameLayout, ...along }, paint: namePaint });
   map.addLayer({
     id: 'fishing-name',
     type: 'symbol',
     source: 'fishing',
     minzoom: 6,
     filter: ['all', ['==', ['geometry-type'], 'Point'], ['has', 'water']],
-    layout: { 'text-field': ['get', 'water'], 'text-font': ['Noto Sans Regular'], 'text-size': ['interpolate', ['linear'], ['zoom'], 6, 11, 10, 13, 14, 15], 'text-max-width': 9, 'text-anchor': 'top', 'text-offset': [0, 0.4], 'text-padding': 4 },
-    paint: { 'text-color': c.text, 'text-halo-color': c.surface, 'text-halo-width': 2 },
-  });
+    layout: { ...nameLayout, 'text-max-width': 9 },
+    paint: namePaint,
+  } );
   map.addLayer({
     id: 'fishing-label',
     type: 'symbol',
@@ -509,7 +514,7 @@ export function MapView(props: Props) {
     // Rectas de corte y recorridos guardados a la vista (para las pruebas).
     container.current?.setAttribute('data-gap-lines', String(props.gapLines?.length ?? 0));
     container.current?.setAttribute('data-tracks-shown', String(props.tracks.length));
-    container.current?.setAttribute('data-fishing', String(props.fishing?.features.filter((f) => f.geometry.type !== 'Point').length ?? 0));
+    container.current?.setAttribute('data-fishing', String(props.fishing?.features.filter((f) => f.geometry.type !== 'Point' && !f.properties?.nameLine).length ?? 0));
   }, [props.waypoints, props.routes, props.tracks, props.done, props.recorded, props.gapLines, props.here, props.zones, props.preview, props.outline, props.ecoregions, props.geology, props.measure, props.target, props.fishing]);
 
   useEffect(() => {
