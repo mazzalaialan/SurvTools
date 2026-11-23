@@ -51,6 +51,8 @@ class Entry:
     # Huella del texto: el mismo libro guardado de nuevo tiene otro md5 pero el mismo texto.
     fingerprint: str = ""
     exclude_reason: str | None = None
+    # Escaneado de letra manuscrita o muy fea: las páginas que el OCR no lee bien van como imagen (ver ocr.py).
+    page_images: bool = False
     id: str = ""
     notes: list[str] = field(default_factory=list)
 
@@ -194,6 +196,8 @@ def apply_overrides(entries: list[Entry], overrides: dict) -> None:
             e.kind = "pdf-ocr"
         if o.get("mode") == "text" and e.kind == "pdf-ocr":
             e.kind = "pdf"
+        if o.get("page_images"):
+            e.page_images = True
         if o.get("exclude"):
             e.exclude_reason = "Excluido en books.yaml"
 

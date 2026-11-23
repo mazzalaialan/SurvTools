@@ -22,7 +22,7 @@ class ImageStore:
         self._by_xref: dict[int, str | None] = {}
         os.makedirs(folder, exist_ok=True)
 
-    def _save(self, img: Image.Image) -> str | None:
+    def _save(self, img: Image.Image, max_width: int = MAX_WIDTH) -> str | None:
         if img.width < MIN_SIDE or img.height < MIN_SIDE or img.width * img.height < MIN_AREA:
             return None
         # Imágenes casi de un solo color (fondos, separadores): no aportan.
@@ -35,8 +35,8 @@ class ImageStore:
             rgba = img.convert("RGBA")
             bg.paste(rgba, mask=rgba.split()[3])
             img = bg
-        if img.width > MAX_WIDTH:
-            img = img.resize((MAX_WIDTH, round(img.height * MAX_WIDTH / img.width)), Image.LANCZOS)
+        if img.width > max_width:
+            img = img.resize((max_width, round(img.height * max_width / img.width)), Image.LANCZOS)
         buf = io.BytesIO()
         img.save(buf, "WEBP", quality=QUALITY, method=6)
         data = buf.getvalue()
@@ -76,13 +76,13 @@ class ImageStore:
         self._by_xref[xref] = src
         return src
 
-    def from_pixmap(self, pix: fitz.Pixmap) -> str | None:
+    def from_pixmap(self, pix: fitz.Pixmap, max_width: int = MAX_WIDTH) -> str | None:
         try:
             mode = "RGBA" if pix.alpha else ("L" if pix.n == 1 else "RGB")
             img = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
         except Exception:
             return None
-        return self._save(img)
+        return self._save(img, max_width)
 
     def from_file(self, path: str) -> str | None:
         try:

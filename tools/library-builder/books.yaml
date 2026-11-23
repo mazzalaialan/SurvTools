@@ -193,10 +193,12 @@
   title: Construcción de una bicibomba móvil
   lang: es
   mode: ocr
+  page_images: true  # letra manuscrita: el OCR la lee mal; esas páginas van como imagen
 "Agua y aguas negras/Bomba de agua/Construccion-de-bicibomba-para-pozo.pdf":
   title: Construcción de una bicibomba para pozo
   lang: es
   mode: ocr
+  page_images: true  # letra manuscrita: el OCR la lee mal; esas páginas van como imagen
 "Agua y aguas negras/Bomba de agua/Diferentes sistemas para bombeo de agua.pdf":
   title: Diferentes sistemas para bombeo de agua
   lang: es
@@ -1011,3 +1013,7 @@
   title: "Donde no hay doctor"
   author: "David Werner (con Carol Thuman y Jane Maxwell; Hesperian)"
   lang: es
+"Mochilas kits y preparacion hogar/Bicibomba - Manual de instalación.pdf":
+  title: "Bicibomba - Manual de instalación"
+  lang: es
+  mode: ocr  # la capa de texto del PDF viene con basura; el OCR lo lee bien

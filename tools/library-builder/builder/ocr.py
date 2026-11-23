@@ -23,6 +23,14 @@ LANGS = "spa+eng"
 WORKERS = 2
 # Menos confianza que esto en una palabra (0–100): se descarta (manchas, bordes).
 MIN_CONF = 30
+# Con `page_images` (opt-in por libro en books.yaml): una página con texto que el OCR lee mal (letra manuscrita,
+# tipografía rara) se guarda como imagen en vez de texto con basura; las que se leen bien siguen como texto.
+# Medido: manuscritos 48–86 de confianza mediana (casi todas ≤78) y ≤0,74 de palabras ≥70; imprenta limpia 90–96 y ≥0,73.
+PAGE_IMG_MIN_WORDS = 5
+PAGE_IMG_MEDIAN = 88
+PAGE_IMG_GOOD_SHARE = 0.65
+PAGE_IMG_DPI = 170
+PAGE_IMG_WIDTH = 1600
 # Tiempo máximo por página; si se pasa, la página se saltea y el libro sigue.
 PAGE_TIMEOUT = 300
 SKIPPED_PAGES: list[int] = []
@@ -93,7 +101,15 @@ def _ocr_page(path: str, pno: int, work: str) -> tuple[int, list[dict], tuple[in
     return pno, pars, (pix.width, pix.height)
 
 
-def extract(path: str, images: ImageStore, work: str) -> Extracted:
+def _unreadable(words: list[dict]) -> bool:
+    """¿El OCR leyó mal esta página? Pocas palabras (portadas, dibujos) no cuentan: siguen el camino normal."""
+    c = [wd["conf"] for wd in words if wd["text"].strip()]
+    if len(c) < PAGE_IMG_MIN_WORDS:
+        return False
+    return median(c) < PAGE_IMG_MEDIAN or sum(1 for x in c if x >= 70) / len(c) < PAGE_IMG_GOOD_SHARE
+
+
+def extract(path: str, images: ImageStore, work: str, page_images: bool = False) -> Extracted:
     out = Extracted()
     doc = fitz.open(path)
     SKIPPED_PAGES.clear()
@@ -104,9 +120,16 @@ def extract(path: str, images: ImageStore, work: str) -> Extracted:
     sizes = [ln["size"] for _, pars, _ in results for p in pars for ln in p["lines"] if ln["size"]]
     body = median(sizes) if sizes else 30.0
     low_conf_pages = 0
+    as_image: list[int] = []
 
     for pno, pars, (w, h) in results:
         page = doc[pno]
+        if page_images and _unreadable([wd for p in pars for ln in p["lines"] for wd in ln["words"]]):
+            src = images.from_pixmap(page.get_pixmap(dpi=PAGE_IMG_DPI), PAGE_IMG_WIDTH)
+            if src:
+                out.blocks.append(Block("img", src=src, page=pno + 1))
+                as_image.append(pno + 1)
+                continue
         scale_pt = 72 / OCR_DPI  # píxeles del OCR → puntos de la página
         items: list[tuple[float, Block]] = []
         word_boxes = []
@@ -152,6 +175,8 @@ def extract(path: str, images: ImageStore, work: str) -> Extracted:
         out.blocks.extend(b for _, b in items)
 
     out.blocks = merge_paragraphs(out.blocks)
+    if as_image:
+        out.warnings.append(f"OCR: {len(as_image)} páginas se guardaron como imagen por no leerse bien: {as_image}")
     if SKIPPED_PAGES:
         out.warnings.append(f"OCR: páginas salteadas por tiempo: {sorted(SKIPPED_PAGES)}")
     if low_conf_pages > doc.page_count * 0.3:

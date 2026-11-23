@@ -83,7 +83,7 @@ def convert_one(e: Entry, src_root: str, out_root: str, ocr: bool) -> dict:
                 return {"skipped": "OCR salteado"}
             from . import ocr as ocr_mod
 
-            ex = ocr_mod.extract(path, images, work)
+            ex = ocr_mod.extract(path, images, work, page_images=e.page_images)
             warnings += ex.warnings
             chapters = chapters_from_blocks(ex.blocks, [], e.pages)
             # Con el texto del OCR ya se puede ver la licencia y el idioma.
