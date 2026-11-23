@@ -73,16 +73,27 @@ export function FishSpeciesPage() {
   );
 }
 
-function BaitList({ title, items }: { title: string; items?: string[] }) {
+/** Cuántas carnadas se ven antes de «Ver todas» (hay peces con más de 20 moscas). */
+const BAITS_SHOWN = 6;
+
+function BaitList({ title, items, columns }: { title: string; items?: string[]; columns?: boolean }) {
+  const { t } = useTranslation();
+  const [all, setAll] = useState(false);
   if (!items?.length) return null;
+  const shown = all ? items : items.slice(0, BAITS_SHOWN);
   return (
     <div>
       <h3 className="fish-bait-title">{title}</h3>
-      <ul className="fish-baits">
-        {items.map((b) => (
+      <ul className={columns ? 'fish-baits fish-baits-cols' : 'fish-baits'}>
+        {shown.map((b) => (
           <li key={b}>{b}</li>
         ))}
       </ul>
+      {items.length > BAITS_SHOWN && (
+        <button type="button" className="btn btn-small fish-more" onClick={() => setAll((v) => !v)} aria-expanded={all}>
+          {all ? t('fishing.seeLess') : t('fishing.seeAll', { count: items.length })}
+        </button>
+      )}
     </div>
   );
 }
@@ -97,7 +108,7 @@ export function Baits({ sp }: { sp: FishSpecies }) {
       <h2 className="section-title">{t('fishing.baits')}</h2>
       <BaitList title={t('fishing.baitNatural')} items={b.natural} />
       <BaitList title={t('fishing.baitLures')} items={b.lures} />
-      <BaitList title={t('fishing.baitFly')} items={b.fly} />
+      <BaitList title={t('fishing.baitFly')} items={b.fly} columns />
       <p className="muted small">{t('fishing.baitsNote')}</p>
     </section>
   );
@@ -164,13 +175,36 @@ export function FishPage() {
             )}
             <Baits sp={sp} />
             <h2 className="section-title">{t('fishing.sectorsFor', { count: sectors.length })}</h2>
-            <SectorList data={data} sectors={sectors} speciesId={sp.id} />
+            <SectorsByRegion data={data} sectors={sectors} speciesId={sp.id} />
             <p className="muted small">{t('fishing.colorsHint')}</p>
             <RulesNotice data={data} />
           </div>
         );
       }}
     </FishDataGate>
+  );
+}
+
+/** Tramos agrupados por jurisdicción, con un buscador de río o lago cuando son muchos (un pez puede estar en 70 tramos). */
+function SectorsByRegion({ data, sectors, speciesId }: { data: FishData; sectors: FishSector[]; speciesId: string }) {
+  const { t, i18n } = useTranslation();
+  const [q, setQ] = useState('');
+  const norm = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const found = q.trim() ? sectors.filter((s) => norm(`${s.water} ${s.name}`).includes(norm(q.trim()))) : sectors;
+  const groups = data.regions.map((r) => ({ region: r, list: found.filter((s) => s.region === r.id) })).filter((g) => g.list.length);
+  return (
+    <>
+      {sectors.length > 12 && (
+        <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fishing.filterWaters')} aria-label={t('fishing.filterWaters')} data-testid="fish-filter" />
+      )}
+      {!found.length && <p className="muted">{t('fishing.noMatch')}</p>}
+      {groups.map((g) => (
+        <section key={g.region.id} className="stack">
+          {groups.length > 1 || data.regions.length > 1 ? <h3 className="fish-bait-title">{t('fishing.inRegion', { region: g.region.name, count: g.list.length })}</h3> : null}
+          <SectorList data={data} sectors={[...g.list].sort((a, b) => a.water.localeCompare(b.water, i18n.language))} speciesId={speciesId} />
+        </section>
+      ))}
+    </>
   );
 }
 
@@ -257,7 +291,6 @@ export function FishSectorPage() {
       {(data) => {
         const s = data.sectors.find((x) => x.id === id)!;
         const region = data.regions.find((r) => r.id === s.region);
-        const source = data.sources.find((x) => x.id === s.source);
         return (
           <div className="stack fish-screen" data-testid="fish-sector-page">
             <h1 className="page-title">{s.water}</h1>
@@ -307,15 +340,7 @@ export function FishSectorPage() {
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>
-            <p className="muted small">
-              {t('fishing.sourceOf', { ref: s.ref ?? '' })}{' '}
-              {source && (
-                <a href={source.url} target="_blank" rel="noreferrer">
-                  {source.name}
-                </a>
-              )}
-            </p>
-            <RulesNotice data={data} />
+            <RulesNotice data={data} pageRef={s.ref} />
           </div>
         );
       }}

@@ -7131,3 +7131,14 @@ button.country-pack-del {
 .fish-permit > .section-title {
   margin: 0;
 }
+/* Moscas: nombres cortos, en dos columnas. */
+.fish-baits-cols {
+  columns: 2;
+  column-gap: var(--sp-3);
+}
+.fish-baits-cols li {
+  break-inside: avoid;
+}
+.fish-more {
+  margin-top: 6px;
+}
