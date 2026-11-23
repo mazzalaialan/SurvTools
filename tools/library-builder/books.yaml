@@ -235,6 +235,7 @@
 "Alimento/Conservas/Ahumado/Ahumado de carnes - Monografias.pdf":
   title: "Ahumado de carnes (proceso y ahumaderos), versión Monografias"
   lang: es
+  exclude: true  # copia del mismo texto (94 % igual a «Ahumado de carnes»)
 "Alimento/Conservas/Ahumado/ahumado.pdf":
   title: "Ahumado de carnes y aves"
   author: "USDA - Servicio de Inocuidad e Inspección de los Alimentos (FSIS)"
@@ -468,6 +469,7 @@
   author: "Max Brooks"
   year: 2003
   lang: en
+  exclude: true  # copia del mismo libro (95 % del texto igual a «The Zombie Survival Guide»)
 "Literatura General/Apocalipsis Z - Tomo 2 Los Días Oscuros - Manel Loureiro.pdf":
   title: "Apocalipsis Z, tomo 2: Los días oscuros"
   author: "Manel Loureiro"
@@ -748,6 +750,8 @@
   author: "Rodrigo Bruna Tapia y Javier Suárez Coca (Universidad Técnica Federico Santa María)"
   year: 2016
   lang: es
+  license: public
+  license_note: Sin reserva de derechos declarada en el libro (se trata como atribución)
 "Construcciones y herramientas/tutorial cutting board.pdf":
   title: "The Basics of Making End Grain Cutting Boards (tutorial)"
   author: "MTM Wood"
@@ -951,6 +955,8 @@
   author: "J. Carlos Díez y Javier Nastri (eds.), Fundación Atapuerca"
   year: 2011
   lang: es
+  license: public
+  license_note: Sin reserva de derechos declarada en el libro (se trata como atribución; la fuente lo da como CC BY-NC-ND, sin uso comercial)
 "Supervivencia General/Fuerzas Armadas - Manual De Enseñanza Supervivencia Tomo 1 (318pag).pdf":
   title: "Manual de enseñanza de supervivencia, Tomo I (ME6-003)"
   author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
@@ -995,6 +1001,8 @@
   title: "Survival, Evasion, and Recovery (MCRP 3-02H)"
   author: "U.S. Marine Corps"
   lang: en
+  license: public
+  license_note: Publicación del Cuerpo de Marines de EE. UU. sin reserva de derechos declarada (se trata como atribución)
 "Supervivencia General/Supervivencia Manuales Ejercito.T92.tomos I y II(pag319) y Manual Scout(pag509).pdf":
   title: "Manual de enseñanza de supervivencia (ME6-003) y Manual scout: recopilación"
   author: "Ejército de Tierra de España (Estado Mayor del Ejército), en la parte del ME6-003"
