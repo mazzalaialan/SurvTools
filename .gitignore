@@ -43,3 +43,4 @@ app/ios/App/App/GoogleService-Info.plist
 app/ios/App/build/
 app/ios/DerivedData/
 app/build/ios/
+__pycache__/
