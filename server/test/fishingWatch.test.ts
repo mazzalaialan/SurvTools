@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { openDb } from '../src/db.ts';
-import { nextSeasonUrls, runFishingWatch } from '../src/fishing/watch.ts';
+import { nextSeasonUrls, runFishingWatch, watchDue } from '../src/fishing/watch.ts';
 
 const DOCS = [{ label: 'Reglamento', url: 'https://example.org/reglamento.pdf' }];
 
@@ -17,7 +17,7 @@ test('pesca: avisa solo cuando cambia el reglamento (la primera vez guarda la hu
   const db = openDb(':memory:');
   const sent: string[] = [];
   const notifier = { send: async (s: string, t: string) => void sent.push(`${s}\n${t}`) };
-  const now = new Date('2026-12-01T12:00:00Z');
+  const now = new Date('2027-10-01T12:00:00Z');
   let r = await runFishingWatch(db, notifier, () => undefined, fakeFetch({ [DOCS[0]!.url]: 'versión 1' }), now, DOCS);
   assert.deepEqual([r.checked, r.changed.length], [1, 0]);
   assert.equal(sent.length, 0);
@@ -33,7 +33,7 @@ test('pesca: avisa una sola vez cuando aparece el reglamento de la temporada sig
   const db = openDb(':memory:');
   const sent: string[] = [];
   const notifier = { send: async (s: string) => void sent.push(s) };
-  const now = new Date('2026-12-01T12:00:00Z');
+  const now = new Date('2027-10-01T12:00:00Z');
   const next = nextSeasonUrls(now)[0]!;
   assert.match(next.url, /2027-28/);
   const bodies = { [DOCS[0]!.url]: 'v1', [next.url]: 'nuevo' };
@@ -47,7 +47,18 @@ test('pesca: avisa una sola vez cuando aparece el reglamento de la temporada sig
 test('pesca: una página caída no rompe la revisión ni avisa', async () => {
   const db = openDb(':memory:');
   const sent: string[] = [];
-  const r = await runFishingWatch(db, { send: async (s) => void sent.push(s) }, () => undefined, fakeFetch({ [DOCS[0]!.url]: 503 }), new Date('2026-12-01T12:00:00Z'), DOCS);
+  const r = await runFishingWatch(db, { send: async (s) => void sent.push(s) }, () => undefined, fakeFetch({ [DOCS[0]!.url]: 503 }), new Date('2027-10-01T12:00:00Z'), DOCS);
   assert.deepEqual(r.failed, ['Reglamento']);
   assert.equal(sent.length, 0);
+});
+
+test('pesca: no revisa durante la vigencia, recién unos días antes de que termine', async () => {
+  assert.equal(watchDue(new Date('2026-12-01T00:00:00Z')), false);
+  assert.equal(watchDue(new Date('2027-09-20T00:00:00Z')), true);
+  assert.equal(watchDue(new Date('2027-11-15T00:00:00Z')), true);
+  const db = openDb(':memory:');
+  let calls = 0;
+  const r = await runFishingWatch(db, null, () => undefined, (async () => (calls++, new Response('x'))) as typeof fetch, new Date('2026-12-01T12:00:00Z'), DOCS);
+  assert.equal(calls, 0);
+  assert.equal(r.checked, 0);
 });

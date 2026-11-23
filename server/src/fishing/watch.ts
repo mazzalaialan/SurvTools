@@ -3,9 +3,10 @@ import { getSetting, setSetting, type Db } from '../db.ts';
 import type { AdminNotifier } from '../monitor/sources.ts';
 
 /**
- * Vigila la normativa de pesca (ver docs/PESCA.md): una vez por día baja el reglamento vigente y las páginas oficiales de los permisos,
- * y si alguno cambió (otra huella del contenido) avisa al administrador por mail, para revisar y regenerar el paquete
- * `fish-AR.json` con tools/fishing-data. También prueba si ya se publicó el reglamento de la temporada siguiente.
+ * Vigila la normativa de pesca (ver docs/PESCA.md): recién desde `WATCH_DAYS_BEFORE` días antes de que termine la vigencia del
+ * reglamento actual (`VALID_UNTIL`) —no todo el año—, una vez por día baja el reglamento y prueba si ya se publicó el de la temporada
+ * siguiente; si cambió o apareció, avisa al administrador por mail para revisar y regenerar `fish-AR.json` con tools/fishing-data.
+ * Pasada la vigencia sigue probando cada día hasta encontrar el nuevo. Al cargar un reglamento nuevo, actualizar `VALID_UNTIL`.
  *
  * No regenera nada solo: la transcripción del reglamento se revisa a mano (es normativa, y un error de lectura sería peor que un
  * dato atrasado). Las huellas quedan en la tabla `settings` (`fishing-watch:<url>`), así un reinicio no repite el aviso.
@@ -17,6 +18,16 @@ export interface WatchedDoc {
   url: string;
 }
 
+/** Fin de la vigencia del reglamento cargado (los permisos de temporada 2026/27 valen hasta el 31/10/2027). */
+export const VALID_UNTIL = '2027-10-31';
+/** Cuántos días antes del fin de la vigencia se empieza a revisar. */
+export const WATCH_DAYS_BEFORE = 45;
+
+/** ¿Toca revisar? Solo desde unos días antes del fin de la vigencia (y después, hasta que se cargue el reglamento nuevo). */
+export function watchDue(now: Date, validUntil = VALID_UNTIL, daysBefore = WATCH_DAYS_BEFORE): boolean {
+  return now.getTime() >= new Date(`${validUntil}T00:00:00Z`).getTime() - daysBefore * 86_400_000;
+}
+
 /** Documentos que se vigilan. Agregar acá los de cada jurisdicción nueva. */
 export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'Reglamento de Pesca Deportiva Continental Patagónico 2026/2027', url: 'https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf' },
@@ -24,7 +35,7 @@ export const FISHING_DOCS: WatchedDoc[] = [
 
 /** El reglamento de la temporada siguiente, si siguen publicándolo con el mismo nombre (se prueba si existe). */
 export function nextSeasonUrls(now: Date): WatchedDoc[] {
-  // La temporada empieza en noviembre: en noviembre de 2026 rige la 2026/27 y se busca la 2027/28.
+  // La que sigue a la vigente: la 2026/27 vence en octubre de 2027, así que se busca la 2027/28 (hasta noviembre, la del año en curso).
   const start = now.getUTCMonth() >= 10 ? now.getUTCFullYear() + 1 : now.getUTCFullYear();
   const yy = (n: number) => String(n % 100).padStart(2, '0');
   return [{ label: `Reglamento ${start}/${start + 1} (temporada siguiente)`, url: `https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%20${start}-${yy(start + 1)}%20Baja.pdf` }];
@@ -48,6 +59,7 @@ export async function runFishingWatch(
   docs: WatchedDoc[] = FISHING_DOCS,
 ): Promise<FishingWatchResult> {
   const result: FishingWatchResult = { checked: 0, changed: [], failed: [], found: [] };
+  if (!watchDue(now)) return result;
   const notes: string[] = [];
   for (const doc of docs) {
     try {
