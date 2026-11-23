@@ -64,6 +64,40 @@ function chains(lines: [number, number][][]): [number, number][][] {
 }
 
 /**
+ * Un punto adentro del lago para escribir el nombre: el promedio de los vértices si cae adentro; si no (lagos con forma de L o de
+ * media luna), el medio del tramo más ancho de una línea horizontal que cruza el lago.
+ */
+function insidePoint(ring: [number, number][]): [number, number] | null {
+  if (ring.length < 3) return null;
+  const c: [number, number] = [ring.reduce((n, p) => n + p[0], 0) / ring.length, ring.reduce((n, p) => n + p[1], 0) / ring.length];
+  const crossings = (y: number) => {
+    const xs: number[] = [];
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i]!;
+      const [xj, yj] = ring[j]!;
+      if (yi > y !== yj > y) xs.push(xi + ((y - yi) * (xj - xi)) / (yj - yi));
+    }
+    return xs.sort((a, b) => a - b);
+  };
+  const inside = (p: [number, number]) => crossings(p[1]).filter((x) => x < p[0]).length % 2 === 1;
+  if (inside(c)) return c;
+  const ys = ring.map((p) => p[1]);
+  const [lo, hi] = [Math.min(...ys), Math.max(...ys)];
+  let best: [number, number] | null = null;
+  let width = 0;
+  for (let k = 1; k < 20; k++) {
+    const y = lo + ((hi - lo) * k) / 20;
+    const xs = crossings(y);
+    for (let i = 0; i + 1 < xs.length; i += 2)
+      if (xs[i + 1]! - xs[i]! > width) {
+        width = xs[i + 1]! - xs[i]!;
+        best = [(xs[i]! + xs[i + 1]!) / 2, y];
+      }
+  }
+  return best;
+}
+
+/**
  * Nombres en el mapa: en los ríos, sobre el mismo dibujo del cauce, con los pedazos de OSM unidos en líneas largas (en pedazos cortos
  * el nombre no entra y el mapa lo descarta). En los lagos, en el centro.
  */
@@ -72,8 +106,8 @@ function nameFeatures(sectors: FishSector[]): Feature[] {
   for (const s of sectors) {
     const g = s.geometry;
     if (g.type === 'Polygon') {
-      const ring = g.coordinates[0] ?? [];
-      if (ring.length) out.push({ type: 'Feature', properties: { water: s.water }, geometry: { type: 'Point', coordinates: [ring.reduce((n, c) => n + c[0], 0) / ring.length, ring.reduce((n, c) => n + c[1], 0) / ring.length] } });
+      const p = insidePoint(g.coordinates[0] ?? []);
+      if (p) out.push({ type: 'Feature', properties: { water: s.water }, geometry: { type: 'Point', coordinates: p } });
       continue;
     }
     const all = chains(g.type === 'LineString' ? [g.coordinates] : g.coordinates);

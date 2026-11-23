@@ -48,7 +48,17 @@ function readSeq(name) {
 const namesOf = (p) => [p.name, p['name:es'], p.alt_name, p.official_name, p.old_name].filter(Boolean).flatMap((n) => String(n).split(';'));
 
 const rivers = readSeq('rivers').filter((f) => f.geometry.type === 'LineString' && f.geometry.coordinates.some(inBox));
-const lakes = readSeq('lakes').filter((f) => /Polygon/.test(f.geometry.type) && namesOf(f.properties).length && ringsOf(f.geometry).some((r) => r.some(inBox)));
+// Solo lagos, lagunas y embalses: el agua de un río también es `natural=water` (con `water=river`), y como al comparar nombres se sacan
+// «río» y «lago», el «Río Aluminé» se confundía con el «Lago Aluminé» (el lago salía estirado sobre el río).
+const RIVER_WATER = /^(river|stream|canal|ditch|drain|oxbow|rapids|stream_pool)$/;
+const lakes = readSeq('lakes').filter(
+  (f) =>
+    /Polygon/.test(f.geometry.type) &&
+    namesOf(f.properties).length &&
+    !RIVER_WATER.test(f.properties.water ?? '') &&
+    !namesOf(f.properties).some((n) => /^\s*(r[ií]o|arroyo|a[°º]|canal)\b/i.test(n)) &&
+    ringsOf(f.geometry).some((r) => r.some(inBox)),
+);
 const dams = readSeq('dams');
 const places = readSeq('places').filter((f) => f.properties.name);
 const bridges = readSeq('bridges').filter((f) => f.geometry.type === 'LineString' && f.geometry.coordinates.some(inBox));
