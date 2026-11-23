@@ -790,3 +790,7 @@ El metrónomo de compresiones (`app/src/modules/firstAid/guides/CprMetronome.tsx
 - Los archivos MIDI los consigue y copia el dueño del proyecto (no se transcriben las canciones); van en una carpeta de la app (por ejemplo `app/public/cpr/`) y se incluyen en el APK y en la PWA.
 - Estimación: 1 a 2 horas.
 
+
+## Pendiente: sección Fauna (pedido del dueño, 2026-11-23)
+
+Sección nueva (aparte de Pesca): qué animales salvajes se pueden encontrar en cada zona (mamíferos, aves, reptiles; cuáles son peligrosos y qué hacer ante un encuentro) y, si hay **caza autorizada** de alguna especie, con su temporada y requisitos según la provincia (normativa con fuente y fecha, como en Pesca; «informativo, consultá el reglamento vigente»). Datos posibles: GBIF (ocurrencias, CC BY), las ecorregiones que ya tiene la app, reglamentos de caza provinciales y de Parques Nacionales. Reusar el diseño de Pesca (portada, mapa, ficha por especie). Sin investigar ni estimar todavía.
