@@ -114,8 +114,10 @@ export function Shell() {
       <div className="shell-main">
         <header className="topbar">
           <BackButton />
-          <BrandMark />
-          <p className="topbar-title">{t('app.name')}</p>
+          <Link className="topbar-home" to="/" aria-label={t('nav.home')} data-testid="topbar-home">
+            <BrandMark />
+            <p className="topbar-title">{t('app.name')}</p>
+          </Link>
           {/* Canal de YouTube: solo con lugar (web y tablet); en el celular está en Acerca de. */}
           <a className="icon-btn topbar-youtube" href={YOUTUBE_URL} target="_blank" rel="noreferrer" aria-label={t('about.youtube')} title={t('about.youtube')} data-testid="topbar-youtube">
             <YoutubeIcon size={26} />
