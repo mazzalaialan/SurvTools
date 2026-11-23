@@ -786,6 +786,7 @@
   title: "Medicamentos herbarios tradicionales de Chile (MHT)"
   year: 2010
   lang: es
+  author: "Ministerio de Salud de Chile (MINSAL)"
 "Cultivo/Plantas medicinales/Los secretos de las plantas - 50 plantas medicinales en su huerta.pdf":
   title: "Los secretos de las plantas: 50 plantas medicinales en su huerta"
   author: "Fundación Secretos para Contar"
@@ -853,6 +854,8 @@
 "Energia/Cursos de mecanica y electricidad del automovil.pdf":
   title: "Cursos de mecánica y electricidad del automóvil"
   lang: es
+  author: "MECANICAVirtual (Dani Meganeboy)"
+  year: 2005
 "Energia/Eolica/Urquia Lus (1982) - Energia Eolica.pdf":
   title: "Energía eólica: manual práctico para la construcción de molinos de viento"
   author: "Juan Ignacio y Sebastián Urquía Lus (Grupo Ecologista de Tafalla)"
@@ -980,6 +983,7 @@
 "Supervivencia General/Manual de Supervivencia  de las fuerzas armadas estadounidenses.pdf":
   title: "Manual de supervivencia de las Fuerzas Armadas estadounidenses"
   lang: es
+  author: "Fuerzas Armadas de EE. UU. (edición en español)"
 "Supervivencia General/Manual De Supervivencia Y Preparacionismo, Escuela Española De Supervivencia & Bushcraft.pdf":
   title: "Manual de supervivencia y preparacionismo: introducción a la supervivencia"
   author: "Escuela Española de Supervivencia & Bushcraft"
@@ -1025,3 +1029,75 @@
   title: "Bicibomba - Manual de instalación"
   lang: es
   mode: ocr  # la capa de texto del PDF viene con basura; el OCR lo lee bien
+
+# Lote «sin autor» 1 (los 40 libros más largos)
+"Energia/Eolica/Urquia Lus (1984) - Energia Hidraulica y Eolica Practica.pdf":
+  title: "Energía hidráulica y eólica práctica"
+  author: "Juan Ignacio y Sebastián Urquía Lus"
+  year: 1984
+  lang: "es"
+"Construcciones y herramientas/Herramientas/Maquinas - Calculos de Taller - A.L. Casillas.pdf":
+  title: "Máquinas: cálculos de taller"
+  author: "A. L. Casillas"
+  lang: "es"
+"Supervivencia General/Manual de supervivencia del SAS británico.pdf":
+  title: "Manual de supervivencia del SAS británico"
+  author: "John «Lofty» Wiseman"
+  year: 1986
+  lang: "es"
+"Supervivencia General/manual del aventurero rudiguer nehberg.pdf":
+  title: "Manual del aventurero: técnicas de supervivencia"
+  author: "Rüdiger Nehberg"
+  year: 1984
+  lang: "es"
+"Medicina y Primeros Auxilios/Manual del Aventurero 2(Medicina de Supervivencia)Rudiger Nehberg.pdf":
+  title: "Manual del aventurero 2: medicina de supervivencia"
+  author: "Rüdiger Nehberg"
+  lang: "es"
+"Supervivencia General/+manual militar supervivencia.pdf":
+  title: "Manual de instrucción: supervivencia (MI7-002)"
+  author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
+  year: 1994
+  lang: "es"
+"Cultivo/Plantas medicinales/100 Plantas Medicinales - Desconocido.pdf":
+  title: "Más de 100 plantas medicinales: medicina popular canaria"
+  author: "S. Jorge Cruz Suárez"
+  year: 2007
+  lang: "es"
+"Alimento/Conservas/Chacinados jamones/Chacinería.pdf":
+  title: "Chacinería"
+  author: "Rufo Sainz"
+  year: 1974
+  lang: "es"
+"Medicina y Primeros Auxilios/SALUD Y CURACION POR YERBAS (PRIMERA PARTE) 001 A 200.pdf":
+  title: "Salud y curación por yerbas (primera parte)"
+  author: "Carlos Kozel"
+  lang: "es"
+"Cocina/Rocket Mass Heaters.pdf":
+  title: "Rocket Mass Heaters: Superefficient Woodstoves YOU Can Build"
+  author: "Ianto Evans y Leslie Jackson"
+  year: 2006
+  lang: "en"
+"Alimento/Panificados/Guía del estudiante panadería.pdf":
+  title: "Panadería: guía del estudiante"
+  author: "Aída Ludeña (CAPLAB, Perú)"
+  year: 2011
+  lang: "es"
+"Catastrofes/Manual de Emergencias en español del Condado de Los Angeles EEUU.pdf":
+  title: "Guía de supervivencia en caso de emergencia (Condado de Los Ángeles)"
+  author: "Condado de Los Ángeles (EE. UU.)"
+  lang: "es"
+"Animales e insectos/Criação de galinhas em pequena escala.pdf":
+  title: "Criação de galinhas em pequena escala (Agrodok 4)"
+  author: "N. van Eekeren, A. Maas, H. W. Saatkamp y M. Verschuur (Agromisa/CTA)"
+  year: 2006
+  lang: "pt"
+"Supervivencia General/American survival guide june 2020.pdf":
+  title: "American Survival Guide, junio de 2020"
+  author: "American Survival Guide (revista)"
+  year: 2020
+  lang: "en"
+"Catastrofes/Correos electrónicos Sobrevivir a una catástrofe urbana.pdf":
+  title: "Sobrevivir a una catástrofe urbana"
+  author: "Richard Duarte"
+  lang: "es"
