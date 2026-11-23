@@ -86,3 +86,15 @@ Trabajo en `~/vikarg-fishing-work/` (fuera del repo, con las fuentes descargadas
 
 - En cada pez, «En supervivencia: qué come» (`tools/fishing-data/survival.json`): carnadas naturales según la dieta, aparte de lo reglamentario y con la aclaración de que hoy están prohibidas.
 - Módulo «Pesca de supervivencia» (`/fishing/survival`, `app/src/modules/fishing/survival.ts`): dónde y cuándo pescar, anzuelos improvisados, línea de mano, líneas fijas, trampas para peces, fija y pesca a mano, y limpiar/cocinar/guardar. Texto propio basado en FM 3-05.70 (dominio público). Sin venenos ni explosivos.
+
+## Próximos pasos (para seguir, 2026-11-23)
+
+**Resto de la Patagonia (ya preparado):** `tools/fishing-data` funciona por jurisdicción. Para Río Negro, Chubut y Parques Nacionales del Sur: (1) escribir en `cuts.json` los puntos de corte de sus zonas (leer el texto de cada «Zona» en `~/vikarg-fishing-work/ambientes.json`); (2) `locate.mjs … <Jurisdicción>`; (3) agregar sus permisos en `permits.json` (Río Negro ya tiene el enlace; Chubut sin enlace verificado); (4) `build.mjs ~/vikarg-fishing-work Neuquén,Río Negro,Chubut,Parques Nacionales del Sur` y `npm run data-sizes`. Ojo: los ambientes compartidos (Limay, Azul…) figuran en varios anexos con reglas distintas: hay que decidir cómo mostrarlos (hoy saldrían repetidos, uno por anexo).
+
+**Resto de Argentina (la lista crece mucho):** cada provincia tiene su reglamento propio (Buenos Aires, Litoral, Cuyo, NOA, Santa Cruz, Tierra del Fuego). Decisiones del dueño para entonces:
+- **Normativa por provincia según dónde estás**: como en el clima, se elige por la ubicación actual o por un waypoint (ver cómo lo hace Meteorología), y la portada muestra las reglas y el permiso de esa provincia. Requiere que cada tramo y región tenga su provincia (`region`) y un contorno de provincias para saber en cuál cae el punto (la app ya tiene los contornos en `modules/maps/outline`).
+- **Paquetes por provincia** en lugar de un solo `fish-AR.json` (que con todo el país pasaría de varios MB): `fish-AR-<provincia>.json`, y bajar solo los de la provincia elegida (como los sectores de Brasil en `modules/emergency/sectors.ts`). El índice de especies puede ir aparte (`fish-AR-species.json`).
+- **Peces de río y de mar, separados** a futuro: el modelo ya tiene `sectors` con geometría; para mar haría falta otro tipo (costa, puertos, pesca embarcada) y otras fuentes (normativa de pesca marítima provincial y nacional). La portada podría tener «Agua dulce» y «Mar».
+- **Vigilancia**: sumar a `FISHING_DOCS` (`server/src/fishing/watch.ts`) el reglamento de cada provincia nueva.
+
+**Pendientes chicos de Pesca:** cierre anticipado de la trucha de arroyo en ríos y arroyos (01/03/2027, reglamento pág. 13) como aviso en su ficha y tramos; los 11 ambientes de Neuquén sin ubicar (necesitan coordenada a mano); reemplazar las fotos provisorias de perca y pejerrey por ilustraciones de perfil si aparecen con licencia libre; imágenes de trucha de lago, salmón chinook y róbalo (candidatas en `~/vikarg-fishing-work/imagenes/imagenes.json`).
