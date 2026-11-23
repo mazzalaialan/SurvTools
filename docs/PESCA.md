@@ -1,6 +1,6 @@
 # Sección Pesca (diseño y datos)
 
-Estado: **app hecha, faltan los datos reales** (2026-11-23). La sección funciona con datos de prueba (`app/e2e/fixtures/fish-AR.json`, e2e `fishing.spec.ts`); falta generar `public/data/fish-AR.json`. Decisiones del dueño del proyecto: empezar por **Patagonia**, **tramos ubicados a mano** en el mapa (no el río entero) y **tabla propia orientativa de carnadas**.
+Estado: **app hecha; datos reales de Neuquén** (2026-11-23). La sección funciona con datos de prueba (`app/e2e/fixtures/fish-AR.json`, e2e `fishing.spec.ts`); falta generar `public/data/fish-AR.json`. Decisiones del dueño del proyecto: empezar por **Patagonia**, **tramos ubicados a mano** en el mapa (no el río entero) y **tabla propia orientativa de carnadas**.
 
 ## Qué hace
 
@@ -74,4 +74,5 @@ Trabajo en `~/vikarg-fishing-work/` (fuera del repo, con las fuentes descargadas
 - `reglas_generales.json` (55 reglas), `especies.json` (18), `carnadas.json` (13 especies, con confianza).
 - **Carnada natural:** casi no se permite en Patagonia (señuelo artificial de un anzuelo; art. 13 y 15). Excepciones: pejerrey en ambientes autorizados de Neuquén («carnada viva», sin aclarar) y pasta de harinas vegetales para carpa y pejerrey en Neuquén y Río Negro. Contradicciones anotadas: art. 15 contra el anexo de Neuquén, y art. 22 (cebado) contra la pasta vegetal.
 - **A confirmar:** Aquihueco (Neuquén) trae fechas de la temporada anterior; Santa Cruz y Tierra del Fuego tienen reglamento propio (fuera de este documento).
-- **Falta:** ubicar los 366 tramos en el mapa (OSM) y revisar los campos de cada tramo.
+- **Piloto Neuquén (hecho 2026-11-23):** `tools/fishing-data/` (ver su README). 97 entradas → **79 tramos en el mapa** (66 ríos o lagos enteros por nombre, 13 zonas cortadas con `cuts.json`; 5 entradas generales se reemplazan por sus zonas y una remite a otra), 7 vedadas («Pesca no autorizada»). **Sin ubicar (11):** lagunas Aquihueco, Doña Pancha, El Aparato, El Palau, Epu Lauquen, Matetue, Puyulafquen y Verde - Selva Triste, ríos Kilka y Ruca Choroy (sin nombre en OSM) y la Zona I del Pulmarí (falta ese pedazo en OSM): se agregan con coordenada a mano. **Aproximados:** Limay Zona I (sin los 500 m bajo la presa), Limay Zona III (hasta la cola del embalse, Álamo Guacho no está en el mapa), Neuquén Zona III (Villa Manzano) y las dos zonas de Piedra del Águila (lago entero). **Supuestos:** en 20 tramos el texto no nombra especies («Devolución obligatoria.»): se toman truchas arcoíris y marrón; «1 trucha» (cupo conjunto) figura como 1 de cada una. Paquete: 512 KB (148 KB comprimido).
+- **Falta:** Río Negro, Chubut y Parques Nacionales del Sur (269 tramos), los 11 sin ubicar y revisar los cupos que cambian por fecha.

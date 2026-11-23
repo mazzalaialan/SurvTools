@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { ModuleGrid } from '@/ui/ModuleGrid';
-import { isStale, sectorSeason, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
+import { isStale, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
 import { FishDataGate, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
 import { useFishData } from './useFishData';
 
@@ -251,16 +251,16 @@ export function FishSectorPage() {
             <h1 className="page-title">{s.water}</h1>
             <p>{s.name}</p>
             <p>
-              <SeasonBadge season={sectorSeason(data, s)} />
+              <SectorSeasonBadge data={data} sector={s} />
               {region && ` · ${region.name}`}
             </p>
+            {s.approx && <p className="fish-stale">{t('fishing.approx', { what: s.approx })}</p>}
             {(s.modality?.length || s.catchAndRelease) && (
               <p>
                 {s.modality?.map((m) => t(`fishing.modality.${m}`)).join(' · ')}
                 {s.catchAndRelease && ` · ${t('fishing.rules.release')}`}
               </p>
             )}
-            {s.notes && <p className="card">{s.notes}</p>}
             <h2 className="section-title">{t('fishing.speciesHere', { count: s.species.length })}</h2>
             <ul className="list" data-testid="fish-sector-species">
               {s.species.map((x) => {
@@ -278,6 +278,12 @@ export function FishSectorPage() {
                 );
               })}
             </ul>
+            {s.notes && (
+              <section className="card stack">
+                <h2 className="section-title">{t('fishing.ruleText')}</h2>
+                <p className="fish-rule-text">{s.notes}</p>
+              </section>
+            )}
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>

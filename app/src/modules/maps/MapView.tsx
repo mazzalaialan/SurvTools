@@ -224,7 +224,7 @@ function addFishingLayers(map: MlMap, c: MapColors) {
   const casing: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 6, 5, 12, 9, 16, 13];
   map.addLayer({ id: 'fishing-fill', type: 'fill', source: 'fishing', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.28, 'fill-outline-color': ['get', 'color'] } });
   // Borde claro debajo de la línea, para que se lea sobre el agua y el relieve.
-  map.addLayer({ id: 'fishing-casing', type: 'line', source: 'fishing', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.bg, 'line-width': casing, 'line-opacity': 0.9 } });
+  map.addLayer({ id: 'fishing-casing', type: 'line', source: 'fishing', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.bg, 'line-width': casing, 'line-opacity': 0.9, 'line-offset': ['coalesce', ['get', 'offset'], 0] } });
   for (const [dash, pattern] of Object.entries(FISHING_DASH)) {
     map.addLayer({
       id: `fishing-line-${dash}`,
@@ -232,7 +232,8 @@ function addFishingLayers(map: MlMap, c: MapColors) {
       source: 'fishing',
       filter: ['==', ['coalesce', ['get', 'dash'], 'solid'], dash],
       layout: { 'line-cap': dash === 'dot' ? 'round' : 'butt', 'line-join': 'round' },
-      paint: { 'line-color': ['get', 'color'], 'line-width': width, ...(pattern ? { 'line-dasharray': pattern } : {}) },
+      // `offset` (px): cuando varios peces comparten un tramo, cada uno va corrido a un costado y se ven todos.
+      paint: { 'line-color': ['get', 'color'], 'line-width': width, 'line-offset': ['coalesce', ['get', 'offset'], 0], ...(pattern ? { 'line-dasharray': pattern } : {}) },
     });
   }
   map.addLayer({

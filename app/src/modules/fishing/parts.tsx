@@ -39,6 +39,13 @@ export function SeasonBadge({ season, now }: { season: Season | undefined; now?:
 }
 
 export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: FishSector }) {
+  const { t } = useTranslation();
+  if (sector.closed)
+    return (
+      <span className="fish-season" data-state="closed">
+        {t('fishing.season.forbidden')}
+      </span>
+    );
   return <SeasonBadge season={sectorSeason(data, sector)} />;
 }
 

@@ -61,8 +61,12 @@ export interface FishSector {
   modality?: Modality[];
   catchAndRelease?: boolean;
   species: SectorSpecies[];
-  /** Prohibiciones y aclaraciones del reglamento para este tramo. */
+  /** Prohibiciones y aclaraciones del reglamento para este tramo (el texto literal). */
   notes?: string;
+  /** Pesca no autorizada en este tramo (todo el año). */
+  closed?: boolean;
+  /** La ubicación del tramo es aproximada (qué se aproximó). */
+  approx?: string;
   source: string;
   /** Página, artículo o anexo del reglamento. */
   ref?: string;
@@ -121,7 +125,7 @@ export async function hasFishData(country: Country): Promise<boolean> {
 
 // --- Temporada ------------------------------------------------------------------------------------------------------------------
 
-export type SeasonStatus = { state: 'open'; until?: Date } | { state: 'closed'; from?: Date } | { state: 'unknown' };
+export type SeasonStatus = { state: 'open'; until?: Date } | { state: 'closed'; from?: Date } | { state: 'forbidden' } | { state: 'unknown' };
 
 /** Fecha local a medianoche. */
 const day = (y: number, m: number, d: number) => new Date(y, m - 1, d);

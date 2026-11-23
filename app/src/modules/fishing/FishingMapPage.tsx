@@ -68,7 +68,8 @@ function FishingMap({ data }: { data: FishData }) {
     if (!chosen.length) return { type: 'FeatureCollection', features: data.sectors.map((s) => feature(s, { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })) };
     return {
       type: 'FeatureCollection',
-      features: chosen.flatMap((id, i) => sectorsWithSpecies(data, id).map((s) => feature(s, { color: FISH_STYLES[i]!.color, dash: FISH_STYLES[i]!.dash }))),
+      // Con varios peces, cada uno corrido unos píxeles (0, +4, −4, +8): en los tramos que comparten se ven todas las líneas.
+      features: chosen.flatMap((id, i) => sectorsWithSpecies(data, id).map((s) => feature(s, { color: FISH_STYLES[i]!.color, dash: FISH_STYLES[i]!.dash, offset: chosen.length > 1 ? [0, 4, -4, 8][i] : 0 }))),
     };
   }, [data, chosen.join(',')]);
 

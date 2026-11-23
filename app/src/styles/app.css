@@ -6935,7 +6935,7 @@ button.country-pack-del {
   position: absolute;
   top: 8px;
   left: 56px;
-  right: 8px;
+  right: 56px;
   z-index: 2;
   display: flex;
   gap: var(--sp-2);
@@ -6949,6 +6949,8 @@ button.country-pack-del {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+.fish-chips .chip:not([aria-pressed='true']) {
   background: var(--surface);
 }
 .fish-swatch {

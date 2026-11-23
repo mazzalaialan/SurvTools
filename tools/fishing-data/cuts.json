@@ -1,0 +1,210 @@
+{
+ "_": "Puntos de corte de los tramos del reglamento (ver locate.mjs). «approx» marca lo que se ubicó a ojo y hay que revisar.",
+ "neuquen-chimehuin-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas"
+ },
+ "neuquen-chimehuin-rio-zona-i": {
+  "from": {
+   "lake": "Huechulafquen"
+  },
+  "to": {
+   "after": {
+    "firstBridgeFrom": {
+     "lake": "Huechulafquen"
+    }
+   },
+   "m": 250,
+   "toward": {
+    "confluence": "Collón Curá"
+   }
+  }
+ },
+ "neuquen-chimehuin-rio-zona-ii": {
+  "from": {
+   "after": {
+    "firstBridgeFrom": {
+     "lake": "Huechulafquen"
+    }
+   },
+   "m": 250,
+   "toward": {
+    "confluence": "Collón Curá"
+   }
+  },
+  "to": {
+   "confluence": "Collón Curá"
+  }
+ },
+ "neuquen-correntoso-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas"
+ },
+ "neuquen-correntoso-rio-zona-i": {
+  "from": {
+   "lake": "Correntoso"
+  },
+  "to": {
+   "firstBridgeFrom": {
+    "lake": "Correntoso"
+   }
+  }
+ },
+ "neuquen-correntoso-rio-zona-ii": {
+  "from": {
+   "firstBridgeFrom": {
+    "lake": "Correntoso"
+   }
+  },
+  "to": {
+   "lake": "Nahuel Huapi"
+  }
+ },
+ "neuquen-limay-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas (y el tramo de PN va en su anexo)"
+ },
+ "neuquen-limay-rio-zona-i": {
+  "from": {
+   "dam": "Piedra del Águila"
+  },
+  "to": {
+   "after": {
+    "firstBridgeFrom": {
+     "dam": "Piedra del Águila"
+    }
+   },
+   "m": 500,
+   "toward": {
+    "dam": "Pichi Picún Leufú"
+   }
+  },
+  "approx": "500 m aguas abajo de la presa no se aplica"
+ },
+ "neuquen-limay-rio-zona-ii": {
+  "from": {
+   "firstBridgeFrom": {
+    "dam": "Pichi Picún Leufú"
+   }
+  },
+  "to": {
+   "after": {
+    "firstBridgeFrom": {
+     "dam": "Pichi Picún Leufú"
+    }
+   },
+   "m": 2000,
+   "toward": {
+    "lake": "Ezequiel Ramos Mexía"
+   }
+  }
+ },
+ "neuquen-limay-rio-zona-iii": {
+  "from": {
+   "after": {
+    "firstBridgeFrom": {
+     "dam": "Pichi Picún Leufú"
+    }
+   },
+   "m": 2000,
+   "toward": {
+    "lake": "Ezequiel Ramos Mexía"
+   }
+  },
+  "to": {
+   "lake": "Ezequiel Ramos Mexía"
+  },
+  "approx": "hasta el paraje Álamo Guacho (no está en el mapa): se toma hasta la cola del embalse Ezequiel Ramos Mexía (El Chocón)"
+ },
+ "neuquen-limay-rio-zona-iv": {
+  "from": {
+   "dam": "Arroyito"
+  },
+  "to": {
+   "confluence": "Neuquén"
+  }
+ },
+ "neuquen-neuquen-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas"
+ },
+ "neuquen-neuquen-rio-zona-i": {
+  "from": {
+   "end": "naciente",
+   "away": {
+    "confluence": "Limay"
+   }
+  },
+  "to": {
+   "confluence": "Varvarco"
+  }
+ },
+ "neuquen-neuquen-rio-zona-ii": {
+  "from": {
+   "confluence": "Varvarco"
+  },
+  "to": {
+   "named": "Balsa Paso Huitrín"
+  }
+ },
+ "neuquen-neuquen-rio-zona-iii": {
+  "from": {
+   "named": "Balsa Paso Huitrín"
+  },
+  "to": {
+   "named": "Villa Manzano"
+  },
+  "approx": "el tramo compartido empieza «en cercanías de Villa Manzano»"
+ },
+ "neuquen-neuquen-rio-zona-iv": {
+  "from": {
+   "named": "Villa Manzano"
+  },
+  "to": {
+   "confluence": "Limay"
+  }
+ },
+ "neuquen-pulmari-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas"
+ },
+ "neuquen-pulmari-rio-zona-i": {
+  "from": {
+   "end": "naciente",
+   "away": {
+    "confluence": "Aluminé"
+   }
+  },
+  "to": {
+   "lake": "Pulmarí"
+  },
+  "approx": "desde el límite del PN Lanín: se toma desde la naciente"
+ },
+ "neuquen-pulmari-rio-zona-ii": {
+  "from": {
+   "lake": "Pulmarí"
+  },
+  "to": {
+   "confluence": "Aluminé"
+  }
+ },
+ "neuquen-piedra-del-aguila-lago": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas"
+ },
+ "neuquen-piedra-del-aguila-lago-zona-i": {
+  "lakeZone": true,
+  "approx": "zona de un lago: por ahora el lago entero, con el texto de la zona"
+ },
+ "neuquen-piedra-del-aguila-lago-zona-ii": {
+  "lakeZone": true,
+  "approx": "zona de un lago: por ahora el lago entero, con el texto de la zona"
+ },
+ "neuquen-el-chocon-lago": {
+  "skip": true,
+  "why": "remite a «Ramos Mexía, Ezequiel» (mismo embalse)"
+ },
+ "neuquen-ramos-mexia-ezequiel-el-chocon-lago": {
+  "name": "Ezequiel Ramos Mexía"
+ }
+}
