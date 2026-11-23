@@ -183,7 +183,8 @@ for (const jur of jurs.split(',')) {
 }
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
 const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => (images[sp.id] ? { ...sp, image: images[sp.id] } : sp));
-const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 10), seasonLabel: '2026/2027', sources: SOURCES, species: used, regions, sectors };
+// Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.
+const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);
 console.log(`${sectors.length} tramos, ${used.length} especies → ${OUT} (${Math.round(readFileSync(OUT).length / 1024)} KB)`);

@@ -92,7 +92,7 @@ export function RulesNotice({ data, pageRef }: { data: FishData; pageRef?: strin
   const src = data.sources[0];
   return (
     <p className="fish-notice" data-testid="fish-notice">
-      {t('fishing.notice', { season: data.seasonLabel ?? '', date: data.generatedAt })}{' '}
+      {t('fishing.notice', { season: data.seasonLabel ?? '', date: data.generatedAt.slice(0, 10) })}{' '}
       {pageRef && `${t('fishing.sourceOf', { ref: pageRef })}: `}
       {src && (
         <a href={src.url} target="_blank" rel="noreferrer">
