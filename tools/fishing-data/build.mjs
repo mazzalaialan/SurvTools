@@ -22,6 +22,7 @@ const reglas = read('reglas_generales.json');
 const cuts = JSON.parse(readFileSync(fileURLToPath(new URL('./cuts.json', import.meta.url)), 'utf8'));
 const permits = JSON.parse(readFileSync(fileURLToPath(new URL('./permits.json', import.meta.url)), 'utf8'));
 const images = JSON.parse(readFileSync(fileURLToPath(new URL('./images.json', import.meta.url)), 'utf8'));
+const survival = JSON.parse(readFileSync(fileURLToPath(new URL('./survival.json', import.meta.url)), 'utf8'));
 
 const SOURCE = {
   id: 'pdcp-2026-27',
@@ -182,7 +183,7 @@ for (const jur of jurs.split(',')) {
   }
 }
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
-const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => (images[sp.id] ? { ...sp, image: images[sp.id] } : sp));
+const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => ({ ...sp, ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
 // Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));

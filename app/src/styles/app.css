@@ -7142,3 +7142,7 @@ button.country-pack-del {
 .fish-more {
   margin-top: 6px;
 }
+/* Supervivencia: aparte de lo reglamentario, con borde de aviso. */
+.fish-survival {
+  border-left: 6px solid var(--warn);
+}

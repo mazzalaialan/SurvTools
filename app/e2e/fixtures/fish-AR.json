@@ -31,6 +31,13 @@
           "Ninfas"
         ],
         "confidence": "high"
+      },
+      "survival": {
+        "baits": [
+          "Lombriz de tierra",
+          "Pancora"
+        ],
+        "tip": "Come de todo."
       }
     },
     {

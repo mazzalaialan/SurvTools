@@ -45,6 +45,9 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
 
   // Ficha del pez: carnadas y tramos.
   await expect(page.getByTestId('fish-baits')).toContainText('Woolly Bugger');
+  // Para una emergencia: lo que come, aparte y con la aclaración del reglamento.
+  await expect(page.getByTestId('fish-survival')).toContainText('Lombriz de tierra');
+  await expect(page.getByTestId('fish-survival')).toContainText('prohibida');
   await expect(page.getByTestId('fish-page')).toContainText('2 tramos donde se pesca');
   await expect(page.getByTestId('fish-sector-list')).toContainText('Captura y devolución');
   // Amarillo donde es con devolución.

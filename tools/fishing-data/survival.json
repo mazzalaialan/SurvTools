@@ -1,0 +1,10 @@
+{
+  "_": "Carnadas naturales para una emergencia de supervivencia (cuando ya no rigen los reglamentos), según la dieta de cada pez (FishBase, CC BY-NC; Cussac 2023, argentina.gob.ar) y la experiencia de pescadores. Tabla propia, orientativa. Con el reglamento vigente, la carnada natural está prohibida en casi toda la Patagonia.",
+  "trucha-arcoiris": { "baits": ["Lombriz de tierra", "Larvas y ninfas de insectos que viven bajo las piedras del río", "Tucuras y otros insectos caídos al agua", "Pancora (cangrejito de agua dulce)", "Pececitos chicos (puyén) o un trozo de pescado"], "tip": "Come de todo: probá primero con lo que encuentres en la orilla (bajo piedras y troncos)." },
+  "trucha-marron": { "baits": ["Pececitos chicos (puyén, peladilla) o un trozo de pescado", "Pancora", "Lombriz de tierra", "Tucuras y grillos", "Larvas de insectos acuáticos"], "tip": "Las grandes comen sobre todo peces y pancoras; pican más al amanecer, al atardecer y de noche." },
+  "trucha-arroyo": { "baits": ["Lombriz de tierra", "Larvas y ninfas de insectos", "Insectos que caen al agua (hormigas, escarabajos, tucuras)"], "tip": "Vive en arroyos fríos y chicos: carnada chica y anzuelo chico." },
+  "salmon-atlantico": { "baits": ["Pececitos chicos o un trozo de pescado", "Lombriz de tierra", "Insectos y sus larvas"], "tip": "En lagos come sobre todo peces chicos." },
+  "perca": { "baits": ["Pancora", "Pececitos chicos (puyén) o un trozo de pescado", "Lombriz de tierra", "Larvas de insectos"], "tip": "Busca el fondo y las piedras de la costa; la pancora es de lo mejor." },
+  "pejerrey": { "baits": ["Lombriz chica o un trocito de lombriz", "Trocitos de pescado o de pejerrey", "Insectos chicos y sus larvas"], "tip": "Boca chica: carnada chica, anzuelo chico y a media agua." },
+  "carpa": { "baits": ["Masa de harina con agua (o pan amasado)", "Granos de maíz cocidos", "Lombriz de tierra", "Papa hervida en trocitos"], "tip": "Come en el fondo, en aguas quietas y barrosas; tené paciencia." }
+}

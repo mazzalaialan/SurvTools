@@ -174,6 +174,18 @@ export function FishPage() {
               </dl>
             )}
             <Baits sp={sp} />
+            {sp.survival && (
+              <section className="card stack fish-survival" data-testid="fish-survival">
+                <h2 className="section-title">{t('fishing.survival.title')}</h2>
+                <p className="small">{t('fishing.survival.warning')}</p>
+                <ul className="fish-baits">
+                  {sp.survival.baits.map((b) => (
+                    <li key={b}>{b}</li>
+                  ))}
+                </ul>
+                {sp.survival.tip && <p>{sp.survival.tip}</p>}
+              </section>
+            )}
             <h2 className="section-title">{t('fishing.sectorsFor', { count: sectors.length })}</h2>
             <SectorsByRegion data={data} sectors={sectors} speciesId={sp.id} />
             <p className="muted small">{t('fishing.colorsHint')}</p>
