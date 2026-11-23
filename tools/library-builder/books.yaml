@@ -1537,10 +1537,13 @@
 "Mochilas kits y preparacion hogar/Urban Bug Out Bag - TheUrbanPrepper.pdf":
   author: "TheUrbanPrepper"
 "Alimento/Conservas/Conserva en Frasco/GUIDE 3 USDA TOMATOES Can.pdf":
+  title: "Conservas caseras del USDA: tomates"
   author: "USDA (Departamento de Agricultura de EE. UU.)"
 "Alimento/Conservas/Conserva en Frasco/GUIDE 4 USDA VEGGIES Can.pdf":
+  title: "Conservas caseras del USDA: hortalizas"
   author: "USDA (Departamento de Agricultura de EE. UU.)"
 "Higiene/jabon-artesano-elaboracion-23114.pdf":
+  title: "Elaboración de jabón artesano"
   author: "Marisa Neila"
 "Construcciones y herramientas/Manual construccion con adobe.pdf":
   author: "Roberto Morales, Rafael Torres, Luis Rengifo y Carlos Irala (Universidad Nacional de Ingeniería, Perú)"
@@ -1555,6 +1558,7 @@
   author: "Carlos Hadzich Marín y Omar Gonzales Arcondo (Grupo PUCP)"
   year: 2009
 "Medicina y Primeros Auxilios/socorrismo.pdf":
+  title: "Guía de primeros auxilios (Scouts de Andalucía)"
   author: "Francisco José Armada Muñoz (Scouts de Andalucía)"
   year: 1999
 "Energia/Combustible/Como hacer biodiesel.pdf":
@@ -1581,3 +1585,151 @@
 "Construcciones y herramientas/Refugio/Atlas-Catalogue-2018.pdf":
   author: "Atlas Survival Shelters"
   year: 2018
+
+# Lote 6 (autores de libros cortos y títulos corregidos)
+"Construcciones y herramientas/4_1_cocinas_y_hornos.pdf":
+  title: "Cocinas y hornos: fichas de autoconstrucción"
+  lang: es
+"Defensa y entrenamiento/manual_iluminacion_tactica.pdf":
+  title: "Manual de iluminación táctica"
+"Medicina y Primeros Auxilios/PRIMEROS_AUXILIOS_Y_SUPERVIVENCIA_EN_EL_MEDIO_NATURAL.3rdj.pdf":
+  title: "Primeros auxilios y supervivencia en el medio natural"
+"Orientacion/Correos electrónicos Conceptos_Cartograficos_def.pdf · versión 1.pdf":
+  title: "Conceptos cartográficos"
+"Construcciones y herramientas/manual_ebanista.pdf":
+  title: "Un manual para el ebanista"
+  author: "Instituto Centroamericano de Extensión de la Cultura (Costa Rica)"
+  lang: es
+"Construcciones y herramientas/un manual para carpintero basico.pdf":
+  title: "Un manual para el carpintero"
+  author: "Instituto Centroamericano de Extensión de la Cultura (Costa Rica)"
+  lang: es
+"Construcciones y herramientas/Manual  Estufas Rocket.pdf":
+  title: "Estufa Rocket: manual para la construcción"
+  author: "Secretaría de Estado de la Energía (Santa Fe, Argentina)"
+  lang: es
+"Psicologia/CuidaDeLosDemásPeroDeTiPrimero_salud_mental_sanitarios.pdf":
+  title: "Cuida de los demás, pero de ti primero: salud mental para sanitarios"
+  author: "Carmen Esteban"
+  lang: es
+"Alimento/Yuyos bien comidos.pdf":
+  title: "Yuyos bien comidos"
+  author: "Ricardo Ledesma y Cecilia Nava (INTA EEA Rafaela)"
+  year: 2009
+  lang: es
+"Catastrofes/maremoto1960 (1).pdf":
+  title: "Cómo sobrevivir a un maremoto: lecciones del tsunami chileno de 1960"
+  author: "Servicio Hidrográfico y Oceanográfico de la Armada de Chile (SHOA)"
+  year: 2000
+  lang: es
+"Catastrofes/Preparados_para_el_desastre.pdf":
+  title: "Preparados para el desastre: «survivalismo» y colapso en la distopía contemporánea (el caso de The Walking Dead)"
+  author: "Ana-Clara Rey Segovia (Universitat de València)"
+  lang: es
+"Construcciones y herramientas/Herramientas/Fichas Preparate Madrid.pdf":
+  title: "Prepárate Madrid: guía práctica de fichas de emergencia"
+  lang: es
+"Construcciones y herramientas/Herramientas/soberania alimentaria costruir herramientas.pdf":
+  title: "Fabricación de herramientas (Cartilla 4, Soberanía Alimentaria)"
+  author: "Cátedra Libre de Soberanía Alimentaria (Universidad Nacional de La Plata)"
+  lang: es
+"Cultivo/Ebook-Gratuito-Superfoods-.pdf":
+  title: "Superfoods: sus beneficios y cómo incorporarlos en tu día a día"
+  author: "Lékué"
+  lang: es
+"Construcciones y herramientas/mesa silla.en.es.pdf":
+  title: "Mesa de picnic plegable (banco convertible)"
+  lang: es
+"Cultivo/Compost/Manual de compostaje.pdf":
+  title: "Manual de compostaje"
+  author: "Fundación Mingako (Chile)"
+  lang: es
+"Medicina y Primeros Auxilios/TEApoyo-Hospital-Universitario-Virgen-del-Rocio.pdf":
+  title: "TEApoyo: TEA y COVID-19"
+  author: "USMI-J, Hospital Universitario Virgen del Rocío (Sevilla)"
+  year: 2020
+  lang: es
+"Alimento/Helados diabeticos.pdf":
+  title: "La viabilidad de un helado para diabéticos"
+  author: "Albert Soler y Lluís Ribas"
+  lang: es
+"Alimento/Cerveza/Summer Ale.pdf":
+  title: "Summer Ale (receta clon de Brooklyn Summer Ale)"
+  author: "Beermetria"
+  year: 2019
+  lang: pt
+"Catastrofes/Guia-para-Personas-con-Discapacidad-en-caso-de-emergencia-y-desastres_Ecuador.pdf":
+  title: "Guía para personas con discapacidad en caso de emergencia y desastres (Ecuador)"
+  author: "Corporación Gestión Ecuador"
+  lang: es
+"Construcciones y herramientas/Herramientas/Como Fabricar un Fire Piston (Piston de Fuego) - Instructables.pdf":
+  title: "Guía ilustrada para fabricar un pistón de fuego (Instructables)"
+  author: "jphphotography (Instructables)"
+  year: 2009
+  lang: en
+"Cultivo/Biodigestor rural.pdf":
+  title: "Unidade demonstrativa de biodigestor rural"
+  lang: pt
+"Mochilas kits y preparacion hogar/Boomer Guide to Prepping.pdf":
+  title: "Boomer's Guide to Prepping"
+  author: "The Bulletproof Home"
+  year: 2013
+  lang: en
+"Alimento/Conservas/Conserva en Frasco/GUIDE 5 USDA MEAT FISH Can.pdf":
+  title: "Conservas caseras del USDA: carnes, aves y pescados (Guía 5)"
+  author: "USDA (Departamento de Agricultura de EE. UU.)"
+  lang: en
+"Alimento/Conservas/Conserva en Frasco/GUIDE 7 USDA  JAMS JELLY Can.pdf":
+  title: "Conservas caseras del USDA: mermeladas y jaleas (Guía 7)"
+  author: "USDA (Departamento de Agricultura de EE. UU.)"
+  lang: en
+"Construcciones y herramientas/HORNO SOLARdeBARRO 15.pdf":
+  title: "Horno solar de barro"
+  author: "Oriol Balliu"
+  lang: es
+"Defensa y entrenamiento/El cuchillo - Jusús L. Tobares.pdf":
+  title: "El cuchillo"
+  author: "Jesús L. Tobares"
+  year: 1977
+  lang: es
+"Psicologia/GuiaprofAfrontamientodificultades.pdf":
+  title: "Materiales para el afrontamiento saludable de las dificultades de la vida cotidiana: guía para profesionales"
+  author: "Servicio Andaluz de Salud (Consejería de Salud, Junta de Andalucía)"
+  year: 2012
+  lang: es
+"Cultivo/Tasi o Doca (Morrenia odorata) Planta Alimenticia - PROCISUR IICA.pdf":
+  title: "Tasi o Doca (Morrenia odorata), planta alimenticia"
+  author: "Instituto Interamericano de Cooperación para la Agricultura (IICA, PROCISUR)"
+  year: 2018
+  lang: es
+"Catastrofes/Preppers Granada 11 Manuales De Supervivencia 04 Manual De Supervivencia En Agua Fría.pdf":
+  title: "Supervivencia en aguas frías"
+  author: "Organización Marítima Internacional (OMI), traducido y compilado por F. Roca"
+  lang: es
+"Construcciones y herramientas/Refugio/Catastrophic event survival structure.pdf":
+  title: "Catastrophic event survival structure and method of manufacture (patente US 6,938,381)"
+  year: 2005
+  lang: en
+"Construcciones y herramientas/Temporary portable nuclear Fallout Shelter.pdf":
+  title: "Temporary/portable nuclear fallout shelter (patente US 4,625,468)"
+  author: "Viktor E. Hampel"
+  year: 1986
+  lang: en
+"Cultivo/Plantas medicinales/Plantas alimenticias silvestres - Salta.pdf":
+  title: "Plantas alimenticias silvestres de Salta"
+  author: "Haydée Lackner (PROHUERTA Salta, INTA)"
+  lang: es
+"Catastrofes/How to Survive an Economic Collapse.pdf":
+  title: "Crash Proof: cómo sobrevivir a un colapso económico"
+  author: "Sarah Ratliff (The Bulletproof Home)"
+  year: 2013
+  lang: en
+"Catastrofes/Preppers Granada 02 Desastres 07 Huracanes 07 Ciclones Tropicales Preparación.pdf":
+  title: "Ciclones tropicales: guía de preparación"
+  author: "NOAA / Servicio Nacional de Meteorología de EE. UU. y Cruz Roja Americana"
+  year: 2013
+  lang: es
+"Construcciones y herramientas/ManualCapacitacionInverter.pdf":
+  title: "Cuaderno del soldador: guía para soldadoras inverter"
+  author: "Lusqtoff"
+  lang: es
