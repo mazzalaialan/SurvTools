@@ -38,6 +38,9 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   // Colores: verde la perca (cupo), y el texto que nombra a los salmónidos los aclara.
   await expect(page.getByTestId('fish-sector-species').getByRole('link', { name: /Perca criolla/ })).toHaveAttribute('data-rule', 'keep');
   await expect(page.getByTestId('fish-group-hint')).toContainText('truchas (arcoíris, marrón');
+  // El permiso: qué hace falta y el enlace oficial para sacarlo.
+  await expect(page.getByTestId('fish-permit')).toContainText('Residente: diario · $12.500');
+  await expect(page.getByTestId('fish-permit-buy')).toHaveAttribute('href', 'https://example.org/permisos/');
   await page.getByTestId('fish-sector-species').getByRole('link', { name: /Trucha arcoíris/ }).click();
 
   // Ficha del pez: carnadas y tramos.

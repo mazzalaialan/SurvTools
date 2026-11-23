@@ -20,6 +20,7 @@ const ambientes = read('ambientes.json');
 const carnadas = read('carnadas.json');
 const reglas = read('reglas_generales.json');
 const cuts = JSON.parse(readFileSync(fileURLToPath(new URL('./cuts.json', import.meta.url)), 'utf8'));
+const permits = JSON.parse(readFileSync(fileURLToPath(new URL('./permits.json', import.meta.url)), 'utf8'));
 
 const SOURCE = {
   id: 'pdcp-2026-27',
@@ -147,6 +148,7 @@ for (const jur of jurs.split(',')) {
     name: jur,
     rules: reglas.reglas.filter((r) => r.jurisdiccion === jur || r.jurisdiccion?.startsWith('Todas')).map((r) => `${r.texto_literal} (${r.articulo_o_punto ?? ''}, pág. ${r.pagina_impresa ?? '?'})`),
     season: { from: '2026-11-01', to: '2027-05-01' },
+    ...(permits[jur] && { permit: permits[jur] }),
     source: SOURCE.id,
   });
   for (const a of ambientes.filter((x) => x.jurisdiccion === jur)) {

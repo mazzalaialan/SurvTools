@@ -1,0 +1,32 @@
+{
+  "_": "Permisos de pesca por jurisdicción (temporada 2026/27). Precios: Reglamento PDCP 2026/27, art. 3º, pág. 7, iguales en las cuatro jurisdicciones; enlaces verificados el 2026-11-23. Revisar cada temporada.",
+  "Neuquén": {
+    "items": [
+      { "type": "Residente: diario", "price": "$12.500" },
+      { "type": "Residente: 10 días", "price": "$25.000" },
+      { "type": "Residente: temporada", "price": "$50.000" },
+      { "type": "Menores de 13 a 17 años: temporada", "price": "$25.000" },
+      { "type": "Sin cargo", "who": "mayores de 65, jubilados, pensionados, menores de hasta 12 años y personas con discapacidad (con acreditación oficial)" },
+      { "type": "No residente: diario", "price": "$50.000" },
+      { "type": "No residente: 10 días", "price": "$140.000" },
+      { "type": "No residente: temporada", "price": "$280.000" },
+      { "type": "Limítrofe: 10 días", "price": "$50.000" }
+    ],
+    "extra": [
+      "Trolling: permiso adicional (diario $25.000, 10 días $50.000, temporada $100.000), además del ordinario.",
+      "Zonas preferenciales (Boca del Chimehuín y río Correntoso): permiso adicional (diario $12.500, 10 días $25.000, temporada $50.000), además del ordinario.",
+      "El permiso de temporada vale hasta el 31/10/2027. El permiso en línea (con QR y DNI) vale también en Río Negro, Chubut y los Parques Nacionales."
+    ],
+    "buyUrl": "https://cazaypesca.neuquen.gob.ar/permisos/",
+    "infoUrl": "https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf",
+    "requirements": "Se saca con el DNI; es personal e intransferible y hay que llevarlo encima.",
+    "where": "Venta en línea desde el 15/10/2026 (Dirección de Fauna de Neuquén).",
+    "date": "2026-11-23"
+  },
+  "Río Negro": {
+    "items": [],
+    "buyUrl": "https://www.permisosdepesca.com.ar/",
+    "where": "Tienda de la Mesa Directiva de Pesca Deportiva Zona Andina, enlazada por el Gobierno de Río Negro (nota del 02/11/2026).",
+    "date": "2026-11-23"
+  }
+}

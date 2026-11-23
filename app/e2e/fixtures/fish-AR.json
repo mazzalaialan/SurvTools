@@ -61,7 +61,17 @@
       "rules": [
         "Señuelo artificial de un solo anzuelo"
       ],
-      "source": "pdcp-2026-27"
+      "source": "pdcp-2026-27",
+      "permit": {
+        "items": [
+          {
+            "type": "Residente: diario",
+            "price": "$12.500"
+          }
+        ],
+        "buyUrl": "https://example.org/permisos/",
+        "date": "2026-11-23"
+      }
     }
   ],
   "sectors": [
