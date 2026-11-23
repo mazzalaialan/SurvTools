@@ -1004,6 +1004,9 @@
 # Escaneado: la capa de texto del PDF está vacía, se necesita OCR.
 "Construcciones y herramientas/MANUAL DEL ARQUITECTO DESCALZO.pdf":
   mode: ocr
+  title: "Manual del arquitecto descalzo"
+  author: "Johan van Lengen"
+  lang: es
 "Medicina y Primeros Auxilios/Donde-no-hay-doctor.docx":
   title: "Donde no hay doctor"
   author: "David Werner (con Carol Thuman y Jane Maxwell; Hesperian)"
