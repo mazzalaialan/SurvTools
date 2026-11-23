@@ -137,19 +137,23 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
         <ul className="fish-permit-list">
           {p.items.map((x) => (
             <li key={`${x.type}-${x.who ?? ''}`}>
-              <strong>{x.type}</strong>
-              {x.who && ` · ${x.who}`}
-              {x.price && ` · ${x.price}`}
+              <strong className="fish-permit-type">{x.type}</strong>
+              {x.who && (
+                <>
+                  <span className="fish-sep"> · </span>
+                  <span className="fish-permit-who">{x.who}</span>
+                </>
+              )}
+              {x.price && (
+                <>
+                  <span className="fish-sep"> · </span>
+                  <span className="fish-permit-price">{x.price}</span>
+                </>
+              )}
             </li>
           ))}
         </ul>
       ) : null}
-      {p?.extra?.map((x) => (
-        <p key={x} className="small">
-          {x}
-        </p>
-      ))}
-      {p?.requirements && <p className="small">{p.requirements}</p>}
       {p?.buyUrl && (
         <a className="btn btn-primary btn-block" href={p.buyUrl} target="_blank" rel="noreferrer" data-testid="fish-permit-buy">
           {t('fishing.permit.buy')}
@@ -160,8 +164,17 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
           {t('fishing.permit.info')}
         </a>
       )}
-      {p?.where && <p className="small muted">{p.where}</p>}
-      {p?.date && <p className="small muted">{t('fishing.permit.asOf', { date: p.date })}</p>}
+      {/* Aclaraciones: después de los precios y del botón, más chicas, para que lo importante se vea primero. */}
+      <div className="fish-permit-notes">
+        {p?.extra?.map((x) => (
+          <p key={x} className="small">
+            {x}
+          </p>
+        ))}
+        {p?.requirements && <p className="small">{p.requirements}</p>}
+        {p?.where && <p className="small muted">{p.where}</p>}
+        {p?.date && <p className="small muted">{t('fishing.permit.asOf', { date: p.date })}</p>}
+      </div>
     </section>
   );
 }

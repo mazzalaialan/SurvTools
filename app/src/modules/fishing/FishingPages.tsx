@@ -115,7 +115,7 @@ export function FishPage() {
         const sp = speciesById(data, id)!;
         const sectors = sectorsWithSpecies(data, id);
         return (
-          <div className="stack" data-testid="fish-page">
+          <div className="stack fish-screen" data-testid="fish-page">
             <h1 className="page-title">{speciesName(sp, i18n.language)}</h1>
             {sp.image && (
               <figure className="fish-figure" data-testid="fish-image">
@@ -259,7 +259,7 @@ export function FishSectorPage() {
         const region = data.regions.find((r) => r.id === s.region);
         const source = data.sources.find((x) => x.id === s.source);
         return (
-          <div className="stack" data-testid="fish-sector-page">
+          <div className="stack fish-screen" data-testid="fish-sector-page">
             <h1 className="page-title">{s.water}</h1>
             <p>{s.name}</p>
             <p>
