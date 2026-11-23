@@ -1591,11 +1591,15 @@
   title: "Cocinas y hornos: fichas de autoconstrucción"
   lang: es
 "Defensa y entrenamiento/manual_iluminacion_tactica.pdf":
-  title: "Manual de iluminación táctica"
+  title: "Técnicas de iluminación táctica"
+  author: "Vaughn Baker"
+  lang: es
 "Medicina y Primeros Auxilios/PRIMEROS_AUXILIOS_Y_SUPERVIVENCIA_EN_EL_MEDIO_NATURAL.3rdj.pdf":
   title: "Primeros auxilios y supervivencia en el medio natural"
 "Orientacion/Correos electrónicos Conceptos_Cartograficos_def.pdf · versión 1.pdf":
   title: "Conceptos cartográficos"
+  author: "Instituto Geográfico Nacional (España) y UPM-LatinGEO"
+  lang: es
 "Construcciones y herramientas/manual_ebanista.pdf":
   title: "Un manual para el ebanista"
   author: "Instituto Centroamericano de Extensión de la Cultura (Costa Rica)"
@@ -1628,6 +1632,7 @@
   lang: es
 "Construcciones y herramientas/Herramientas/Fichas Preparate Madrid.pdf":
   title: "Prepárate Madrid: guía práctica de fichas de emergencia"
+  author: "Ayuntamiento de Madrid"
   lang: es
 "Construcciones y herramientas/Herramientas/soberania alimentaria costruir herramientas.pdf":
   title: "Fabricación de herramientas (Cartilla 4, Soberanía Alimentaria)"
@@ -1732,4 +1737,151 @@
 "Construcciones y herramientas/ManualCapacitacionInverter.pdf":
   title: "Cuaderno del soldador: guía para soldadoras inverter"
   author: "Lusqtoff"
+  lang: es
+
+# Lote 7 (libros cortos sin autor)
+"Cultivo/Correos electrónicos pdf_ManualHuertoAzotea.pdf · versión 1.pdf":
+  title: "Pequeño manual del cultivo en azoteas: un huerto en tu azotea"
+  author: "Ecologistas en Acción de Las Palmas de Gran Canaria"
+  lang: es
+"Medicina y Primeros Auxilios/Medicamentos/HIDROXICLOROQUINA -PLAQUENIL-ProsepctoPaciente.pdf":
+  title: "Plaquenil (hidroxicloroquina): prospecto para el paciente"
+  author: "Sanofi-Aventis Argentina (aprobado por ANMAT)"
+  year: 2015
+  lang: es
+"Medicina y Primeros Auxilios/Medicamentos/HIDROXICLOROQUINA -PLAQUENIL-ProspectoMedico.pdf":
+  title: "Plaquenil (hidroxicloroquina): prospecto para el profesional"
+  author: "Sanofi-Aventis Argentina (aprobado por ANMAT)"
+  year: 2015
+  lang: es
+"Medicina y Primeros Auxilios/Preppers Granada 13 Salud Y Primeros Auxilios 07 Infecciones 08 Infeccion De Piel Y Tejidos Blandos.pdf":
+  title: "Infección de piel y tejidos blandos: celulitis e infecciones necrotizantes"
+  author: "Javier Rascón, Antoni Campins y Melcior Riera"
+  lang: es
+"Catastrofes/Recomanacions per afrontar la mort d’una persona estimada durant el confinament per l’epidèmia de COVID-19.pdf":
+  author: "Col·legi Oficial de Psicologia de Catalunya"
+  year: 2020
+  lang: ca
+"Construcciones y herramientas/Construccion-de-bicimolino.pdf":
+  title: "Construcción de bicimolino (pedal moledor/desgranador)"
+  author: "Maya Pedal"
+  year: 2010
+  lang: es
+"Cultivo/FLORA NATIVA DE CHILE(ImagenesArboles).pdf":
+  title: "Flora nativa de Chile"
+  lang: es
+"Cultivo/Plantas medicinales/Taller Plantas Silvestres Comestibles - E Rapaport.pdf":
+  title: "Taller de plantas silvestres comestibles"
+  author: "Eduardo H. Rapoport"
+  lang: es
+"Energia/Solar/Proyectos de electrificaciòn fotovoltaica para las diferente.pdf":
+  title: "Proyectos de electrificación fotovoltaica para las diferentes necesidades"
+  author: "Xavier Vallvé (Trama TecnoAmbiental)"
+  year: 2000
+  lang: es
+"Psicologia/Consejos Psicologicos para largos periodos dentro de casa.pdf":
+  title: "Consejos psicológicos para largos períodos dentro de casa"
+  author: "Elena San Martín"
+  lang: es
+"Revista Comando/comando+02.pdf":
+  title: "Revista Comando n.º 2"
+  lang: es
+"Revista Comando/comando+03.pdf":
+  title: "Revista Comando n.º 3"
+  lang: es
+"Revista Comando/comando+05.pdf":
+  title: "Revista Comando n.º 5"
+  lang: es
+"Revista Comando/comando+06.pdf":
+  title: "Revista Comando n.º 6"
+  lang: es
+"Revista Comando/comando+07.pdf":
+  title: "Revista Comando n.º 7"
+  lang: es
+"Revista Comando/comando+08.pdf":
+  title: "Revista Comando n.º 8"
+  lang: es
+"Revista Comando/comando+09.pdf":
+  title: "Revista Comando n.º 9"
+  lang: es
+"Revista Comando/comando+10.pdf":
+  title: "Revista Comando n.º 10"
+  lang: es
+"Revista Comando/comando+11.pdf":
+  title: "Revista Comando n.º 11"
+  lang: es
+"Revista Comando/comando+12.pdf":
+  title: "Revista Comando n.º 12"
+  lang: es
+"Revista Comando/comando+13.pdf":
+  title: "Revista Comando n.º 13"
+  lang: es
+"Revista Comando/comando+14.pdf":
+  title: "Revista Comando n.º 14"
+  lang: es
+"Revista Comando/comando+15.pdf":
+  title: "Revista Comando n.º 15"
+  lang: es
+"Revista Comando/comando+16.pdf":
+  title: "Revista Comando n.º 16"
+  lang: es
+"Revista Comando/comando+17.pdf":
+  title: "Revista Comando n.º 17"
+  lang: es
+"Revista Comando/comando+18.pdf":
+  title: "Revista Comando n.º 18"
+  lang: es
+"Revista Comando/comando+19.pdf":
+  title: "Revista Comando n.º 19"
+  lang: es
+"Revista Comando/comando+20.pdf":
+  title: "Revista Comando n.º 20"
+  lang: es
+"Revista Comando/comando+21.pdf":
+  title: "Revista Comando n.º 21"
+  lang: es
+"Revista Comando/comando+22.pdf":
+  title: "Revista Comando n.º 22"
+  lang: es
+"Revista Comando/comando+23.pdf":
+  title: "Revista Comando n.º 23"
+  lang: es
+"Revista Comando/comando+24.pdf":
+  title: "Revista Comando n.º 24"
+  lang: es
+"Revista Comando/comando+25.pdf":
+  title: "Revista Comando n.º 25"
+  lang: es
+"Revista Comando/comando+26.pdf":
+  title: "Revista Comando n.º 26"
+  lang: es
+"Revista Comando/comando+27.pdf":
+  title: "Revista Comando n.º 27"
+  lang: es
+"Revista Comando/comando+28.pdf":
+  title: "Revista Comando n.º 28"
+  lang: es
+"Revista Comando/comando+29.pdf":
+  title: "Revista Comando n.º 29"
+  lang: es
+"Revista Comando/comando+30.pdf":
+  title: "Revista Comando n.º 30"
+  lang: es
+"Revista Comando/comando+31.pdf":
+  title: "Revista Comando n.º 31"
+  lang: es
+"Revista Comando/comando+32.pdf":
+  title: "Revista Comando n.º 32"
+  lang: es
+"Revista Comando/comando+33.pdf":
+  title: "Revista Comando n.º 33"
+  lang: es
+"Revista Comando/comando+34.pdf":
+  title: "Revista Comando n.º 34"
+  lang: es
+"Revista Comando/comando+35.pdf":
+  title: "Revista Comando n.º 35"
+  lang: es
+"Revista Comando/comando+36.pdf":
+  title: "Revista Comando n.º 36"
   lang: es
