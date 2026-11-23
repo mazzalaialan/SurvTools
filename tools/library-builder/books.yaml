@@ -978,6 +978,7 @@
   author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
   year: 1992
   lang: es
+  exclude: true  # copia del mismo texto (90 % igual a «Manual de enseñanza de supervivencia, Tomo II»)
 "Supervivencia General/Manual de Enseñanza Supervivencia.pdf":
   title: "Manual de enseñanza de supervivencia, Tomo I (ME6-003)"
   author: "Ejército de Tierra de España (Estado Mayor del Ejército)"
@@ -1276,6 +1277,7 @@
   title: "Hierbas medicinales"
   author: "FUCOA (Ministerio de Agricultura, Chile)"
   lang: es
+  exclude: true  # copia del mismo texto (92 % igual a «103 hierbas medicinales»)
 "Cultivo/Plantas medicinales/Aloe Vera-La planta que cura.pdf":
   title: "Aloe vera: la planta que cura"
   author: "Marc Schweizer"
