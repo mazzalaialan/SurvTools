@@ -526,20 +526,20 @@
   "jurisdicciones": [
    "Buenos Aires"
   ],
-  "descripcion_tramo_literal": "Laguna El Hinojo (noroeste bonaerense): pejerrey.",
+  "descripcion_tramo_literal": "Laguna El Hinojo (Hinojo Chico, Trenque Lauquen; sistema Hinojo-Las Tunas): pejerrey.",
   "fuente": {},
   "_cut": null
  },
  {
   "id": "lit-las-tunas",
   "jurisdiccion": "Litoral",
-  "agua": "Las Tunas",
+  "agua": "Tunas Grandes",
   "tipo_agua": "Laguna",
   "subtramo": null,
   "jurisdicciones": [
    "Buenos Aires"
   ],
-  "descripcion_tramo_literal": "Laguna Las Tunas (Gral. Pinto, noroeste bonaerense): pejerrey.",
+  "descripcion_tramo_literal": "Laguna Las Tunas (Tunas Grandes, Trenque Lauquen; sistema Hinojo-Las Tunas): pejerrey.",
   "fuente": {},
   "_cut": null
  },
@@ -726,6 +726,306 @@
    "Entre Ríos"
   ],
   "descripcion_tramo_literal": "Río Mocoretá (límite Corrientes/Entre Ríos), afluente del Uruguay: boga, dorado, bagre.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-salada-grande",
+  "jurisdiccion": "Litoral",
+  "agua": "La Salada Grande",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna La Salada Grande (General Madariaga): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-las-flores",
+  "jurisdiccion": "Litoral",
+  "agua": "Las Flores Grande",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Las Flores Grande (Lobos y Monte): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-del-burro",
+  "jurisdiccion": "Litoral",
+  "agua": "del Burro",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna del Burro (sistema de Chascomús): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-la-brava",
+  "jurisdiccion": "Litoral",
+  "agua": "La Brava",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna La Brava (Balcarce): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-blanca-chica",
+  "jurisdiccion": "Litoral",
+  "agua": "Blanca Chica",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Blanca Chica (Olavarría): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-cabeza-de-buey",
+  "jurisdiccion": "Litoral",
+  "agua": "Cabeza de Buey",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Cabeza de Buey (Guaminí): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-el-carpincho",
+  "jurisdiccion": "Litoral",
+  "agua": "El Carpincho",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna El Carpincho (Junín): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-chasico",
+  "jurisdiccion": "Litoral",
+  "agua": "Chasicó",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Chasicó (Villarino): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-los-horcones",
+  "jurisdiccion": "Litoral",
+  "agua": "Los Horcones",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Los Horcones (General Madariaga): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-melincue",
+  "jurisdiccion": "Litoral",
+  "agua": "Melincué",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Laguna Melincué (sur de Santa Fe): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-paiva",
+  "jurisdiccion": "Litoral",
+  "agua": "Paiva",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Laguna Paiva (norte de Santa Fe): tararira, pejerrey y bagres.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-galarza",
+  "jurisdiccion": "Litoral",
+  "agua": "Galarza",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Laguna Galarza (Esteros del Iberá): tararira; pesca con devolución en la reserva.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-luna",
+  "jurisdiccion": "Litoral",
+  "agua": "de Luna",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Laguna de Luna (Esteros del Iberá): tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-mirinay",
+  "jurisdiccion": "Litoral",
+  "agua": "Miriñay",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Río Miriñay (Corrientes, afluente del Uruguay): dorado, tararira y bogas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-aguapey",
+  "jurisdiccion": "Litoral",
+  "agua": "Aguapey",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Río Aguapey (Corrientes, afluente del Uruguay): dorado y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-pilcomayo",
+  "jurisdiccion": "Litoral",
+  "agua": "Pilcomayo",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Formosa"
+  ],
+  "descripcion_tramo_literal": "Río Pilcomayo (Formosa, frontera con Paraguay): dorado, sábalo y surubí.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-parana-mini",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná Miní",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires",
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Paraná Miní (Delta): pejerrey en invierno, dorado, tararira y bogas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-barca-grande",
+  "jurisdiccion": "Litoral",
+  "agua": "Barca Grande",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Barca Grande (Delta entrerriano): dorado, surubí y bogas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-ibicuy",
+  "jurisdiccion": "Litoral",
+  "agua": "Ibicuy",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Ibicuy (Delta entrerriano): dorado, surubí, bogas y patíes.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-arrecifes",
+  "jurisdiccion": "Litoral",
+  "agua": "Arrecifes",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Río Arrecifes (norte de Buenos Aires): tararira, bagres y carpas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-areco",
+  "jurisdiccion": "Litoral",
+  "agua": "Areco",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Río Areco (norte de Buenos Aires): tararira, bagres y carpas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-carcarana",
+  "jurisdiccion": "Litoral",
+  "agua": "Carcarañá",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Río Carcarañá (sur de Santa Fe): tararira, bagres y carpas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-tapenaga",
+  "jurisdiccion": "Litoral",
+  "agua": "Tapenagá",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Chaco"
+  ],
+  "descripcion_tramo_literal": "Río Tapenagá (Chaco): tararira y bagres.",
   "fuente": {},
   "_cut": null
  }

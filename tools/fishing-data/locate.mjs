@@ -534,6 +534,26 @@ for (const a of ambientes) {
     report.errors.push(`${a.id}: ${e.message}`);
   }
 }
+// «clip» [oeste, sur, este, norte]: deja solo lo que cae en ese recuadro (ríos homónimos de otro país o provincia: el Ibicuí de
+// Brasil, el Paraná Miní del Chaco, el Pilcomayo en Bolivia).
+for (const [id, c] of Object.entries(cuts)) {
+  if (!c?.clip || !out[id]) continue;
+  const [w, so, e, n] = c.clip;
+  const inside = ([x, y]) => x >= w && x <= e && y >= so && y <= n;
+  const g = out[id].geometry;
+  const lines = g.type === 'LineString' ? [g.coordinates] : g.type === 'MultiLineString' ? g.coordinates : null;
+  if (!lines) continue;
+  const parts = [];
+  for (const l of lines) {
+    let cur = [];
+    for (const p of l) {
+      if (inside(p)) cur.push(p);
+      else if (cur.length) (cur.length > 1 && parts.push(cur), (cur = []));
+    }
+    if (cur.length > 1) parts.push(cur);
+  }
+  if (parts.length) out[id].geometry = parts.length === 1 ? { type: 'LineString', coordinates: parts[0] } : { type: 'MultiLineString', coordinates: parts };
+}
 writeFileSync(outFile, JSON.stringify(out));
 console.log(`${jurisdiction}: ${report.ok.length} enteros, ${report.cut.length} cortados, ${report.missing.length} sin encontrar, ${report.errors.length} con error`);
 for (const l of report.cut) console.log('  corte', l);

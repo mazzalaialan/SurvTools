@@ -942,10 +942,10 @@
   "osm": "way/28329445"
  },
  "lit-el-hinojo": {
-  "osm": "way/231212462"
+  "osm": "relation/6614861"
  },
  "lit-las-tunas": {
-  "osm": "way/231217373"
+  "osm": "relation/6614860"
  },
  "lit-kakel-huincul": {
   "osm": "way/28348451"
@@ -973,5 +973,68 @@
  },
  "lit-sauce-grande-laguna": {
   "osm": "relation/5857741"
+ },
+ "lit-salada-grande": {
+  "osm": "relation/2621564"
+ },
+ "lit-las-flores": {
+  "osm": "way/117672676"
+ },
+ "lit-del-burro": {
+  "osm": "relation/9419186"
+ },
+ "lit-la-brava": {
+  "osm": "relation/15836119"
+ },
+ "lit-blanca-chica": {
+  "osm": "way/406120336"
+ },
+ "lit-cabeza-de-buey": {
+  "osm": "way/648904437"
+ },
+ "lit-el-carpincho": {
+  "osm": "relation/3329132"
+ },
+ "lit-chasico": {
+  "osm": "relation/10983279"
+ },
+ "lit-los-horcones": {
+  "osm": "relation/12193979"
+ },
+ "lit-melincue": {
+  "osm": "relation/11327367"
+ },
+ "lit-paiva": {
+  "osm": "way/308663451"
+ },
+ "lit-galarza": {
+  "osm": "way/41018112"
+ },
+ "lit-luna": {
+  "osm": "way/41018114"
+ },
+ "lit-pilcomayo": {
+  "clip": [
+   -62.4,
+   -25.5,
+   -57.5,
+   -22.5
+  ]
+ },
+ "lit-parana-mini": {
+  "clip": [
+   -59.7,
+   -34.5,
+   -58.2,
+   -33.8
+  ]
+ },
+ "lit-ibicuy": {
+  "clip": [
+   -59.8,
+   -34.0,
+   -58.4,
+   -33.2
+  ]
  }
 }
