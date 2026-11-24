@@ -6882,6 +6882,73 @@ button.country-pack-del {
 }
 
 /* ---- Pesca (modules/fishing) ---- */
+/* Lista de peces: en el celular una fila con la imagen chica a la izquierda; desde 640 px, cuadrícula de tarjetas con la imagen arriba. */
+.fish-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.fish-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 8px;
+  min-height: 64px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+}
+.fish-card:hover,
+.fish-card:focus-visible {
+  border-color: var(--accent);
+}
+.fish-card-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 2;
+  border-radius: 6px;
+  /* Blanco como el fondo de las láminas: así no quedan franjas arriba y abajo de la imagen. */
+  background: #fff;
+  color: #8a8f96;
+  overflow: hidden;
+}
+.fish-card .list-sub i {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Rojo nocturno: como la lámina de la ficha, en grises multiplicados sobre rojo oscuro (sin blanco que deslumbre). */
+:root[data-theme='red'] .fish-card-img {
+  background: var(--border);
+  color: var(--text);
+}
+:root[data-theme='red'] .fish-card-img img {
+  filter: grayscale(1) contrast(1.1);
+  mix-blend-mode: multiply;
+}
+.fish-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+@media (min-width: 640px) {
+  .fish-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .fish-card {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding: 10px;
+  }
+}
 .fish-season {
   font-weight: 700;
   white-space: nowrap;

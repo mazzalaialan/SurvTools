@@ -2,7 +2,7 @@ import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { LocateFixed, Map as MapIcon } from 'lucide-react';
+import { Fish, LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { useZonePlace } from '@/modules/garden/status';
 import { ModuleGrid } from '@/ui/ModuleGrid';
@@ -30,7 +30,8 @@ function ZoneSpecies({ data, lang }: { data: FishData; lang: string }) {
     <>
       <ZonePicker data={data} {...z} />
       <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fishing.searchFish')} aria-label={t('fishing.searchFish')} />
-      <ul className="list" data-testid="fish-species-list">
+      {/* Cuadrícula con la imagen de cada pez (en la compu entran varios por fila; en el celular, uno abajo del otro). */}
+      <ul className="fish-grid" data-testid="fish-species-list">
         {list.map((sp) => (
           <SpeciesRow key={sp.id} sp={sp} data={data} lang={lang} zone={z.zone} />
         ))}
@@ -101,11 +102,17 @@ function SpeciesRow({ sp, data, lang, zone }: { sp: FishSpecies; data: FishData;
   const n = sectorsWithSpecies({ ...data, sectors: sectorsInZone(data, zone ?? null) }, sp.id).length;
   return (
     <li>
-      <Link className="list-row" to={`/fishing/fish/${sp.id}`}>
+      <Link className="fish-card" to={`/fishing/fish/${sp.id}`}>
+        <span className="fish-card-img">
+          {sp.image ? <img src={`${import.meta.env.BASE_URL}fish/${sp.image.file}`} alt="" loading="lazy" /> : <Fish size={36} aria-hidden />}
+        </span>
         <span className="list-main">
           <span className="list-title">{speciesName(sp, lang)}</span>
           <span className="list-sub">
-            <i>{sp.scientific}</i> · {sp.native ? t('fishing.native') : t('fishing.introduced')} · {t('fishing.sectorsCount', { count: n })}
+            <i>{sp.scientific}</i>
+          </span>
+          <span className="list-sub">
+            {sp.native ? t('fishing.native') : t('fishing.introduced')} · {t('fishing.sectorsCount', { count: n })}
           </span>
         </span>
       </Link>
