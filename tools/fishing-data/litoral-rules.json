@@ -1,79 +1,348 @@
 {
-  "_": "Reglas de pesca deportiva del Litoral por jurisdicción y especie (curado a mano desde ~/vikarg-fishing-work/litoral/normativa.json, 2026-11-23). Solo lo que tiene fuente oficial (o la autoridad citada en prensa, marcado «unconfirmed»); lo que no figura queda «sin regla específica: rige la norma general». limit: número = cupo diario; 0 = solo devolución; null = sin límite. forbidden = prohibida todo el año. closures: vedas «MM-DD» que se repiten cada año.",
-  "Santa Fe": {
-    "norm": "Ley 12.212, Dec. 2410/04, Res. 162/05 y 168/05, Ley 12.722 (Ministerio de Ambiente y Cambio Climático)",
-    "rules": [
-      "Caña y reel o línea de mano; hasta 3 anzuelos por aparejo y 2 aparejos por pescador.",
-      "La licencia vence el 31 de diciembre; el trámite es digital con la ID Ciudadana (santafe.gob.ar, Gestiones Ciudadanas: «Pesca»).",
-      "Las tallas son mínimas para sacrificar (Ley 12.212, art. 10)."
-    ],
-    "species": {
-      "dorado": { "limit": 0, "minSizeCm": 65, "note": "Solo pesca deportiva con devolución obligatoria (Ley 12.722)." },
-      "surubi-pintado": { "minSizeCm": 85, "closures": [{ "from": "11-01", "to": "12-31" }], "note": "Veda del 1/11 al 31/12 (Res. 168/05)." },
-      "surubi-atigrado": { "minSizeCm": 78, "closures": [{ "from": "11-01", "to": "12-31" }] },
-      "pacu": { "forbidden": true, "note": "Prohibida su pesca todo el año (Res. 162/05)." },
-      "manguruyu": { "forbidden": true, "note": "Prohibida su pesca todo el año (Res. 162/05)." },
-      "boga": { "minSizeCm": 42 }, "sabalo": { "minSizeCm": 42 }, "pati": { "minSizeCm": 45 }, "tararira": { "minSizeCm": 45 },
-      "pejerrey": { "minSizeCm": 20 }, "salmon-rio": { "minSizeCm": 45 }, "armado": { "minSizeCm": 40 }, "armado-chancho": { "minSizeCm": 45 },
-      "bagre-amarillo": { "minSizeCm": 30 }, "moncholo": { "minSizeCm": 35 }, "mandube": { "minSizeCm": 35 }
-    }
-  },
-  "Corrientes": {
-    "norm": "Disposición 853/22 (Ministerio de Turismo / Recursos Naturales de Corrientes)",
-    "rules": ["Pesca deportiva todos los días.", "Solo se pueden transportar piezas dentro de la localidad donde se pescaron.", "Puede haber vedas extraordinarias por tramos del río: consultá antes de salir."],
-    "species": {
-      "dorado": { "limit": 0, "note": "Solo pesca y devolución (Anexo I)." },
-      "surubi-pintado": { "limit": 0, "note": "Solo pesca y devolución (Anexo I)." },
-      "surubi-atigrado": { "limit": 0, "note": "Solo pesca y devolución (Anexo I)." },
-      "armado": { "minSizeCm": 45, "limit": 5 }, "boga": { "minSizeCm": 45, "limit": 2, "note": "Máximo 6 por embarcación." },
-      "bagre-amarillo": { "minSizeCm": 25, "limit": 5 }, "corvina": { "minSizeCm": 25, "limit": 5 }, "mandube": { "minSizeCm": 40, "limit": 5 },
-      "moncholo": { "minSizeCm": 30, "limit": 5 }, "pacu": { "minSizeCm": 45, "limit": 1, "note": "1 por licencia y 1 por embarcación." },
-      "pati": { "minSizeCm": 70, "limit": 2 }, "palometa": { "minSizeCm": 20, "limit": 10 }, "raya": { "limit": 1 },
-      "sabalo": { "minSizeCm": 40, "limit": 3 }, "salmon-rio": { "minSizeCm": 45, "limit": 2 }, "tararira": { "minSizeCm": 30, "limit": 5 },
-      "virreyna": { "minSizeCm": 30, "limit": 5 }
-    }
-  },
-  "Buenos Aires": {
-    "norm": "Ley 11.477, Dec. 3237/95 y disposiciones de la Dirección Provincial de Pesca",
-    "rules": ["Prohibidos mediomundo, atarraya, espinel, redes y robadores.", "En el Plata y el Paraná: hasta 5 anzuelos en línea de flote y 3 en línea de fondo (Disp. 19/96)."],
-    "species": {
-      "dorado": { "minSizeCm": 60, "limit": 2, "closures": [{ "from": "10-01", "to": "01-15" }], "note": "Veda deportiva del 1/10 al 15/01 (Disp. 17/93)." },
-      "tararira": { "minSizeCm": 40, "limit": 3, "closures": [{ "from": "11-01", "to": "01-31" }], "note": "Veda del 1/11 al 31/01 (Disp. 177/07); en noviembre y diciembre, solo sábados, domingos y feriados con devolución." },
-      "pejerrey": { "minSizeCm": 25, "closures": [{ "from": "09-01", "to": "12-01", "onlyLakes": true }], "note": "En lagunas el cupo depende de cada laguna (10 a 30); veda del 1/09 al 1/12 en aguas interiores (no en el Río de la Plata ni el Delta)." }
-    }
-  },
-  "CARU - Rio Uruguay": {
-    "norm": "Comisión Administradora del Río Uruguay: Res. 8/98 (texto actualizado), Res. 59/12 y Res. 111/23",
-    "rules": ["Línea de mano, caña con o sin reel, mediomundo, calderín y red de playa de hasta 10 m.", "Señuelos con un solo anzuelo funcional y sin rebaba.", "Zona intangible de Puerto Yeruá (km 318,6 a 314,1): prohibida la pesca todo el año.", "Las tallas son en longitud estándar (sin la cola)."],
-    "species": {
-      "dorado": { "minSizeCm": 65, "closures": [{ "from": "09-01", "to": "12-31" }], "note": "Veda del 1/09 al 31/12 para pesca deportiva y comercial (Res. 111/23)." },
-      "surubi-pintado": { "minSizeCm": 85 },
-      "surubi-atigrado": { "forbidden": true, "note": "Veda absoluta." }, "pacu": { "forbidden": true, "note": "Veda absoluta." },
-      "manguruyu": { "forbidden": true, "note": "Veda absoluta." }, "salmon-rio": { "forbidden": true, "note": "Veda absoluta (pirapitá)." },
-      "armado": { "forbidden": true, "note": "Veda absoluta." }, "armado-chancho": { "forbidden": true, "note": "Veda absoluta." },
-      "bagre-amarillo": { "minSizeCm": 20 }, "bagre-blanco": { "minSizeCm": 22 }, "bagre-negro": { "minSizeCm": 24 }, "boga": { "minSizeCm": 34 },
-      "pati": { "minSizeCm": 40 }, "pejerrey": { "minSizeCm": 25 }, "sabalo": { "minSizeCm": 34 }, "tararira": { "minSizeCm": 33 }
-    }
-  },
-  "Entre Ríos": {
-    "norm": "Ley 4892 y resoluciones de la Dirección de Recursos Naturales y Fiscalización",
-    "rules": ["No encontramos el texto oficial vigente de tallas y cupos deportivos: consultá a la Dirección de Recursos Naturales antes de sacrificar piezas.", "Se autoriza el consumo en el lugar (Res. 20/26, art. 6)."],
-    "species": {
-      "surubi-pintado": { "closures": [{ "from": "08-15", "to": "03-15" }], "note": "Veda del 15/08 al 15/03 (Res. 276/07). Según la Dirección, fuera de la veda solo con devolución: confirmalo." },
-      "dorado": { "limit": 0, "unconfirmed": true, "note": "Devolución obligatoria según la Dirección de Recursos Naturales (prensa, 29/10/2025)." },
-      "pacu": { "forbidden": true, "unconfirmed": true, "note": "Pesca prohibida (veda indeterminada, según fuente secundaria)." },
-      "manguruyu": { "forbidden": true, "unconfirmed": true, "note": "Pesca prohibida (veda indeterminada, según fuente secundaria)." }
-    }
-  },
-  "Misiones": {
-    "norm": "Ministerio de Ecología; Res. 364/2026 (veda 2026/27)",
-    "rules": ["Durante la veda solo se permite la pesca de subsistencia con permiso, desde la costa, con línea de mano, lunes, miércoles y viernes, sin dorado, surubí, pirá-pará ni manguruyú."],
+ "_": "Reglas de pesca deportiva del Litoral por jurisdicción y especie (curado a mano desde ~/vikarg-fishing-work/litoral/normativa.json, 2026-11-23). Solo lo que tiene fuente oficial (o la autoridad citada en prensa, marcado «unconfirmed»); lo que no figura queda «sin regla específica: rige la norma general». limit: número = cupo diario; 0 = solo devolución; null = sin límite. forbidden = prohibida todo el año. closures: vedas «MM-DD» que se repiten cada año.",
+ "Santa Fe": {
+  "norm": "Ley 12.212, Dec. 2410/04, Res. 162/05 y 168/05, Ley 12.722 (Ministerio de Ambiente y Cambio Climático)",
+  "rules": [
+   "Caña y reel o línea de mano; hasta 3 anzuelos por aparejo y 2 aparejos por pescador.",
+   "La licencia vence el 31 de diciembre; el trámite es digital con la ID Ciudadana (santafe.gob.ar, Gestiones Ciudadanas: «Pesca»).",
+   "Las tallas son mínimas para sacrificar (Ley 12.212, art. 10)."
+  ],
+  "species": {
+   "dorado": {
+    "limit": 0,
+    "minSizeCm": 65,
+    "note": "Solo pesca deportiva con devolución obligatoria (Ley 12.722)."
+   },
+   "surubi-pintado": {
+    "minSizeCm": 85,
     "closures": [
-      { "from": "2026-11-02", "to": "2026-12-22", "waters": ["Paraná", "Iguazú", "Urugua-í"], "note": "Veda total (deportiva y comercial) en el Paraná, el Iguazú, sus afluentes y el lago Urugua-í (Res. 364/2026)." },
-      { "from": "2026-10-01", "to": "2027-01-31", "waters": ["Uruguay"], "note": "Veda total en el río Uruguay y su cuenca (Res. 364/2026)." }
+     {
+      "from": "11-01",
+      "to": "12-31"
+     }
     ],
-    "species": {}
-  },
-  "Chaco": { "norm": "Dec. 1623/10 y Res. 1078/2020 (Subsecretaría de Ambiente)", "rules": ["Hay vedas móviles según la altura del río: consultá antes de salir.", "No encontramos tallas ni cupos oficiales vigentes."], "species": {} },
-  "Formosa": { "norm": "Ley 305 (capítulos de pesca vigentes) y Res. 051/2020", "rules": ["Prohibida la pesca deportiva en el arroyo Ramírez, la laguna Herradura, Puerto Dalmacia, la boca del Bermejo y bajo los puentes y alcantarillas de las rutas.", "La licencia se tramita solo de forma presencial.", "No encontramos tallas ni cupos oficiales vigentes."], "species": {} }
+    "note": "Veda del 1/11 al 31/12 (Res. 168/05)."
+   },
+   "surubi-atigrado": {
+    "minSizeCm": 78,
+    "closures": [
+     {
+      "from": "11-01",
+      "to": "12-31"
+     }
+    ]
+   },
+   "pacu": {
+    "forbidden": true,
+    "note": "Prohibida su pesca todo el año (Res. 162/05)."
+   },
+   "manguruyu": {
+    "forbidden": true,
+    "note": "Prohibida su pesca todo el año (Res. 162/05)."
+   },
+   "boga": {
+    "minSizeCm": 42
+   },
+   "sabalo": {
+    "minSizeCm": 42
+   },
+   "pati": {
+    "minSizeCm": 45
+   },
+   "tararira": {
+    "minSizeCm": 45
+   },
+   "pejerrey": {
+    "minSizeCm": 20
+   },
+   "salmon-rio": {
+    "minSizeCm": 45
+   },
+   "armado": {
+    "minSizeCm": 40
+   },
+   "armado-chancho": {
+    "minSizeCm": 45
+   },
+   "bagre-amarillo": {
+    "minSizeCm": 30
+   },
+   "bagre-blanco": {
+    "minSizeCm": 35
+   },
+   "manduvi": {
+    "minSizeCm": 35
+   }
+  }
+ },
+ "Corrientes": {
+  "norm": "Disposición 853/22 (Ministerio de Turismo / Recursos Naturales de Corrientes)",
+  "rules": [
+   "Pesca deportiva todos los días.",
+   "Solo se pueden transportar piezas dentro de la localidad donde se pescaron.",
+   "Puede haber vedas extraordinarias por tramos del río: consultá antes de salir."
+  ],
+  "species": {
+   "dorado": {
+    "limit": 0,
+    "note": "Solo pesca y devolución (Anexo I)."
+   },
+   "surubi-pintado": {
+    "limit": 0,
+    "note": "Solo pesca y devolución (Anexo I)."
+   },
+   "surubi-atigrado": {
+    "limit": 0,
+    "note": "Solo pesca y devolución (Anexo I)."
+   },
+   "armado": {
+    "minSizeCm": 45,
+    "limit": 5
+   },
+   "boga": {
+    "minSizeCm": 45,
+    "limit": 2,
+    "note": "Máximo 6 por embarcación."
+   },
+   "bagre-amarillo": {
+    "minSizeCm": 25,
+    "limit": 5
+   },
+   "corvina": {
+    "minSizeCm": 25,
+    "limit": 5
+   },
+   "manduvi": {
+    "minSizeCm": 40,
+    "limit": 5
+   },
+   "bagre-blanco": {
+    "minSizeCm": 30,
+    "limit": 5
+   },
+   "pacu": {
+    "minSizeCm": 45,
+    "limit": 1,
+    "note": "1 por licencia y 1 por embarcación."
+   },
+   "pati": {
+    "minSizeCm": 70,
+    "limit": 2
+   },
+   "palometa": {
+    "minSizeCm": 20,
+    "limit": 10
+   },
+   "raya": {
+    "limit": 1
+   },
+   "sabalo": {
+    "minSizeCm": 40,
+    "limit": 3
+   },
+   "salmon-rio": {
+    "minSizeCm": 45,
+    "limit": 2
+   },
+   "tararira": {
+    "minSizeCm": 30,
+    "limit": 5
+   },
+   "virreyna": {
+    "minSizeCm": 30,
+    "limit": 5
+   }
+  }
+ },
+ "Buenos Aires": {
+  "norm": "Ley 11.477, Dec. 3237/95 y disposiciones de la Dirección Provincial de Pesca",
+  "rules": [
+   "Prohibidos mediomundo, atarraya, espinel, redes y robadores.",
+   "En el Plata y el Paraná: hasta 5 anzuelos en línea de flote y 3 en línea de fondo (Disp. 19/96)."
+  ],
+  "species": {
+   "dorado": {
+    "minSizeCm": 60,
+    "limit": 2,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "01-15"
+     }
+    ],
+    "note": "Veda deportiva del 1/10 al 15/01 (Disp. 17/93)."
+   },
+   "tararira": {
+    "minSizeCm": 40,
+    "limit": 3,
+    "closures": [
+     {
+      "from": "11-01",
+      "to": "01-31"
+     }
+    ],
+    "note": "Veda del 1/11 al 31/01 (Disp. 177/07); en noviembre y diciembre, solo sábados, domingos y feriados con devolución."
+   },
+   "pejerrey": {
+    "minSizeCm": 25,
+    "closures": [
+     {
+      "from": "09-01",
+      "to": "12-01",
+      "onlyLakes": true
+     }
+    ],
+    "note": "En lagunas el cupo depende de cada laguna (10 a 30); veda del 1/09 al 1/12 en aguas interiores (no en el Río de la Plata ni el Delta)."
+   }
+  }
+ },
+ "CARU - Rio Uruguay": {
+  "norm": "Comisión Administradora del Río Uruguay: Res. 8/98 (texto actualizado), Res. 59/12 y Res. 111/23",
+  "rules": [
+   "Línea de mano, caña con o sin reel, mediomundo, calderín y red de playa de hasta 10 m.",
+   "Señuelos con un solo anzuelo funcional y sin rebaba.",
+   "Zona intangible de Puerto Yeruá (km 318,6 a 314,1): prohibida la pesca todo el año.",
+   "Las tallas son en longitud estándar (sin la cola)."
+  ],
+  "species": {
+   "dorado": {
+    "minSizeCm": 65,
+    "closures": [
+     {
+      "from": "09-01",
+      "to": "12-31"
+     }
+    ],
+    "note": "Veda del 1/09 al 31/12 para pesca deportiva y comercial (Res. 111/23)."
+   },
+   "surubi-pintado": {
+    "minSizeCm": 85
+   },
+   "surubi-atigrado": {
+    "forbidden": true,
+    "note": "Veda absoluta."
+   },
+   "pacu": {
+    "forbidden": true,
+    "note": "Veda absoluta."
+   },
+   "manguruyu": {
+    "forbidden": true,
+    "note": "Veda absoluta."
+   },
+   "salmon-rio": {
+    "forbidden": true,
+    "note": "Veda absoluta (pirapitá)."
+   },
+   "armado": {
+    "forbidden": true,
+    "note": "Veda absoluta."
+   },
+   "armado-chancho": {
+    "forbidden": true,
+    "note": "Veda absoluta."
+   },
+   "bagre-amarillo": {
+    "minSizeCm": 20
+   },
+   "bagre-blanco": {
+    "minSizeCm": 22
+   },
+   "bagre-negro": {
+    "minSizeCm": 24
+   },
+   "boga": {
+    "minSizeCm": 34
+   },
+   "pati": {
+    "minSizeCm": 40
+   },
+   "pejerrey": {
+    "minSizeCm": 25
+   },
+   "sabalo": {
+    "minSizeCm": 34
+   },
+   "tararira": {
+    "minSizeCm": 33
+   }
+  }
+ },
+ "Entre Ríos": {
+  "norm": "Ley 4892 y resoluciones de la Dirección de Recursos Naturales y Fiscalización",
+  "rules": [
+   "No encontramos el texto oficial vigente de tallas y cupos deportivos: consultá a la Dirección de Recursos Naturales antes de sacrificar piezas.",
+   "Se autoriza el consumo en el lugar (Res. 20/26, art. 6)."
+  ],
+  "species": {
+   "surubi-pintado": {
+    "closures": [
+     {
+      "from": "08-15",
+      "to": "03-15"
+     }
+    ],
+    "note": "Veda del 15/08 al 15/03 (Res. 276/07). Según la Dirección, fuera de la veda solo con devolución: confirmalo."
+   },
+   "dorado": {
+    "limit": 0,
+    "unconfirmed": true,
+    "note": "Devolución obligatoria según la Dirección de Recursos Naturales (prensa, 29/10/2025)."
+   },
+   "pacu": {
+    "forbidden": true,
+    "unconfirmed": true,
+    "note": "Pesca prohibida (veda indeterminada, según fuente secundaria)."
+   },
+   "manguruyu": {
+    "forbidden": true,
+    "unconfirmed": true,
+    "note": "Pesca prohibida (veda indeterminada, según fuente secundaria)."
+   }
+  }
+ },
+ "Misiones": {
+  "norm": "Ministerio de Ecología; Res. 364/2026 (veda 2026/27)",
+  "rules": [
+   "Durante la veda solo se permite la pesca de subsistencia con permiso, desde la costa, con línea de mano, lunes, miércoles y viernes, sin dorado, surubí, pirá-pará ni manguruyú."
+  ],
+  "closures": [
+   {
+    "from": "2026-11-02",
+    "to": "2026-12-22",
+    "waters": [
+     "Paraná",
+     "Iguazú",
+     "Urugua-í"
+    ],
+    "note": "Veda total (deportiva y comercial) en el Paraná, el Iguazú, sus afluentes y el lago Urugua-í (Res. 364/2026)."
+   },
+   {
+    "from": "2026-10-01",
+    "to": "2027-01-31",
+    "waters": [
+     "Uruguay"
+    ],
+    "note": "Veda total en el río Uruguay y su cuenca (Res. 364/2026)."
+   }
+  ],
+  "species": {}
+ },
+ "Chaco": {
+  "norm": "Dec. 1623/10 y Res. 1078/2020 (Subsecretaría de Ambiente)",
+  "rules": [
+   "Hay vedas móviles según la altura del río: consultá antes de salir.",
+   "No encontramos tallas ni cupos oficiales vigentes."
+  ],
+  "species": {}
+ },
+ "Formosa": {
+  "norm": "Ley 305 (capítulos de pesca vigentes) y Res. 051/2020",
+  "rules": [
+   "Prohibida la pesca deportiva en el arroyo Ramírez, la laguna Herradura, Puerto Dalmacia, la boca del Bermejo y bajo los puentes y alcantarillas de las rutas.",
+   "La licencia se tramita solo de forma presencial.",
+   "No encontramos tallas ni cupos oficiales vigentes."
+  ],
+  "species": {}
+ }
 }

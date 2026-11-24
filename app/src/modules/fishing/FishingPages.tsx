@@ -221,6 +221,11 @@ export function FishPage() {
                 )}
               </dl>
             )}
+            {sp.danger && (
+              <p className="card fish-rule" data-rule="forbidden" data-testid="fish-danger">
+                <strong>{t('fishing.danger')}</strong> {sp.danger.text}
+              </p>
+            )}
             <Baits sp={sp} />
             {sp.survival && (
               <section className="card stack fish-survival" data-testid="fish-survival">

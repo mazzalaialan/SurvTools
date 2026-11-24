@@ -32,6 +32,8 @@ export interface FishSpecies {
   bestTime?: string;
   /** Imagen del pez (ilustración o foto con licencia libre, en `public/fish/`), con su crédito. */
   image?: { file: string; credit: string; license: string; url: string };
+  /** Riesgo al manipularlo (dientes, púas, aguijón) y cómo agarrarlo. */
+  danger?: { level?: string; text: string };
   /** Para una emergencia de supervivencia (cuando ya no rigen los reglamentos): carnadas naturales según lo que come y un consejo. */
   survival?: { baits: string[]; tip?: string };
   /** Carnadas orientativas (tabla propia de VikArg: dieta de FishBase y experiencia de pescadores). */

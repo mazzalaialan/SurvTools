@@ -286,6 +286,32 @@ const finalSectors = sectors.filter((s) => !drop.has(s)).map(({ _shared, _region
 sectors.length = 0;
 sectors.push(...finalSectors);
 if (merged) console.log(`${merged} ambientes compartidos juntados (${drop.size} entradas repetidas)`);
+// Fichas de los peces del Litoral (investigación del 2026-11-23: MAGyP, Santa Fe, FishBase y experiencia de pescadores).
+const LIT_ALIAS = { 'armado-comun': 'armado', 'salmon-de-rio': 'salmon-rio', 'raya-de-rio': 'raya' };
+const litFile = `${work}/litoral/especies.json`;
+if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
+  const v = (x) => (x && typeof x === 'object' && 'valor' in x ? x.valor : x);
+  const conf = (x) => (x?.confianza === 'oficial' || x?.confianza?.startsWith?.('confirmado') ? 'high' : x?.confianza === 'sin confirmar' ? 'low' : 'medium');
+  for (const e of JSON.parse(readFileSync(litFile, 'utf8')).especies) {
+    const id = LIT_ALIAS[e.id] ?? e.id;
+    if (species.some((x) => x.id === id)) continue; // carpa y pejerrey ya tienen ficha (Patagonia)
+    const list = (x) => (Array.isArray(v(x)) ? v(x) : v(x) ? [v(x)] : []).filter((t) => typeof t === 'string' && !/^no encontrad/i.test(t));
+    const danger = v(e.peligro);
+    species.push({
+      id,
+      scientific: e.cientifico,
+      native: /nativ/i.test(v(e.origen) ?? ''),
+      name: e.nombre,
+      ...(v(e.tamano) && { size: v(e.tamano) }),
+      ...(v(e.dieta) && { diet: v(e.dieta) }),
+      ...(v(e.epoca) && !/^no encontrad/i.test(v(e.epoca)) && { bestSeason: v(e.epoca) }),
+      ...(v(e.horario) && !/^no encontrad/i.test(v(e.horario)) && { bestTime: v(e.horario) }),
+      baits: { natural: list(e.carnadas_naturales), lures: list(e.senuelos_moscas), confidence: conf(e.carnadas_naturales) },
+      ...(e.en_supervivencia?.baits?.length && { survival: e.en_supervivencia }),
+      ...(danger?.texto && { danger: { level: danger.nivel, text: danger.texto } }),
+    });
+  }
+}
 for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.push({ id, scientific: '', native: true, name: { es: LITORAL_NAMES[id] ?? id } });
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
 const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => ({ ...sp, ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
