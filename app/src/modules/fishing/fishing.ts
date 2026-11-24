@@ -24,6 +24,8 @@ export interface FishSpecies {
   scientific: string;
   native: boolean;
   name: { es: string; en?: string; pt?: string };
+  /** Otros nombres comunes regionales («patí blanco», «patí canal»…), para mostrarlos y para el buscador. */
+  aka?: string[];
   /** Tamaño típico en la región (texto propio, p. ej. «30–50 cm»). */
   size?: string;
   /** Resumen propio de la dieta. */

@@ -6918,6 +6918,12 @@ button.country-pack-del {
   color: #8a8f96;
   overflow: hidden;
 }
+.fish-card .fish-aka {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .fish-card .list-sub i {
   display: -webkit-box;
   -webkit-line-clamp: 2;

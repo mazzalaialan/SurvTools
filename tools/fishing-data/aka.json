@@ -1,0 +1,229 @@
+{
+ "_": "Otros nombres comunes de cada pez (FishBase —CC BY-NC—, fichas de Pesca Continental del MAGyP, GBIF y normas provinciales; investigación del 2026-11-24 en ~/vikarg-fishing-work/otros-nombres.json, con fuentes y nombres ambiguos). Los nombres compartidos con otra especie se dejan: el buscador muestra las dos.",
+ "trucha-marron": {
+  "es": [
+   "trucha europea"
+  ]
+ },
+ "trucha-arroyo": {
+  "es": [
+   "trucha salmonada"
+  ]
+ },
+ "trucha-lago": {
+  "es": [
+   "trucha lacustre"
+  ]
+ },
+ "salmon-atlantico": {
+  "es": [
+   "salmón del Traful",
+   "salmón de lago",
+   "salmón plateado"
+  ]
+ },
+ "salmon-pacifico": {
+  "es": [
+   "salmón rey",
+   "salmón real"
+  ]
+ },
+ "perca": {
+  "es": [
+   "perca espinuda",
+   "perca de boca chica",
+   "perca bocona"
+  ]
+ },
+ "pejerrey": {
+  "es": [
+   "pejerrey bonaerense",
+   "pejerrey patagónico",
+   "baboso",
+   "matungo"
+  ]
+ },
+ "carpa": {
+  "es": [
+   "carpa espejo",
+   "carpa de espejos",
+   "carpa germana"
+  ]
+ },
+ "dorado": {
+  "es": [
+   "pirayú",
+   "tigre de río",
+   "picudo"
+  ]
+ },
+ "surubi-pintado": {
+  "es": [
+   "surubí manchado",
+   "surubí común",
+   "sorubí pintado"
+  ]
+ },
+ "surubi-atigrado": {
+  "es": [
+   "surubí rayado",
+   "rollizo",
+   "pirá-pará",
+   "bagre rayado"
+  ]
+ },
+ "pacu": {
+  "es": [
+   "pakú"
+  ]
+ },
+ "sabalo": {
+  "es": [
+   "sábalo jetón",
+   "sábalo picudo",
+   "lamepiedras"
+  ]
+ },
+ "boga": {
+  "es": [
+   "bogón"
+  ]
+ },
+ "pati": {
+  "es": [
+   "patí canal"
+  ]
+ },
+ "tararira": {
+  "es": [
+   "tarucha",
+   "trucha criolla",
+   "dientudo",
+   "perra loca",
+   "perro mocho"
+  ]
+ },
+ "bagre-amarillo": {
+  "es": [
+   "bagre overo",
+   "bagre manchado",
+   "bagre pintado",
+   "bagre misionero",
+   "mandí amarillo"
+  ]
+ },
+ "bagre-blanco": {
+  "es": [
+   "moncholo",
+   "moncholo blanco",
+   "mandí",
+   "porteñito",
+   "indio",
+   "mandí guazú"
+  ]
+ },
+ "armado": {
+  "es": [
+   "armado amarillo",
+   "armao"
+  ]
+ },
+ "armado-chancho": {
+  "es": [
+   "armado blanco",
+   "armao chancho",
+   "ytaguá pochic"
+  ]
+ },
+ "manguruyu": {
+  "es": [
+   "manguruyú amarillo",
+   "manguruyú negro",
+   "bagre sapo",
+   "apretador"
+  ]
+ },
+ "mojarra": {
+  "es": [
+   "mojarra pacusa",
+   "mojarra matrera",
+   "mojarrita"
+  ]
+ },
+ "salmon-rio": {
+  "es": [
+   "pirapitá",
+   "salmón criollo",
+   "salmón del Paraná",
+   "pirapitanga"
+  ]
+ },
+ "palometa": {
+  "es": [
+   "palometa amarilla",
+   "palometa mora",
+   "palomita",
+   "piraña"
+  ]
+ },
+ "chafalote": {
+  "es": [
+   "machete",
+   "pez machete",
+   "dientudo"
+  ]
+ },
+ "raya": {
+  "es": [
+   "chucho de río",
+   "raya fina",
+   "raya grande",
+   "raya común",
+   "yabebí"
+  ]
+ },
+ "manduvi": {
+  "es": [
+   "manduvé",
+   "manduví fino"
+  ]
+ },
+ "anguila": {
+  "es": [
+   "mbusú",
+   "pirá-mboi",
+   "anguila de pantano"
+  ]
+ },
+ "corvina": {
+  "es": [
+   "curvina"
+  ]
+ },
+ "bagre-negro": {
+  "es": [
+   "bagre sapo",
+   "bagre de arroyo",
+   "bagre lagunero",
+   "moncholo lagunero",
+   "jundiá",
+   "ñurundiá"
+  ]
+ },
+ "robalo": {
+  "es": [
+   "robalito",
+   "róbalo de piedra"
+  ]
+ },
+ "virreyna": {
+  "es": [
+   "bagre blanco",
+   "patí bastardo",
+   "patí labrado",
+   "porteñito",
+   "cabezón",
+   "bagre plateado"
+  ]
+ }
+}

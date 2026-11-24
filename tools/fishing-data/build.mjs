@@ -424,7 +424,12 @@ if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
 }
 for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.push({ id, scientific: '', native: true, name: { es: LITORAL_NAMES[id] ?? id } });
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
-const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => ({ ...sp, ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
+// Otros nombres comunes (investigación con fuentes en ~/vikarg-fishing-work/otros-nombres.json; copia revisada en aka.json).
+const AKA_FILE = fileURLToPath(new URL('./aka.json', import.meta.url));
+const aka = existsSync(AKA_FILE) ? JSON.parse(readFileSync(AKA_FILE, 'utf8')) : {};
+const used = species
+  .filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id)))
+  .map((sp) => ({ ...sp, ...(aka[sp.id]?.es?.length && { aka: aka[sp.id].es }), ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
 // Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.
 // Zonas (por cuenca): la app muestra los peces, la normativa y los permisos de la zona donde estás.
 const ZONES = [

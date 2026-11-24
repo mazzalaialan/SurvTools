@@ -25,7 +25,7 @@ function ZoneSpecies({ data, lang }: { data: FishData; lang: string }) {
   const z = useFishZone(data);
   const [q, setQ] = useState('');
   const norm = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const list = speciesInZone(data, z.zone).filter((sp) => !q.trim() || norm(`${speciesName(sp, lang)} ${sp.scientific}`).includes(norm(q.trim())));
+  const list = speciesInZone(data, z.zone).filter((sp) => !q.trim() || norm(`${speciesName(sp, lang)} ${sp.scientific} ${(sp.aka ?? []).join(' ')}`).includes(norm(q.trim())));
   return (
     <>
       <ZonePicker data={data} {...z} />
@@ -111,6 +111,7 @@ function SpeciesRow({ sp, data, lang, zone }: { sp: FishSpecies; data: FishData;
           <span className="list-sub">
             <i>{sp.scientific}</i>
           </span>
+          {sp.aka?.length ? <span className="list-sub fish-aka">{sp.aka.join(', ')}</span> : null}
           <span className="list-sub">
             {sp.native ? t('fishing.native') : t('fishing.introduced')} · {t('fishing.sectorsCount', { count: n })}
           </span>
@@ -205,6 +206,11 @@ export function FishPage() {
             <p className="muted">
               <i>{sp.scientific}</i> · {sp.native ? t('fishing.native') : t('fishing.introduced')}
             </p>
+            {sp.aka?.length ? (
+              <p className="muted" data-testid="fish-aka">
+                {t('fishing.aka', { names: sp.aka.join(', ') })}
+              </p>
+            ) : null}
             <Link className="btn btn-primary btn-block" to={`/fishing/map?fish=${sp.id}`} data-testid="fish-where">
               <MapIcon size={20} aria-hidden /> {t('fishing.where')}
             </Link>
