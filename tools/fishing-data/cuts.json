@@ -919,5 +919,59 @@
    ]
   ],
   "approx": "une los lagos Chepelmut y Yehuin; el río no está dibujado en el mapa base"
+ },
+ "lit-del-monte-guamini": {
+  "osm": "relation/1624512"
+ },
+ "lit-cochico": {
+  "osm": "relation/16686992"
+ },
+ "lit-alsina": {
+  "osm": "relation/11242617"
+ },
+ "lit-inchauspe": {
+  "osm": "way/28940173"
+ },
+ "lit-la-paraguaya": {
+  "osm": "way/28939460"
+ },
+ "lit-las-barrancas": {
+  "osm": "way/23196669"
+ },
+ "lit-mar-chiquita-junin": {
+  "osm": "way/28329445"
+ },
+ "lit-el-hinojo": {
+  "osm": "way/231212462"
+ },
+ "lit-las-tunas": {
+  "osm": "way/231217373"
+ },
+ "lit-kakel-huincul": {
+  "osm": "way/28348451"
+ },
+ "lit-vitel": {
+  "osm": "relation/5622608"
+ },
+ "lit-adela": {
+  "osm": "relation/9168291"
+ },
+ "lit-chis-chis": {
+  "osm": "relation/9168292"
+ },
+ "lit-la-salada-pedro-luro": {
+  "osm": "relation/11549159"
+ },
+ "lit-blanca-grande": {
+  "osm": "way/431485876"
+ },
+ "lit-la-picasa": {
+  "osm": "relation/3629800"
+ },
+ "lit-san-lorenzo-ba": {
+  "osm": "way/893176951"
+ },
+ "lit-sauce-grande-laguna": {
+  "osm": "relation/5857741"
  }
 }

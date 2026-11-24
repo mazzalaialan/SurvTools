@@ -425,5 +425,308 @@
   "descripcion_tramo_literal": "Lago Urugua-í (Misiones).",
   "fuente": {},
   "_cut": null
+ },
+ {
+  "id": "lit-del-monte-guamini",
+  "jurisdiccion": "Litoral",
+  "agua": "del Monte",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna del Monte (Encadenadas del Oeste, Guaminí): pejerrey, la más pescada del sistema junto a Epecuén.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-cochico",
+  "jurisdiccion": "Litoral",
+  "agua": "Cochicó",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Cochicó (Encadenadas del Oeste, Daireaux/Guaminí): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-alsina",
+  "jurisdiccion": "Litoral",
+  "agua": "Alsina",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Alsina (Encadenadas del Oeste, Guaminí/Carhué): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-inchauspe",
+  "jurisdiccion": "Litoral",
+  "agua": "Inchauspe",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Inchauspe (Encadenadas del Oeste, Guaminí): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-la-paraguaya",
+  "jurisdiccion": "Litoral",
+  "agua": "La Paraguaya",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna La Paraguaya (Encadenadas del Oeste, Puán/Guaminí): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-las-barrancas",
+  "jurisdiccion": "Litoral",
+  "agua": "Las Barrancas",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Las Barrancas (zona Chascomús, Lezama): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-mar-chiquita-junin",
+  "jurisdiccion": "Litoral",
+  "agua": "Mar Chiquita",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Mar Chiquita (zona Junín / Gral. Arenales): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-el-hinojo",
+  "jurisdiccion": "Litoral",
+  "agua": "El Hinojo",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna El Hinojo (noroeste bonaerense): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-las-tunas",
+  "jurisdiccion": "Litoral",
+  "agua": "Las Tunas",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Las Tunas (Gral. Pinto, noroeste bonaerense): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-kakel-huincul",
+  "jurisdiccion": "Litoral",
+  "agua": "Kakel Huincul",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Kakel Huincul (Castelli/Chascomús): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-vitel",
+  "jurisdiccion": "Litoral",
+  "agua": "Vitel",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Vitel (Encadenadas de Chascomús): pejerrey y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-adela",
+  "jurisdiccion": "Litoral",
+  "agua": "Adela",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Adela (Encadenadas de Chascomús): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-chis-chis",
+  "jurisdiccion": "Litoral",
+  "agua": "Chis Chis",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Chis Chis (Encadenadas de Chascomús): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-la-salada-pedro-luro",
+  "jurisdiccion": "Litoral",
+  "agua": "La Salada",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna La Salada de Pedro Luro (Villarino): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-blanca-grande",
+  "jurisdiccion": "Litoral",
+  "agua": "Blanca Grande",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Blanca Grande (Olavarría/Bolívar): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-la-picasa",
+  "jurisdiccion": "Litoral",
+  "agua": "La Picasa",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe",
+   "Buenos Aires",
+   "Córdoba"
+  ],
+  "descripcion_tramo_literal": "Laguna La Picasa (límite Santa Fe / Buenos Aires / Córdoba, Rufino): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-san-lorenzo-ba",
+  "jurisdiccion": "Litoral",
+  "agua": "San Lorenzo",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna San Lorenzo (zona Chascomús/Castelli): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-sauce-grande-laguna",
+  "jurisdiccion": "Litoral",
+  "agua": "Sauce Grande",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna Sauce Grande (sudoeste bonaerense): pejerrey.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-lujan",
+  "jurisdiccion": "Litoral",
+  "agua": "Luján",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Río Luján, de Suipacha a Tigre: bagre, boga, pejerrey, tararira, carpa y dorado en el tramo bajo.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-samborombon",
+  "jurisdiccion": "Litoral",
+  "agua": "Samborombón",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Río Samborombón, hasta la bahía homónima: pejerrey, tararira, boga y bagre.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-feliciano",
+  "jurisdiccion": "Litoral",
+  "agua": "Feliciano",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Feliciano: boga, dorado, pacú, surubí, sábalo (afluente del Paraná).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-guayquiraro",
+  "jurisdiccion": "Litoral",
+  "agua": "Guayquiraró",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes",
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Guayquiraró (límite Corrientes/Entre Ríos), cerca de la desembocadura en el Paraná (Esquina): dorado, surubí, boga.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-mocoreta",
+  "jurisdiccion": "Litoral",
+  "agua": "Mocoretá",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes",
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Mocoretá (límite Corrientes/Entre Ríos), afluente del Uruguay: boga, dorado, bagre.",
+  "fuente": {},
+  "_cut": null
  }
 ]

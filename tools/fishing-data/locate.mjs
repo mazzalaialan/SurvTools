@@ -43,7 +43,14 @@ export const norm = (s) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
+const seqCache = new Map();
 function readSeq(name) {
+  if (seqCache.has(name)) return seqCache.get(name);
+  const v = readSeqRaw(name);
+  seqCache.set(name, v);
+  return v;
+}
+function readSeqRaw(name) {
   const text = readFileSync(`${dir}/${name}.geojsonseq`, 'utf8');
   return text
     .split('\n')
@@ -413,6 +420,17 @@ for (const a of ambientes) {
   const cut = cuts[a.id];
   if (cut?.skip) continue;
   try {
+    // Cuerpo de agua por su id de OpenStreetMap («osm»: «way/28940173» o «relation/1624512»): para lagunas homónimas.
+    if (cut?.osm) {
+      const [t, id] = cut.osm.split('/');
+      const hit = readSeq('lakes').find((f) => f.properties['@type'] === t && String(f.properties['@id']) === id && /Polygon/.test(f.geometry.type));
+      if (hit) {
+        const polys = hit.geometry.type === 'Polygon' ? [hit.geometry.coordinates] : hit.geometry.coordinates;
+        out[a.id] = { geometry: { type: 'Polygon', coordinates: [simplify(polys[0][0], 40).map(round)] }, how: `OSM ${cut.osm}` };
+        report.ok.push(a.id);
+        continue;
+      }
+    }
     // Ubicado a mano por coordenada (ver coordenadas.json del investigador, copiado a cuts.json).
     if (cut?.at) {
       const p = cut.at;
