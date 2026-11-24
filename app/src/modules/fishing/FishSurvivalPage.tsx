@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { SurvivalFigure } from './SurvivalFigure';
 import { SURVIVAL_SOURCE, SURVIVAL_TECHNIQUES } from './survival';
 
 type Lang = 'es' | 'en' | 'pt';
@@ -16,9 +17,15 @@ export function FishSurvivalPage() {
       {SURVIVAL_TECHNIQUES.map((x) => (
         <details key={x.id} className="card fish-tech" data-testid={`fish-tech-${x.id}`}>
           <summary>
+            <span className="fish-tech-thumb" aria-hidden="true">
+              <SurvivalFigure id={x.id} />
+            </span>
             <strong>{x.title[lang]}</strong>
             <span className="muted small"> · {x.summary[lang]}</span>
           </summary>
+          <div className="fish-tech-figure">
+            <SurvivalFigure id={x.id} />
+          </div>
           <ol className="fish-tech-steps">
             {x.steps.map((s) => (
               <li key={s.es}>{s[lang]}</li>

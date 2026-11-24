@@ -88,10 +88,10 @@ function Where() {
       {/* 1 pozón en la curva */}
       <ellipse cx="186" cy="102" rx="24" ry="15" transform="rotate(35 186 102)" style={{ fill: WATER_DEEP, stroke: 'var(--info)', strokeWidth: 1.4 }} />
       <Fish x={186} y={102} s={0.8} rot={35} />
-      <Txt x={226} y={138}>pozón</Txt>
+      <Txt x={214} y={98}>pozón</Txt>
       {/* 2 abajo de una roca */}
       <ellipse cx="62" cy="40" rx="11" ry="9" style={{ ...LINE, fill: 'var(--surface)' }} />
-      <Fish x={96} y={42} s={0.8} flip />
+      <Fish x={96} y={42} s={0.8} />
       <Txt x={80} y={68}>roca</Txt>
       {/* 4 corriente rápida junto a agua quieta */}
       <path d="M112,52 H150 M116,60 H158" style={{ ...LINE, stroke: 'var(--info)' }} />
@@ -124,59 +124,65 @@ function Where() {
 /* ---------------------------------------------------------- anzuelos improvisados */
 function Hooks() {
   return (
-    <Svg h={205}>
-      <path d="M120,12 V190 M240,12 V190" style={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '3 5' }} />
+    <Svg h={240}>
+      <path d="M120,12 V222 M240,12 V222" style={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '3 5' }} />
       <Num x={14} y={16} n={1} />
       <Num x={134} y={16} n={2} />
       <Num x={254} y={16} n={3} />
-      {/* 1: alfiler o alambre en J */}
       <path d="M62,24 V118 C62,158 22,158 24,118 L34,102" style={{ ...LINE, strokeWidth: 4 }} />
       <path d="M34,102 L40,112" style={{ ...LINE, strokeWidth: 3, stroke: 'var(--accent)' }} />
       <circle cx="62" cy="24" r="5" style={LINE} />
-      <Txt x={60} y={188} anchor="middle">alambre en J</Txt>
-      {/* 2: espina atada a un palito */}
-      <path d="M180,26 V138" style={{ ...LINE, strokeWidth: 7, stroke: 'var(--text-muted)' }} />
-      <path d="M176,134 L187,142 L218,96Z" style={{ ...LINE, fill: 'var(--surface)', strokeWidth: 1.8 }} />
-      <path d="M173,118 l14,5 M173,126 l14,5" style={ACC} />
-      <Txt x={180} y={188} anchor="middle">espina y palito</Txt>
-      {/* 3: anzuelo de tranca */}
-      <path d="M254,82 L322,56" style={{ ...LINE, strokeWidth: 5 }} />
-      <path d="M248,84 L254,82 L254,86Z M328,54 L322,56 L322,52Z" style={{ ...LINE, fill: 'currentColor' }} />
-      <path d="M288,69 V30" style={LINE} />
-      <path d="M283,64 l10,8" style={ACC} />
-      <path d="M244,150 C262,124 312,122 338,148 C312,176 262,176 244,150Z" style={{ ...LINE, fill: FISH_FILL }} />
-      <path d="M244,150 L266,146 M244,150 L266,156" style={THIN} />
-      <circle cx="318" cy="142" r="2" style={{ fill: 'currentColor' }} />
-      <path d="M286,132 L298,168" style={{ ...LINE, strokeWidth: 4 }} />
-      <path d="M292,150 C270,150 252,140 250,100 V60" style={{ ...THIN, strokeWidth: 1.6 }} />
-      <Txt x={296} y={190} anchor="middle">de tranca</Txt>
+      <Txt x={60} y={200} anchor="middle">alambre en J</Txt>
+      <path d="M180,14 V44" style={THIN} />
+      <path d="M180,44 V140" style={{ ...LINE, strokeWidth: 7, stroke: 'var(--text-muted)' }} />
+      <path d="M174,138 L186,146 L222,96Z" style={{ ...LINE, fill: 'currentColor', strokeWidth: 1.5 }} />
+      <path d="M173,128 l14,7 M173,134 l14,7 M173,140 l14,7" style={ACC} />
+      <Txt x={180} y={200} anchor="middle">espina y palito</Txt>
+      <path d="M300,14 V44" style={THIN} />
+      <path d="M270,44 C270,40 330,40 330,44 V94 C330,102 270,102 270,94Z" style={{ ...LINE, fill: FISH_FILL, strokeWidth: 1.6 }} />
+      <path d="M300,46 L304,56 L304,82 L300,92 L296,82 L296,56Z" style={{ ...LINE, fill: 'currentColor', strokeWidth: 1.4 }} />
+      <Txt x={300} y={116} anchor="middle">antes: escondido</Txt>
+      <Txt x={300} y={129} anchor="middle">en la carnada</Txt>
+      {/* Pez con la cabeza a la izquierda (boca por donde sale la línea) y la cola a la derecha; el palito, atravesado en la garganta. */}
+      <path d="M262,166 C276,146 312,146 330,166 C312,186 276,186 262,166Z" style={{ ...LINE, fill: FISH_FILL, strokeWidth: 1.6 }} />
+      <path d="M330,166 L346,152 L342,166 L346,180Z" style={{ ...LINE, fill: FISH_FILL, strokeWidth: 1.6 }} />
+      <circle cx="271" cy="162" r="2" style={{ fill: 'currentColor' }} />
+      <path d="M284,154 C289,160 289,172 284,178" style={THIN} />
+      <path d="M279,166 H256 C248,166 248,150 248,140" style={{ ...THIN, strokeWidth: 1.6 }} />
+      <path d="M279,152 L283,158 L283,174 L279,180 L275,174 L275,158Z" style={{ ...LINE, fill: 'currentColor', strokeWidth: 1.4 }} />
+      <Txt x={300} y={206} anchor="middle">al tirar: queda</Txt>
+      <Txt x={300} y={219} anchor="middle">atravesado</Txt>
     </Svg>
   );
 }
 
 /* ----------------------------------------------------------- línea de mano / caña */
 function Handline() {
+  const pebbles: [number, number, number][] = [[100, 226, 7], [128, 230, 5], [160, 228, 8], [196, 231, 5], [262, 228, 7], [296, 231, 6], [330, 227, 8]];
   return (
-    <Svg h={235}>
-      <path d="M0,92 H360 V235 H0Z" style={{ fill: WATER }} />
+    <Svg h={245}>
+      <path d="M0,92 H360 V245 H0Z" style={{ fill: WATER }} />
       <path d="M60,92 H360" style={LINE} />
-      <path d="M0,86 H60 L82,92 V235 H0Z" style={{ fill: 'color-mix(in srgb, var(--text-muted) 25%, var(--surface))', stroke: 'currentColor', strokeWidth: 2 }} />
+      <path d="M82,222 Q160,214 230,220 T360,218 V245 H82Z" style={{ fill: 'color-mix(in srgb, var(--text-muted) 35%, var(--surface))', stroke: 'currentColor', strokeWidth: 1.6 }} />
+      {pebbles.map(([x, y, r]) => (
+        <ellipse key={x} cx={x} cy={y} rx={r} ry={r * 0.7} style={{ ...THIN, fill: 'var(--surface)' }} />
+      ))}
+      <path d="M0,86 H60 L82,92 V245 H0Z" style={{ fill: 'color-mix(in srgb, var(--text-muted) 25%, var(--surface))', stroke: 'currentColor', strokeWidth: 2 }} />
       <path d="M30,86 C100,62 170,34 236,22" style={{ ...LINE, strokeWidth: 4, stroke: 'var(--accent)' }} />
       <Txt x={96} y={82} bold>caña de rama</Txt>
-      {/* línea, boya, plomada y anzuelo */}
       <path d="M236,22 C240,50 238,76 238,88" style={THIN} />
       <ellipse cx="238" cy="96" rx="6" ry="9" style={{ ...LINE, fill: 'var(--surface)' }} />
       <path d="M232,94 H244" style={ACC} />
       <Txt x={254} y={86}>boya</Txt>
-      <path d="M238,105 V176" style={THIN} />
+      <path d="M238,105 V186" style={THIN} />
       <path d="M232,150 l6,-6 l8,3 l2,8 l-8,5 l-8,-3Z" style={{ ...LINE, fill: 'color-mix(in srgb, var(--text-muted) 40%, var(--surface))', strokeWidth: 1.6 }} />
       <Txt x={254} y={158}>plomada</Txt>
-      <path d="M238,176 V192 C238,208 224,208 224,194" style={{ ...LINE, strokeWidth: 2.4 }} />
-      <path d="M222,198 q-8,2 -14,-6 q4,-8 12,-4" style={{ ...ACC, strokeWidth: 3 }} />
-      <Txt x={254} y={206}>anzuelo y carnada</Txt>
-      <path d="M82,222 H360" style={{ stroke: 'var(--border)', strokeWidth: 1.5 }} />
-      <Fish x={150} y={196} s={0.9} />
-      <Arrow x1={176} y1={196} x2={198} y2={196} style={MUTED} />
+      <path d="M238,186 V200 C238,214 224,214 224,202" style={{ ...LINE, strokeWidth: 2.4 }} />
+      <path d="M222,204 q-8,2 -14,-6 q4,-8 12,-4" style={{ ...ACC, strokeWidth: 3 }} />
+      <Txt x={254} y={198}>anzuelo y carnada,</Txt>
+      <Txt x={254} y={211}>cerca del fondo</Txt>
+      <Fish x={150} y={190} s={0.9} />
+      <Arrow x1={176} y1={190} x2={198} y2={190} style={MUTED} />
     </Svg>
   );
 }
@@ -184,8 +190,9 @@ function Handline() {
 /* ------------------------------------------------------------------- espinel */
 function Setline() {
   const xs = [100, 150, 200, 250, 300];
+  const bait = [150, 250];
   return (
-    <Svg h={265}>
+    <Svg h={270}>
       <Txt x={6} y={14} bold>Espinel</Txt>
       <path d="M0,76 H360 V135 H0Z" style={{ fill: WATER }} />
       <path d="M0,76 H360" style={LINE} />
@@ -193,30 +200,33 @@ function Setline() {
       <path d="M40,70 V32 M320,70 V32" style={{ ...LINE, strokeWidth: 5, stroke: 'var(--text-muted)' }} />
       <path d="M40,36 Q180,52 320,36" style={{ ...LINE, strokeWidth: 2.4 }} />
       {xs.map((x, i) => {
-        const y0 = 36 + 16 * Math.sin(((x - 40) / 280) * Math.PI) + 2;
+        const t = (x - 40) / 280;
+        const y0 = 36 + 32 * t * (1 - t);
+        const y1 = 106 + (i % 2) * 6;
         return (
           <g key={x}>
-            <path d={`M${x},${y0} V${108 + (i % 2) * 6}`} style={THIN} />
-            <path d={`M${x},${108 + (i % 2) * 6} v6 c0,8 -9,8 -9,1`} style={{ ...LINE, strokeWidth: 2 }} />
+            <path d={`M${x},${y0} V${y1}`} style={THIN} />
+            <path d={`M${x},${y1} v6 c0,8 -9,8 -9,1`} style={{ ...LINE, strokeWidth: 2 }} />
+            {bait.includes(x) && <ellipse cx={x - 5} cy={y1 + 14} rx="5" ry="3.5" style={{ ...ACC, strokeWidth: 2.2, fill: 'color-mix(in srgb, var(--accent) 40%, var(--surface))' }} />}
           </g>
         );
       })}
-      <path d="M100,28 H150 M100,24 V32 M150,24 V32" style={THIN} />
-      <Txt x={125} y={22} anchor="middle">1–2 m</Txt>
+      <path d="M100,24 H150 M100,20 V28 M150,20 V28" style={THIN} />
+      <Txt x={125} y={18} anchor="middle">1–2 m</Txt>
       <Fish x={228} y={124} s={0.7} />
-      {/* a una rama */}
       <path d="M0,150 H360" style={{ stroke: 'var(--border)', strokeWidth: 1 }} />
       <Txt x={6} y={168} bold>Línea en una rama</Txt>
-      <path d="M0,230 H360 V265 H0Z" style={{ fill: WATER }} />
-      <path d="M0,230 H360" style={LINE} />
-      <path d="M0,230 V176 M0,176 H0" style={LINE} />
-      <path d="M8,230 V184 C8,176 12,174 20,176 L250,182" style={{ ...LINE, strokeWidth: 7, stroke: 'var(--text-muted)' }} />
-      <path d="M130,181 l30,-12 M190,183 l20,-14" style={{ ...LINE, strokeWidth: 3, stroke: 'var(--text-muted)' }} />
-      <path d="M250,182 V238 v6 c0,8 -9,8 -9,1" style={THIN} />
-      <path d="M250,242 v6 c0,8 -9,8 -9,1" style={{ ...LINE, strokeWidth: 2 }} />
-      <Txt x={266} y={214}>línea con carnada</Txt>
-      <Fish x={300} y={248} s={0.7} />
-      <path d="M0,150 H0" style={LINE} />
+      <path d="M0,230 H360 V270 H0Z" style={{ fill: WATER }} />
+      <path d="M58,230 H360" style={LINE} />
+      <path d="M0,212 H58 L72,230 V270 H0Z" style={{ fill: 'color-mix(in srgb, var(--text-muted) 25%, var(--surface))', stroke: 'currentColor', strokeWidth: 2 }} />
+      <path d="M14,212 V182 H32 V212Z" style={{ fill: 'color-mix(in srgb, var(--accent) 65%, var(--text-muted))', stroke: 'currentColor', strokeWidth: 1.6, strokeLinejoin: 'round' }} />
+      <path d="M30,180 C100,184 190,192 262,198 L262,201 C190,206 100,208 30,196Z" style={{ fill: 'color-mix(in srgb, var(--accent) 65%, var(--text-muted))', stroke: 'currentColor', strokeWidth: 1.6, strokeLinejoin: 'round' }} />
+      <Txt x={110} y={178}>rama</Txt>
+      <path d="M260,201 V246" style={THIN} />
+      <path d="M260,246 v6 c0,8 -9,8 -9,1" style={{ ...LINE, strokeWidth: 2 }} />
+      <ellipse cx="255" cy="260" rx="5" ry="3.5" style={{ ...ACC, strokeWidth: 2.2, fill: 'color-mix(in srgb, var(--accent) 40%, var(--surface))' }} />
+      <Txt x={274} y={222}>línea con carnada</Txt>
+      <Fish x={310} y={254} s={0.7} />
     </Svg>
   );
 }
@@ -228,15 +238,17 @@ function Traps() {
       <Txt x={6} y={14} bold>Corral de piedras, visto desde arriba</Txt>
       <path d="M0,28 H360 V124 H0Z" style={{ fill: WATER }} />
       <path d="M0,28 H360 M0,124 H360" style={LINE} />
-      <Arrow x1={14} y1={76} x2={64} y2={76} style={MUTED} />
-      <Stones pts={[[96, 30], [182, 62]]} />
-      <Stones pts={[[96, 122], [182, 90]]} />
+      <Arrow x1={76} y1={52} x2={22} y2={52} style={MUTED} />
+      <Txt x={80} y={56}>corriente</Txt>
+      <Stones pts={[[96, 30], [206, 66]]} />
+      <Stones pts={[[96, 122], [206, 86]]} />
       <Stones pts={[[182, 62], [208, 40], [262, 38], [292, 76], [262, 114], [208, 112], [182, 90]]} />
       <Fish x={218} y={74} s={0.7} flip />
       <Fish x={254} y={90} s={0.7} flip />
       <Fish x={126} y={72} s={0.7} flip />
       <Txt x={298} y={80}>corral</Txt>
-      <Txt x={30} y={110}>embudo</Txt>
+      <Txt x={316} y={94}>(arriba)</Txt>
+      <Txt x={10} y={112}>embudo</Txt>
       <path d="M0,142 H360" style={{ stroke: 'var(--border)', strokeWidth: 1 }} />
       <Txt x={6} y={160} bold>Nasa de botella</Txt>
       <path d="M0,170 H360 V285 H0Z" style={{ fill: WATER }} />
@@ -279,15 +291,15 @@ function Spear() {
       <path d="M186,40 L262,100" style={LINE} />
       <path d="M262,100 L334,142" style={{ ...MUTED }} />
       <path d="M262,100 L318,196" style={{ ...LINE, stroke: 'var(--info)' }} />
-      <g opacity="0.55">
+      <g opacity="0.9">
         <Fish x={334} y={142} s={0.8} />
       </g>
       <Txt x={358} y={118} anchor="end">lo que ves</Txt>
       <Fish x={322} y={206} s={0.9} />
-      <Txt x={336} y={236} anchor="end">donde está</Txt>
+      <Txt x={356} y={238} anchor="end">apuntá acá (más abajo)</Txt>
       <path d="M232,18 L318,196" style={{ ...LINE, strokeWidth: 3.5, stroke: 'var(--accent)' }} />
       <path d="M318,196 l-3,-12 m3,12 l-10,-7" style={ACC} />
-      <Txt x={152} y={64}>apuntá acá</Txt>
+      <Txt x={150} y={60}>tu ojo</Txt>
     </Svg>
   );
 }
@@ -300,20 +312,23 @@ function Food() {
       <path d="M30,78 C70,34 150,34 212,62 L252,40 V104 L212,82 C150,116 70,116 30,78Z" style={{ ...LINE, fill: FISH_FILL }} />
       <circle cx="52" cy="70" r="3" style={{ fill: 'currentColor' }} />
       <path d="M88,56 C80,70 80,84 88,98" style={THIN} />
-      <path d="M96,100 C130,106 170,102 204,86" style={{ ...MUTED, stroke: 'var(--accent)', strokeWidth: 2.6, strokeDasharray: '6 4' }} />
+      <Arrow x1={206} y1={88} x2={98} y2={101} style={{ ...MUTED, stroke: 'var(--accent)', strokeWidth: 2.6, strokeDasharray: '6 4' }} />
       <path d="M118,106 c6,10 14,-4 20,8 s14,-6 20,6 s10,-4 14,2" style={{ ...ACC, strokeWidth: 3 }} />
       <Txt x={84} y={34} anchor="middle">agallas</Txt>
       <Txt x={150} y={134} anchor="middle">tripas</Txt>
-      <Txt x={228} y={118}>corte</Txt>
+      <Txt x={198} y={124}>corte: del ano a las agallas</Txt>
       <path d="M0,148 H360" style={{ stroke: 'var(--border)', strokeWidth: 1 }} />
       <Txt x={6} y={166} bold>Cocinar y guardar</Txt>
       <path d="M0,245 H360" style={{ stroke: 'var(--border)', strokeWidth: 1.5 }} />
       {/* brasas, fuego y espetón */}
-      <path d="M60,240 L130,236 M70,246 L140,242" style={{ ...LINE, strokeWidth: 6, stroke: 'var(--text-muted)' }} />
-      <path d="M72,236 C58,218 82,206 80,190 C94,204 112,214 104,236Z" style={{ fill: 'var(--accent)', stroke: 'currentColor', strokeWidth: 1.5, strokeLinejoin: 'round' }} />
-      <path d="M44,208 V240 M44,208 l-6,-8 M44,208 l6,-8 M136,208 V240 M136,208 l-6,-8 M136,208 l6,-8" style={{ ...LINE, strokeWidth: 3, stroke: 'var(--text-muted)' }} />
-      <path d="M32,202 H148" style={{ ...LINE, strokeWidth: 3 }} />
-      <Fish x={90} y={190} s={1.5} />
+      <path d="M56,240 L130,238 M66,233 L124,231" style={{ ...LINE, strokeWidth: 7, stroke: 'var(--text-muted)' }} />
+      <path d="M72,231 q-5,-9 0,-16 q8,7 0,16Z M90,231 q-6,-12 0,-22 q9,10 0,22Z M108,231 q-5,-9 0,-16 q8,7 0,16Z" style={{ fill: 'var(--accent)', stroke: 'var(--accent)', strokeWidth: 1.5, strokeLinejoin: 'round' }} />
+      <circle cx="80" cy="228" r="2.5" style={{ fill: 'var(--accent)' }} />
+      <circle cx="100" cy="227" r="2.5" style={{ fill: 'var(--accent)' }} />
+      <circle cx="118" cy="228" r="2.5" style={{ fill: 'var(--accent)' }} />
+      <path d="M42,192 V238 M42,192 l-6,-8 M42,192 l6,-8 M138,192 V238 M138,192 l-6,-8 M138,192 l6,-8" style={{ ...LINE, strokeWidth: 3, stroke: 'var(--text-muted)' }} />
+      <path d="M30,190 H150" style={{ ...LINE, strokeWidth: 3 }} />
+      <Fish x={90} y={188} s={1.4} />
       <Txt x={90} y={262} anchor="middle">a la brasa</Txt>
       {/* tiras secándose */}
       <path d="M200,172 V244 M330,172 V244 M192,178 H338" style={{ ...LINE, strokeWidth: 3.5, stroke: 'var(--text-muted)' }} />

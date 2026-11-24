@@ -7154,6 +7154,30 @@ button.country-pack-del {
   flex-wrap: wrap;
   gap: 4px;
 }
+.fish-tech-thumb {
+  flex: none;
+  width: 56px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface);
+  margin-right: 6px;
+}
+.fish-tech-thumb .survival-figure {
+  width: 100%;
+  height: 100%;
+}
+.fish-tech-figure {
+  max-width: 420px;
+  margin: var(--sp-2) auto 0;
+}
+.survival-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+}
 .fish-tech-steps {
   margin: var(--sp-2) 0 0;
   padding-left: 1.3em;
