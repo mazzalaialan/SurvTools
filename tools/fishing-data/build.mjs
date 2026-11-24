@@ -108,6 +108,14 @@ function parseSector(a) {
     const ld = m[1].split(/-\s*devoluci|,?\s*devoluci/i)[0];
     for (const item of ld.matchAll(/(\d+)\s+([a-záéíóúñ ]+?)(?=,|\sy\s\d|\sy\s[a-z]+\s+sin|$|\s+excepto)/gi)) for (const id of speciesOf(item[2])) set(id, { limit: Number(item[1]) });
     if (/carpas? sin l[ií]mite/i.test(ld)) set('carpa', { limit: null });
+    // «LD: sin límites de captura para la trucha de lago (bocón) y salmón Chinook, otros salmónidos 2 ejemplares» (Parques Nacionales).
+    const free = ld.match(/sin l[ií]mites? de captura para ([^,]*)/i);
+    if (free) for (const part of free[1].split(/\sy\s/)) for (const id of speciesOf(part)) set(id, { limit: null });
+    for (const item of ld.matchAll(/(?:otros\s+)?([a-záéíóúñ ]+?)\s+(\d+)\s+ejemplares?/gi)) {
+      const ids = speciesOf(item[1]);
+      const others = /otros/i.test(item[0]);
+      for (const id of /salm[oó]nid/i.test(item[1]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo'] : ids) if (!(others && species.has(id))) set(id, { limit: Number(item[2]) });
+    }
   }
   // Devolución obligatoria: cupo 0.
   // «Devolución obligatoria.» a secas (sin «de …») o «de todos los peces»: todo se devuelve.
@@ -130,8 +138,10 @@ function parseSector(a) {
   for (const m of text.matchAll(/\((S|M|T|SBM)\)/g)) mods.add(MODALITY[m[1]]);
   if (/mosca solamente|exclusivo equipo de mosca|solo mosca/i.test(text)) mods.add('fly');
   if (/trolling/i.test(t) && !/prohibid[oa] (el )?trolling/i.test(t)) mods.add('trolling');
-  const open = text.match(/Apertura:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
-  const close = text.match(/Cierre:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
+  // «Apertura: 01/11/2026 - Cierre: 31/05/2027» o «Permitido pescar desde el 01/11/2026 al 31/05/2027».
+  const span = text.match(/desde el (\d{1,2}\/\d{1,2}\/\d{4}) (?:al|hasta el) (\d{1,2}\/\d{1,2}\/\d{4})/i);
+  const open = text.match(/Apertura:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[1]]);
+  const close = text.match(/Cierre:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[2]]);
   const season = closed ? undefined : open && close ? { from: iso(open[1]), to: iso(close[1]) } : undefined;
   return { species: [...species.values()], modality: [...mods], season, closed, inferred, catchAndRelease: allRelease || undefined };
 }
