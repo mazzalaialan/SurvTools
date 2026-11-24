@@ -1019,7 +1019,8 @@
    -25.5,
    -57.5,
    -22.5
-  ]
+  ],
+  "tol": 120
  },
  "lit-parana-mini": {
   "clip": [
@@ -1036,5 +1037,27 @@
    -58.4,
    -33.2
   ]
+ },
+ "lit-pilaga": {
+  "name": "Riacho Pilagá",
+  "tol": 120
+ },
+ "lit-de-oro": {
+  "clip": [
+   -60.6,
+   -27.4,
+   -58.4,
+   -26.3
+  ],
+  "tol": 120
+ },
+ "lit-tragadero": {
+  "tol": 120
+ },
+ "lit-guaycuru": {
+  "tol": 120
+ },
+ "lit-piray-guazu": {
+  "tol": 120
  }
 }

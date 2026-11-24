@@ -1028,5 +1028,96 @@
   "descripcion_tramo_literal": "Río Tapenagá (Chaco): tararira y bagres.",
   "fuente": {},
   "_cut": null
+ },
+ {
+  "id": "lit-piray-guazu",
+  "jurisdiccion": "Litoral",
+  "agua": "Piray Guazú",
+  "tipo_agua": "Arroyo",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Misiones"
+  ],
+  "descripcion_tramo_literal": "Arroyo Piray Guazú (Misiones, afluente del Paraná): dorado, tararira y bogas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-yaboti",
+  "jurisdiccion": "Litoral",
+  "agua": "Yabotí",
+  "tipo_agua": "Arroyo",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Misiones"
+  ],
+  "descripcion_tramo_literal": "Arroyo Yabotí (Misiones, Reserva de Biosfera Yabotí, afluente del Uruguay): dorado y tararira.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-guaycuru",
+  "jurisdiccion": "Litoral",
+  "agua": "Guaycurú",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Chaco"
+  ],
+  "descripcion_tramo_literal": "Río Guaycurú (Chaco, afluente del Paraná): tararira, bagres y bogas.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-de-oro",
+  "jurisdiccion": "Litoral",
+  "agua": "de Oro",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Chaco"
+  ],
+  "descripcion_tramo_literal": "Río de Oro (Chaco, afluente del Paraguay): tararira y bagres.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-tragadero",
+  "jurisdiccion": "Litoral",
+  "agua": "Tragadero",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Chaco"
+  ],
+  "descripcion_tramo_literal": "Río Tragadero (Chaco, cerca de Resistencia): tararira y bagres.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-pilaga",
+  "jurisdiccion": "Litoral",
+  "agua": "Pilagá",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Formosa"
+  ],
+  "descripcion_tramo_literal": "Riacho Pilagá (Formosa): tararira y bagres.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-carabelas-grande",
+  "jurisdiccion": "Litoral",
+  "agua": "Carabelas Grande",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Río Carabelas Grande (Delta bonaerense): pejerrey en invierno, dorado, bogas y bagres.",
+  "fuente": {},
+  "_cut": null
  }
 ]

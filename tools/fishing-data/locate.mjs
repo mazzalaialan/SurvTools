@@ -426,7 +426,9 @@ for (const a of ambientes) {
       const hit = readSeq('lakes').find((f) => f.properties['@type'] === t && String(f.properties['@id']) === id && /Polygon/.test(f.geometry.type));
       if (hit) {
         const polys = hit.geometry.type === 'Polygon' ? [hit.geometry.coordinates] : hit.geometry.coordinates;
-        out[a.id] = { geometry: { type: 'Polygon', coordinates: [simplify(polys[0][0], 40).map(round)] }, how: `OSM ${cut.osm}` };
+        // El anillo más grande (en un multipolígono el primero puede ser una isla o un pedazo chico).
+        const outer = polys.map((q) => q[0]).sort((a, b) => b.length - a.length)[0];
+        out[a.id] = { geometry: { type: 'Polygon', coordinates: [simplify(outer, 40).map(round)] }, how: `OSM ${cut.osm}` };
         report.ok.push(a.id);
         continue;
       }
@@ -553,6 +555,13 @@ for (const [id, c] of Object.entries(cuts)) {
     if (cur.length > 1) parts.push(cur);
   }
   if (parts.length) out[id].geometry = parts.length === 1 ? { type: 'LineString', coordinates: parts[0] } : { type: 'MultiLineString', coordinates: parts };
+}
+// «tol»: simplificar más (metros) los ríos de llanura con miles de meandros (Pilcomayo, Pilagá): pesan mucho y de lejos no se ven.
+for (const [id, c] of Object.entries(cuts)) {
+  if (!c?.tol || !out[id]) continue;
+  const g = out[id].geometry;
+  if (g.type === 'LineString') g.coordinates = simplify(g.coordinates, c.tol).map(round);
+  else if (g.type === 'MultiLineString') g.coordinates = g.coordinates.map((l) => simplify(l, c.tol).map(round)).filter((l) => l.length > 1);
 }
 writeFileSync(outFile, JSON.stringify(out));
 console.log(`${jurisdiction}: ${report.ok.length} enteros, ${report.cut.length} cortados, ${report.missing.length} sin encontrar, ${report.errors.length} con error`);
