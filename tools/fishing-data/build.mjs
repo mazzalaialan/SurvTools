@@ -215,6 +215,9 @@ const LITORAL_NAMES = {
   corvina: 'Corvina de río', palometa: 'Palometa', raya: 'Raya de río', virreyna: 'Virreyna',
 };
 const litoralSpecies = new Set();
+/** Peces de la cuenca del Plata que se encuentran en los ríos grandes y en las lagunas (para los que ninguna norma nombra). */
+const LIT_RIVER_SPECIES = ['dorado', 'surubi-pintado', 'surubi-atigrado', 'pacu', 'boga', 'sabalo', 'pati', 'tararira', 'bagre-amarillo', 'bagre-blanco', 'armado', 'mojarra', 'palometa', 'chafalote', 'raya', 'anguila', 'manduvi', 'salmon-rio', 'manguruyu'];
+const LIT_LAKE_SPECIES = ['tararira', 'pejerrey', 'carpa', 'mojarra', 'bagre-amarillo', 'anguila'];
 if (jurs.split(',').includes('Litoral')) {
   const rulesBy = JSON.parse(readFileSync(fileURLToPath(new URL('./litoral-rules.json', import.meta.url)), 'utf8'));
   const waters = JSON.parse(readFileSync(`${work}/litoral/ambientes.json`, 'utf8'));
@@ -242,6 +245,10 @@ if (jurs.split(',').includes('Litoral')) {
       const closures = (r.closures ?? []).filter((c) => c.waters.some((n) => lower(w.agua).includes(lower(n)))).map(({ from, to, note }) => ({ from, to, note }));
       return { region: rid(j), regionName: j.replace('CARU - Rio Uruguay', 'Río Uruguay (CARU)'), species, ...(closures.length && { closures }), notes: [r.norm, ...(r.rules ?? [])].join(' — '), name: w.descripcion_tramo_literal };
     });
+    // Peces que están en el agua aunque ninguna norma los nombre (mojarra, chafalote, anguila…): se suman sin regla
+    // («Sin regla específica: rige la norma general»), así aparecen en la lista y en el mapa.
+    const present = lakeLike(w) ? LIT_LAKE_SPECIES : LIT_RIVER_SPECIES;
+    for (const set of sets) for (const id of present) if (!set.species.some((e) => e.id === id)) set.species.push({ id }), litoralSpecies.add(id);
     const sp = new Map();
     for (const set of sets) for (const e of set.species) if (!sp.has(e.id) || (e.forbidden && !sp.get(e.id).forbidden)) sp.set(e.id, e);
     sectors.push({
@@ -292,7 +299,8 @@ const litFile = `${work}/litoral/especies.json`;
 if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
   const v = (x) => (x && typeof x === 'object' && 'valor' in x ? x.valor : x);
   const conf = (x) => (x?.confianza === 'oficial' || x?.confianza?.startsWith?.('confirmado') ? 'high' : x?.confianza === 'sin confirmar' ? 'low' : 'medium');
-  for (const e of JSON.parse(readFileSync(litFile, 'utf8')).especies) {
+  const extra = JSON.parse(readFileSync(fileURLToPath(new URL('./litoral-extra.json', import.meta.url)), 'utf8')).especies;
+  for (const e of [...JSON.parse(readFileSync(litFile, 'utf8')).especies, ...extra]) {
     const id = LIT_ALIAS[e.id] ?? e.id;
     if (species.some((x) => x.id === id)) continue; // carpa y pejerrey ya tienen ficha (Patagonia)
     const list = (x) => (Array.isArray(v(x)) ? v(x) : v(x) ? [v(x)] : []).filter((t) => typeof t === 'string' && !/^no encontrad/i.test(t));

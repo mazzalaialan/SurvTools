@@ -1,0 +1,50 @@
+{
+ "_": "Peces del Litoral cargados a mano (no estaban en la investigación). Ficha propia según FishBase (Synbranchus marmoratus) y conocimiento general; confianza media.",
+ "especies": [
+  {
+   "id": "anguila",
+   "nombre": {
+    "es": "Anguila criolla",
+    "en": "Marbled swamp eel",
+    "pt": "Muçum"
+   },
+   "cientifico": "Synbranchus marmoratus",
+   "origen": {
+    "valor": "nativa"
+   },
+   "tamano": {
+    "valor": "Lo común: 40 a 60 cm; llega a cerca de 1 m."
+   },
+   "dieta": {
+    "valor": "Nocturna y del fondo: come peces chicos, camarones de río, lombrices e insectos acuáticos. Respira aire: en la sequía sobrevive enterrada en el barro."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "Lombriz de tierra",
+     "Trozos de pescado o de sábalo",
+     "Camarón de río"
+    ],
+    "confianza": "medio"
+   },
+   "senuelos_moscas": {
+    "valor": []
+   },
+   "horario": {
+    "valor": "De noche, en orillas con vegetación, bajo camalotes y en bañados y zanjas."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Es muy resbaladiza y puede morder: agarrarla con un trapo; no es venenosa."
+    }
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombriz de tierra",
+     "Trozos de pescado"
+    ],
+    "tip": "Buscala de noche en bañados, zanjas y bajo los camalotes; también se saca del barro en la sequía. Se come bien cocida, y es muy buena carnada para dorado y surubí."
+   }
+  }
+ ]
+}
