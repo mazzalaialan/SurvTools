@@ -228,14 +228,40 @@
   "date": "2026-11-23"
  },
  "Santa Fe": {
-  "items": [],
+  "items": [
+   {
+    "type": "Pesca deportiva particular (residente en Santa Fe)",
+    "price": "$13.000"
+   },
+   {
+    "type": "Pesca deportiva de club",
+    "price": "$6.500"
+   },
+   {
+    "type": "Pesca deportiva de federación",
+    "price": "$3.250"
+   },
+   {
+    "type": "Turista nacional (residente de otra provincia)",
+    "price": "$13.000"
+   },
+   {
+    "type": "Turista extranjero",
+    "price": "$43.329"
+   },
+   {
+    "type": "Sin cargo",
+    "who": "jubilados y damas residentes en Santa Fe (tramitan la licencia igual)"
+   }
+  ],
   "extra": [
+   "Importes en módulos tributarios (MT de $13 desde el 01/01/2026, Ley 14.426); la cantidad de módulos de cada licencia sale de prensa (31/12/2025): confirmalo en el trámite oficial.",
    "Vence el 31 de diciembre. El trámite es digital con la ID Ciudadana (santafe.gob.ar → Gestiones Ciudadanas → «Pesca»); el carnet tiene QR y tarda unas 72 horas hábiles.",
-   "No encontramos los precios 2026 oficiales.",
    "La licencia de residente de Entre Ríos, Chaco o Corrientes vale en Santa Fe (Res. 336/25)."
   ],
-  "infoUrl": "https://www.santafe.gob.ar/",
-  "date": "2026-11-23"
+  "buyUrl": "https://www.santafe.gob.ar/ms/ambiente/tramites/",
+  "infoUrl": "https://www.santafe.gov.ar/index.php/content/download/263365/1381255/file/Valor%20MT%202026.pdf",
+  "date": "2026-11-24"
  },
  "Corrientes": {
   "items": [],
@@ -293,12 +319,37 @@
   "date": "2026-11-23"
  },
  "Formosa": {
-  "items": [],
+  "items": [
+   {
+    "type": "Costa: anual",
+    "price": "$100"
+   },
+   {
+    "type": "Costa: por jornada",
+    "price": "$30"
+   },
+   {
+    "type": "Embarcada a motor: anual",
+    "price": "$300"
+   },
+   {
+    "type": "Embarcada a motor: por jornada",
+    "price": "$90"
+   },
+   {
+    "type": "Embarcada a remo: anual",
+    "price": "$200"
+   },
+   {
+    "type": "Embarcada a remo: por jornada",
+    "price": "$60"
+   }
+  ],
   "extra": [
-   "El trámite es solo presencial, en la Dirección de Registro, Control y Fiscalización."
+   "Importes tal cual figuran en el Mi Portal de Formosa (página consultada el 23-24/11/2026); parecen desactualizados por su magnitud: confirmar en la Dirección de Registro, Control y Fiscalización (Clorinda: Libertad 1168; El Colorado: Buenos Aires y San Juan). Requisitos: DNI, 2 fotos 3x3, constancia de domicilio y depósito solo en Banco de Formosa."
   ],
   "infoUrl": "https://www.formosa.gob.ar/tramite/136/licencia_para_pesca_deportiva__recreativa",
-  "date": "2026-11-23"
+  "date": "2026-11-24"
  },
  "Misiones": {
   "items": [],

@@ -298,7 +298,8 @@
  "Misiones": {
   "norm": "Ministerio de Ecología; Res. 364/2026 (veda 2026/27)",
   "rules": [
-   "Durante la veda solo se permite la pesca de subsistencia con permiso, desde la costa, con línea de mano, lunes, miércoles y viernes, sin dorado, surubí, pirá-pará ni manguruyú."
+   "Durante la veda solo se permite la pesca de subsistencia con permiso, desde la costa, con línea de mano, lunes, miércoles y viernes, sin dorado, surubí, pirá-pará ni manguruyú.",
+   "Tallas y cupos: compendio del MAGyP (Informe Técnico 62, datos de diciembre de 2019); su vigencia actual no está verificada."
   ],
   "closures": [
    {
@@ -320,23 +321,306 @@
     "note": "Veda total en el río Uruguay y su cuenca (Res. 364/2026)."
    }
   ],
-  "species": {}
+  "species": {
+   "armado": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "bagre-amarillo": {
+    "minSizeCm": 30,
+    "limit": 10,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "bagre-blanco": {
+    "minSizeCm": 30,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "boga": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "corvina": {
+    "minSizeCm": 25,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "dorado": {
+    "minSizeCm": 75,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "manduvi": {
+    "minSizeCm": 40,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "manguruyu": {
+    "minSizeCm": 100,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "pacu": {
+    "minSizeCm": 45,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "pati": {
+    "minSizeCm": 70,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "sabalo": {
+    "minSizeCm": 40,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "salmon-rio": {
+    "minSizeCm": 45,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "surubi-atigrado": {
+    "minSizeCm": 80,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "surubi-pintado": {
+    "minSizeCm": 85,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "virreyna": {
+    "minSizeCm": 30,
+    "limit": 10,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   }
+  }
  },
  "Chaco": {
   "norm": "Dec. 1623/10 y Res. 1078/2020 (Subsecretaría de Ambiente)",
   "rules": [
    "Hay vedas móviles según la altura del río: consultá antes de salir.",
-   "No encontramos tallas ni cupos oficiales vigentes."
+   "Tallas y cupos: compendio del MAGyP (Informe Técnico 62, datos de diciembre de 2019); su vigencia actual no está verificada."
   ],
-  "species": {}
+  "species": {
+   "armado": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "armado-chancho": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "bagre-amarillo": {
+    "minSizeCm": 30,
+    "limit": 10,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "bagre-blanco": {
+    "minSizeCm": 30,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "boga": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "corvina": {
+    "minSizeCm": 25,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "dorado": {
+    "minSizeCm": 75,
+    "limit": 1,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "manduvi": {
+    "minSizeCm": 40,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "manguruyu": {
+    "minSizeCm": 70,
+    "limit": 1,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "pacu": {
+    "minSizeCm": 45,
+    "limit": 1,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "pati": {
+    "minSizeCm": 70,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "sabalo": {
+    "minSizeCm": 40,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "salmon-rio": {
+    "minSizeCm": 45,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "surubi-atigrado": {
+    "minSizeCm": 80,
+    "limit": 1,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada. En 2026 la Subsecretaría de Ambiente dijo que no se puede retener surubí (prensa): devolvelo.",
+    "unconfirmed": true
+   },
+   "surubi-pintado": {
+    "minSizeCm": 85,
+    "limit": 1,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada. En 2026 la Subsecretaría de Ambiente dijo que no se puede retener surubí (prensa): devolvelo.",
+    "unconfirmed": true
+   },
+   "virreyna": {
+    "minSizeCm": 30,
+    "limit": 10,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   }
+  }
  },
  "Formosa": {
   "norm": "Ley 305 (capítulos de pesca vigentes) y Res. 051/2020",
   "rules": [
    "Prohibida la pesca deportiva en el arroyo Ramírez, la laguna Herradura, Puerto Dalmacia, la boca del Bermejo y bajo los puentes y alcantarillas de las rutas.",
    "La licencia se tramita solo de forma presencial.",
-   "No encontramos tallas ni cupos oficiales vigentes."
+   "Tallas y cupos: compendio del MAGyP (Informe Técnico 62, datos de diciembre de 2019); su vigencia actual no está verificada."
   ],
-  "species": {}
+  "species": {
+   "armado": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "bagre-amarillo": {
+    "minSizeCm": 30,
+    "limit": 10,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "bagre-blanco": {
+    "minSizeCm": 30,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "boga": {
+    "minSizeCm": 45,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "corvina": {
+    "minSizeCm": 25,
+    "limit": 5,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "dorado": {
+    "minSizeCm": 75,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "manduvi": {
+    "minSizeCm": 40,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "manguruyu": {
+    "minSizeCm": 100,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "pacu": {
+    "minSizeCm": 45,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "pati": {
+    "minSizeCm": 70,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "sabalo": {
+    "minSizeCm": 40,
+    "limit": 4,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "salmon-rio": {
+    "minSizeCm": 45,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "surubi-atigrado": {
+    "minSizeCm": 80,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "surubi-pintado": {
+    "minSizeCm": 85,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "tararira": {
+    "minSizeCm": 30,
+    "limit": 10,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   },
+   "virreyna": {
+    "minSizeCm": 30,
+    "limit": 2,
+    "note": "Dato de diciembre de 2019 (MAGyP, Informe Técnico 62, tabla 3); vigencia actual no verificada.",
+    "unconfirmed": true
+   }
+  }
  }
 }
