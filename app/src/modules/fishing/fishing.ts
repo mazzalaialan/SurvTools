@@ -44,6 +44,32 @@ export interface SectorSpecies {
   limit?: number | null;
   minSizeCm?: number | null;
   maxSizeCm?: number | null;
+  /** Prohibida todo el año (pacú y manguruyú en Santa Fe, veda absoluta de la CARU…). */
+  forbidden?: boolean;
+  /** Vedas de la especie que se repiten cada año («MM-DD»). */
+  closures?: { from: string; to: string }[];
+  /** Aclaración de la norma para esta especie. */
+  note?: string;
+  /** El dato sale de la autoridad citada en prensa o de una fuente secundaria, no del texto oficial. */
+  unconfirmed?: boolean;
+}
+
+/** ¿Está la especie en veda hoy? Devuelve hasta cuándo, si está. */
+export function speciesClosedUntil(sp: SectorSpecies, now: Date = new Date()): Date | null {
+  for (const c of sp.closures ?? []) {
+    const st = seasonStatus({ from: c.from, to: c.to }, now);
+    if (st.state === 'open' && st.until) return st.until;
+  }
+  return null;
+}
+
+/** Veda total del tramo vigente hoy (fechas «AAAA-MM-DD» o «MM-DD»), si hay. */
+export function sectorClosure(s: Pick<FishSector, 'closures'>, now: Date = new Date()): { until: Date; note?: string } | null {
+  for (const c of s.closures ?? []) {
+    const st = seasonStatus({ from: c.from, to: c.to }, now);
+    if (st.state === 'open' && st.until) return { until: st.until, note: c.note };
+  }
+  return null;
 }
 
 /** Temporada: fechas «MM-DD» (se repiten cada año) o «AAAA-MM-DD» (una temporada concreta). Sin fechas = todo el año. */
@@ -69,6 +95,8 @@ export interface FishSector {
   notes?: string;
   /** Pesca no autorizada en este tramo (todo el año). */
   closed?: boolean;
+  /** Vedas totales del tramo con fecha (p. ej. la veda de Misiones en el Paraná). */
+  closures?: { from: string; to: string; note?: string }[];
   /** La ubicación del tramo es aproximada (qué se aproximó). */
   approx?: string;
   /**

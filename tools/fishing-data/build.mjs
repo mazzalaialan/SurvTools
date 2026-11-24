@@ -163,7 +163,7 @@ const species = speciesFromCarnadas();
 const regions = [];
 const sectors = [];
 const missing = [];
-for (const jur of jurs.split(',')) {
+for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
   const geoFile = `${work}/geo-${jur.replace(/\s+/g, '-')}.json`;
   const geo = existsSync(geoFile) ? JSON.parse(readFileSync(geoFile, 'utf8')) : {};
   const regionId = lower(jur).replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
@@ -207,6 +207,51 @@ for (const jur of jurs.split(',')) {
   }
 }
 
+// --- Litoral (ver README): cada provincia regula por especie; cada río lleva el reglamento de cada jurisdicción que rige en él. ---
+const LITORAL_NAMES = {
+  dorado: 'Dorado', 'surubi-pintado': 'Surubí pintado', 'surubi-atigrado': 'Surubí atigrado', pacu: 'Pacú', manguruyu: 'Manguruyú', boga: 'Boga',
+  sabalo: 'Sábalo', pati: 'Patí', tararira: 'Tararira', 'salmon-rio': 'Salmón de río (pirapitá)', armado: 'Armado común', 'armado-chancho': 'Armado chancho',
+  'bagre-amarillo': 'Bagre amarillo', 'bagre-blanco': 'Bagre blanco', 'bagre-negro': 'Bagre negro', moncholo: 'Moncholo', mandube: 'Mandubé',
+  corvina: 'Corvina de río', palometa: 'Palometa', raya: 'Raya de río', virreyna: 'Virreyna',
+};
+const litoralSpecies = new Set();
+if (jurs.split(',').includes('Litoral')) {
+  const rulesBy = JSON.parse(readFileSync(fileURLToPath(new URL('./litoral-rules.json', import.meta.url)), 'utf8'));
+  const waters = JSON.parse(readFileSync(`${work}/litoral/ambientes.json`, 'utf8'));
+  const geo = JSON.parse(readFileSync(`${work}/geo-Litoral.json`, 'utf8'));
+  const rid = (j) => 'lit-' + lower(j).replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
+  const lakeLike = (w) => /lag|lago|embalse/i.test(w.tipo_agua);
+  const SRC = (j) => ({ id: rid(j), name: `${rulesBy[j]?.norm ?? j}`, url: permits[j]?.infoUrl ?? permits[j]?.buyUrl ?? '', license: 'Normativa pública sin licencia declarada: se usa con atribución', date: '2026-11-23' });
+  for (const j of Object.keys(rulesBy).filter((k) => !k.startsWith('_'))) {
+    SOURCES.push(SRC(j));
+    regions.push({ id: rid(j), name: j.replace('CARU - Rio Uruguay', 'Río Uruguay (CARU)'), rules: [rulesBy[j].norm, ...(rulesBy[j].rules ?? [])], ...(permits[j] && { permit: permits[j] }), source: rid(j) });
+  }
+  for (const w of waters) {
+    const g = geo[w.id];
+    if (!g) {
+      missing.push(w.id);
+      continue;
+    }
+    const sets = w.jurisdicciones.filter((j) => rulesBy[j]).map((j) => {
+      const r = rulesBy[j];
+      const species = Object.entries(r.species ?? {}).map(([id, x]) => {
+        litoralSpecies.add(id);
+        const closures = (x.closures ?? []).filter((c) => !c.onlyLakes || lakeLike(w)).map(({ from, to }) => ({ from, to }));
+        return { id, ...(x.limit !== undefined && { limit: x.limit }), ...(x.minSizeCm && { minSizeCm: x.minSizeCm }), ...(x.forbidden && { forbidden: true }), ...(closures.length && { closures }), ...(x.note && { note: x.note }), ...(x.unconfirmed && { unconfirmed: true }) };
+      });
+      const closures = (r.closures ?? []).filter((c) => c.waters.some((n) => lower(w.agua).includes(lower(n)))).map(({ from, to, note }) => ({ from, to, note }));
+      return { region: rid(j), regionName: j.replace('CARU - Rio Uruguay', 'Río Uruguay (CARU)'), species, ...(closures.length && { closures }), notes: [r.norm, ...(r.rules ?? [])].join(' — '), name: w.descripcion_tramo_literal };
+    });
+    const sp = new Map();
+    for (const set of sets) for (const e of set.species) if (!sp.has(e.id) || (e.forbidden && !sp.get(e.id).forbidden)) sp.set(e.id, e);
+    sectors.push({
+      id: w.id, region: sets[0]?.region ?? 'lit', water: `${w.tipo_agua} ${w.agua}`, name: w.descripcion_tramo_literal, geometry: g.geometry,
+      species: [...sp.values()], ...(sets.length > 1 ? { rules: sets } : { ...sets[0], region: sets[0]?.region }),
+      ...(cuts[w.id]?.approx && { approx: cuts[w.id].approx }), source: sets[0]?.region ?? 'lit',
+    });
+  }
+}
+
 // Ambientes compartidos (decisión del dueño): el mismo río o lago figura en el anexo de cada jurisdicción con reglas distintas. Se
 // dibuja una sola vez y la ficha muestra el reglamento de cada una, con a quién pertenece. Se juntan solo si el reglamento dice que es
 // compartido y además salieron sobre el mismo dibujo (así no se mezclan dos lagunas homónimas).
@@ -241,6 +286,7 @@ const finalSectors = sectors.filter((s) => !drop.has(s)).map(({ _shared, _region
 sectors.length = 0;
 sectors.push(...finalSectors);
 if (merged) console.log(`${merged} ambientes compartidos juntados (${drop.size} entradas repetidas)`);
+for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.push({ id, scientific: '', native: true, name: { es: LITORAL_NAMES[id] ?? id } });
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
 const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => ({ ...sp, ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
 // Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.

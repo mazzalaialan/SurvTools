@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { ModuleGrid } from '@/ui/ModuleGrid';
-import { isStale, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
+import { isStale, sectorClosure, sectorSeason, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
 import { FishDataGate, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
 import { useFishData } from './useFishData';
 
@@ -304,12 +304,17 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
       <p>{s.name}</p>
       <p>
         <SectorSeasonBadge data={data} sector={s} />
-        {region && ` · ${region.name}`}
+        {region && `${sectorSeason(data, s) || s.closed ? ' · ' : ''}${region.name}`}
       </p>
       {s.approx && <p className="fish-stale">{t('fishing.approx', { what: s.approx })}</p>}
       {s.closed && (
         <p className="card fish-rule" data-rule="forbidden" data-testid="fish-forbidden">
           <strong>{t('fishing.season.forbidden')}</strong>
+        </p>
+      )}
+      {sectorClosure(s) && (
+        <p className="card fish-rule" data-rule="forbidden" data-testid="fish-total-closure">
+          <strong>{sectorClosure(s)!.note ?? t('fishing.season.closed')}</strong>
         </p>
       )}
       {(s.modality?.length || s.catchAndRelease) && (

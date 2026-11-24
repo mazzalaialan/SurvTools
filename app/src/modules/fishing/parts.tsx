@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { seasonStatus, sectorSeason, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
+import { sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
 /** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
@@ -46,7 +46,17 @@ export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: Fi
         {t('fishing.season.forbidden')}
       </span>
     );
-  return <SeasonBadge season={sectorSeason(data, sector)} />;
+  const total = sectorClosure(sector);
+  if (total)
+    return (
+      <span className="fish-season" data-state="closed">
+        {t('fishing.season.closedUntil', { date: total.until.toLocaleDateString(undefined, { day: 'numeric', month: 'long' }) })}
+      </span>
+    );
+  const season = sectorSeason(data, sector);
+  // En el Litoral no hay temporada general: las vedas van por especie (se ven en cada pez).
+  if (!season) return null;
+  return <SeasonBadge season={season} />;
 }
 
 /**
@@ -55,23 +65,35 @@ export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: Fi
  */
 export type KeepRule = 'forbidden' | 'release' | 'keep' | 'free' | 'unknown';
 export function keepRule(sp: SectorSpecies | undefined, sector: FishSector): KeepRule {
-  if (sector.closed) return 'forbidden';
+  if (sector.closed || sectorClosure(sector)) return 'forbidden';
   if (!sp) return 'unknown';
+  // Prohibida todo el año o en veda hoy: rojo.
+  if (sp.forbidden || speciesClosedUntil(sp)) return 'forbidden';
   if (sector.catchAndRelease || sp.limit === 0) return 'release';
   if (sp.limit === null) return 'free';
   if (sp.limit && sp.limit > 0) return 'keep';
   return 'unknown';
 }
 
+/** «11-01» → «1/11». */
+const fmtMD = (md: string) => md.split('-').slice(-2).reverse().map(Number).join('/');
+
 /** Cupo y talla de una especie en un tramo, en una línea. */
 export function speciesRules(t: (k: string, o?: Record<string, unknown>) => string, sp: SectorSpecies, sector: FishSector): string[] {
   const out: string[] = [];
+  if (sp.forbidden) return [t('fishing.rules.forbidden'), ...(sp.note ? [sp.note] : [])];
+  const until = speciesClosedUntil(sp);
+  if (until) out.push(t('fishing.rules.closedUntil', { date: until.toLocaleDateString(undefined, { day: 'numeric', month: 'long' }) }));
   if (sector.catchAndRelease || sp.limit === 0) out.push(t('fishing.rules.release'));
   else if (sp.limit) out.push(t('fishing.rules.limit', { n: sp.limit }));
   else if (sp.limit === null) out.push(t('fishing.rules.free'));
-  else out.push(t('fishing.rules.general'));
   if (sp.minSizeCm) out.push(t('fishing.rules.minSize', { cm: sp.minSizeCm }));
   if (sp.maxSizeCm) out.push(t('fishing.rules.maxSize', { cm: sp.maxSizeCm }));
+  if (!until) for (const c of sp.closures ?? []) out.push(t('fishing.rules.closure', { from: fmtMD(c.from), to: fmtMD(c.to) }));
+  if (sp.note) out.push(sp.note);
+  if (sp.unconfirmed) out.push(t('fishing.rules.unconfirmed'));
+  // Sin ninguna regla para la especie: rige la norma general (no es «libre»).
+  if (!out.length) out.push(t('fishing.rules.general'));
   return out;
 }
 

@@ -195,5 +195,101 @@
   "requirements": "Se saca con el DNI; es personal e intransferible y hay que llevarlo encima.",
   "where": "Parques Nacionales no tiene un portal propio: reconoce los permisos provinciales (Neuquén, Río Negro o Chubut), que valen en los parques.",
   "date": "2026-11-23"
+ },
+ "Entre Ríos": {
+  "items": [
+   {
+    "type": "Residente de Entre Ríos: anual",
+    "price": "$15.444"
+   },
+   {
+    "type": "Residente de otra provincia: anual",
+    "price": "$24.252"
+   },
+   {
+    "type": "No residente: 4 días",
+    "price": "$5.489"
+   },
+   {
+    "type": "Extranjero: 5 días",
+    "price": "$24.252"
+   },
+   {
+    "type": "Con guía, solo con devolución",
+    "price": "$2.298"
+   }
+  ],
+  "extra": [
+   "Socios de entidades de caza y pesca de Entre Ríos: 50 % de descuento en los permisos anuales.",
+   "Desde diciembre de 2025 la licencia de residente vale también en Santa Fe, Chaco y Corrientes (en aguas compartidas)."
+  ],
+  "buyUrl": "https://portal.entrerios.gov.ar/pf/buscador/tramite?708",
+  "requirements": "Precios del Boletín Oficial del 28/05/2026 (Res. 117/26 MDE).",
+  "date": "2026-11-23"
+ },
+ "Santa Fe": {
+  "items": [],
+  "extra": [
+   "Vence el 31 de diciembre. El trámite es digital con la ID Ciudadana (santafe.gob.ar → Gestiones Ciudadanas → «Pesca»); el carnet tiene QR y tarda unas 72 horas hábiles.",
+   "No encontramos los precios 2026 oficiales.",
+   "La licencia de residente de Entre Ríos, Chaco o Corrientes vale en Santa Fe (Res. 336/25)."
+  ],
+  "infoUrl": "https://www.santafe.gob.ar/",
+  "date": "2026-11-23"
+ },
+ "Corrientes": {
+  "items": [],
+  "extra": [
+   "Licencia de residente y licencia de turista. No encontramos los precios 2026 oficiales."
+  ],
+  "buyUrl": "https://www.recnaturalesctes.gob.ar/login",
+  "infoUrl": "https://corrientes.tur.ar/la-pesca-deportiva-retoma-su-actividad-plena-en-corrientes-tras-el-levantamiento-de-la-veda-extraordinaria/",
+  "date": "2026-11-23"
+ },
+ "Buenos Aires": {
+  "items": [
+   {
+    "type": "Sin cargo",
+    "who": "menores de 14 años, jubilados, pensionados, personas con discapacidad y veteranos de Malvinas"
+   }
+  ],
+  "extra": [
+   "Vence el 31 de diciembre. No encontramos los precios 2026 en un sitio oficial."
+  ],
+  "buyUrl": "https://mi.mda.gba.gob.ar/pesca/licencia/validacion",
+  "date": "2026-11-23"
+ },
+ "Chaco": {
+  "items": [],
+  "extra": [
+   "No encontramos los precios 2026 oficiales."
+  ],
+  "buyUrl": "https://carnet.chaco.gob.ar/",
+  "date": "2026-11-23"
+ },
+ "Formosa": {
+  "items": [],
+  "extra": [
+   "El trámite es solo presencial, en la Dirección de Registro, Control y Fiscalización."
+  ],
+  "infoUrl": "https://www.formosa.gob.ar/tramite/136/licencia_para_pesca_deportiva__recreativa",
+  "date": "2026-11-23"
+ },
+ "Misiones": {
+  "items": [],
+  "extra": [
+   "Licencia digital por el portal de autogestión (pago en línea y carnet por correo). No encontramos los precios 2026."
+  ],
+  "buyUrl": "https://licenciadepesca.ecologia.misiones.gob.ar/app/login",
+  "infoUrl": "https://ecologia.misiones.gob.ar/autogestion-de-licencias-de-pesca/",
+  "date": "2026-11-23"
+ },
+ "CARU - Rio Uruguay": {
+  "items": [],
+  "extra": [
+   "La CARU no emite licencia: vale la licencia provincial (Entre Ríos o Corrientes)."
+  ],
+  "infoUrl": "https://www.argentina.gob.ar/normativa/nacional/norma-50733/actualizacion",
+  "date": "2026-11-23"
  }
 }
