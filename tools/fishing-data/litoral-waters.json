@@ -1132,5 +1132,36 @@
   "descripcion_tramo_literal": "Costa argentina del Río de la Plata, de San Isidro a Punta Rasa (Buenos Aires): pejerrey en invierno, bagres, bogas, carpas, corvina y dorado; desde muelles, escolleras y la costa.",
   "fuente": {},
   "_cut": null
+ },
+ {
+  "id": "lit-paso-de-las-piedras",
+  "jurisdiccion": "Litoral",
+  "agua": "Paso de las Piedras",
+  "tipo_agua": "Embalse",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Embalse Paso de las Piedras (Coronel Pringles y Villarino; agua potable de Bahía Blanca): pesca deportiva SOLO desde la costa y en los sectores habilitados (1, 2, 21 y 22 del Anexo I); prohibido usar cebo o cualquier cosa que contamine el agua, navegar, acampar, hacer fuego y bañarse; con bajante, la Autoridad del Agua puede restringir o prohibir la pesca (Res. ADA 395/2017). Cupos, artes y vedas: Ley 11.477. Pejerrey.",
+  "fuente": {
+   "documento": "Resolución ADA 395/2017 (Autoridad del Agua de la Provincia de Buenos Aires, 29/05/2017)",
+   "url": "https://ada.gba.gov.ar/web_doc/dique/RESOL0395-2017.pdf"
+  },
+  "_cut": null
+ },
+ {
+  "id": "lit-iguazu",
+  "jurisdiccion": "Litoral",
+  "agua": "Iguazú",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Misiones"
+  ],
+  "descripcion_tramo_literal": "Río Iguazú inferior (Misiones, frontera con Brasil): desde la salida del Parque Nacional Iguazú, en Puerto Iguazú, hasta la confluencia con el Paraná en la triple frontera; pesca embarcada de dorado (con devolución), surubí, manguruyú y boga. El tramo dentro del Parque Nacional (Cataratas) no está incluido.",
+  "fuente": {
+   "documento": "Descripción del lugar: PESQA (pesqa.ar/lugar/rio-iguazu, 2026-11-24); vedas: Ministerio de Ecología de Misiones"
+  },
+  "_cut": null
  }
 ]

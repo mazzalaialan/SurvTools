@@ -1062,5 +1062,16 @@
  },
  "lit-rio-de-la-plata": {
   "line": "litoral/rio-de-la-plata-costa.json"
+ },
+ "lit-paso-de-las-piedras": {
+  "osm": "relation/13967294"
+ },
+ "lit-iguazu": {
+  "clip": [
+   -54.62,
+   -25.7,
+   -54.53,
+   -25.55
+  ]
  }
 }
