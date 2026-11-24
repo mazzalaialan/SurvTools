@@ -122,6 +122,9 @@ function SpeciesRow({ sp, data, lang, zone }: { sp: FishSpecies; data: FishData;
   );
 }
 
+/** Orden de los peces en un tramo según su regla. */
+const RULE_ORDER = ['forbidden', 'release', 'keep', 'free', 'unknown'] as const;
+
 /** Lista de peces del país. */
 export function FishSpeciesPage() {
   const { t, i18n } = useTranslation();
@@ -407,9 +410,13 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
       )}
       <h2 className="section-title">{t('fishing.speciesHere', { count: s.species.length })}</h2>
       <ul className="list" data-testid="fish-sector-species">
-        {/* En orden alfabético (como la lista de peces). */}
+        {/* Por regla (decisión del dueño): primero los prohibidos o en veda, después los de devolución, los que tienen cupo, los permitidos sin
+            límite y al final los que no tienen regla; dentro de cada grupo, en orden alfabético. */}
         {[...s.species]
           .sort((a, b) => {
+            const ra = RULE_ORDER.indexOf(keepRule(a, s));
+            const rb = RULE_ORDER.indexOf(keepRule(b, s));
+            if (ra !== rb) return ra - rb;
             const na = speciesById(data, a.id);
             const nb = speciesById(data, b.id);
             return (na ? speciesName(na, i18n.language) : a.id).localeCompare(nb ? speciesName(nb, i18n.language) : b.id, i18n.language);
