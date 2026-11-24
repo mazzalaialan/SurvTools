@@ -196,9 +196,13 @@ export function FishPage() {
               <figure className="fish-figure" data-testid="fish-image">
                 <img src={`${import.meta.env.BASE_URL}fish/${sp.image.file}`} alt={speciesName(sp, i18n.language)} loading="lazy" />
                 <figcaption className="muted small">
-                  <a href={sp.image.url} target="_blank" rel="noreferrer">
-                    {sp.image.credit}
-                  </a>{' '}
+                  {sp.image.url ? (
+                    <a href={sp.image.url} target="_blank" rel="noreferrer">
+                      {sp.image.credit}
+                    </a>
+                  ) : (
+                    sp.image.credit
+                  )}{' '}
                   · {sp.image.license}
                 </figcaption>
               </figure>
