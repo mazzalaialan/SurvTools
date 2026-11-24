@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
+import { sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
 /** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
@@ -199,5 +199,30 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
         {p?.date && <p className="small muted">{t('fishing.permit.asOf', { date: p.date })}</p>}
       </div>
     </section>
+  );
+}
+
+/** Elegir la zona (cuenca): por defecto la de tu lugar; se puede cambiar a mano. */
+export function ZonePicker({ data, zone, auto, manual, setZone }: { data: FishData; zone: string | null; auto: string | null; manual: boolean; setZone: (z: string | null) => void }) {
+  const { t, i18n } = useTranslation();
+  const zones = data.zones ?? [];
+  if (zones.length < 2) return null;
+  return (
+    <label className="fish-zone" data-testid="fish-zone">
+      <span>{t('fishing.zone.label')}</span>
+      <select className="input" value={zone ?? ''} onChange={(e) => setZone(e.target.value === auto ? null : e.target.value)}>
+        {zones.map((z) => (
+          <option key={z.id} value={z.id}>
+            {zoneName(z, i18n.language)}
+            {z.id === auto ? ` (${t('fishing.zone.here')})` : ''}
+          </option>
+        ))}
+      </select>
+      {manual && auto && auto !== zone && (
+        <button type="button" className="btn btn-small" onClick={() => setZone(null)}>
+          {t('fishing.zone.useHere')}
+        </button>
+      )}
+    </label>
   );
 }

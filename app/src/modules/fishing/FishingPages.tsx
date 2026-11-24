@@ -1,14 +1,67 @@
+import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { ModuleGrid } from '@/ui/ModuleGrid';
-import { isStale, sectorClosure, sectorSeason, sectorsNear, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
-import { FishDataGate, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules } from './parts';
+import { isStale, sectorClosure, sectorSeason, sectorsInZone, sectorsNear, speciesInZone, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
+import { FishDataGate, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules, ZonePicker } from './parts';
+import { useFishZone } from './useFishZone';
 import { useFishData } from './useFishData';
 
 const NEAR_RADIUS_M = 30_000;
+
+function ZoneControl({ data }: { data: FishData }) {
+  const z = useFishZone(data);
+  return <ZonePicker data={data} {...z} />;
+}
+
+/** Peces de la zona elegida, del que está en más tramos al que menos, con un buscador. */
+function ZoneSpecies({ data, lang }: { data: FishData; lang: string }) {
+  const { t } = useTranslation();
+  const z = useFishZone(data);
+  const [q, setQ] = useState('');
+  const norm = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const list = speciesInZone(data, z.zone).filter((sp) => !q.trim() || norm(`${speciesName(sp, lang)} ${sp.scientific}`).includes(norm(q.trim())));
+  return (
+    <>
+      <ZonePicker data={data} {...z} />
+      <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fishing.searchFish')} aria-label={t('fishing.searchFish')} />
+      <ul className="list" data-testid="fish-species-list">
+        {list.map((sp) => (
+          <SpeciesRow key={sp.id} sp={sp} data={data} lang={lang} zone={z.zone} />
+        ))}
+      </ul>
+    </>
+  );
+}
+
+function ZoneWaters({ data }: { data: FishData }) {
+  const z = useFishZone(data);
+  const zoneData = { ...data, sectors: sectorsInZone(data, z.zone) };
+  return (
+    <>
+      <ZonePicker data={data} {...z} />
+      {waters(zoneData).map((w) => (
+        <section key={w.water} className="stack">
+          <h2 className="section-title">{w.water}</h2>
+          <SectorList data={data} sectors={w.sectors} />
+        </section>
+      ))}
+    </>
+  );
+}
+
+function ZoneRegions({ data, children }: { data: FishData; children: (regions: FishData['regions']) => React.ReactNode }) {
+  const z = useFishZone(data);
+  return (
+    <>
+      <ZonePicker data={data} {...z} />
+      {children(data.regions.filter((r) => !z.zone || r.zone === z.zone))}
+    </>
+  );
+}
 
 /** Portada de Pesca: estado de los datos, botón al mapa y las demás pantallas. */
 export function FishingHomePage() {
@@ -20,6 +73,7 @@ export function FishingHomePage() {
       <FishDataGate state={state}>
         {(data) => (
           <div className="card stack" data-testid="fish-status">
+            <ZoneControl data={data} />
             <p>{t('fishing.status', { season: data.seasonLabel ?? '', species: data.species.length, sectors: data.sectors.length })}</p>
             {isStale(data) && <p className="fish-stale">{t('fishing.stale')}</p>}
             <RulesNotice data={data} />
@@ -34,9 +88,9 @@ export function FishingHomePage() {
   );
 }
 
-function SpeciesRow({ sp, data, lang }: { sp: FishSpecies; data: FishData; lang: string }) {
+function SpeciesRow({ sp, data, lang, zone }: { sp: FishSpecies; data: FishData; lang: string; zone?: string | null }) {
   const { t } = useTranslation();
-  const n = sectorsWithSpecies(data, sp.id).length;
+  const n = sectorsWithSpecies({ ...data, sectors: sectorsInZone(data, zone ?? null) }, sp.id).length;
   return (
     <li>
       <Link className="list-row" to={`/fishing/fish/${sp.id}`}>
@@ -60,13 +114,7 @@ export function FishSpeciesPage() {
       <h1 className="page-title">{t('modules.fishingSpecies.title')}</h1>
       <FishDataGate state={state}>
         {(data) => (
-          <ul className="list" data-testid="fish-species-list">
-            {[...data.species]
-              .sort((a, b) => speciesName(a, i18n.language).localeCompare(speciesName(b, i18n.language), i18n.language))
-              .map((sp) => (
-                <SpeciesRow key={sp.id} sp={sp} data={data} lang={i18n.language} />
-              ))}
-          </ul>
+          <ZoneSpecies data={data} lang={i18n.language} />
         )}
       </FishDataGate>
     </div>
@@ -269,12 +317,7 @@ export function FishWatersPage() {
               <LocateFixed size={20} aria-hidden /> {t('fishing.nearMe')}
             </button>
             {near && <NearSectors data={data} here={fix ? [fix.lon, fix.lat] : null} />}
-            {waters(data).map((w) => (
-              <section key={w.water} className="stack">
-                <h2 className="section-title">{w.water}</h2>
-                <SectorList data={data} sectors={w.sectors} />
-              </section>
-            ))}
+            <ZoneWaters data={data} />
           </>
         )}
       </FishDataGate>
@@ -401,7 +444,9 @@ export function FishRulesPage() {
         {(data) => (
           <>
             <RulesNotice data={data} />
-            {data.regions.map((r) => (
+            <ZoneRegions data={data}>
+              {(regions) =>
+                regions.map((r) => (
               <section key={r.id} className="card stack" data-testid="fish-region">
                 <h2 className="section-title">{r.name}</h2>
                 {r.season && (
@@ -418,7 +463,9 @@ export function FishRulesPage() {
                   </ul>
                 ) : null}
               </section>
-            ))}
+                ))
+              }
+            </ZoneRegions>
             <h2 className="section-title">{t('fishing.sources')}</h2>
             <ul className="list">
               {data.sources.map((s) => (

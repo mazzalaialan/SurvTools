@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { distanceToSector, isStale, seasonStatus, sectorsNear, sectorsWithSpecies, waters, type FishData, type FishSector } from './fishing';
+import { distanceToSector, isStale, seasonStatus, sectorsInZone, sectorsNear, sectorsWithSpecies, speciesClosedUntil, speciesInZone, waters, zoneNear, type FishData, type FishSector } from './fishing';
 
 const sector = (id: string, water: string, coords: [number, number][], species: string[]): FishSector => ({
   id,
@@ -76,5 +76,28 @@ describe('pesca: búsquedas', () => {
   it('avisa con datos de más de un año', () => {
     expect(isStale(data, new Date(2026, 11, 1))).toBe(false);
     expect(isStale(data, new Date(2028, 0, 1))).toBe(true);
+  });
+});
+
+describe('pesca: zonas y vedas por especie', () => {
+  const zoned: FishData = {
+    ...data,
+    zones: [{ id: 'patagonia', name: { es: 'Patagonia' } }, { id: 'litoral', name: { es: 'Litoral' } }],
+    regions: [{ id: 'neuquen', name: 'Neuquén', zone: 'patagonia', source: 'x' }, { id: 'lit-santa-fe', name: 'Santa Fe', zone: 'litoral', source: 'x' }],
+    species: [{ id: 'arcoiris', scientific: '', native: false, name: { es: 'Trucha' } }, { id: 'dorado', scientific: '', native: true, name: { es: 'Dorado' } }],
+    sectors: [...data.sectors, { ...sector('p', 'Río Paraná', [[-60.6, -31.6], [-60.5, -31.8]], ['dorado']), region: 'lit-santa-fe' }],
+  };
+  it('cada zona con sus tramos y sus peces', () => {
+    expect(sectorsInZone(zoned, 'litoral').map((s) => s.id)).toEqual(['p']);
+    expect(speciesInZone(zoned, 'litoral').map((s) => s.id)).toEqual(['dorado']);
+    expect(speciesInZone(zoned, 'patagonia').map((s) => s.id)).toEqual(['arcoiris']);
+  });
+  it('la zona del lugar es la del tramo más cercano', () => {
+    expect(zoneNear(zoned, [-60.52, -31.74])).toBe('litoral');
+    expect(zoneNear(zoned, [-71.1, -39.9])).toBe('patagonia');
+  });
+  it('veda anual de una especie (surubí del 1/11 al 31/12)', () => {
+    expect(speciesClosedUntil({ id: 's', closures: [{ from: '11-01', to: '12-31' }] }, new Date(2026, 10, 24))?.getMonth()).toBe(11);
+    expect(speciesClosedUntil({ id: 's', closures: [{ from: '11-01', to: '12-31' }] }, new Date(2026, 1, 1))).toBeNull();
   });
 });

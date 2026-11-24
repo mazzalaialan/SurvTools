@@ -8,8 +8,9 @@ import { MapView, type ViewState } from '@/modules/maps/MapView';
 import { outlineFeatures } from '@/modules/maps/outline';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { FullscreenStage } from '@/ui/FullscreenStage';
-import { sectorsWithSpecies, speciesById, speciesName, type FishData, type FishSector } from './fishing';
-import { FISH_STYLES, FishDataGate, MAX_FISH, SectorSeasonBadge } from './parts';
+import { sectorsInZone, sectorsWithSpecies, speciesById, speciesInZone, speciesName, type FishData, type FishSector } from './fishing';
+import { useFishZone } from './useFishZone';
+import { FISH_STYLES, FishDataGate, MAX_FISH, SectorSeasonBadge, ZonePicker } from './parts';
 import { useFishData } from './useFishData';
 
 const NONE: never[] = [];
@@ -20,8 +21,19 @@ const FORBIDDEN_COLOR = '#c62828';
 
 type Bounds = [number, number, number, number];
 
+/** Todos los puntos [lon, lat] de una geometría, sea línea, polígono o varios (MultiPolygon de los lagos con islas o en partes). */
+function pointsOf(g: FishSector['geometry']): [number, number][] {
+  const out: [number, number][] = [];
+  const walk = (x: unknown): void => {
+    if (Array.isArray(x) && typeof x[0] === 'number') out.push(x as [number, number]);
+    else if (Array.isArray(x)) x.forEach(walk);
+  };
+  walk(g.coordinates);
+  return out;
+}
+
 function boundsOf(sectors: FishSector[]): Bounds | undefined {
-  const pts = sectors.flatMap((s) => (s.geometry.type === 'LineString' ? s.geometry.coordinates : s.geometry.coordinates.flat()));
+  const pts = sectors.flatMap((s) => pointsOf(s.geometry));
   if (!pts.length) return undefined;
   const lons = pts.map((p) => p[0]);
   const lats = pts.map((p) => p[1]);
@@ -105,8 +117,9 @@ function nameFeatures(sectors: FishSector[]): Feature[] {
   const out: Feature[] = [];
   for (const s of sectors) {
     const g = s.geometry;
-    if (g.type === 'Polygon') {
-      const p = insidePoint(g.coordinates[0] ?? []);
+    if (g.type === 'Polygon' || g.type === 'MultiPolygon') {
+      const ring = g.type === 'Polygon' ? (g.coordinates[0] ?? []) : (g.coordinates[0]?.[0] ?? []);
+      const p = insidePoint(ring);
       if (p) out.push({ type: 'Feature', properties: { water: s.water }, geometry: { type: 'Point', coordinates: p } });
       continue;
     }
@@ -133,6 +146,8 @@ function FishingMap({ data }: { data: FishData }) {
     void loadGeoData().then((geo) => setOutline(outlineFeatures(geo)));
   }, []);
 
+  const z = useFishZone(data);
+  const zoneSectors = useMemo(() => sectorsInZone(data, z.zone), [data, z.zone]);
   const chosen = (params.get('fish') ?? '').split(',').filter((id) => id && speciesById(data, id)).slice(0, MAX_FISH);
   const focus = data.sectors.find((s) => s.id === params.get('sector'));
   const [picked, setPicked] = useState<string[]>(focus ? [focus.id] : []);
@@ -152,10 +167,10 @@ function FishingMap({ data }: { data: FishData }) {
   };
 
   // Con peces elegidos, un color y un trazo por pez; si no, todos los tramos en un color neutro con su número de especies.
-  const shown = useMemo(() => (chosen.length ? [...new Set(chosen.flatMap((id) => sectorsWithSpecies(data, id)))] : data.sectors), [data, chosen.join(',')]);
+  const shown = useMemo(() => (chosen.length ? [...new Set(chosen.flatMap((id) => sectorsWithSpecies(data, id)))] : zoneSectors), [data, chosen.join(','), zoneSectors]);
   const fc = useMemo<FeatureCollection>(() => {
     // En «Todos», los tramos con la pesca prohibida van en rojo (y sin número).
-    if (!chosen.length) return { type: 'FeatureCollection', features: [...data.sectors.map((s) => feature(s, s.closed ? { color: FORBIDDEN_COLOR, dash: 'dot' } : { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })), ...nameFeatures(data.sectors)] };
+    if (!chosen.length) return { type: 'FeatureCollection', features: [...zoneSectors.map((s) => feature(s, s.closed ? { color: FORBIDDEN_COLOR, dash: 'dot' } : { color: ALL_COLOR, dash: 'solid', label: String(s.species.length) })), ...nameFeatures(data.sectors)] };
     return {
       type: 'FeatureCollection',
       // Con varios peces, cada uno corrido unos píxeles (0, +4, −4, +8): en los tramos que comparten se ven todas las líneas.
@@ -164,9 +179,24 @@ function FishingMap({ data }: { data: FishData }) {
   }, [data, chosen.join(',')]);
 
   const [start] = useState<{ view: ViewState; bounds?: Bounds }>(() => {
-    const b = boundsOf(focus ? [focus] : shown) ?? [-72, -46, -66, -36];
+    const b = boundsOf(focus ? [focus] : chosen.length ? shown : zoneSectors) ?? [-72, -46, -66, -36];
     return { view: { lat: (b[1] + b[3]) / 2, lon: (b[0] + b[2]) / 2, zoom: 7 }, bounds: b };
   });
+
+  // Peces de lo que se ve: los que tienen algún tramo dentro del área visible (calculada con el centro y el zoom); los elegidos siempre.
+  const [view, setView] = useState<ViewState>(start.view);
+  const chipSpecies = useMemo(() => {
+    const span = (360 / 2 ** view.zoom) * 2; // ~ 512 px de ancho de mapa
+    const box = [view.lon - span, view.lat - span * 0.9, view.lon + span, view.lat + span * 0.9];
+    const visible = data.sectors.filter((s) => {
+      const b = boundsOf([s]);
+      return b && b[0] <= box[2]! && b[2] >= box[0]! && b[1] <= box[3]! && b[3] >= box[1]!;
+    });
+    const count = (id: string) => visible.filter((s) => s.species.some((x) => x.id === id)).length;
+    const here = data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => count(b.id) - count(a.id));
+    const list = here.length ? here : speciesInZone(data, z.zone);
+    return [...chosen.map((id) => speciesById(data, id)!).filter((sp) => !list.includes(sp)), ...list];
+  }, [data, view.lat, view.lon, view.zoom, z.zone, chosen.join(',')]);
 
   const pickedSectors = picked.map((id) => data.sectors.find((s) => s.id === id)).filter((s): s is FishSector => !!s);
   const title = chosen.length === 1 ? speciesName(speciesById(data, chosen[0]!)!, lang) : null;
@@ -188,7 +218,7 @@ function FishingMap({ data }: { data: FishData }) {
         outline={outline}
         flyTo={null}
         fishing={fc}
-        onMove={() => undefined}
+        onMove={setView}
         onWaypoint={() => undefined}
         onFishingPick={(ids) => {
           setPicked(ids);
@@ -200,7 +230,7 @@ function FishingMap({ data }: { data: FishData }) {
         <button type="button" className="chip" aria-pressed={!chosen.length} onClick={() => setChosen([])}>
           {t('fishing.all')}
         </button>
-        {data.species.map((sp) => {
+        {chipSpecies.map((sp) => {
           const i = chosen.indexOf(sp.id);
           const style = i >= 0 ? FISH_STYLES[i] : undefined;
           return (
@@ -220,6 +250,7 @@ function FishingMap({ data }: { data: FishData }) {
         })}
       </div>
       <div className="card fish-sheet" data-testid="fish-sheet">
+        {!pickedSectors.length && <ZonePicker data={data} {...z} />}
         {pickedSectors.length > 0 ? (
           <>
             <div className="fish-sheet-head">

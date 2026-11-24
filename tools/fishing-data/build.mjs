@@ -290,7 +290,13 @@ for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
 const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => ({ ...sp, ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
 // Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.
-const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', sources: SOURCES, species: used, regions, sectors };
+// Zonas (por cuenca): la app muestra los peces, la normativa y los permisos de la zona donde estás.
+const ZONES = [
+  { id: 'patagonia', name: { es: 'Patagonia', en: 'Patagonia', pt: 'Patagônia' } },
+  { id: 'litoral', name: { es: 'Litoral (Paraná, Uruguay y Delta)', en: 'Litoral (Paraná, Uruguay and Delta)', pt: 'Litoral (Paraná, Uruguai e Delta)' } },
+];
+for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : 'patagonia';
+const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', zones: ZONES.filter((z) => regions.some((r) => r.zone === z.id)), sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);
 console.log(`${sectors.length} tramos, ${used.length} especies → ${OUT} (${Math.round(readFileSync(OUT).length / 1024)} KB)`);

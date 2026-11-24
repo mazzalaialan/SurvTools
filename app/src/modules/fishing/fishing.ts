@@ -86,7 +86,7 @@ export interface FishSector {
   water: string;
   /** Descripción del tramo tal como la da el reglamento («desde … hasta …»). */
   name: string;
-  geometry: { type: 'LineString'; coordinates: [number, number][] } | { type: 'MultiLineString'; coordinates: [number, number][][] } | { type: 'Polygon'; coordinates: [number, number][][] };
+  geometry: { type: 'LineString'; coordinates: [number, number][] } | { type: 'MultiLineString'; coordinates: [number, number][][] } | { type: 'Polygon'; coordinates: [number, number][][] } | { type: 'MultiPolygon'; coordinates: [number, number][][][] };
   season?: Season;
   modality?: Modality[];
   catchAndRelease?: boolean;
@@ -116,9 +116,16 @@ export interface FishPermit {
   price?: string;
 }
 
+export interface FishZone {
+  id: string;
+  name: { es: string; en?: string; pt?: string };
+}
+
 export interface FishRegion {
   id: string;
   name: string;
+  /** Zona (cuenca) a la que pertenece: Patagonia, Litoral… */
+  zone?: string;
   /** Cómo sacar el permiso de pesca: tipos y precios, enlace oficial de compra y otros lugares de venta. */
   permit?: { items: FishPermit[]; extra?: string[]; buyUrl?: string; infoUrl?: string; where?: string; requirements?: string; source?: string; date?: string };
   /** Reglas generales de la jurisdicción (texto del reglamento, resumido). */
@@ -132,6 +139,8 @@ export interface FishData {
   generatedAt: string;
   /** Nombre de la temporada del reglamento (p. ej. «2025/2026»). */
   seasonLabel?: string;
+  /** Zonas por cuenca (la app muestra lo de la zona donde estás). */
+  zones?: FishZone[];
   sources: FishSource[];
   species: FishSpecies[];
   regions: FishRegion[];
@@ -240,6 +249,7 @@ export function waters(data: FishData): { water: string; sectors: FishSector[] }
 
 function lines(g: FishSector['geometry']): [number, number][][] {
   if (g.type === 'LineString') return [g.coordinates];
+  if (g.type === 'MultiPolygon') return g.coordinates.flat();
   return g.coordinates;
 }
 
@@ -271,6 +281,7 @@ function insideRing(p: [number, number], ring: [number, number][]): boolean {
 /** Distancia en metros de un punto (lon, lat) a un tramo (0 si está dentro de un lago). */
 export function distanceToSector(p: [number, number], s: FishSector): number {
   if (s.geometry.type === 'Polygon' && insideRing(p, s.geometry.coordinates[0]!)) return 0;
+  if (s.geometry.type === 'MultiPolygon' && s.geometry.coordinates.some((poly) => insideRing(p, poly[0]!))) return 0;
   let best = Infinity;
   for (const line of lines(s.geometry)) {
     for (let i = 1; i < line.length; i++) best = Math.min(best, pointSegment(p, line[i - 1]!, line[i]!));
@@ -304,3 +315,35 @@ export function sectorsGeoJSON(sectors: FishSector[]): GeoJSON.FeatureCollection
 export function isStale(data: FishData, now: Date = new Date()): boolean {
   return now.getTime() - new Date(data.generatedAt).getTime() > 365 * 86_400_000;
 }
+
+// --- Zonas -----------------------------------------------------------------------------------------------------------------------
+
+/** Zona de un tramo (la de su jurisdicción). */
+export function sectorZone(data: FishData, s: FishSector): string | undefined {
+  return data.regions.find((r) => r.id === s.region)?.zone;
+}
+
+/** Tramos de una zona (sin zona elegida, todos). */
+export function sectorsInZone(data: FishData, zone: string | null): FishSector[] {
+  return zone ? data.sectors.filter((s) => sectorZone(data, s) === zone) : data.sectors;
+}
+
+/** Peces de una zona, del que está en más tramos al que menos. */
+export function speciesInZone(data: FishData, zone: string | null): FishSpecies[] {
+  const sectors = sectorsInZone(data, zone);
+  const count = (id: string) => sectors.filter((s) => s.species.some((x) => x.id === id)).length;
+  return data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => count(b.id) - count(a.id));
+}
+
+/** La zona del tramo más cercano a un punto (lon, lat), o `null` si no hay datos. */
+export function zoneNear(data: FishData, p: [number, number]): string | null {
+  let best: FishSector | null = null;
+  let bd = Infinity;
+  for (const s of data.sectors) {
+    const d = distanceToSector(p, s);
+    if (d < bd) (bd = d), (best = s);
+  }
+  return best ? (sectorZone(data, best) ?? null) : null;
+}
+
+export const zoneName = (z: FishZone, lang: string) => z.name[lang.slice(0, 2) as 'es' | 'en' | 'pt'] ?? z.name.es;
