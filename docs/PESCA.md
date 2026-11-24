@@ -167,3 +167,7 @@ Sumadas las que lista Pesca Continental del MAGyP y faltaban (48 peces en total)
 ## Descarga aparte (2026-11-24)
 
 Decisión del dueño: los datos de pesca son una **descarga aparte** de los del país. Ya no van en `countryFiles`: tienen `fishFiles` y `fishPackState` (`modules/emergency/countryDownload.ts`), `downloadFishPack` y `deleteFishPack` (`countryDelete.ts`) y su estado en `useCountryPackStore` (`fish`, `busyFish`). En Ajustes → País, cada país con paquete de pesca tiene un botón con un pez al costado del de los datos generales (bajar, actualizar o, si está al día, borrar). En la sección Pesca, si no está bajado, se ofrece bajarlo (`FishPackOffer`), y la portada avisa cuando hay una versión nueva. Sin el paquete, la sección no baja nada sola.
+
+## Cuyo (en curso, 2026-11-24)
+
+**Primero Mendoza.** Investigación en `~/vikarg-fishing-work/cuyo/` (fuentes, `ambientes.json` con el formato del patagónico, `reglas_generales.json`, `permisos.json`), guardada a medida que avanza. **Para retomar:** (1) revisar lo que haya en esa carpeta; (2) sumar «Mendoza» a `OWN` en `tools/fishing-data/build.mjs` (fuente, temporada) y su recuadro en `locate.mjs` (`BBOX`, aprox. [-70.6, -37.6, -66.5, -32.0]); (3) `prepare.sh` con ese recuadro en `~/vikarg-fishing-work/osm-cuyo` y `locate.mjs … Mendoza`; (4) permisos a `permits.json`, zona «Cuyo» en `ZONES` del build (las regiones de Mendoza, San Juan y San Luis); (5) vigilancia en `server/src/fishing/watch.ts`. Después, San Juan y San Luis.
