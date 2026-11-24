@@ -6883,6 +6883,18 @@ button.country-pack-del {
 
 /* ---- Pesca (modules/fishing) ---- */
 /* Lista de peces: en el celular una fila con la imagen chica a la izquierda; desde 640 px, cuadrícula de tarjetas con la imagen arriba. */
+.fish-zone-toggle {
+  align-self: flex-start;
+  gap: 4px;
+}
+.fish-zone-open {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.fish-zone-open .fish-zone {
+  flex: 1;
+}
 .fish-grid {
   list-style: none;
   margin: 0;

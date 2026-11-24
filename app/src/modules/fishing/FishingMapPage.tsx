@@ -2,13 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { MapView, type ViewState } from '@/modules/maps/MapView';
 import { outlineFeatures } from '@/modules/maps/outline';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { FullscreenStage } from '@/ui/FullscreenStage';
-import { sectorsInZone, sectorsWithSpecies, speciesById, speciesInZone, speciesName, type FishData, type FishSector } from './fishing';
+import { sectorsInZone, sectorsWithSpecies, speciesById, speciesInZone, speciesName, zoneName, type FishData, type FishSector } from './fishing';
 import { useFishZone } from './useFishZone';
 import { FISH_STYLES, FishDataGate, MAX_FISH, SectorSeasonBadge, ZonePicker } from './parts';
 import { useFishData } from './useFishData';
@@ -152,6 +152,7 @@ function FishingMap({ data }: { data: FishData }) {
   const focus = data.sectors.find((s) => s.id === params.get('sector'));
   const [picked, setPicked] = useState<string[]>(focus ? [focus.id] : []);
   const [listOpen, setListOpen] = useState(false);
+  const [zoneOpen, setZoneOpen] = useState(false);
 
   const setChosen = (ids: string[]) => {
     const next = new URLSearchParams(params);
@@ -265,7 +266,27 @@ function FishingMap({ data }: { data: FishData }) {
         })}
       </div>
       <div className="card fish-sheet" data-testid="fish-sheet">
-        {!pickedSectors.length && <ZonePicker data={data} {...z} />}
+        {/* La zona ocupa lugar sobre el mapa: plegada muestra solo su nombre; se despliega para cambiarla. */}
+        {!pickedSectors.length &&
+          (zoneOpen ? (
+            <div className="fish-zone-open">
+              <ZonePicker
+                data={data}
+                {...z}
+                setZone={(v) => {
+                  z.setZone(v);
+                  setZoneOpen(false);
+                }}
+              />
+              <button className="icon-btn" type="button" aria-label={t('common.close')} onClick={() => setZoneOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+          ) : (data.zones?.length ?? 0) > 1 ? (
+            <button type="button" className="btn btn-small fish-zone-toggle" aria-expanded={false} onClick={() => setZoneOpen(true)} data-testid="fish-zone-toggle">
+              {t('fishing.zone.label')}: {z.zone ? zoneName(data.zones!.find((x) => x.id === z.zone)!, lang) : t('fishing.zone.all')} <ChevronDown size={16} aria-hidden />
+            </button>
+          ) : null)}
         {pickedSectors.length > 0 ? (
           <>
             <div className="fish-sheet-head">
