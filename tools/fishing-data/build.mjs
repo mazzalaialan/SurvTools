@@ -65,6 +65,7 @@ const OWN = {
 const SOURCES = [
   SOURCE,
   ...Object.values(OWN).map((o) => o.source),
+  { id: 'ign', name: 'Ríos que no están en OpenStreetMap (Tierra del Fuego, Santa Cruz): Instituto Geográfico Nacional, capas de hidrografía (WFS)', url: 'https://www.ign.gob.ar/NuestrasActividades/InformacionGeoespacial/CapasSIG', license: 'Sin licencia declarada: se usa con atribución', date: '2026-11-24' },
   { id: 'osm', name: 'Ríos y lagos: © colaboradores de OpenStreetMap', url: 'https://www.openstreetmap.org/copyright', license: 'ODbL 1.0', date: new Date().toISOString().slice(0, 10) },
   { id: 'fishbase', name: 'Dieta de las especies: FishBase (Froese y Pauly)', url: 'https://www.fishbase.se', license: 'CC BY-NC 4.0', date: '2026-11-23' },
 ];

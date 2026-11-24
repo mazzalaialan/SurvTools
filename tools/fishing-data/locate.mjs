@@ -6,7 +6,7 @@
 //
 // Uso: node tools/fishing-data/locate.mjs <carpeta de prepare.sh> <ambientes.json> <jurisdicción> <salida.json>
 // © colaboradores de OpenStreetMap, ODbL.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const [dir, ambientesFile, jurisdiction, outFile] = process.argv.slice(2);
@@ -339,6 +339,23 @@ function segDist(p, a, b) {
 const round = (c) => [Number(c[0].toFixed(5)), Number(c[1].toFixed(5))];
 
 /** Une los tramos de un río en líneas continuas (para «todo el río»). */
+let ignCache;
+/** Líneas de agua del IGN (capas de hidrografía bajadas del WFS; ver tools/fishing-data/README.md). */
+function ignLines() {
+  if (ignCache) return ignCache;
+  const base = process.env.IGN_DIR ?? `${process.env.HOME}/vikarg-fishing-work/ign`;
+  ignCache = [];
+  if (!existsSync(base)) return ignCache;
+  for (const f of readdirSync(base).filter((x) => x.startsWith('lineas'))) {
+    for (const feat of JSON.parse(readFileSync(`${base}/${f}`, 'utf8')).features ?? []) {
+      const g = feat.geometry;
+      if (!g) continue;
+      for (const c of g.type === 'MultiLineString' ? g.coordinates : [g.coordinates]) ignCache.push({ properties: feat.properties, coords: c });
+    }
+  }
+  return ignCache;
+}
+
 function mergeWays(ways) {
   // Se unen en cadenas largas los pedazos que comparten un extremo: de lejos el mapa descarta las líneas de menos de un píxel, y un
   // río patagónico son cientos de pedazos cortos (no se veía con la provincia entera a la vista).
@@ -405,11 +422,14 @@ for (const a of ambientes) {
         }
         return ins;
       };
-      let hit = allWater.find((f) => ringsOf(f.geometry).slice(0, 1).some(inside));
-      if (!hit) {
+      // «riverWater»: la laguna está cargada en OSM como agua de río (laguna Setúbal: natural=water, water=river).
+      const pool = cut.riverWater ? readSeq('lakes').filter((f) => /Polygon/.test(f.geometry.type)) : allWater;
+      // «point»: no buscar el agua (la laguna es chica y el punto cae junto a un lago grande, como Los Juncos junto al Buenos Aires).
+      let hit = cut.point ? undefined : pool.find((f) => ringsOf(f.geometry).slice(0, 1).some(inside));
+      if (!hit && !cut.point) {
         // El más cercano a menos de 800 m (la coordenada de una fuente puede caer en la orilla).
         let bd = 800;
-        for (const f of allWater) for (const r of ringsOf(f.geometry)) for (const c of r) { const d = dist(c, p); if (d < bd) (bd = d), (hit = f); }
+        for (const f of pool) for (const r of ringsOf(f.geometry)) for (const c of r) { const d = dist(c, p); if (d < bd) (bd = d), (hit = f); }
       }
       if (hit) {
         const polys = hit.geometry.type === 'Polygon' ? [hit.geometry.coordinates] : hit.geometry.coordinates;
@@ -421,6 +441,20 @@ for (const a of ambientes) {
       }
       report.ok.push(a.id);
       continue;
+    }
+    // Ríos que OSM no tiene pero sí las cartas del IGN (WFS de hidrografía, ~/vikarg-fishing-work/ign/): se toma el cauce del IGN
+    // con ese nombre cerca de la coordenada («ign»: { name, near: [lon, lat], km }).
+    if (cut?.ign) {
+      const { name, near, km = 40 } = cut.ign;
+      const names = [name].flat();
+      const lines = ignLines().filter((f) => names.includes(f.properties.fna) && f.coords.some((c) => dist(c, near) < km * 1000));
+      if (lines.length) {
+        const chains = mergeWays(lines.map((f) => ({ geometry: { type: 'LineString', coordinates: f.coords } })));
+        const parts = chains.map((c) => simplify(c, 40).map(round)).filter((c) => c.length > 1);
+        out[a.id] = { geometry: parts.length === 1 ? { type: 'LineString', coordinates: parts[0] } : { type: 'MultiLineString', coordinates: parts }, how: `cauce del IGN («${name}»)`, ign: true };
+        report.ok.push(a.id);
+        continue;
+      }
     }
     if (cut?.path) {
       const [pa, pb] = cut.path;

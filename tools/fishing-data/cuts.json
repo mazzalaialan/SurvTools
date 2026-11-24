@@ -723,5 +723,201 @@
     "limit": 1
    }
   }
+ },
+ "lit-setubal": {
+  "at": [
+   -60.64,
+   -31.584
+  ],
+  "riverWater": true
+ },
+ "neuquen-verde-selva-triste-laguna": {
+  "at": [
+   -71.6615,
+   -40.7745
+  ]
+ },
+ "apn-colehual-rio": {
+  "path": [
+   [
+    -71.6843,
+    -42.6786
+   ],
+   [
+    -71.6998,
+    -42.6742
+   ]
+  ],
+  "approx": "arroyo Calihuel en el mapa base: equivalencia de nombre deducida (el reglamento usa otra grafía): confirmar"
+ },
+ "apn-llodconto-arroyo": {
+  "at": [
+   -71.5622,
+   -41.3607
+  ],
+  "approx": "junto al puente de la RP81; el arroyo no está dibujado en el mapa base"
+ },
+ "santa-cruz-olnie-i-lago": {
+  "at": [
+   -71.54491,
+   -47.76366
+  ]
+ },
+ "santa-cruz-jeinimeni-rio": {
+  "name": "Río Jeinemeni"
+ },
+ "santa-cruz-peloue-rio": {
+  "ign": {
+   "name": "Río Pelque",
+   "near": [
+    -71.3521,
+    -50.7931
+   ],
+   "km": 60
+  },
+  "approx": "río Pelque de las cartas del IGN: equivalencia de nombre deducida (el reglamento usa otra grafía): confirmar"
+ },
+ "santa-cruz-los-juncos-laguna": {
+  "at": [
+   -71.6135,
+   -46.5379
+  ],
+  "approx": "Reserva Natural Urbana Laguna de Los Juncos (Los Antiguos); ubicada por un punto",
+  "point": true
+ },
+ "tdf-claro-rio": {
+  "path": [
+   [
+    -67.9067,
+    -54.4236
+   ],
+   [
+    -67.8847,
+    -54.4322
+   ]
+  ]
+ },
+ "tdf-candelaria-rio": {
+  "ign": {
+   "name": [
+    "Río Candelaria",
+    "Río La Candelaria",
+    "Río de la Candelaria"
+   ],
+   "near": [
+    -67.8251,
+    -53.95223
+   ],
+   "km": 40
+  }
+ },
+ "tdf-herminita-rio": {
+  "ign": {
+   "name": "Río Herminita",
+   "near": [
+    -68.44852,
+    -53.83511
+   ],
+   "km": 30
+  }
+ },
+ "tdf-moneta-rio": {
+  "ign": {
+   "name": "Río Moneta",
+   "near": [
+    -68.39948,
+    -53.77946
+   ],
+   "km": 40
+  }
+ },
+ "tdf-ona-rio": {
+  "ign": {
+   "name": "Río Ona",
+   "near": [
+    -68.07161,
+    -54.23734
+   ],
+   "km": 20
+  }
+ },
+ "tdf-menendez-rio": {
+  "ign": {
+   "name": "Río de las Turbas o Menéndez",
+   "near": [
+    -68.40346,
+    -54.16949
+   ],
+   "km": 40
+  }
+ },
+ "tdf-turbio-rio": {
+  "ign": {
+   "name": "Río Turbio",
+   "near": [
+    -67.18902,
+    -54.53963
+   ],
+   "km": 20
+  }
+ },
+ "tdf-tuerto-rio": {
+  "ign": {
+   "name": "Arroyo Tuerto",
+   "near": [
+    -67.44427,
+    -54.64
+   ],
+   "km": 15
+  }
+ },
+ "tdf-yakush-lago": {
+  "at": [
+   -67.73153,
+   -54.46873
+  ]
+ },
+ "tdf-hantuk-laguna": {
+  "at": [
+   -67.35054,
+   -54.40057
+  ]
+ },
+ "tdf-margarita-laguna": {
+  "at": [
+   -67.99011,
+   -54.62982
+  ]
+ },
+ "tdf-san-luis-laguna": {
+  "at": [
+   -67.62879,
+   -53.92229
+  ]
+ },
+ "tdf-negra-laguna": {
+  "at": [
+   -67.2931,
+   -54.5263
+  ]
+ },
+ "tdf-varela-laguna": {
+  "at": [
+   -67.2508,
+   -54.5157
+  ]
+ },
+ "tdf-la-union-rio": {
+  "path": [
+   [
+    -67.60021,
+    -54.39441
+   ],
+   [
+    -67.71261,
+    -54.4215
+   ]
+  ],
+  "approx": "une los lagos Chepelmut y Yehuin; el río no está dibujado en el mapa base"
  }
 }
