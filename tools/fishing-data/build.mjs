@@ -198,7 +198,7 @@ for (const jur of jurs.split(',')) {
       ...(p.inferred && { speciesInferred: true }),
       species: p.species,
       notes: [general?.descripcion_tramo_literal, a.descripcion_tramo_literal].filter(Boolean).map((x) => x.replace(/^[\s-]+/, '')).join(' — '),
-      ...(cuts[a.id]?.approx && { approx: cuts[a.id].approx }),
+      ...((cuts[a.id]?.approx || g.approxPoint) && { approx: cuts[a.id]?.approx ?? 'ubicado por coordenada; el agua no está dibujada en el mapa base' }),
       source: SOURCE.id,
       ref: `pág. ${a.fuente?.pagina_impresa ?? '?'}`,
       _shared: !!a.compartido_con,

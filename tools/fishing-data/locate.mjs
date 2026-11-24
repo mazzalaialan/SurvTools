@@ -60,6 +60,9 @@ const lakes = readSeq('lakes').filter(
     ringsOf(f.geometry).some((r) => r.some(inBox)),
 );
 const dams = readSeq('dams');
+// Para los ambientes que OSM no tiene con nombre: todos los cuerpos de agua y cauces, con o sin nombre (se ubican por coordenada).
+const allWater = readSeq('lakes').filter((f) => /Polygon/.test(f.geometry.type) && !RIVER_WATER.test(f.properties.water ?? '') && ringsOf(f.geometry).some((r) => r.some(inBox)));
+const allRivers = readSeq('rivers').filter((f) => f.geometry.type === 'LineString' && f.geometry.coordinates.some(inBox));
 const places = readSeq('places').filter((f) => f.properties.name);
 const bridges = readSeq('bridges').filter((f) => f.geometry.type === 'LineString' && f.geometry.coordinates.some(inBox));
 
@@ -339,6 +342,48 @@ for (const a of ambientes) {
   const cut = cuts[a.id];
   if (cut?.skip) continue;
   try {
+    // Ubicado a mano por coordenada (ver coordenadas.json del investigador, copiado a cuts.json).
+    if (cut?.at) {
+      const p = cut.at;
+      const inside = (ring) => {
+        let ins = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+          const [xi, yi] = ring[i], [xj, yj] = ring[j];
+          if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) ins = !ins;
+        }
+        return ins;
+      };
+      let hit = allWater.find((f) => ringsOf(f.geometry).slice(0, 1).some(inside));
+      if (!hit) {
+        // El más cercano a menos de 800 m (la coordenada de una fuente puede caer en la orilla).
+        let bd = 800;
+        for (const f of allWater) for (const r of ringsOf(f.geometry)) for (const c of r) { const d = dist(c, p); if (d < bd) (bd = d), (hit = f); }
+      }
+      if (hit) {
+        const polys = hit.geometry.type === 'Polygon' ? [hit.geometry.coordinates] : hit.geometry.coordinates;
+        out[a.id] = { geometry: { type: 'Polygon', coordinates: [simplify(polys[0][0], 40).map(round)] }, how: 'coordenada: cuerpo de agua de OSM' };
+      } else {
+        // Sin el agua en el mapa: un círculo de ~300 m alrededor de la coordenada, marcado como aproximado.
+        const ring = Array.from({ length: 13 }, (_, i) => { const t = (i / 12) * 2 * Math.PI; return round([p[0] + (0.0027 / Math.cos(rad(p[1]))) * Math.cos(t), p[1] + 0.0027 * Math.sin(t)]); });
+        out[a.id] = { geometry: { type: 'Polygon', coordinates: [ring] }, how: 'coordenada (sin el agua en OSM)', approxPoint: true };
+      }
+      report.ok.push(a.id);
+      continue;
+    }
+    if (cut?.path) {
+      const [pa, pb] = cut.path;
+      const box2 = [Math.min(pa[0], pb[0]) - 0.08, Math.min(pa[1], pb[1]) - 0.06, Math.max(pa[0], pb[0]) + 0.08, Math.max(pa[1], pb[1]) + 0.06];
+      const near = allRivers.filter((w) => w.geometry.coordinates.some(([x, y]) => x >= box2[0] && x <= box2[2] && y >= box2[1] && y <= box2[3]));
+      const nodes = graphOf(near);
+      const A = nearestNode(nodes, pa);
+      const B = nearestNode(nodes, pb);
+      const path = A.d < 1500 && B.d < 1500 ? pathBetween(nodes, A.key, B.key) : null;
+      out[a.id] = path && path.length > 1
+        ? { geometry: { type: 'LineString', coordinates: simplify(path, 40).map(round) }, how: 'coordenadas: cauce de OSM entre los dos puntos' }
+        : { geometry: { type: 'LineString', coordinates: [round(pa), round(pb)] }, how: 'coordenadas (línea recta: sin el cauce en OSM)', approxPoint: true };
+      report.cut.push(`${a.id}: ${out[a.id].how}`);
+      continue;
+    }
     if (isLake) {
       const lk = keys.map((k) => byName(lakes, k)).find((l) => l.length) ?? [];
       if (!lk.length) {
