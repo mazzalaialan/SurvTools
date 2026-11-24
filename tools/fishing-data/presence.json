@@ -1,0 +1,74 @@
+{
+ "_": "Dónde está cada pez que ninguna norma nombra (investigación del 2026-11-24: MAGyP, FishBase, guía del PN Pre-Delta). rivers: ríos del Litoral, Delta y Río de la Plata; lakes: lagunas; waters: solo en las aguas cuyo nombre contiene alguno de estos.",
+ "anchoa-de-rio": {
+  "rivers": true,
+  "lakes": false
+ },
+ "morena": {
+  "rivers": true,
+  "lakes": true
+ },
+ "banderita": {
+  "rivers": true,
+  "lakes": false
+ },
+ "sabalito": {
+  "rivers": true,
+  "lakes": true
+ },
+ "cucharon": {
+  "rivers": true,
+  "lakes": false
+ },
+ "chanchita": {
+  "rivers": true,
+  "lakes": true
+ },
+ "dientudo-jorobado": {
+  "rivers": true,
+  "lakes": false
+ },
+ "tachuela": {
+  "rivers": true,
+  "lakes": true
+ },
+ "lisa": {
+  "rivers": true,
+  "lakes": false,
+  "waters": [
+   "Paraná de las Palmas",
+   "Paraná Guazú"
+  ]
+ },
+ "manduba": {
+  "rivers": true,
+  "lakes": false
+ },
+ "vieja-de-agua": {
+  "rivers": true,
+  "lakes": true
+ },
+ "vieja-de-latigo": {
+  "rivers": true,
+  "lakes": false
+ },
+ "carpa-cabezona": {
+  "rivers": true,
+  "lakes": false,
+  "waters": [
+   "Uruguay",
+   "Paraná"
+  ]
+ },
+ "carpa-plateada": {
+  "rivers": true,
+  "lakes": false,
+  "waters": [
+   "Uruguay"
+  ]
+ },
+ "pirana": {
+  "rivers": true,
+  "lakes": true
+ }
+}

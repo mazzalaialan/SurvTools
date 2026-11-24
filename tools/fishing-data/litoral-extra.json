@@ -1,5 +1,5 @@
 {
- "_": "Peces del Litoral cargados a mano (no estaban en la investigación). Ficha propia según FishBase (Synbranchus marmoratus) y conocimiento general; confianza media. Corvina de río, bagre negro y róbalo patagónico: investigación del 2026-11-24 (FishBase, MAGyP, UNaM, INALI, prensa y revistas de pesca; fuentes y confianza en cada dato).",
+ "_": "Peces del Litoral cargados a mano (no estaban en la investigación). Ficha propia según FishBase (Synbranchus marmoratus) y conocimiento general; confianza media. Corvina de río, bagre negro y róbalo patagónico: investigación del 2026-11-24 (FishBase, MAGyP, UNaM, INALI, prensa y revistas de pesca; fuentes y confianza en cada dato). Especies del MAGyP (Pesca Continental, fichas por especie) sumadas el 2026-11-24, con FishBase y la guía del PN Pre-Delta (APN 2015): fuentes y confianza en cada dato.",
  "especies": [
   {
    "id": "anguila",
@@ -476,6 +476,1664 @@
     "nota": "Hay que mirar el encabezado de la tabla de IT 62 antes de usar las otras provincias."
    },
    "imagen_id": "virreyna"
+  },
+  {
+   "id": "anchoa-de-rio",
+   "nombre": {
+    "es": "Anchoa de río",
+    "en": "River anchovy (Atlantic sabretooth anchovy)",
+    "pt": "Sardinha-de-rio (sin nombre portugués confirmado)"
+   },
+   "otros_nombres": [
+    "sardina"
+   ],
+   "cientifico": "Lycengraulis grossidens",
+   "familia": "Engraulidae",
+   "origen": {
+    "valor": "nativa (migradora entre el mar y la cuenca del Plata; hay poblaciones residentes de agua dulce)",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 25 cm (MAGyP); FishBase da 23 cm; el Pre-Delta, unos 20 cm.",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Carnívora, sobre todo de peces: mojarras, juveniles de otros peces, camarones, copépodos y larvas de insectos. Desde los 6 cm come plancton, crustáceos e insectos.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No es pez de caña: el MAGyP dice que se pesca con redes (de arrastre en la costa bonaerense y agalleras en los ríos). No se encontró carnada."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró ningún reporte de señuelo o mosca."
+   },
+   "epoca": {
+    "valor": "El MAGyP la da «en abundancia entre diciembre y mayo» en el litoral marino bonaerense; el Pre-Delta dice que de diciembre a mayo está en el mar y desde mayo remonta el Río de la Plata y sube por el Paraná y el Uruguay a desovar; en el Pre-Delta se la ve con correntada desde el invierno hasta la primavera.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Las dos fuentes describen la misma migración con meses compatibles."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "ninguno",
+     "texto": "Inofensiva. Pez chico y blando."
+    },
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Sin fuente explícita sobre peligro: se deduce del tamaño y la dieta."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "No se usa como carnada en las fuentes leídas (el MAGyP no lo dice); es presa de peces predadores."
+    ],
+    "tip": "Pez chico (≤25 cm) de cardumen que sube por el Paraná y el Uruguay desde mayo, sobre todo en zonas de correntada. Con lo mínimo: red de mano, mosquitero o tela fina arrastrada en la orilla (así la capturan, a gran escala, con redes). Se come entera, frita o a las brasas. No se encontró dato de que pique con anzuelo.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "El método de lo mínimo es inferencia a partir de las artes comerciales que cita el MAGyP."
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Cuenca del Plata (Paraguay, Paraná, Uruguay y Río de la Plata) y el litoral marino bonaerense; hacia el sur llega al río Negro (Carmen de Patagones, 41° S). FishBase: el Paraná hasta cerca de Corrientes.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "No se cargó «patagonia»: el límite sur es la desembocadura del río Negro (Carmen de Patagones), no los ríos y lagos de pesca deportiva patagónicos."
+   },
+   "normativa_nota": {
+    "valor": "Sin veda ni talla en las fichas leídas. Verificar por provincia.",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "imagen_id": "anchoa-de-rio"
+  },
+  {
+   "id": "morena",
+   "nombre": {
+    "es": "Morena",
+    "en": "Knifefish (banded/ spotted knifefish)",
+    "pt": "Tuvira (Gymnotus; sin nombre portugués confirmado para esta especie)"
+   },
+   "otros_nombres": [
+    "carapo",
+    "morena pintada"
+   ],
+   "cientifico": "Gymnotus carapo (MAGyP) / Gymnotus inaequilabiatus (Pre-Delta)",
+   "cientifico_alternativo": "La guía del Pre-Delta (2015) llama a la morena del Paraná Gymnotus inaequilabiatus; el MAGyP y FishBase usan G. carapo. Es un complejo de especies: no está resuelto cuál es la correcta para la carnada del litoral.",
+   "familia": "Gymnotidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Puede superar el metro (MAGyP); FishBase: 76 cm y 1,2 kg para G. carapo; el Pre-Delta muestra un adulto de 70 cm.",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Carnívora: juveniles comen crustáceos chicos e insectos; adultos, crustáceos mayores y peces. Se alimenta de noche (gusanos, larvas de libélula, camarones, peces chicos como mojarritas, algo de vegetales). En el Iberá, de unos 25 cm comían larvas de escarabajos acuáticos; de 50 cm, peces.",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No hay reportes de pesca de la morena como pez blanco. El MAGyP la da como pez de carnada y ornamental."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "Se reproduce en primavera (Pre-Delta); en Brasil, especies afines desovan de noviembre a marzo con puestas múltiples.",
+    "fuentes": [
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": "Nocturna: de día se esconde bajo vegetación flotante (camalotes) y sale de noche (Pre-Delta, FishBase).",
+    "fuentes": [
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Sin riesgo serio para las personas (pez de hasta 1 m, emite pulsos eléctricos de comunicación, no descargas fuertes según las fuentes). FishBase la marca como «agresiva» entre peces. Es resbalosa: agarrala con un trapo; puede morder."
+    },
+    "fuentes": [
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Lo de morder y el trapo es precaución mía; las fuentes no hablan de mordeduras a personas."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Es una de las mejores CARNADAS VIVAS: Careca Pesca la recomienda para surubí, dorado, patí y dientudo.",
+     "Se pesca de noche con lombriz o trozo de carne en pozos y debajo de los camalotes (inferencia; no hay fuente de la técnica)."
+    ],
+    "tip": "Pez de carnada (MAGyP: «se la captura como ornamental y como carnada para la pesca deportiva»). Los indígenas la comen (MAGyP). Tolera bajas de oxígeno y respira aire, aguanta viva horas en un balde con poca agua, buena para llevarla de carnada. De día está bajo los camalotes, de noche sale a comer: ahí es más fácil de agarrar. Usala viva, enganchada por el labio o la parte de adelante del cuerpo.",
+    "fuentes": [
+     "magyp",
+     "careca-2025",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Que sirve de carnada: confirmado por 2 fuentes (MAGyP y Careca). La técnica de captura con lo mínimo es inferencia."
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "lagunas_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Ríos Paraguay, Paraná, Iguazú, Uruguay y esteros formoseños (MAGyP); el Pre-Delta la cita en arroyos, lagunas y riachos del Paraná medio y en el Iberá; el MAGyP incluye el Río de la Plata.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó la norma de carnada viva por provincia."
+   },
+   "imagen_id": "morena"
+  },
+  {
+   "id": "banderita",
+   "nombre": {
+    "es": "Banderita",
+    "en": "Glass knifefish",
+    "pt": "Sarapó (Eigenmannia; sin nombre portugués confirmado para esta especie)"
+   },
+   "otros_nombres": [
+    "ratona",
+    "pez espada",
+    "señorita",
+    "charuto",
+    "morenita",
+    "machete"
+   ],
+   "cientifico": "Eigenmannia virescens",
+   "cientifico_alternativo": "La guía del Pre-Delta registra para el Paraná medio a Eigenmannia trilineata («ratona, banderita, señorita», hasta 40 cm): puede ser la especie real en parte del litoral.",
+   "familia": "Sternopygidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Más de 40 cm (MAGyP); FishBase: 44 cm los machos (hasta 113 g), las hembras unos 20 cm.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Crustáceos chicos e insectos.",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "oficial"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se pesca como pez blanco."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "horario": {
+    "valor": "Nocturna, gregaria y tímida; prefiere aguas quietas y profundas y arroyos con fondo de restos vegetales.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "ninguno",
+     "texto": "Inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Se usa ella misma como carnada."
+    ],
+    "tip": "Pez de carnada: el MAGyP dice que «se captura para utilizarlo como carnada en la pesca comercial y deportiva, donde es ampliamente requerido». Es blanda y tímida, vive de día entre la vegetación y los troncos y sale de noche; se agarra con red de mano o trampa de botella cerca de la costa (inferencia). Poca carne.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Que es carnada: oficial (MAGyP). Careca Pesca no la lista."
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Cuenca del Plata: Paraguay, Pilcomayo, Paraná, Uruguay y Río de la Plata; también la cuenca del Salí-Dulce (MAGyP).",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "sin_confirmar": [
+     "lagunas_litoral"
+    ],
+    "nota": "FishBase la cita en lagunas (ponds) y arroyos, sin ubicarlas."
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "banderita"
+  },
+  {
+   "id": "sabalito",
+   "nombre": {
+    "es": "Sabalito",
+    "en": "Curimatid (sabalito)",
+    "pt": "Biru (sin confirmar)"
+   },
+   "otros_nombres": [
+    "huevada"
+   ],
+   "cientifico": "Cyphocharax voga",
+   "familia": "Curimatidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Alrededor de 20 cm (MAGyP, Pre-Delta); FishBase: 26 cm.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Detritívoro y de algas (clorofitas, diatomeas); los juveniles hasta los 40-50 días comen plancton.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se pesca como pez blanco: se usa solo de carnada (MAGyP)."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No aplica."
+   },
+   "epoca": {
+    "valor": "Se reproduce de diciembre a enero (MAGyP); en la laguna de Chascomús y en ambientes ligados al Río de la Plata hay ejemplares maduros todo el año, con más en primavera y fines de verano (Pre-Delta).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Las fuentes difieren: reproducción en dic-ene (MAGyP) contra maduración todo el año con pico en primavera-verano (Pre-Delta)."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "ninguno",
+     "texto": "Inofensivo."
+    },
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Se usa como carnada viva para corvina de río, y es carnada típica de pesca grande (Careca Pesca: corvina de río «mojarras, sabalitos»)."
+    ],
+    "tip": "MAGyP: «se utiliza solamente como carnada». Muy resistente a la contaminación y de aguas turbias (MAGyP), así que aguanta en un balde. Detritívoro de boca chica: no pica a un cebo grande; se pesca con red de mano o tela fina, o con anzuelo muy chico y masa (inferencia). Como alimento hay poca información; es un pez chico de 20 cm.",
+    "fuentes": [
+     "magyp",
+     "careca-2025"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Es carnada: confirmado por MAGyP y Careca. El método de captura es inferencia."
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata",
+     "lagunas_litoral"
+    ],
+    "detalle": "Paraguay, Paraná, Uruguay, Río de la Plata y cuenca del Salado (Buenos Aires), ríos Segundo y Saladillo (Córdoba) (MAGyP); laguna de Chascomús (Pre-Delta); FishBase: lagunas costeras de Rio Grande do Sul y Uruguay, Buenos Aires y el Plata.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "sabalito"
+  },
+  {
+   "id": "cucharon",
+   "nombre": {
+    "es": "Cucharón",
+    "en": "Duckbill catfish (shovelnose catfish)",
+    "pt": "Bico-de-pato"
+   },
+   "otros_nombres": [
+    "bagre cucharón",
+    "mandubé cucharón",
+    "pico de pato",
+    "patí zapatilla"
+   ],
+   "cientifico": "Sorubim lima",
+   "familia": "Pimelodidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Unos 40 cm (MAGyP); FishBase: 54 cm.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Peces y crustáceos. Los juveniles cazan de noche insectos que caen al agua (efímeras) junto con apretadores y bagres amarillos.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró carnada recomendada para el cucharón. Por su dieta (peces y crustáceos), un pececito o camarón sería lo lógico (inferencia)."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "En el Pre-Delta se vieron crías de enero a abril de 2007; los juveniles cazan en las noches de calor.",
+    "fuentes": [
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": "Principalmente nocturno (FishBase, Pre-Delta).",
+    "fuentes": [
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Como los demás pimelódidos, tiene espinas pectorales y dorsal: agarralo con cuidado."
+    },
+    "fuentes": [],
+    "confianza": "sin confirmar",
+    "nota": "Precaución general mía; las fuentes leídas no lo dicen de esta especie."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Pececitos (mojarra, sabalito) o camarón, de noche (inferencia por su dieta)"
+    ],
+    "tip": "El MAGyP lo da para consumo y como ornamental, y el Pre-Delta dice que los pobladores lo comen por la calidad de su carne. Es nocturno: línea de mano con pececito vivo al anochecer, en remansos de arroyos y riachos.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Paraguay, Pilcomayo, Paraná, Uruguay y Río de la Plata (MAGyP, Pre-Delta); arroyos y riachos del Paraná medio.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "cucharon"
+  },
+  {
+   "id": "chanchita",
+   "nombre": {
+    "es": "Chanchita (San Pedro)",
+    "en": "Cichlid (Gymnogeophagus australis; sin nombre inglés estándar)",
+    "pt": "Cará (sin nombre portugués confirmado)"
+   },
+   "otros_nombres": [
+    "San Pedro"
+   ],
+   "cientifico": "Gymnogeophagus australis",
+   "familia": "Cichlidae",
+   "aviso_confusion": "En el habla común «chanchita» es casi siempre Australoheros facetus (el pez de acuario, 20 cm, muy común en lagunas y arroyos de Buenos Aires y el Litoral; el Pre-Delta le da «chanchita»). El MAGyP usa «chanchita / San Pedro» para Gymnogeophagus australis, otro cíclido distinto, de 10 cm. Si se carga una sola ficha, conviene decidir cuál; esta sigue al MAGyP. (Pre-Delta también llama «chanchita» a Gymnogeophagus balzanii).",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 10 cm (MAGyP); FishBase: 15,5 cm.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Contradicción menor: 10 cm contra 15,5 cm."
+   },
+   "dieta": {
+    "valor": "Crustáceos e insectos acuáticos.",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "oficial"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se pesca con caña; es un pez de acuario."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No aplica."
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "ninguno",
+     "texto": "Inofensiva."
+    },
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "Demasiado chica (10 cm) para comer; se captura para el comercio de ornamentales (se exportó en 2003, MAGyP). Podría servir de carnada chica, pero no hay fuente. No es especie para supervivencia.",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "lagunas_litoral"
+    ],
+    "detalle": "Río Uruguay medio y lagunas de Santa Fe y Buenos Aires (MAGyP).",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "oficial",
+    "sin_confirmar": [
+     "rio_de_la_plata"
+    ],
+    "nota": "FishBase: cuenca baja del Paraná (Argentina) y bajo Uruguay (Uruguay); no nombra el Río de la Plata."
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "chanchita"
+  },
+  {
+   "id": "dientudo-jorobado",
+   "nombre": {
+    "es": "Dientudo jorobado",
+    "en": "Toothed characin (sin nombre inglés estándar)",
+    "pt": "Dentudo (sin nombre portugués confirmado)"
+   },
+   "otros_nombres": [
+    "mojarra perro",
+    "perro blanco",
+    "dientudo",
+    "pez perro"
+   ],
+   "cientifico": "Cynopotamus argenteus",
+   "cientifico_alternativo": "El Pre-Delta (2015) registra Cynopotamus kincaidi («dientudo, pez perro») en el Paraná medio; no es seguro que la de MAGyP sea la misma.",
+   "familia": "Characidae",
+   "origen": {
+    "valor": "nativa (Paraguay, bajo Paraná y Uruguay)",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 30 cm (MAGyP); FishBase: 29,5 cm.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Pececitos y crustáceos.",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "oficial",
+    "nota": "Para C. kincaidi, el Pre-Delta dice que come sobre todo otros peces."
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No es objeto de pesca (MAGyP)."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Dientes grandes y filosos al frente de la boca (por eso su nombre): al sacarlo del anzuelo, no metas los dedos en la boca."
+    },
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Lo de los dientes sale del nombre y de las láminas; ninguna fuente leída habla de mordeduras."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Se usa ELLA de carnada viva (para chafalote y pira-pitá; Careca: dientudo «ideal para usar como carnada viva»)."
+    ],
+    "tip": "MAGyP: «se la utiliza como carnada». Como pez de carnada tiene mucho valor porque es carnívoro (los grandes predadores le responden). Se captura con anzuelo chico y lombriz, morena o trocitos (Careca: dientudo «lombriz, morena, panzudo»). Son 30 cm de pez, comestible entero pero sin dato de calidad.",
+    "fuentes": [
+     "magyp",
+     "careca-2025"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Careca habla de «dientudo» en general, sin especie."
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Paraguay, Paraná, Uruguay y Río de la Plata (MAGyP); FishBase: Paraguay, bajo Paraná y Uruguay.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "dientudo-jorobado"
+  },
+  {
+   "id": "tachuela",
+   "nombre": {
+    "es": "Tachuela",
+    "en": "Peppered corydoras (peppered cory)",
+    "pt": "Limpa-fundo (sin confirmar)"
+   },
+   "otros_nombres": [
+    "coridora",
+    "corydora",
+    "basurero",
+    "barriga de fuego",
+    "amarillito",
+    "limpia fondo"
+   ],
+   "cientifico": "Corydoras paleatus",
+   "familia": "Callichthyidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "No pasa los 8 cm (MAGyP); FishBase: 6,6 cm y 11 g.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Detritus; FishBase suma gusanos, crustáceos, insectos y plantas.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se pesca con caña."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No aplica."
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró época de pesca."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Tiene espinas filosas en la dorsal y las pectorales: pueden pinchar al agarrarla."
+    },
+    "fuentes": [],
+    "confianza": "sin confirmar",
+    "nota": "Dato general sobre coridoras; las fuentes leídas no lo dicen."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "Muy chica (6-8 cm): no vale como comida ni como carnada. Se captura en cantidad para ornamentales (exportada en 2003, MAGyP). Respira aire (FishBase, Pre-Delta), así que sobrevive fuera del agua un rato. Útil solo como indicador: donde hay tachuelas hay arroyos o lagunas de fondo blando.",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "lagunas_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Cuenca del Plata (Paraguay, Uruguay, Paraná y ambientes relacionados), arroyos, lagunas y ríos de Buenos Aires (MAGyP); el Pre-Delta la da en las cuencas del Paraná, Uruguay y Plata y en los arroyos atlánticos bonaerenses.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "sin_confirmar": [
+     "patagonia"
+    ],
+    "nota": "El Pre-Delta cita un registro en el río Limay (Baigún et al. 2002, Neuquén) como «el más al sur»: es un registro aislado; no se carga como zona habitual."
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "tachuela"
+  },
+  {
+   "id": "lisa",
+   "nombre": {
+    "es": "Lisa",
+    "en": "Mullet (lebranche / parati mullet)",
+    "pt": "Tainha"
+   },
+   "otros_nombres": [],
+   "cientifico": "Mugil platanus (y/o Mugil liza)",
+   "cientifico_alternativo": "El MAGyP escribe «Mugil sp.» y dice que hay dos especies: M. platanus y M. liza. Taxonómicamente se discute si M. platanus es sinónimo de M. liza. Se carga una sola ficha, con el género.",
+   "familia": "Mugilidae",
+   "origen": {
+    "valor": "nativa (anfibiótica: vive en el mar, el estuario y el agua dulce)",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 50 cm (MAGyP); FishBase: 80 cm y 40 cm lo común.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Contradicción: 50 cm (MAGyP) contra 80 cm (FishBase, para el mar)."
+   },
+   "dieta": {
+    "valor": "Fitoplancton, algas filamentosas y detritus (no es predador).",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró carnada confiable. Por su dieta no responde a carnada animal común; en la pesca deportiva de lisa en Mar Chiquita la nota de Perfil (2026-11-06) no detalla carnada. El MAGyP solo habla de redes agalleras."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "En la albufera de Mar Chiquita la lisa «empezó a picar» en noviembre de 2026, con mejores temperaturas; es ambiente costero.",
+    "fuentes": [
+     "perfil-2026"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola nota de prensa, de un ambiente costero."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "ninguno",
+     "texto": "Inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Carnada vegetal o masa (inferencia por su dieta de algas y detritus; sin fuente)"
+    ],
+    "tip": "Muy buen pez para comer: en Buenos Aires la venden fresca y se ahúma (MAGyP; «muy apreciada por la colectividad judía»). Se pesca con red agallera o de arrastre en la costa y las lagunas, nunca con carnada de carne. Se la ve en cardumen cerca de la superficie. Es eurihalina: pasa del estuario al agua dulce.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Lo de la pesca con red es oficial (MAGyP); la carnada vegetal es inferencia."
+   },
+   "donde_vive": {
+    "valor": [
+     "rio_de_la_plata",
+     "lagunas_litoral"
+    ],
+    "detalle": "Costa Atlántica, Río de la Plata y Uruguay; cuenca del Salado (común en muchas lagunas bonaerenses) (MAGyP). Mar Chiquita (PE).",
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "oficial",
+    "sin_confirmar": [
+     "rios_litoral"
+    ],
+    "nota": "«Uruguay» en el MAGyP puede ser el río o el país; el tramo bajo del río Uruguay no está confirmado."
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "lisa"
+  },
+  {
+   "id": "manduba",
+   "nombre": {
+    "es": "Mandubá",
+    "en": "Driftwood catfish (mandubé)",
+    "pt": "Mandubé"
+   },
+   "otros_nombres": [
+    "manduví",
+    "manduvé",
+    "manduvé verde"
+   ],
+   "cientifico": "Ageneiosus inermis (probable)",
+   "cientifico_alternativo": "La página del MAGyP no da la especie (trae «Mugil sp.», que es un error evidente: pone la familia Auchenipteridae). La guía del Pre-Delta y FishBase usan «mandubá, manduvé, manduví» para Ageneiosus inermis. Ojo: la app ya tiene la ficha «manduvi» (Ageneiosus valenciennesi, del MAGyP manduvi.php). Son vecinos, no la misma; hay que decidir si se fusionan.",
+   "familia": "Auchenipteridae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 2,5 kg y más de 50 cm (MAGyP); FishBase: 64,8 cm y 3,1 kg.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Carnívoro: peces chicos, ranas, insectos y crustáceos (MAGyP); peces y crustáceos (FishBase, Pre-Delta).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "pececitos vivos (mojarra)",
+     "lombriz"
+    ],
+    "fuentes": [
+     "magyp",
+     "careca-2025"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "MAGyP: «con anzuelo encarnado con peces pequeños o lombrices». Careca: manduvá «mojarra», manduví «mojarra viva, excelente en pozones y piedras»."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "Se reproduce a fines de primavera y verano (Pre-Delta).",
+    "fuentes": [
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": "Nocturno (FishBase). Careca: «excelente respuesta al amanecer».",
+    "fuentes": [
+     "fishbase",
+     "careca-2025"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Los machos tienen la espina dorsal con dentículos y las barbillas óseas en época reproductiva; se enganchan en las redes y cuesta soltarlos (FishBase). Agarralo con trapo."
+    },
+    "fuentes": [
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Mojarra viva o pececitos",
+     "Lombriz"
+    ],
+    "tip": "Pez muy apreciado: «su carne es considerada muy fina» (MAGyP, FishBase). Pozones y zonas con piedra y remansos con vegetación, de noche o al amanecer, con línea de mano y pececito vivo. Cuidado con la espina dorsal al sacarlo.",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "careca-2025"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Paraguay, Paraná, Uruguay y Río de la Plata (MAGyP, Pre-Delta).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": "Pesca reglamentada en Entre Ríos (Ley 4892/70, según el Pre-Delta).",
+    "fuentes": [
+     "predelta-2015"
+    ],
+    "confianza": "oficial"
+   },
+   "imagen_id": "manduba"
+  },
+  {
+   "id": "vieja-de-agua",
+   "nombre": {
+    "es": "Vieja de agua",
+    "en": "Suckermouth catfish (plecos)",
+    "pt": "Cascudo"
+   },
+   "otros_nombres": [
+    "limpiavidrios",
+    "cascudo",
+    "vieja negra",
+    "vieja del agua"
+   ],
+   "cientifico": "Hypostomus commersoni",
+   "familia": "Loricariidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 50 cm (MAGyP); FishBase: 60,5 cm y 1,8 kg.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Detritívora: se alimenta del contenido orgánico del fango (pez de fondo).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "lombriz",
+     "corazón",
+     "filet blanco"
+    ],
+    "fuentes": [
+     "careca-2025"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente (Careca Pesca: «Pez tranquilo, ideal para principiantes»)."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "Se reproduce en primavera (Pre-Delta).",
+    "fuentes": [
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Cuerpo cubierto de placas óseas y espinas en las aletas, que pinchan. Sin peligro serio."
+    },
+    "fuentes": [
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "El dato de las espinas es general (loricáridos); no se leyó una fuente que lo diga de esta especie."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombriz, corazón, filet de pescado blanco (Careca)"
+    ],
+    "tip": "Pez de fondo que tolera estar fuera del agua (respira aire por el intestino, Pre-Delta), así que se conserva vivo. El MAGyP da los ejemplares chicos como pez de acuario; no dice nada de comerla. Se encuentra donde hay fondo fangoso con corriente moderada. Valor de supervivencia dudoso: poca carne bajo las placas; sin fuente sobre sabor.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "careca-2025"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata",
+     "lagunas_litoral"
+    ],
+    "detalle": "Paraguay, Pilcomayo, Paraná, Uruguay, Río de la Plata, cuenca del Salí y del Salado (Buenos Aires) (MAGyP); el Pre-Delta suma los sistemas lagunares de Buenos Aires.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "vieja-de-agua"
+  },
+  {
+   "id": "vieja-de-latigo",
+   "nombre": {
+    "es": "Vieja de látigo",
+    "en": "Whiptail catfish",
+    "pt": "Cascudo-chicote (sin confirmar)"
+   },
+   "otros_nombres": [
+    "vieja del agua",
+    "viejito"
+   ],
+   "cientifico": "Paraloricaria vetula",
+   "familia": "Loricariidae",
+   "origen": {
+    "valor": "nativa",
+    "fuentes": [
+     "magyp",
+     "fishbase",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta 50 cm (MAGyP); FishBase: 55,4 cm y 361 g.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Detritívora (MAGyP). El Pre-Delta las vio en grupos comiendo el mejillón dorado (Limnoperna fortunei).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró; el MAGyP dice que se captura con redes enmalladoras."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Placas y espinas: sin peligro serio."
+    },
+    "fuentes": [],
+    "confianza": "sin confirmar",
+    "nota": "Precaución general; sin fuente."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "MAGyP: «su carne es de excelente calidad, consumida por pobladores aledaños a los ríos». Se pesca con red enmalladora; con lo mínimo, una red chica en la orilla de fondo duro o con corriente. Sufre matanzas al caer en redes de pesca (Pre-Delta).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "rio_de_la_plata"
+    ],
+    "detalle": "Paraguay, Paraná, Uruguay y Río de la Plata (MAGyP, Pre-Delta, FishBase).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "vieja-de-latigo"
+  },
+  {
+   "id": "carpa-cabezona",
+   "nombre": {
+    "es": "Carpa cabezona",
+    "en": "Bighead carp",
+    "pt": "Carpa-cabeça-grande"
+   },
+   "otros_nombres": [
+    "carpa cabeza grande"
+   ],
+   "cientifico": "Hypophthalmichthys nobilis",
+   "cientifico_alternativo": "Aristichthys nobilis (nombre usado por el MAGyP)",
+   "familia": "Cyprinidae",
+   "origen": {
+    "valor": "introducida (originaria de China/Asia; llegó desde Brasil a Misiones, Corrientes y Formosa)",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "oficial"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 146 cm. Sin dato de MAGyP. En el MAGyP: «rápido crecimiento: 1,5 kg en 5 meses en Israel».",
+    "fuentes": [
+     "fishbase",
+     "magyp"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "dieta": {
+    "valor": "Filtradora de zooplancton y algas (rotíferos, cladóceros, copépodos); filtra también cianobacterias.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "Al ser filtradora no pica a carnada común. No se encontraron métodos de pesca deportiva locales."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "Aumentó mucho su presencia en el río Uruguay medio e inferior durante 2025; en el Paraná se registró un primer ejemplar cerca de Resistencia (Chaco).",
+    "fuentes": [
+     "elonce-2026",
+     "pecescriollos-2009"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Pez grande (hasta 146 cm según FishBase) y fuerte: puede lastimar al debatirse. Sin dientes ni espinas peligrosas. La CARU pide no devolverla al agua."
+    },
+    "fuentes": [
+     "fishbase",
+     "elonce-2026"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La CARU pide no devolverla ni liberarla y reportar la captura. Lo del tamaño es de FishBase; lo de lastimar es precaución mía."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "Si cae una en el río Uruguay, la CARU pide no devolverla y reportarla (Elonce, 2026-05-23). Se la puede comer: es de carne aprovechable (la cabezona se come en Asia; FishBase solo da el uso en acuicultura); tiene muchas espinas intermusculares como las demás carpas (el MAGyP lo dice de la plateada). Se pesca con red; con caña no hay método confirmado.",
+    "fuentes": [
+     "elonce-2026",
+     "magyp"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral"
+    ],
+    "detalle": "Río Uruguay (tramo medio e inferior, aumento de capturas en 2025 según la CARU) y río Paraná (primer registro en Argentina: Puerto Antequera, Chaco, cerca de Resistencia, 2009).",
+    "fuentes": [
+     "elonce-2026",
+     "pecescriollos-2009"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "El MAGyP la da «introducida en Misiones, Corrientes y Formosa» (cultivo)."
+   },
+   "normativa_nota": {
+    "valor": "La CARU pide no devolverlas al agua y reportar su captura (2026). No es veda: es pedido de gestión.",
+    "fuentes": [
+     "elonce-2026"
+    ],
+    "confianza": "oficial"
+   },
+   "imagen_id": "carpa-cabezona"
+  },
+  {
+   "id": "carpa-plateada",
+   "nombre": {
+    "es": "Carpa plateada",
+    "en": "Silver carp",
+    "pt": "Carpa-prateada"
+   },
+   "otros_nombres": [
+    "carpa de plata"
+   ],
+   "cientifico": "Hypophthalmichthys molitrix",
+   "familia": "Cyprinidae",
+   "origen": {
+    "valor": "introducida (originaria de Asia; en los años 90 desde Brasil a Misiones, Corrientes y Formosa)",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "oficial"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 120 cm. El MAGyP no da tamaño.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "dieta": {
+    "valor": "Filtradora de microfitoplancton (MAGyP); FishBase: fitoplancton y zooplancton.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "Filtradora: no pica con carnada. No se encontraron métodos deportivos locales."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "Aumento de capturas en el río Uruguay medio e inferior durante 2025 (CARU).",
+    "fuentes": [
+     "elonce-2026"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Es famosa por saltar fuera del agua cuando la asusta el motor de una lancha y puede golpear a quien va en el bote (dato general mío, sin fuente leída). Sin dientes ni espinas. La CARU pide no devolverla al agua."
+    },
+    "fuentes": [
+     "elonce-2026"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "MAGyP: «no es apta, en general, para consumo debido especialmente a su alta cantidad de espinas»; en Cuba se hace picadillo. La CARU pide no devolverlas al agua y reportarlas. Con lo mínimo: red de mano o agallera en remansos con algas.",
+    "fuentes": [
+     "magyp",
+     "elonce-2026"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral"
+    ],
+    "detalle": "Río Uruguay (tramos medio e inferior, 2025) (CARU vía Elonce); el MAGyP dice «Misiones, Corrientes y Formosa» (introducción de los años 90). Primer registro en Argentina: García Romero et al. (1998), según el checklist CLOFFAR (no leído, dato del buscador).",
+    "fuentes": [
+     "elonce-2026",
+     "magyp"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "sin_confirmar": [
+     "rio_de_la_plata"
+    ],
+    "nota": "No se encontró un registro confirmado en el Paraná o el Plata."
+   },
+   "normativa_nota": {
+    "valor": "La CARU pide no devolverlas al agua y reportar su captura (2026).",
+    "fuentes": [
+     "elonce-2026"
+    ],
+    "confianza": "oficial"
+   },
+   "imagen_id": "carpa-plateada"
+  },
+  {
+   "id": "pirana",
+   "nombre": {
+    "es": "Piraña (palometa pacusa, palometa mora)",
+    "en": "Red-bellied piranha",
+    "pt": "Piranha-vermelha (piranha-caju)"
+   },
+   "otros_nombres": [
+    "palometa",
+    "piraña pacusa",
+    "palometa pacusa",
+    "palometa mora",
+    "piraña caju"
+   ],
+   "cientifico": "Pygocentrus nattereri",
+   "familia": "Serrasalmidae",
+   "aviso_distincion": "NO es la «palometa» que ya tiene la app (Serrasalmus maculatus, palometa común, de ~0,5 kg). El MAGyP, en la ficha «Piraña/Palometa», da Pygocentrus nattereri. Según Scarabotti (CONICET, El Litoral 2023) en la laguna Setúbal conviven tres: la palometa pacusa o piraña (P. nattereri, hasta 1,5 kg, la que más daño hace a las redes), la palometa común (S. maculatus) y la ñata (S. marginatus), ambas de unos 0,5 kg. Entonces: ficha propia para la piraña, separada de la palometa. En la gente, ambas se llaman «palometa»; en la lista conviene la aclaración. Diferencia: P. nattereri tiene el perfil de la cabeza redondeado (sin concavidad) y banda negra en el borde de la cola; S. maculatus tiene el perfil cóncavo (Pre-Delta).",
+   "origen": {
+    "valor": "nativa (Amazonas, Paraguay-Paraná, ríos costeros del NE de Brasil)",
+    "fuentes": [
+     "fishbase",
+     "predelta-2015",
+     "magyp"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "MAGyP: 30-40 cm; Pre-Delta: hasta 27-31 cm de longitud estándar y 1,28 kg; FishBase: 50 cm; El Litoral: hasta 1,5 kg.",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "fishbase",
+     "ellitoral-2023"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "Contradicción: 30-40 cm (MAGyP), 31 cm y 1,28 kg (Pre-Delta), 50 cm (FishBase), 1,5 kg (El Litoral). Para Argentina vale 30-40 cm y 1-1,5 kg."
+   },
+   "dieta": {
+    "valor": "Carnívora, sobre todo peces (ictiófaga), también insectos y gusanos; en el Iberá comía peces chicos (Astyanax asuncionensis) y algo de plantas sumergidas. Se alimenta al amanecer, al atardecer y de noche.",
+    "fuentes": [
+     "predelta-2015",
+     "fishbase",
+     "magyp"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "carne",
+     "corazón",
+     "hígado",
+     "pajarilla"
+    ],
+    "fuentes": [
+     "careca-2025"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Careca Pesca da esa lista para «palometa» en general (con líder de acero). No aclara la especie."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": "Se reproduce de septiembre a noviembre en el Iberá; el MAGyP dice que su agresividad aumenta con la temperatura. Hay mordeduras sobre todo en las bajantes de verano (enero 2009, playas cerca del Pre-Delta).",
+    "fuentes": [
+     "predelta-2015",
+     "magyp"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "horario": {
+    "valor": "Los grandes (15-24 cm) se alimentan al amanecer, a la tarde y de noche hasta las 22 h; los chicos, de día (FishBase).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Es el pez más agresivo de la fauna sudamericana (Pre-Delta). Sus dientes cortantes pueden causar heridas graves; hay mordeduras documentadas en bañistas en las bajantes (Pre-Delta, 2009; El Litoral, 2023). No te metas al agua donde hay palometas, no tires vísceras en la orilla, y al sacarla usá líder de acero y pinza, nunca los dedos. Evitá los camalotes en época de cría."
+    },
+    "fuentes": [
+     "predelta-2015",
+     "fishbase",
+     "ellitoral-2023",
+     "careca-2025"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Carne, corazón, hígado, pajarilla (Careca)"
+    ],
+    "tip": "Es más peligro que alimento: MAGyP «no es objeto de pesca comercial o deportiva; podría aprovecharse para productos pesqueros con valor agregado». Pica fácil a carne cruda con línea con líder de acero, pero lo importante es evitarla al bañarse o vadear. Sin dato de que su carne sea buena para comer.",
+    "fuentes": [
+     "magyp",
+     "careca-2025",
+     "predelta-2015"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [
+     "rios_litoral",
+     "lagunas_litoral"
+    ],
+    "detalle": "Cuenca del Plata: Paraguay, Pilcomayo, Paraná, Uruguay, Río de la Plata y cuenca del Salí-Dulce (MAGyP); el Pre-Delta la da «ampliamente distribuida» en el Paraná, Paraguay, Uruguay y el Plata, y en arroyos, riachos y lagunas como el Iberá; El Litoral la ubica en la laguna Setúbal (Santa Fe).",
+    "fuentes": [
+     "magyp",
+     "predelta-2015",
+     "ellitoral-2023"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "sin_confirmar": [
+     "rio_de_la_plata"
+    ],
+    "nota": "Para el estuario propiamente dicho no se encontró un registro; es un pez de agua dulce."
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "pirana"
   }
  ],
  "fuentes": [

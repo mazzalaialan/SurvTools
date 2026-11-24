@@ -246,7 +246,7 @@ export function FishPage() {
                 )}
               </dl>
             )}
-            {sp.danger && (
+            {sp.danger && !/^ningun/i.test(sp.danger.level ?? '') && (
               <p className="card fish-rule" data-rule="forbidden" data-testid="fish-danger">
                 <strong>{t('fishing.danger')}</strong> {sp.danger.text}
               </p>

@@ -1,5 +1,5 @@
 {
- "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor).",
+ "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor). Especies del MAGyP sumadas el 2026-11-24 (anchoa de río … piraña). Provisorias: cucharon (en acuario, con otro pez atrás), chanchita (en una mano), lisa (grabado de una especie cercana), manduba (lámina de Ageneiosus militaris, con aletas rojas: buscar A. inermis gris).",
  "trucha-arcoiris": {
   "file": "trucha-arcoiris.webp",
   "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)",
@@ -197,5 +197,95 @@
   "credit": "demianlescano (iNaturalist), observación del 2018-10-14, Gral. Obligado, Santa Fe; Megalonema platanum (grado de investigación); recortada y espejada (todas miran a la izquierda)",
   "license": "CC0 1.0",
   "url": "https://www.inaturalist.org/observations/45619804"
+ },
+ "anchoa-de-rio": {
+  "file": "anchoa-de-rio.webp",
+  "credit": "Carla Isobel Elliff (subida a FishBase), Lycengraulis grossidens, Santos, Brasil, mayo 2011; vía Wikimedia Commons; recortada; espejada (todas miran a la izquierda)",
+  "license": "CC BY 3.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Lycengraulis_grossidens.jpg"
+ },
+ "morena": {
+  "file": "morena.webp",
+  "credit": "Paul Louis Oudart, lámina de «Voyage dans l'Amérique méridionale» (A. d'Orbigny, 1835-1847), vía Wikimedia Commons",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Gymnotus_inaequilabiatus.jpg"
+ },
+ "banderita": {
+  "file": "banderita.webp",
+  "credit": "Paul Louis Oudart, lámina de «Voyage dans l'Amérique méridionale» (A. d'Orbigny, 1835-1847), vía Wikimedia Commons",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Eigenmannia_virescens.jpg"
+ },
+ "sabalito": {
+  "file": "sabalito.webp",
+  "credit": "Cláudio D. Timm (Flickr), Cyphocharax voga; vía Wikimedia Commons; recortada; espejada (todas miran a la izquierda)",
+  "license": "CC BY 2.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Cyphocharax_voga.jpg"
+ },
+ "cucharon": {
+  "file": "cucharon.webp",
+  "credit": "Chrumps, Sorubim lima en acuario; vía Wikimedia Commons; recortada",
+  "license": "CC BY-SA 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Sorubim_lima.jpg"
+ },
+ "chanchita": {
+  "file": "chanchita.webp",
+  "credit": "Rebeca Quetglas, Gymnogeophagus australis; vía Wikimedia Commons; recortada",
+  "license": "CC0 1.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Gymnogeophagus_australis.jpg"
+ },
+ "dientudo-jorobado": {
+  "file": "dientudo-jorobado.webp",
+  "credit": "Paul Louis Oudart, lámina de «Voyage dans l'Amérique méridionale» (A. d'Orbigny, 1835-1847), vía Wikimedia Commons",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Cynopotamus_argenteus.jpg"
+ },
+ "tachuela": {
+  "file": "tachuela.webp",
+  "credit": "Hiyotada, Corydoras paleatus; vía Wikimedia Commons; recortada",
+  "license": "CC0 1.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Corydoras_paleatus.jpg"
+ },
+ "lisa": {
+  "file": "lisa.webp",
+  "credit": "H. L. Todd, «The White Mullet» (Mugil brasiliensis Agass.), en Goode (1884), Fisheries and Fishery Industries of the United States; vía Wikimedia Commons; recortada; sin el título ni la barra de escala",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:FMIB_51051_White_Mullet.jpeg"
+ },
+ "manduba": {
+  "file": "manduba.webp",
+  "credit": "Paul Louis Oudart, lámina de «Voyage dans l'Amérique méridionale» (A. d'Orbigny, 1835-1847), vía Wikimedia Commons; recortada; espejada (todas miran a la izquierda)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Ageneiosus_militaris_Orbigny.jpg"
+ },
+ "vieja-de-agua": {
+  "file": "vieja-de-agua.webp",
+  "credit": "Paul Louis Oudart, lámina de «Voyage dans l'Amérique méridionale» (A. d'Orbigny, 1835-1847), vía Wikimedia Commons; recortada; espejada (todas miran a la izquierda)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Hypostomus_commersoni.jpg"
+ },
+ "vieja-de-latigo": {
+  "file": "vieja-de-latigo.webp",
+  "credit": "Paul Louis Oudart, lámina de «Voyage dans l'Amérique méridionale» (A. d'Orbigny, 1835-1847), vía Wikimedia Commons; recortada; espejada (todas miran a la izquierda)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Paraloricaria_vetula.jpg"
+ },
+ "carpa-cabezona": {
+  "file": "carpa-cabezona.webp",
+  "credit": "mark6mauno, Hypophthalmichthys nobilis; vía Wikimedia Commons; recortada",
+  "license": "CC BY-SA 2.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Hypophthalmichthys_nobilis_(Bighead_carp).jpg"
+ },
+ "carpa-plateada": {
+  "file": "carpa-plateada.webp",
+  "credit": "USFWS Mountain-Prairie, Silver Carp adulto (Hypophthalmichthys molitrix); vía Wikimedia Commons",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Silver_Carp_Adult_(Hypophthalmichthys_molitrix).jpg"
+ },
+ "pirana": {
+  "file": "pirana.webp",
+  "credit": "FF23-fr, Pygocentrus nattereri; vía Wikimedia Commons; recortada",
+  "license": "CC BY-SA 3.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Pygocentrus_nattereri_(ok).JPG"
  }
 }
