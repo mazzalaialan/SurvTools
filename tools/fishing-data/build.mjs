@@ -109,12 +109,24 @@ function parseSector(a) {
     for (const item of ld.matchAll(/(\d+)\s+([a-záéíóúñ ]+?)(?=,|\sy\s\d|\sy\s[a-z]+\s+sin|$|\s+excepto)/gi)) for (const id of speciesOf(item[2])) set(id, { limit: Number(item[1]) });
     if (/carpas? sin l[ií]mite/i.test(ld)) set('carpa', { limit: null });
     // «LD: sin límites de captura para la trucha de lago (bocón) y salmón Chinook, otros salmónidos 2 ejemplares» (Parques Nacionales).
-    const free = ld.match(/sin l[ií]mites? de captura para ([^,]*)/i);
+    const free = ld.match(/sin l[ií]mites? de (?:captura|extracci[oó]n) para ([^,]*)/i);
     if (free) for (const part of free[1].split(/\sy\s/)) for (const id of speciesOf(part)) set(id, { limit: null });
+    // «la pesca de salmónidos exóticos (salmón y trucha) será sin límites de extracción y sin devolución» (PN Tierra del Fuego).
+    const freeAll = ld.match(/pesca de ([^.]*?)\s+ser[aá] sin l[ií]mites?/i);
+    if (freeAll) for (const id of /salm[oó]nid/i.test(freeAll[1]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo'] : speciesOf(freeAll[1])) set(id, { limit: null });
     for (const item of ld.matchAll(/(?:otros\s+)?([a-záéíóúñ ]+?)\s+(\d+)\s+ejemplares?/gi)) {
       const ids = speciesOf(item[1]);
       const others = /otros/i.test(item[0]);
       for (const id of /salm[oó]nid/i.test(item[1]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo'] : ids) if (!(others && species.has(id))) set(id, { limit: Number(item[2]) });
+    }
+  }
+  // Cualquier oración con «sin límite»: «Carpas sin límite.», «salmónidos sin límite de captura», «sin límites de percas y salmónidos».
+  for (const sentence of text.split(/\.\s+/)) {
+    if (!/sin l[ií]mites?/i.test(sentence) || /\d+\s+(?:trucha|perca|pejerrey|salm)/i.test(sentence.replace(/.*sin l[ií]mites?/i, ''))) continue;
+    for (const part of sentence.split(/,|\sy\s|\(|\)|:/)) {
+      if (!/sin l[ií]mite|salm|trucha|perca|pejerrey|carpa|r[oó]balo|chinook/i.test(part)) continue;
+      const ids = /salm[oó]nid/i.test(part) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo'] : speciesOf(part);
+      for (const id of ids) if (!species.get(id)?.limit) set(id, { limit: null });
     }
   }
   // Devolución obligatoria: cupo 0.
