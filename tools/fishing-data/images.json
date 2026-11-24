@@ -38,9 +38,9 @@
  },
  "pejerrey": {
   "file": "pejerrey.webp",
-  "credit": "Uli7 (Wikimedia Commons). Pejerrey bonaerense (Odontesthes bonariensis); el patagónico es muy parecido",
-  "license": "CC0",
-  "url": "https://commons.wikimedia.org/wiki/File:Pejerrey_Odontesthes_Bonariensis.jpg"
+  "credit": "CHUCAO (Wikimedia Commons). Pejerrey bonaerense (Odontesthes bonariensis); el patagónico es muy parecido",
+  "license": "CC BY-SA 3.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Odontesthes_bonariensis.JPG"
  },
  "trucha-lago": {
   "file": "trucha-lago.webp",
@@ -53,5 +53,113 @@
   "credit": "Grabado antiguo «The King Salmon», Freshwater and Marine Image Bank (Wikimedia Commons); fondo limpiado",
   "license": "Dominio público",
   "url": "https://commons.wikimedia.org/wiki/File:FMIB_38721_King_Salmon_(Oncorhynchus_tschawytscha).jpeg"
+ },
+ "dorado": {
+  "file": "dorado.webp",
+  "credit": "P. Oudart (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Salminus_brasiliensis.jpg"
+ },
+ "surubi-pintado": {
+  "file": "surubi-pintado.webp",
+  "credit": "Pablo Scarabotti, Tzipe Govezensky, Pablo Bolcatto &amp; Rafael A. Barrio (Wikimedia Commons)",
+  "license": "CC BY 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Pseudoplatystoma_corruscans_RIP.png"
+ },
+ "surubi-atigrado": {
+  "file": "surubi-atigrado.webp",
+  "credit": "Pablo Scarabotti, Tzipe Govezensky, Pablo Bolcatto &amp; Rafael A. Barrio (Wikimedia Commons)",
+  "license": "CC BY 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Pseudoplatystoma_duo_duo.png"
+ },
+ "pacu": {
+  "file": "pacu.webp",
+  "credit": "Dick Culbert from Gibsons, B.C., Canada (Wikimedia Commons)",
+  "license": "CC BY 2.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Piaractus_mesopotamicus_-_Flickr_-_Dick_Culbert.jpg"
+ },
+ "sabalo": {
+  "file": "sabalo.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Prochilodus_lineatus_d%27Orbigny.jpg"
+ },
+ "boga": {
+  "file": "boga.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Leporinus_obtusidens_Orbigny.jpg"
+ },
+ "pati": {
+  "file": "pati.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons); espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Luciopimelodus_pati_Orbigny.jpg"
+ },
+ "tararira": {
+  "file": "tararira.webp",
+  "credit": "J. F. Hennig (Wikimedia Commons); espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Hoplias_malabaricus2.jpg"
+ },
+ "bagre-amarillo": {
+  "file": "bagre-amarillo.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons); espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Pimelodus_maculatus.jpg"
+ },
+ "bagre-blanco": {
+  "file": "bagre-blanco.webp",
+  "credit": "Aaron Soderstrom (Wikimedia Commons); imagen chica, provisoria",
+  "license": "CC BY-SA 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Pimelodus_albicans.png"
+ },
+ "armado": {
+  "file": "armado.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons); espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Pterodoras_granulosus.jpg"
+ },
+ "manguruyu": {
+  "file": "manguruyu.webp",
+  "credit": "François-Louis Laporte, comte de Castelnau (Wikimedia Commons); Zungaro zungaro, especie hermana del manguruyú del Paraná",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Zungaro_zungaro.jpg"
+ },
+ "mojarra": {
+  "file": "mojarra.webp",
+  "credit": "W.S.Serra (Wikimedia Commons)",
+  "license": "CC BY-SA 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Astyanax_lacustris.jpg"
+ },
+ "salmon-rio": {
+  "file": "salmon-rio.webp",
+  "credit": "W.S.Serra (Wikimedia Commons)",
+  "license": "CC BY 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Brycon_orbignyanus.jpg"
+ },
+ "palometa": {
+  "file": "palometa.webp",
+  "credit": "Rudolf Kner (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Serrasalmus_maculatus.png"
+ },
+ "chafalote": {
+  "file": "chafalote.webp",
+  "credit": "Oudart (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Rhaphiodon_vulpinus1.jpg"
+ },
+ "raya": {
+  "file": "raya.webp",
+  "credit": "Karelj (Wikimedia Commons)",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Potamotrygon_motoro_1.jpg"
+ },
+ "manduvi": {
+  "file": "manduvi.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons); Ageneiosus militaris (manduví del Paraná y el Plata); espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Ageneiosus_militaris_Orbigny.jpg"
  }
 }
