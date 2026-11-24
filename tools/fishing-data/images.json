@@ -41,5 +41,17 @@
   "credit": "Uli7 (Wikimedia Commons). Pejerrey bonaerense (Odontesthes bonariensis); el patagónico es muy parecido",
   "license": "CC0",
   "url": "https://commons.wikimedia.org/wiki/File:Pejerrey_Odontesthes_Bonariensis.jpg"
+ },
+ "trucha-lago": {
+  "file": "trucha-lago.webp",
+  "credit": "Sherman F. Denton, «Game Birds and Fishes of North America» (dominio público); versión digital de Rawpixel (Wikimedia Commons)",
+  "license": "CC BY-SA 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Vintage_illustrations_by_Denton_from_Game_Birds_and_Fishes_of_North_America_digitally_enhanced_by_rawpixel_08.jpg"
+ },
+ "salmon-pacifico": {
+  "file": "salmon-pacifico.webp",
+  "credit": "Grabado antiguo «The King Salmon», Freshwater and Marine Image Bank (Wikimedia Commons); fondo limpiado",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:FMIB_38721_King_Salmon_(Oncorhynchus_tschawytscha).jpeg"
  }
 }
