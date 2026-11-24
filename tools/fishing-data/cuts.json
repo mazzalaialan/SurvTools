@@ -501,5 +501,98 @@
  },
  "apn-ruca-choroy-rio": {
   "name": "Río Rucachoroi"
+ },
+ "lit-parana-misiones": {
+  "from": {
+   "confluence": "Iguazú"
+  },
+  "to": {
+   "confluence": "Paraguay"
+  },
+  "approx": "el límite entre Misiones y Corrientes sobre el río (cerca de Posadas) no se marca: rigen las dos",
+  "gapM": 5000
+ },
+ "lit-parana-corrientes-chaco": {
+  "from": {
+   "confluence": "Paraguay"
+  },
+  "to": [
+   -58.83,
+   -28.0
+  ],
+  "gapM": 5000
+ },
+ "lit-parana-corrientes-santafe": {
+  "from": [
+   -58.83,
+   -28.0
+  ],
+  "to": [
+   -59.58,
+   -30.18
+  ],
+  "gapM": 25000,
+  "approx": "el límite norte sigue el paralelo 28°; el sur, la desembocadura del arroyo Guayquiraró (aproximada)"
+ },
+ "lit-parana-santafe-entrerios": {
+  "from": [
+   -59.58,
+   -30.18
+  ],
+  "to": [
+   -60.3,
+   -33.26
+  ],
+  "gapM": 5000,
+  "approx": "entre las desembocaduras del Guayquiraró y del arroyo del Medio (aproximadas)"
+ },
+ "lit-parana-bsas-entrerios": {
+  "from": [
+   -60.3,
+   -33.26
+  ],
+  "to": {
+   "end": "desembocadura",
+   "away": [
+    -59.58,
+    -30.18
+   ]
+  },
+  "gapM": 5000,
+  "approx": "desde el arroyo del Medio hasta donde el Paraná se divide en los brazos del Delta"
+ },
+ "lit-uruguay-caru": {
+  "from": {
+   "confluence": "Cuareim"
+  },
+  "to": {
+   "end": "desembocadura",
+   "away": {
+    "lat": -29.0
+   }
+  },
+  "gapM": 5000
+ },
+ "lit-uruguay-alto": {
+  "from": {
+   "end": "naciente",
+   "away": {
+    "confluence": "Cuareim"
+   }
+  },
+  "to": {
+   "confluence": "Cuareim"
+  },
+  "approx": "el límite entre Misiones y Corrientes (arroyo Chimiray) no se marca: rigen las dos",
+  "gapM": 5000
+ },
+ "lit-paraguay": {
+  "approx": "el límite entre Formosa y Chaco (confluencia con el Bermejo) no se marca: rigen las dos"
+ },
+ "lit-salado-sf": {
+  "approx": "se toma el Salado dentro de Santa Fe"
+ },
+ "lit-salado-ba": {
+  "approx": "se toma el Salado dentro de Buenos Aires"
  }
 }

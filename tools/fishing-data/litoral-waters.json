@@ -1,0 +1,429 @@
+[
+ {
+  "id": "lit-parana-misiones",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Misiones",
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Alto Paraná, frontera con Paraguay: desde la confluencia con el Iguazú hasta la confluencia con el río Paraguay (Misiones aguas arriba de Posadas, Corrientes aguas abajo).",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "confluence": "Iguazú"
+   },
+   "to": {
+    "confluence": "Paraguay"
+   },
+   "approx": "el límite entre Misiones y Corrientes sobre el río (cerca de Posadas) no se marca: rigen las dos"
+  }
+ },
+ {
+  "id": "lit-parana-corrientes-chaco",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes",
+   "Chaco"
+  ],
+  "descripcion_tramo_literal": "Paraná medio: desde la confluencia con el río Paraguay hasta el límite de Chaco con Santa Fe (paralelo 28°).",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "confluence": "Paraguay"
+   },
+   "to": {
+    "lat": -28.0
+   }
+  }
+ },
+ {
+  "id": "lit-parana-corrientes-santafe",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes",
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Paraná medio: desde el paralelo 28° hasta la desembocadura del arroyo Guayquiraró (límite de Corrientes con Entre Ríos).",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "lat": -28.0
+   },
+   "to": {
+    "confluence": "Guayquiraró"
+   },
+   "approx": "el límite norte sigue el paralelo 28°"
+  }
+ },
+ {
+  "id": "lit-parana-santafe-entrerios",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe",
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Paraná medio e inferior: desde el arroyo Guayquiraró hasta el arroyo del Medio (límite de Santa Fe con Buenos Aires).",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "confluence": "Guayquiraró"
+   },
+   "to": {
+    "confluence": "del Medio"
+   }
+  }
+ },
+ {
+  "id": "lit-parana-bsas-entrerios",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires",
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Paraná inferior y Delta: desde el arroyo del Medio hasta el Río de la Plata.",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "confluence": "del Medio"
+   },
+   "to": {
+    "end": "desembocadura",
+    "away": {
+     "confluence": "Guayquiraró"
+    }
+   }
+  }
+ },
+ {
+  "id": "lit-parana-de-las-palmas",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná de las Palmas",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Brazo del Delta en la provincia de Buenos Aires.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-parana-guazu",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraná Guazú",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Entre Ríos",
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Brazo del Delta en el límite de Entre Ríos con Buenos Aires.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-uruguay-caru",
+  "jurisdiccion": "Litoral",
+  "agua": "Uruguay",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "CARU - Rio Uruguay"
+  ],
+  "descripcion_tramo_literal": "Río Uruguay compartido con la República Oriental del Uruguay: desde la desembocadura del río Cuareim (Bella Unión) hasta el Río de la Plata. Rige el Estatuto y la normativa de la CARU.",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "confluence": "Cuareim"
+   },
+   "to": {
+    "end": "desembocadura",
+    "away": {
+     "lat": -29.0
+    }
+   }
+  }
+ },
+ {
+  "id": "lit-uruguay-alto",
+  "jurisdiccion": "Litoral",
+  "agua": "Uruguay",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Misiones",
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Alto Uruguay, frontera con Brasil: Misiones aguas arriba del arroyo Chimiray y Corrientes aguas abajo, hasta el río Cuareim.",
+  "fuente": {},
+  "_cut": {
+   "from": {
+    "end": "naciente",
+    "away": {
+     "confluence": "Cuareim"
+    }
+   },
+   "to": {
+    "confluence": "Cuareim"
+   },
+   "approx": "el límite entre Misiones y Corrientes (arroyo Chimiray) no se marca: rigen las dos"
+  }
+ },
+ {
+  "id": "lit-salto-grande",
+  "jurisdiccion": "Litoral",
+  "agua": "Salto Grande",
+  "tipo_agua": "Lago",
+  "subtramo": null,
+  "jurisdicciones": [
+   "CARU - Rio Uruguay"
+  ],
+  "descripcion_tramo_literal": "Embalse de Salto Grande (Entre Ríos y Uruguay).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-paraguay",
+  "jurisdiccion": "Litoral",
+  "agua": "Paraguay",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Formosa",
+   "Chaco"
+  ],
+  "descripcion_tramo_literal": "Río Paraguay, frontera con la República del Paraguay: Formosa aguas arriba de la desembocadura del Bermejo y Chaco aguas abajo.",
+  "fuente": {},
+  "_cut": {
+   "approx": "el límite entre Formosa y Chaco (confluencia con el Bermejo) no se marca: rigen las dos"
+  }
+ },
+ {
+  "id": "lit-bermejo",
+  "jurisdiccion": "Litoral",
+  "agua": "Bermejo",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Chaco",
+   "Formosa"
+  ],
+  "descripcion_tramo_literal": "Río Bermejo, límite entre Chaco y Formosa.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-gualeguay",
+  "jurisdiccion": "Litoral",
+  "agua": "Gualeguay",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Gualeguay (Entre Ríos).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-gualeguaychu",
+  "jurisdiccion": "Litoral",
+  "agua": "Gualeguaychú",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Entre Ríos"
+  ],
+  "descripcion_tramo_literal": "Río Gualeguaychú (Entre Ríos).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-corrientes",
+  "jurisdiccion": "Litoral",
+  "agua": "Corrientes",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Río Corrientes (Corrientes).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-santa-lucia",
+  "jurisdiccion": "Litoral",
+  "agua": "Santa Lucía",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Río Santa Lucía (Corrientes).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-ibera",
+  "jurisdiccion": "Litoral",
+  "agua": "Iberá",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Corrientes"
+  ],
+  "descripcion_tramo_literal": "Laguna Iberá (Esteros del Iberá, Corrientes). Ojo: parte del sistema es Parque Nacional y Parque Provincial, con reglas propias.",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-salado-sf",
+  "jurisdiccion": "Litoral",
+  "agua": "Salado",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Río Salado (Santa Fe).",
+  "fuente": {},
+  "_cut": {
+   "approx": "se toma el Salado dentro de Santa Fe"
+  }
+ },
+ {
+  "id": "lit-san-javier",
+  "jurisdiccion": "Litoral",
+  "agua": "San Javier",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Río San Javier (Santa Fe).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-coronda",
+  "jurisdiccion": "Litoral",
+  "agua": "Coronda",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Río Coronda (Santa Fe).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-setubal",
+  "jurisdiccion": "Litoral",
+  "agua": "Setúbal",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Santa Fe"
+  ],
+  "descripcion_tramo_literal": "Laguna Setúbal (Santa Fe).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-salado-ba",
+  "jurisdiccion": "Litoral",
+  "agua": "Salado",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Río Salado (Buenos Aires).",
+  "fuente": {},
+  "_cut": {
+   "approx": "se toma el Salado dentro de Buenos Aires"
+  }
+ },
+ {
+  "id": "lit-chascomus",
+  "jurisdiccion": "Litoral",
+  "agua": "Chascomús",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna de Chascomús (Buenos Aires).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-lobos",
+  "jurisdiccion": "Litoral",
+  "agua": "Lobos",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna de Lobos (Buenos Aires).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-monte",
+  "jurisdiccion": "Litoral",
+  "agua": "Monte",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna de Monte (San Miguel del Monte, Buenos Aires).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-gomez",
+  "jurisdiccion": "Litoral",
+  "agua": "Gómez",
+  "tipo_agua": "Laguna",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Laguna de Gómez (Junín, Buenos Aires).",
+  "fuente": {},
+  "_cut": null
+ },
+ {
+  "id": "lit-urugua-i",
+  "jurisdiccion": "Litoral",
+  "agua": "Urugua-í",
+  "tipo_agua": "Lago",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Misiones"
+  ],
+  "descripcion_tramo_literal": "Lago Urugua-í (Misiones).",
+  "fuente": {},
+  "_cut": null
+ }
+]

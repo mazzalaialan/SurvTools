@@ -23,6 +23,8 @@ const BBOX = {
   'Río Negro': [-72.0, -42.05, -62.7, -37.5],
   Chubut: [-72.2, -46.05, -63.5, -41.95],
   'Parques Nacionales del Sur (APN)': [-73.8, -55.2, -62.7, -36.0],
+  // Litoral (Entre Ríos, Santa Fe, Corrientes, Misiones, Chaco, Formosa, Buenos Aires y el río Uruguay compartido).
+  Litoral: [-62.9, -38.6, -53.5, -21.9],
 };
 const box = BBOX[jurisdiction];
 if (!box) throw new Error(`Jurisdicción sin recuadro: ${jurisdiction}`);
@@ -83,7 +85,7 @@ const dist = (a, b) => {
 };
 
 // --- Red de un río: nodos por coordenada, aristas por segmento ---
-function graphOf(ways) {
+function graphOf(ways, gapM = 300) {
   const nodes = new Map();
   const id = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
   const add = (c) => {
@@ -103,13 +105,23 @@ function graphOf(ways) {
   }
   // En OSM un río suele estar partido (un embalse, un tramo sin nombre, un error de dibujo): se unen los extremos sueltos que quedan
   // a menos de GAP_M de otro punto del río, para que el camino por el cauce no se corte.
-  const GAP_M = 300;
+  const GAP_M = gapM;
+  // Pedazos sueltos: cada extremo se une al punto más cercano de OTRO pedazo (si no, se unía a su mismo pedazo y el hueco seguía).
+  const comp = new Map();
+  let nc = 0;
+  for (const k of nodes.keys()) {
+    if (comp.has(k)) continue;
+    const stack = [k];
+    comp.set(k, nc);
+    while (stack.length) for (const [v] of nodes.get(stack.pop()).edges) if (!comp.has(v)) (comp.set(v, nc), stack.push(v));
+    nc++;
+  }
   const ends = [...nodes].filter(([, n]) => n.edges.length === 1);
   for (const [k, n] of ends) {
     let best = null;
     let bd = GAP_M;
     for (const [k2, n2] of nodes) {
-      if (k2 === k || n.edges.some(([v]) => v === k2)) continue;
+      if (comp.get(k2) === comp.get(k)) continue;
       const d = dist(n.c, n2.c);
       if (d < bd) (bd = d), (best = k2);
     }
@@ -405,7 +417,8 @@ for (const a of ambientes) {
       continue;
     }
     if (cut?.from || cut?.to) {
-      const nodes = graphOf(ways);
+      // Los ríos grandes (Paraná) están dibujados en pedazos con huecos de varios km entre islas: se unen con más tolerancia.
+      const nodes = graphOf(ways, cut.gapM ?? 300);
       const fromSpec = cut.from ?? { end: 'naciente' };
       const toSpec = cut.to ?? { end: 'desembocadura' };
       const concrete = (s) => !s.end;

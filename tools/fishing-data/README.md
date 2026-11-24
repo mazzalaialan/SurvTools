@@ -13,3 +13,13 @@ reglamento y la tabla de carnadas):
 
 Licencias: reglamento sin licencia declarada (atribución); OpenStreetMap ODbL; dieta de FishBase CC BY-NC (se usa mientras la app sea
 gratuita). Las carnadas son una tabla propia, orientativa.
+
+## Litoral
+
+Los ríos y lagunas del Litoral no salen de un reglamento por ambiente (cada provincia regula por especie), así que la lista está a mano en
+`litoral-waters.json` (copia de `~/vikarg-fishing-work/litoral/ambientes.json`): cada ambiente con las jurisdicciones que rigen en él
+(los ríos de borde, como el Paraná, en tramos compartidos por las dos provincias de cada orilla; el río Uruguay desde el Cuareim, de la
+CARU). Extracto: `prepare.sh <pbf> ~/vikarg-fishing-work/osm-litoral -62.9,-38.6,-53.5,-21.9`; ubicación:
+`locate.mjs ~/vikarg-fishing-work/osm-litoral ~/vikarg-fishing-work/litoral/ambientes.json Litoral ~/vikarg-fishing-work/geo-Litoral.json`.
+Los cortes del Paraná van por coordenada (los nombres «arroyo del Medio» y «Guayquiraró» se repiten en otros arroyos) y con `gapM`
+(el Paraná está dibujado en pedazos con huecos entre islas).
