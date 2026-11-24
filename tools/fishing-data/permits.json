@@ -249,15 +249,40 @@
  "Buenos Aires": {
   "items": [
    {
+    "type": "Anual",
+    "price": "$5.005"
+   },
+   {
+    "type": "Anual (pescador federado)",
+    "price": "$2.502,50"
+   },
+   {
+    "type": "Turística (20 días)",
+    "price": "$1.815"
+   },
+   {
+    "type": "Extranjero: anual",
+    "price": "$20.020"
+   },
+   {
+    "type": "Extranjero: turística (20 días)",
+    "price": "$10.010"
+   },
+   {
+    "type": "Concurso (3 días)",
+    "price": "$1.650"
+   },
+   {
     "type": "Sin cargo",
     "who": "menores de 14 años, jubilados, pensionados, personas con discapacidad y veteranos de Malvinas"
    }
   ],
   "extra": [
-   "Vence el 31 de diciembre. No encontramos los precios 2026 en un sitio oficial."
+   "Importes de la Ley Impositiva 2026 (Ley 15.558: tasas en unidades tributarias de $275). La anual vence el 31 de diciembre."
   ],
   "buyUrl": "https://mi.mda.gba.gob.ar/pesca/licencia/validacion",
-  "date": "2026-11-23"
+  "infoUrl": "https://normas.gba.gob.ar/documentos/Bd5moXfD.html",
+  "date": "2026-11-24"
  },
  "Chaco": {
   "items": [],

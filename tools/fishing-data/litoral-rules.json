@@ -181,18 +181,12 @@
       "to": "01-31"
      }
     ],
-    "note": "Veda del 1/11 al 31/01 (Disp. 177/07); en noviembre y diciembre, solo sábados, domingos y feriados con devolución."
+    "note": "Veda del 1/11 al 31/01 (Disp. 117/07 o 177/07, según la cita; DI-2018-513): en noviembre y diciembre, solo sábados, domingos y feriados con devolución."
    },
    "pejerrey": {
     "minSizeCm": 25,
-    "closures": [
-     {
-      "from": "09-01",
-      "to": "12-01",
-      "onlyLakes": true
-     }
-    ],
-    "note": "En lagunas el cupo depende de cada laguna (10 a 30); veda del 1/09 al 1/12 en aguas interiores (no en el Río de la Plata ni el Delta)."
+    "limit": 10,
+    "note": "Cupo 10 por día en lagunas (15 en ríos y arroyos; de 15 a 30 en algunas lagunas puntuales). Del 1/09 al 1/12, en todas las aguas interiores (no en el Río de la Plata ni el Delta), solo sábados, domingos y feriados (DI-2019-483, art. 7; Disp. 42/11). Fuera de ese período rige la Disp. 503/06."
    }
   }
  },
@@ -282,12 +276,12 @@
       "to": "03-15"
      }
     ],
-    "note": "Veda del 15/08 al 15/03 (Res. 276/07). Según la Dirección, fuera de la veda solo con devolución: confirmalo."
+    "note": "Veda del 15/08 al 15/03 «bajo cualquier forma» (Res. 276/07, art. 1; ratificada por la Res. 20/26 DRNyF, art. 7, BO 02/02/2026)."
    },
    "dorado": {
     "limit": 0,
     "unconfirmed": true,
-    "note": "Devolución obligatoria según la Dirección de Recursos Naturales (prensa, 29/10/2025)."
+    "note": "La Ley 11.174 prohíbe su pesca comercial; para la deportiva no encontramos texto oficial que imponga devolución (la Dirección la pide, según prensa del 29/10/2025). Devolvelo."
    },
    "pacu": {
     "forbidden": true,
