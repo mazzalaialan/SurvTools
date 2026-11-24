@@ -4,13 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
+import { useZonePlace } from '@/modules/garden/status';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import { isStale, sectorClosure, sectorSeason, sectorsInZone, sectorsNear, speciesInZone, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
 import { FishDataGate, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules, ZonePicker } from './parts';
 import { useFishZone } from './useFishZone';
 import { useFishData } from './useFishData';
 
-const NEAR_RADIUS_M = 30_000;
+const NEAR_RADIUS_M = 300_000;
+const NEAR_COUNT = 8;
 
 function ZoneControl({ data }: { data: FishData }) {
   const z = useFishZone(data);
@@ -300,8 +302,7 @@ export function SectorList({ data, sectors, speciesId, distances }: { data: Fish
                 <span className="list-sub">{s.name}</span>
                 <span className="list-sub">
                   <SectorSeasonBadge data={data} sector={s} />
-                  {rules.length > 0 && ` · ${rules.join(' · ')}`}
-                  {d !== undefined && ` · ${(d / 1000).toLocaleString(i18n.language, { maximumFractionDigits: 1 })} km`}
+                  {[...(sectorSeason(data, s) || s.closed ? [''] : []), ...rules, ...(d !== undefined ? [`${(d / 1000).toLocaleString(i18n.language, { maximumFractionDigits: 1 })} km`] : [])].join(' · ')}
                 </span>
               </span>
             </Link>
@@ -318,6 +319,8 @@ export function FishWatersPage() {
   const state = useFishData();
   const [near, setNear] = useState(false);
   const { fix } = useGeolocation(near);
+  // Sin GPS: tu lugar (waypoint de «tu lugar» o la última ubicación), como la Huerta y Meteorología.
+  const place = useZonePlace(false);
   return (
     <div className="stack">
       <h1 className="page-title">{t('modules.fishingWaters.title')}</h1>
@@ -327,7 +330,7 @@ export function FishWatersPage() {
             <button className="btn btn-block" type="button" onClick={() => setNear(true)} data-testid="fish-near">
               <LocateFixed size={20} aria-hidden /> {t('fishing.nearMe')}
             </button>
-            {near && <NearSectors data={data} here={fix ? [fix.lon, fix.lat] : null} />}
+            {near && <NearSectors data={data} here={fix ? [fix.lon, fix.lat] : place ? [place.lon, place.lat] : null} />}
             <ZoneWaters data={data} />
           </>
         )}
@@ -338,7 +341,8 @@ export function FishWatersPage() {
 
 function NearSectors({ data, here }: { data: FishData; here: [number, number] | null }) {
   const { t } = useTranslation();
-  const near = useMemo(() => (here ? sectorsNear(data, here, NEAR_RADIUS_M) : []), [data, here]);
+  // Los más cercanos, aunque estén lejos (con la ubicación de la conexión, en la computadora, el río puede quedar a más de 30 km).
+  const near = useMemo(() => (here ? sectorsNear(data, here, NEAR_RADIUS_M).slice(0, NEAR_COUNT) : []), [data, here?.[0], here?.[1]]);
   if (!here) return <p className="muted">{t('fishing.locating')}</p>;
   if (!near.length) return <p className="muted">{t('fishing.noneNear', { km: NEAR_RADIUS_M / 1000 })}</p>;
   return (
