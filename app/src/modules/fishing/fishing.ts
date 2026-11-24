@@ -56,15 +56,20 @@ export interface SectorSpecies {
   unconfirmed?: boolean;
   /** Desde esta fecha («AAAA-MM-DD»), solo devolución («A partir del 02/05/2027: devolución obligatoria…»). */
   releaseFrom?: string;
+  /** Hasta esta fecha («AAAA-MM-DD», sin incluirla), solo devolución (Tierra del Fuego: la arco iris hasta el 01/01/2027). */
+  releaseUntil?: string;
   /** El cupo es en total para varias especies («1 trucha», «2 salmónidos»), no uno por especie. */
   groupLimit?: boolean;
 }
 
 /** ¿Ya rige la devolución obligatoria por fecha? */
 export function releaseActive(sp: SectorSpecies, now: Date = new Date()): boolean {
-  if (!sp.releaseFrom) return false;
-  const [y, m, d] = sp.releaseFrom.split('-').map(Number);
-  return now >= new Date(y!, m! - 1, d!);
+  const day = (iso: string) => {
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(y!, m! - 1, d!);
+  };
+  if (sp.releaseUntil && now < day(sp.releaseUntil)) return true;
+  return !!sp.releaseFrom && now >= day(sp.releaseFrom);
 }
 
 /** ¿Está la especie en veda hoy? Devuelve hasta cuándo, si está. */

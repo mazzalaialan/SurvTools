@@ -594,5 +594,134 @@
  },
  "lit-salado-ba": {
   "approx": "se toma el Salado dentro de Buenos Aires"
+ },
+ "santa-cruz-san-martin-lago": {
+  "name": "Lago O'Higgins / Lago San Martín"
+ },
+ "santa-cruz-buenos-aires-lago": {
+  "name": "Lago General Carrera / Lago Buenos Aires"
+ },
+ "santa-cruz-pueyrredon-lago": {
+  "name": "Lago Cochrane / Lago Pueyrredón"
+ },
+ "santa-cruz-magan-arroyo": {
+  "name": "Arroyo Chorrillo Magán"
+ },
+ "santa-cruz-san-jose-embalse": {
+  "name": "Dique San José"
+ },
+ "santa-cruz-gallegos-chico-rio-veda-puente-nuevo": {
+  "fold": "santa-cruz-gallegos-chico-rio"
+ },
+ "santa-cruz-gallegos-rio-ventana-extraccion": {
+  "fold": "santa-cruz-gallegos-rio"
+ },
+ "santa-cruz-gallegos-rio-veda-puente-guer-aike": {
+  "fold": "santa-cruz-gallegos-rio"
+ },
+ "santa-cruz-las-vueltas-rio-veda-salto-argentino": {
+  "fold": "santa-cruz-las-vueltas-rio"
+ },
+ "santa-cruz-las-vueltas-rio-salmon-chinook": {
+  "fold": "santa-cruz-las-vueltas-rio"
+ },
+ "santa-cruz-los-antiguos-rio-fase-b": {
+  "fold": "santa-cruz-los-antiguos-rio"
+ },
+ "santa-cruz-santa-cruz-rio-costa": {
+  "fold": "santa-cruz-santa-cruz-rio"
+ },
+ "santa-cruz-santa-cruz-rio-salmon-chinook": {
+  "fold": "santa-cruz-santa-cruz-rio"
+ },
+ "santa-cruz-santa-cruz-rio-robalo": {
+  "fold": "santa-cruz-santa-cruz-rio"
+ },
+ "santa-cruz-santa-cruz-rio-trolling": {
+  "fold": "santa-cruz-santa-cruz-rio"
+ },
+ "santa-cruz-santa-cruz-rio-veda-obras-hidroelectricas": {
+  "fold": "santa-cruz-santa-cruz-rio"
+ },
+ "tdf-yehuin-lago-reserva-corazon-de-la-isla": {
+  "fold": "tdf-yehuin-lago"
+ },
+ "tdf-valdez-rio-veda-desembocadura": {
+  "fold": "tdf-valdez-rio"
+ },
+ "tdf-grande-rio-prueba-piloto": {
+  "skip": true
+ },
+ "santa-cruz-santa-cruz-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 1,
+    "groupLimit": true,
+    "releaseFrom": "2027-03-15",
+    "note": "Steelhead: 1 por temporada (cupo total por pescador); desde el 15/03/2027, devolución obligatoria."
+   },
+   "trucha-marron": {
+    "limit": 1,
+    "groupLimit": true
+   },
+   "perca": {
+    "limit": 1,
+    "groupLimit": true
+   },
+   "salmon-pacifico": {
+    "limit": 1,
+    "closures": [
+     {
+      "from": "12-01",
+      "to": "07-31"
+     }
+    ],
+    "note": "Chinook: temporada del 01/08 al 30/11/2027, solo en la costa entre la bajada de calle Bella Vista y el cruce del Interconectado."
+   },
+   "robalo": {
+    "limit": 10,
+    "minSizeCm": 30,
+    "note": "Todo el año, en el tramo costero hasta la Estancia La Esperanza."
+   }
+  },
+  "release": false
+ },
+ "santa-cruz-las-vueltas-rio": {
+  "species": {
+   "salmon-pacifico": {
+    "limit": 1,
+    "releaseFrom": "2027-03-15",
+    "note": "Chinook: 1 por día del 01/10/2026 al 14/03/2027; devolución obligatoria desde el 22/02/2027 aguas abajo de los pozos de la S hasta la confluencia del río Eléctrico."
+   },
+   "trucha-arcoiris": {
+    "limit": 0
+   },
+   "trucha-marron": {
+    "limit": 0
+   }
+  },
+  "release": false
+ },
+ "santa-cruz-gallegos-rio": {
+  "species": {
+   "trucha-marron": {
+    "limit": 0,
+    "note": "Trucha de mar (marrón anádroma): devolución obligatoria, salvo del 01/02 al 28/02/2027: 1 por día."
+   }
+  }
+ },
+ "santa-cruz-la-leona-rio": {
+  "release": false,
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 0
+   },
+   "trucha-marron": {
+    "limit": 0
+   },
+   "salmon-pacifico": {
+    "limit": 1
+   }
+  }
  }
 }

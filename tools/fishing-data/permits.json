@@ -291,5 +291,114 @@
   ],
   "infoUrl": "https://www.argentina.gob.ar/normativa/nacional/norma-50733/actualizacion",
   "date": "2026-11-23"
+ },
+ "Santa Cruz": {
+  "items": [
+   {
+    "type": "Residente: diario",
+    "price": "$15.000"
+   },
+   {
+    "type": "Residente: fin de semana (sábado y domingo)",
+    "price": "$20.000"
+   },
+   {
+    "type": "Residente: semanal",
+    "price": "$25.000"
+   },
+   {
+    "type": "Residente: temporada",
+    "price": "$40.000"
+   },
+   {
+    "type": "Menores de 13 a 17 años: temporada",
+    "price": "$15.000"
+   },
+   {
+    "type": "Socios de club de pesca (con personería jurídica): temporada",
+    "price": "$20.000"
+   },
+   {
+    "type": "Sin cargo",
+    "who": "mayores de 65, jubilados, pensionados, menores de hasta 12 años y personas con discapacidad (con acreditación oficial); excombatientes de Malvinas (permiso único permanente, con certificación)"
+   },
+   {
+    "type": "No residente en el país: diario",
+    "price": "$90.000"
+   },
+   {
+    "type": "No residente en el país: semanal",
+    "price": "$300.000"
+   },
+   {
+    "type": "No residente en el país: temporada",
+    "price": "$450.000"
+   }
+  ],
+  "extra": [
+   "Trolling: permiso adicional (diario $20.000, semanal $30.000, temporada $40.000), además del ordinario.",
+   "Los permisos de temporada rigen hasta el 30/09/2027. Solo valen en aguas provinciales de Santa Cruz (no valen los permisos de Neuquén, Río Negro, Chubut ni el de Parques Nacionales; en los Parques Nacionales de Santa Cruz rige el permiso de APN).",
+   "El permiso es personal, nominativo e intransferible; hay que llevarlo (físico o digital) y el DNI. El sitio oficial indica pago por transferencia bancaria con comprobante."
+  ],
+  "buyUrl": "https://pesca.santacruz.gob.ar/",
+  "infoUrl": "https://pesca.santacruz.gob.ar/valores/",
+  "requirements": "DNI; los menores los saca el padre, madre o tutor. Registro con cuenta en el sitio (inicio de sesión); no se probó el trámite.",
+  "where": "En línea en pesca.santacruz.gob.ar (Secretaría de Estado de Pesca y Acuicultura). Consultas: Dirección de Pesca Continental, Avellaneda 801 1° piso, Río Gallegos, +54 2966 429462, pesca-continental@santacruz.gob.ar. La nota oficial del 01/10/2026 nombra al «Sistema de Coordinación Pesquera, SIPESQ» como el sistema de gestión (sin URL verificada).",
+  "date": "2026-11-24"
+ },
+ "Tierra del Fuego": {
+  "items": [
+   {
+    "type": "Residente país: diario",
+    "price": "$26.000"
+   },
+   {
+    "type": "Residente país: 3 días",
+    "price": "$39.000"
+   },
+   {
+    "type": "Residente país: semanal (7 días)",
+    "price": "$65.000"
+   },
+   {
+    "type": "Residente país: temporada",
+    "price": "$90.000"
+   },
+   {
+    "type": "Menores de 13 a 17 años: temporada (solo pesca con devolución obligatoria)",
+    "price": "$20.000"
+   },
+   {
+    "type": "Sin cargo (solo pesca con devolución obligatoria)",
+    "who": "residentes en el país: menores de hasta 12 años, mayores de 65, jubilados, pensionados y personas con discapacidad (con acreditación)"
+   },
+   {
+    "type": "Extranjero no residente: diario",
+    "price": "$78.000"
+   },
+   {
+    "type": "Extranjero no residente: 3 días",
+    "price": "$117.000"
+   },
+   {
+    "type": "Extranjero no residente: semanal (7 días)",
+    "price": "$195.000"
+   },
+   {
+    "type": "Extranjero no residente: temporada",
+    "price": "$260.000"
+   }
+  ],
+  "extra": [
+   "Extranjeros no residentes, permiso adicional por zona preferencial. Ríos Grande y Menéndez: diario $59.000, 3 días $163.000, semanal $260.000, temporada $390.000. Ríos Ewan Sur, Irigoyen y lago Fagnano: diario $43.000, 3 días $85.000, semanal $130.000, temporada $247.000.",
+   "Extranjeros de países limítrofes (arancel diferenciado reincorporado): ríos Grande y Menéndez: diario $65.000, 3 días $78.000, semanal $130.000, temporada $175.000; ríos Ewan Sur, Irigoyen y lago Fagnano: diario $35.000, 3 días $62.000, semanal $98.000, temporada $169.000.",
+   "Los cotos privados (estancias) cobran aparte; los residentes con permiso acceden gratis a algunos por el sistema de reservas SAPTDF (https://saptdf.ar, verificado, requiere usuario).",
+   "Temporada 30/10/2026 al 02/05/2027. El permiso es válido en todo el ámbito provincial."
+  ],
+  "buyUrl": null,
+  "infoUrl": "https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/",
+  "requirements": "Documento de identidad y permiso (o comprobante de pago, o permiso digital en la «app pesca deportiva»). Los menores los saca el padre, madre o tutor.",
+  "where": "El permiso lo venden comercializadores habilitados que registran al pescador en www.siped.ar (Resolución 259/2026, Anexo II, punto 1). NO se encontró un enlace oficial de compra en línea verificado: siped.ar respondió 301 y luego no respondió desde este servidor. Información oficial: Secretaría de Ambiente, Dirección General de Recursos Hídricos; pescacontinentaltdf@gmail.com.",
+  "date": "2026-11-24"
  }
 }

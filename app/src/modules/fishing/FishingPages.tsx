@@ -384,8 +384,7 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
       )}
       {(s.modality?.length || s.catchAndRelease) && (
         <p>
-          {s.modality?.map((m) => t(`fishing.modality.${m}`)).join(' · ')}
-          {s.catchAndRelease && ` · ${t('fishing.rules.release')}`}
+          {[...(s.modality ?? []).map((m) => t(`fishing.modality.${m}`)), ...(s.catchAndRelease ? [t('fishing.rules.release')] : [])].join(' · ')}
         </p>
       )}
       <h2 className="section-title">{t('fishing.speciesHere', { count: s.species.length })}</h2>
@@ -457,7 +456,7 @@ export function FishSectorPage() {
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>
-            <RulesNotice data={data} pageRef={s.ref} />
+            <RulesNotice data={data} pageRef={s.ref} sourceId={s.source} />
           </div>
         );
       }}
@@ -487,6 +486,17 @@ export function FishRulesPage() {
                   </p>
                 )}
                 <PermitCard region={r} />
+                {(() => {
+                  const src = data.sources.find((x) => x.id === r.source);
+                  return src?.url ? (
+                    <p className="small">
+                      {t('fishing.normOf')}{' '}
+                      <a href={src.url} target="_blank" rel="noreferrer">
+                        {src.name}
+                      </a>
+                    </p>
+                  ) : null;
+                })()}
                 {r.rules?.length ? (
                   <ul>
                     {r.rules.map((x) => (

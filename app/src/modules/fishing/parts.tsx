@@ -86,7 +86,10 @@ export function speciesRules(t: (k: string, o?: Record<string, unknown>) => stri
   if (until) out.push(t('fishing.rules.closedUntil', { date: until.toLocaleDateString(undefined, { day: 'numeric', month: 'long' }) }));
   const fmtD = (iso: string) => iso.split('-').reverse().map(Number).slice(0, 2).join('/');
   const releaseNow = releaseActive(sp);
-  if (sector.catchAndRelease || sp.limit === 0 || releaseNow) out.push(releaseNow && sp.limit !== 0 && !sector.catchAndRelease ? t('fishing.rules.releaseSince', { date: fmtD(sp.releaseFrom!) }) : t('fishing.rules.release'));
+  const untilNow = !!sp.releaseUntil && releaseNow && sp.limit !== 0 && !sector.catchAndRelease;
+  if (sector.catchAndRelease || sp.limit === 0 || releaseNow)
+    out.push(untilNow ? t('fishing.rules.releaseUntil', { date: fmtD(sp.releaseUntil!) }) : releaseNow && sp.limit !== 0 && !sector.catchAndRelease ? t('fishing.rules.releaseSince', { date: fmtD(sp.releaseFrom!) }) : t('fishing.rules.release'));
+  if (untilNow && sp.limit) out.push(t('fishing.rules.limitAfter', { n: sp.limit, date: fmtD(sp.releaseUntil!) }));
   else if (sp.limit) out.push(sp.groupLimit ? t('fishing.rules.limitGroup', { n: sp.limit }) : t('fishing.rules.limit', { n: sp.limit }));
   if (sp.releaseFrom && !releaseNow && sp.limit !== 0 && !sector.catchAndRelease) out.push(t('fishing.rules.releaseFrom', { date: fmtD(sp.releaseFrom) }));
   else if (sp.limit === null) out.push(t('fishing.rules.free'));
@@ -112,9 +115,10 @@ export function GroupHint({ text }: { text?: string }) {
 }
 
 /** Aviso fijo: los datos son informativos y hay que consultar el reglamento vigente. */
-export function RulesNotice({ data, pageRef }: { data: FishData; pageRef?: string }) {
+/** Aviso de que es orientativo; con `sourceId`, enlaza la norma de ese tramo o región (cada provincia tiene la suya). */
+export function RulesNotice({ data, pageRef, sourceId }: { data: FishData; pageRef?: string; sourceId?: string }) {
   const { t } = useTranslation();
-  const src = data.sources[0];
+  const src = sourceId ? data.sources.find((x) => x.id === sourceId) : undefined;
   return (
     <p className="fish-notice" data-testid="fish-notice">
       {t('fishing.notice', { season: data.seasonLabel ?? '', date: data.generatedAt.slice(0, 10) })}{' '}

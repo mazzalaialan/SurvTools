@@ -16,7 +16,9 @@ if (!jurs) {
 }
 const OUT = outArg ?? fileURLToPath(new URL('../../app/public/data/fish-AR.json', import.meta.url));
 const read = (f) => JSON.parse(readFileSync(`${work}/${f}`, 'utf8'));
-const ambientes = read('ambientes.json');
+// Patagonia (reglamento común) + Santa Cruz y Tierra del Fuego (normas provinciales propias, en sur/).
+const ambientes = [...read('ambientes.json'), ...(existsSync(`${work}/sur/ambientes.json`) ? read('sur/ambientes.json') : [])];
+const reglasSur = existsSync(`${work}/sur/reglas_generales.json`) ? read('sur/reglas_generales.json') : { reglas: [] };
 const carnadas = read('carnadas.json');
 const reglas = read('reglas_generales.json');
 const cuts = JSON.parse(readFileSync(fileURLToPath(new URL('./cuts.json', import.meta.url)), 'utf8'));
@@ -31,8 +33,38 @@ const SOURCE = {
   license: 'Normativa pública sin licencia declarada: se usa con atribución',
   date: '2026-10-20',
 };
+/** Normas provinciales propias (no son parte del reglamento patagónico común). */
+const OWN = {
+  'Santa Cruz': {
+    source: {
+      id: 'sc-disp-241-2026',
+      name: 'Santa Cruz: Disposición N.º 241/2026 de la Secretaría de Estado de Pesca y Acuicultura (Reglamento General de Pesca Deportiva Continental 2026/2027, Anexos I y II)',
+      url: 'https://pesca.santacruz.gob.ar/static/docs/reglamento-pesca-2026-2027.pdf',
+      license: 'Norma oficial: se usan los datos con atribución (decisión del dueño, 2026-11-24: la leyenda «Todos los derechos reservados» es del portal, no de la disposición)',
+      date: '2026-09-22',
+    },
+    season: { from: '2026-10-01', to: '2027-09-30' },
+  },
+  'Tierra del Fuego': {
+    source: {
+      id: 'tdf-res-259-2026',
+      name: 'Tierra del Fuego: Resolución S.A. N.º 259/2026 de la Secretaría de Ambiente (reglamento de pesca deportiva 2026/2027)',
+      url: 'https://prodyambiente.tierradelfuego.gob.ar/wp-content/uploads/2026/10/Resolucion-N259-Temporada-pesca-2026.pdf',
+      license: 'Normativa pública sin licencia declarada: se usa con atribución',
+      date: '2026-10-01',
+    },
+    season: { from: '2026-10-30', to: '2027-05-02' },
+    // Art. del Anexo I: desde el 01/03/2027, devolución obligatoria en toda la provincia.
+    releaseFrom: '2027-03-01',
+    // Art. 3: «no podrá sacrificar más de un (01) ejemplar por día» (donde el ambiente no dice otra cosa).
+    defaultLimit: 1,
+    // Anexo IV, 1.a: hasta el 01/01/2027, devolución obligatoria de la trucha arco iris en todos los ambientes provinciales.
+    releaseUntil: { 'trucha-arcoiris': '2027-01-01' },
+  },
+};
 const SOURCES = [
   SOURCE,
+  ...Object.values(OWN).map((o) => o.source),
   { id: 'osm', name: 'Ríos y lagos: © colaboradores de OpenStreetMap', url: 'https://www.openstreetmap.org/copyright', license: 'ODbL 1.0', date: new Date().toISOString().slice(0, 10) },
   { id: 'fishbase', name: 'Dieta de las especies: FishBase (Froese y Pauly)', url: 'https://www.fishbase.se', license: 'CC BY-NC 4.0', date: '2026-11-23' },
 ];
@@ -79,14 +111,14 @@ const lower = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 /** Nombres del reglamento → especies de la app. «truchas» y «salmónidos» sin más: arco iris y marrón (las que hay en casi todos lados). */
 function speciesOf(phrase) {
   const p = lower(phrase);
-  if (/arco ?iris/.test(p)) return ['trucha-arcoiris'];
-  if (/marron/.test(p)) return ['trucha-marron'];
+  if (/arco ?iris|steelhead|mykiss/.test(p)) return ['trucha-arcoiris'];
+  if (/marron|salmo trutta/.test(p)) return ['trucha-marron'];
   if (/arroyo|fontinalis/.test(p)) return ['trucha-arroyo'];
   if (/de lago|namaycush|bocona/.test(p)) return ['trucha-lago'];
   if (/encerrado|salmo salar|atlantico/.test(p)) return ['salmon-atlantico'];
-  if (/chinook|pacifico/.test(p)) return ['salmon-pacifico'];
+  if (/chinook|pacifico|tshawytscha|coho|kisutch/.test(p)) return ['salmon-pacifico'];
+  if (/perca|percichthys/.test(p)) return ['perca'];
   if (/salmonido|trucha/.test(p)) return ['trucha-arcoiris', 'trucha-marron'];
-  if (/perca/.test(p)) return ['perca'];
   if (/pejerrey/.test(p)) return ['pejerrey'];
   if (/carpa/.test(p)) return ['carpa'];
   if (/robalo/.test(p)) return ['robalo'];
@@ -103,6 +135,17 @@ function parseSector(a) {
   const t = lower(text);
   const species = new Map();
   const set = (id, patch) => species.set(id, { id, ...species.get(id), ...patch });
+  // Santa Cruz: «Límite Diario (LD): Dos (2) ejemplares en total por pescador» (sin nombrar especies: es para las truchas en total);
+  // «Un (1) ejemplar exclusivo de Salmón Chinook».
+  let totalLimit;
+  for (const m of text.matchAll(/\(LD\)(?:\s*general)?:?\s*(?:de\s+)?[A-Za-zÁÉÍÓÚáéíóú]+\s*\((\d+)\)\s*([^.;]*)/gi)) {
+    const rest = m[2];
+    const generic = /^ejemplar/i.test(rest) && !/exclusiv|\bde (trucha|salm|perca|r[oó]balo)/i.test(rest);
+    if (generic) totalLimit = Number(m[1]);
+    else for (const id of speciesOf(rest.split(/[,;]/)[0])) set(id, { limit: Number(m[1]) });
+  }
+  // «Un (1) ejemplar de Perca (Percichthys trucha) y Un (1) ejemplar de Trucha Marrón (Salmo trutta)».
+  for (const m of text.matchAll(/\((\d+)\)\s*ejemplar(?:es)? de ([A-ZÁÉÍÓÚ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚ]?[a-záéíóúñ]+)?)/g)) for (const id of speciesOf(m[2])) set(id, { limit: Number(m[1]) });
   // Cupo diario: «LD: 1 trucha arco iris, 2 percas y 10 pejerreyes y carpas sin límite».
   for (const m of text.matchAll(/LD:?\s*([^.]*)/g)) {
     const ld = m[1].split(/-\s*devoluci|,?\s*devoluci/i)[0];
@@ -136,7 +179,7 @@ function parseSector(a) {
   }
   // Devolución obligatoria: cupo 0.
   // «Devolución obligatoria.» a secas (sin «de …») o «de todos los peces»: todo se devuelve.
-  let allRelease = /devoluci[oó]n obligatoria(?! de)(?! a partir)/i.test(text.replace(/devoluci[oó]n obligatoria de (todas las especies|todos los peces)/gi, 'devolución obligatoria')) || /captura y devoluci[oó]n/i.test(text);
+  let allRelease = /devoluci[oó]n obligatoria(?! de)(?! a partir)(?! para)(?! y sin excepciones para)/i.test(text.replace(/devoluci[oó]n obligatoria de (todas las especies|todos los peces)/gi, 'devolución obligatoria')) || /captura y devoluci[oó]n(?! obligatoria (?:para|de) (?:la |el )?(?:trucha|salm))/i.test(text.replace(/a partir del[^.]*\./gi, ''));
   for (const m of text.matchAll(/devoluci[oó]n obligatoria de ([^.;:]*)/gi)) {
     const what = m[1];
     if (/todas las especies|todos los peces/i.test(what)) continue;
@@ -148,18 +191,21 @@ function parseSector(a) {
   if (allRelease) for (const id of species.keys()) set(id, { limit: 0 });
   // «A partir del 02/05/2027: devolución obligatoria de todos los salmónidos» / «Desde el 01/04/2027 devolución obligatoria»:
   // hasta esa fecha rige el cupo; desde ahí, solo devolución.
-  for (const m of text.matchAll(/(?:a partir del?|desde el)\s*(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s*:?\s*((?:(?!\.\s)[^.])*?)devoluci[oó]n obligatoria(?:\s+de\s+(todos los salm[oó]nidos|todas las capturas|todos los peces|todas las especies))?/gi)) {
+  for (const m of text.matchAll(/(?:a partir del?|desde el)\s*(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s*:?\s*((?:(?!\.\s)[^.])*?)devoluci[oó]n obligatoria(?:\s+(?:de|para)\s+(?:la |el )?([^.,;]+))?/gi)) {
     if (/\bal\s+\d{1,2}\/\d{1,2}/i.test(m[4])) continue; // «desde el … al …»: es un período, queda en el texto
     const yy = m[3].length === 2 ? `20${m[3]}` : m[3];
     const from = `${yy}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-    const targets = m[5] && /salm/i.test(m[5]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo', 'trucha-lago', 'salmon-atlantico', 'salmon-pacifico'] : [...species.keys()];
+    const named = m[5] && !/todas|todos/i.test(m[5]) ? [...new Set(m[5].split(/,|\sy\s/).flatMap((x) => speciesOf(x)))] : [];
+    const targets = m[5] && /salm[oó]nid/i.test(m[5]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo', 'trucha-lago', 'salmon-atlantico', 'salmon-pacifico'] : named.length ? named : [...species.keys()];
     for (const id of targets) if (species.has(id)) set(id, { releaseFrom: from });
   }
   // Si no nombra ninguna especie pero se pesca, al menos las truchas (en la Patagonia están en casi todos los ambientes con salmónidos).
-  const closed = (/pesca no autorizada|no se permite la pesca|veda total|prohibida la pesca\s*(en todo|todo el a)/i.test(text) || /^\W*(neuqu[eé]n\W*)?prohibida la pesca\.?\s*$/i.test(text.replace(/^-\s*/, ''))) && !/LD/.test(text);
+  const closed = (/pesca no autorizada|no se permite la pesca|veda total|veda permanente|prohibida la pesca\s*(en todo|todo el a|deportiva)|se proh[ií]be la pesca durante todo el a|queda prohibida la pesca|se encuentra prohibida la pesca/i.test(text) || /^\W*(neuqu[eé]n\W*)?prohibida la pesca\.?\s*$/i.test(text.replace(/^-\s*/, ''))) && !/LD/.test(text);
   // Sin especies nombradas (p. ej. «Devolución obligatoria.»): se toman las truchas, que están en casi todos los ríos y lagos patagónicos.
   const inferred = !species.size && !closed;
   if (inferred) for (const id of ['trucha-arcoiris', 'trucha-marron']) set(id, allRelease ? { limit: 0 } : {});
+  if (totalLimit !== undefined && !allRelease)
+    for (const e of species.values()) if (e.limit === undefined && /trucha|salmon/.test(e.id)) set(e.id, { limit: totalLimit, groupLimit: true });
   const mods = new Set();
   for (const m of text.matchAll(/\((S|M|T|SBM)\)/g)) mods.add(MODALITY[m[1]]);
   if (/mosca solamente|exclusivo equipo de mosca|solo mosca/i.test(text)) mods.add('fly');
@@ -167,9 +213,14 @@ function parseSector(a) {
   // «Apertura: 01/11/2026 - Cierre: 31/05/2027» o «Permitido pescar desde el 01/11/2026 al 31/05/2027».
   const span = text.match(/desde el (\d{1,2}\/\d{1,2}\/\d{4}) (?:al|hasta el) (\d{1,2}\/\d{1,2}\/\d{4})/i);
   const open = text.match(/Apertura:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[1]]);
-  const close = text.match(/Cierre:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[2]]);
+  const close = text.match(/Cierre(?: de la temporada)?:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[2]]);
   const oct = text.match(/durante (?:el mes de )?octubre del?\s*(\d{4})/i);
-  const season = closed ? undefined : open && close ? { from: iso(open[1]), to: iso(close[1]), ...(oct && { also: [{ from: `${oct[1]}-10-01`, to: `${oct[1]}-10-31` }] }) } : undefined;
+  // Tierra del Fuego: «Se habilita la pesca deportiva el día treinta (30) de octubre de 2026 y la finalización de la temporada para el día dieciocho (18) de abril de 2027».
+  const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const words = [...text.matchAll(/d[ií]a [a-z]+ \((\d+)\) de ([a-z]+) de (\d{4})/gi)].map((m) => `${m[3]}-${String(MONTHS.indexOf(m[2].toLowerCase()) + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}`);
+  const jan = text.match(/a partir del d[ií]a uno \(1\) de enero de (\d{4})/i);
+  const allYear = /(habilitad[oa]s? durante todo el a[ñn]o|abierto todo el a[ñn]o|durante todo el a[ñn]o)/i.test(text) && !open;
+  const season = closed ? undefined : allYear ? { allYear: true } : jan ? { from: `${jan[1]}-01-01`, to: '2027-05-02' } : words.length === 2 && /habilita la pesca/i.test(text) ? { from: words[0], to: words[1] } : open && close ? { from: iso(open[1]), to: iso(close[1]), ...(oct && { also: [{ from: `${oct[1]}-10-01`, to: `${oct[1]}-10-31` }] }) } : undefined;
   return { species: [...species.values()], modality: [...mods], season, closed, inferred, catchAndRelease: allRelease || undefined };
 }
 
@@ -185,19 +236,46 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
   regions.push({
     id: regionId,
     name: jur,
-    rules: reglas.reglas.filter((r) => r.jurisdiccion === jur || r.jurisdiccion?.startsWith('Todas')).map((r) => `${r.texto_literal} (${r.articulo_o_punto ?? ''}, pág. ${r.pagina_impresa ?? '?'})`),
-    season: { from: '2026-11-01', to: '2027-05-01' },
+    rules: (OWN[jur] ? reglasSur.reglas.filter((r) => r.jurisdiccion === jur) : reglas.reglas.filter((r) => r.jurisdiccion === jur || r.jurisdiccion?.startsWith('Todas'))).map(
+      (r) => `${r.texto_literal} (${[r.articulo_o_punto, r.pagina_impresa || r.pagina ? `pág. ${r.pagina_impresa ?? r.pagina}` : ''].filter(Boolean).join(', ')})`,
+    ),
+    season: OWN[jur]?.season ?? { from: '2026-11-01', to: '2027-05-01' },
     ...(permits[jur] && { permit: permits[jur] }),
-    source: SOURCE.id,
+    source: OWN[jur]?.source.id ?? SOURCE.id,
   });
+  // Subtramos que son una regla puntual del mismo río (veda junto a un puente, ventana de extracción, régimen de una especie):
+  // van como nota del tramo general («fold» en cuts.json), no como otro dibujo encima del mismo río.
+  const folded = new Map();
+  for (const a of ambientes.filter((x) => x.jurisdiccion === jur && cuts[x.id]?.fold)) {
+    const into = cuts[a.id].fold;
+    folded.set(into, [...(folded.get(into) ?? []), a]);
+  }
   for (const a of ambientes.filter((x) => x.jurisdiccion === jur)) {
-    if (cuts[a.id]?.skip) continue;
+    if (cuts[a.id]?.skip || cuts[a.id]?.fold) continue;
     const g = geo[a.id] ?? (cuts[a.id]?.lakeZone ? geo[a.id.replace(/-zona-[ivx]+$/, '')] : undefined);
     if (!g) {
       missing.push(a.id);
       continue;
     }
     const p = parseSector(a);
+    for (const f of folded.get(a.id) ?? []) {
+      const q = parseSector(f);
+      for (const e of q.species) if (!p.species.some((x) => x.id === e.id) && !q.inferred) p.species.push(e);
+    }
+    // Reglas por especie que el texto da con redacción libre (cuts.json → «species»: se revisan a mano contra la norma).
+    for (const [id, patch] of Object.entries(cuts[a.id]?.species ?? {})) {
+      const e = p.species.find((x) => x.id === id);
+      if (e) Object.assign(e, patch);
+      else p.species.push({ id, ...patch });
+    }
+    if (cuts[a.id]?.release === false) p.catchAndRelease = undefined;
+    const own = OWN[jur];
+    for (const e of p.species) {
+      if (!own || e.limit === 0 || p.catchAndRelease) continue;
+      if (own.defaultLimit !== undefined && e.limit === undefined) Object.assign(e, { limit: own.defaultLimit, groupLimit: true });
+      if (own.releaseFrom) e.releaseFrom ??= own.releaseFrom;
+      if (own.releaseUntil?.[e.id]) e.releaseUntil = own.releaseUntil[e.id];
+    }
     // Cierre anticipado de la trucha de arroyo en ríos y arroyos: desde el 01/03/2027, devolución obligatoria (Reglamento 2026/27, pág. 13, 2.b).
     if (/r[ií]o|arroyo/i.test(a.tipo_agua)) for (const e of p.species) if (e.id === 'trucha-arroyo' && e.limit !== 0) e.releaseFrom ??= '2027-03-01';
     const general = ambientes.find((x) => x.id === a.id.replace(/-zona-[ivx]+$/, '') && x.id !== a.id);
@@ -214,10 +292,13 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       ...(p.catchAndRelease && { catchAndRelease: true }),
       ...(p.inferred && { speciesInferred: true }),
       species: p.species,
-      notes: [general?.descripcion_tramo_literal, a.descripcion_tramo_literal].filter(Boolean).map((x) => x.replace(/^[\s-]+/, '')).join(' — '),
+      notes: [general?.descripcion_tramo_literal, a.descripcion_tramo_literal, ...(folded.get(a.id) ?? []).map((f) => `${f.subtramo}: ${f.descripcion_tramo_literal}`)]
+        .filter(Boolean)
+        .map((x) => x.replace(/^[\s-]+/, ''))
+        .join(' — '),
       ...((cuts[a.id]?.approx || g.approxPoint) && { approx: cuts[a.id]?.approx ?? 'ubicado por coordenada; el agua no está dibujada en el mapa base' }),
-      source: SOURCE.id,
-      ref: `pág. ${a.fuente?.pagina_impresa ?? '?'}`,
+      source: OWN[jur]?.source.id ?? SOURCE.id,
+      ref: `pág. ${a.fuente?.pagina_impresa ?? a.fuente?.pagina ?? a.fuente?.pagina_pdf ?? '?'}`,
       _shared: !!a.compartido_con,
       _regionName: jur,
     });

@@ -62,3 +62,16 @@ test('pesca: no revisa durante la vigencia, recién unos días antes de que term
   assert.equal(calls, 0);
   assert.equal(r.checked, 0);
 });
+
+test('pesca: cada documento se revisa según su propia vigencia', async () => {
+  const db = openDb(':memory:');
+  const docs = [
+    { label: 'Común', url: 'https://example.org/comun.pdf' },
+    { label: 'Santa Cruz', url: 'https://example.org/sc.pdf', validUntil: '2027-09-30' },
+  ];
+  const seen: string[] = [];
+  const f = (async (url: string | URL) => (seen.push(String(url)), new Response('x'))) as typeof fetch;
+  // Mediados de agosto de 2027: ya toca Santa Cruz (45 días antes del 30/09), todavía no el reglamento común (31/10).
+  await runFishingWatch(db, null, () => undefined, f, new Date('2027-08-20T12:00:00Z'), docs);
+  assert.deepEqual(seen, ['https://example.org/sc.pdf']);
+});

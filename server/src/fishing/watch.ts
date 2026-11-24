@@ -16,6 +16,8 @@ export interface WatchedDoc {
   /** Nombre para el mail. */
   label: string;
   url: string;
+  /** Fin de la vigencia de ese documento, si no es la del reglamento patagónico común. */
+  validUntil?: string;
 }
 
 /** Fin de la vigencia del reglamento cargado (los permisos de temporada 2026/27 valen hasta el 31/10/2027). */
@@ -31,6 +33,11 @@ export function watchDue(now: Date, validUntil = VALID_UNTIL, daysBefore = WATCH
 /** Documentos que se vigilan. Agregar acá los de cada jurisdicción nueva. */
 export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'Reglamento de Pesca Deportiva Continental Patagónico 2026/2027', url: 'https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf' },
+  // Santa Cruz: Disposición 241/2026 (temporada hasta el 30/09/2027).
+  { label: 'Santa Cruz: Reglamento de Pesca Deportiva Continental 2026/2027', url: 'https://pesca.santacruz.gob.ar/static/docs/reglamento-pesca-2026-2027.pdf', validUntil: '2027-09-30' },
+  // Tierra del Fuego: Resolución S.A. 259/2026 (temporada hasta el 02/05/2027; la nueva sale en septiembre u octubre).
+  { label: 'Tierra del Fuego: Resolución de la temporada de pesca 2026/2027', url: 'https://prodyambiente.tierradelfuego.gob.ar/wp-content/uploads/2026/10/Resolucion-N259-Temporada-pesca-2026.pdf', validUntil: '2027-10-01' },
+  { label: 'Tierra del Fuego: página de pesca deportiva (anuncia la resolución nueva)', url: 'https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/', validUntil: '2027-10-01' },
 ];
 
 /** El reglamento de la temporada siguiente, si siguen publicándolo con el mismo nombre (se prueba si existe). */
@@ -59,9 +66,10 @@ export async function runFishingWatch(
   docs: WatchedDoc[] = FISHING_DOCS,
 ): Promise<FishingWatchResult> {
   const result: FishingWatchResult = { checked: 0, changed: [], failed: [], found: [] };
-  if (!watchDue(now)) return result;
+  if (!docs.some((d) => watchDue(now, d.validUntil))) return result;
   const notes: string[] = [];
   for (const doc of docs) {
+    if (!watchDue(now, doc.validUntil)) continue;
     try {
       const res = await fetchImpl(doc.url, { signal: AbortSignal.timeout(60_000), headers: { 'user-agent': 'VikArg-server/1.0' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -79,7 +87,7 @@ export async function runFishingWatch(
       log('no se pudo revisar un documento de pesca', { url: doc.url, err: String(err) });
     }
   }
-  for (const doc of nextSeasonUrls(now)) {
+  for (const doc of watchDue(now) ? nextSeasonUrls(now) : []) {
     if (getSetting(db, KEY(doc.url))) continue; // ya se avisó
     try {
       const res = await fetchImpl(doc.url, { method: 'HEAD', signal: AbortSignal.timeout(30_000), headers: { 'user-agent': 'VikArg-server/1.0' } });

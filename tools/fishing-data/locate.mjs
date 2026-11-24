@@ -23,6 +23,8 @@ const BBOX = {
   'Río Negro': [-72.0, -42.05, -62.7, -37.5],
   Chubut: [-72.2, -46.05, -63.5, -41.95],
   'Parques Nacionales del Sur (APN)': [-73.8, -55.2, -62.7, -36.0],
+  'Santa Cruz': [-73.7, -52.5, -65.6, -45.9],
+  'Tierra del Fuego': [-68.8, -55.2, -63.7, -52.6],
   // Litoral (Entre Ríos, Santa Fe, Corrientes, Misiones, Chaco, Formosa, Buenos Aires y el río Uruguay compartido).
   Litoral: [-62.9, -38.6, -53.5, -21.9],
 };
