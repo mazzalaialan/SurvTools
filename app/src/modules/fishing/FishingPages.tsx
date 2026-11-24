@@ -383,7 +383,14 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
       )}
       <h2 className="section-title">{t('fishing.speciesHere', { count: s.species.length })}</h2>
       <ul className="list" data-testid="fish-sector-species">
-        {s.species.map((x) => {
+        {/* En orden alfabético (como la lista de peces). */}
+        {[...s.species]
+          .sort((a, b) => {
+            const na = speciesById(data, a.id);
+            const nb = speciesById(data, b.id);
+            return (na ? speciesName(na, i18n.language) : a.id).localeCompare(nb ? speciesName(nb, i18n.language) : b.id, i18n.language);
+          })
+          .map((x) => {
           const sp = speciesById(data, x.id);
           const rules = speciesRules(t, x, s);
           return (
