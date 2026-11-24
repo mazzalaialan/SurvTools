@@ -420,6 +420,14 @@ for (const a of ambientes) {
   const cut = cuts[a.id];
   if (cut?.skip) continue;
   try {
+    // Línea ya armada (archivo con [[lon, lat], …] en la carpeta de trabajo): la costa argentina del Río de la Plata, que OSM tiene
+    // como costa de mar (natural=coastline) y no como agua; se arma con la costa entre San Isidro y Punta Rasa (ver README).
+    if (cut?.line) {
+      const coords = JSON.parse(readFileSync(`${process.env.HOME}/vikarg-fishing-work/${cut.line}`, 'utf8'));
+      out[a.id] = { geometry: { type: 'LineString', coordinates: coords }, how: `línea armada (${cut.line})` };
+      report.ok.push(a.id);
+      continue;
+    }
     // Cuerpo de agua por su id de OpenStreetMap («osm»: «way/28940173» o «relation/1624512»): para lagunas homónimas.
     if (cut?.osm) {
       const [t, id] = cut.osm.split('/');

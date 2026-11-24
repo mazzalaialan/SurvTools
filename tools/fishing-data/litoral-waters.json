@@ -1119,5 +1119,18 @@
   "descripcion_tramo_literal": "Río Carabelas Grande (Delta bonaerense): pejerrey en invierno, dorado, bogas y bagres.",
   "fuente": {},
   "_cut": null
+ },
+ {
+  "id": "lit-rio-de-la-plata",
+  "jurisdiccion": "Litoral",
+  "agua": "de la Plata",
+  "tipo_agua": "Río",
+  "subtramo": null,
+  "jurisdicciones": [
+   "Buenos Aires"
+  ],
+  "descripcion_tramo_literal": "Costa argentina del Río de la Plata, de San Isidro a Punta Rasa (Buenos Aires): pejerrey en invierno, bagres, bogas, carpas, corvina y dorado; desde muelles, escolleras y la costa.",
+  "fuente": {},
+  "_cut": null
  }
 ]

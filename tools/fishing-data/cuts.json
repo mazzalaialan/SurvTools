@@ -1059,5 +1059,8 @@
  },
  "lit-piray-guazu": {
   "tol": 120
+ },
+ "lit-rio-de-la-plata": {
+  "line": "litoral/rio-de-la-plata-costa.json"
  }
 }

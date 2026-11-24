@@ -23,3 +23,5 @@ CARU). Extracto: `prepare.sh <pbf> ~/vikarg-fishing-work/osm-litoral -62.9,-38.6
 `locate.mjs ~/vikarg-fishing-work/osm-litoral ~/vikarg-fishing-work/litoral/ambientes.json Litoral ~/vikarg-fishing-work/geo-Litoral.json`.
 Los cortes del Paraná van por coordenada (los nombres «arroyo del Medio» y «Guayquiraró» se repiten en otros arroyos) y con `gapM`
 (el Paraná está dibujado en pedazos con huecos entre islas).
+
+**Río de la Plata costero:** OSM lo tiene como costa de mar (`natural=coastline`), no como agua. La línea se arma con la costa entre San Isidro y Punta Rasa (camino más corto sobre los tramos de costa, simplificado a 150 m) y se guarda en `~/vikarg-fishing-work/litoral/rio-de-la-plata-costa.json`; en `cuts.json` va como `line`.
