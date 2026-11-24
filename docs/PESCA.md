@@ -107,3 +107,11 @@ Cargadas las cuatro jurisdicciones del reglamento 2026/27: **300 tramos** en el 
 - **Sin ubicar (40):** lagunas y arroyos sin nombre en OSM (lista en la salida de `build.mjs`); se agregan con coordenada a mano en `cuts.json`.
 - **Especies supuestas (145 tramos):** el texto no nombra especies (muy común en Parques: «Mosca solamente. Devolución obligatoria.»): se toman truchas arcoíris y marrón.
 - **Permisos:** Río Negro con su tienda oficial; Chubut y Parques sin enlace propio (vale el permiso de Neuquén o Río Negro en línea).
+
+## Ambientes sin ubicar (2026-11-23)
+
+Con la búsqueda de coordenadas (`~/vikarg-fishing-work/coordenadas.json`: IGN WFS de hidrografía —libre, Ley 27.275—, GeoNames CC BY, Wikipedia, OSM) se ubicaron 24 más (323 tramos en el mapa). **Quedan 16**, que se ven en las listas con su reglamento pero no en el mapa:
+- **Sin rastro en ninguna fuente:** lagunas Doña Pancha (o Nedalafquen), El Aparato, Matetue y Puyulafquen (Neuquén); Derivador Azud, arroyos Rifleros y Vicente —afluente del Lepa— (Chubut); arroyo Canal de Doña Rosa (o de Alarcón), arroyo Llodconto (sección Mascardi/Steffen), lago Los Raulíes (¿cerca del arroyo de los Raulíes, -39.44, -71.36?), laguna Media Luna y río Nuevo (Parques Nacionales).
+- **Candidato dudoso (no cargado):** El Palau → ¿laguna Palao (-36.9323, -70.3151) o Palau Mahuida (-38.80, -70.68)?; Laguna Verde - Selva Triste → ¿Laguna Verde de Villa La Angostura (OSM way 191658886)?; río Colehual → ¿arroyo Calihuel?; río Rillaqueo → ¿errata de arroyo Millaqueo (desemboca en -41.0025, -71.5762)?
+- **A medias:** tramo 28 de Julio del río Chubut (empieza en el salto de Boca Toma, -43.4423, -65.9407; falta el «puente de madera» donde termina).
+- **A quién preguntar:** Dirección de Fauna de Neuquén, intendencias de los PN Los Alerces y Nahuel Huapi, Instituto Provincial del Agua de Chubut (Azud). Al confirmar uno: agregarlo en `tools/fishing-data/cuts.json` (`name` si está en OSM con otro nombre, `at: [lon, lat]` para un lago, `path: [[lon, lat], [lon, lat]]` para un río) y regenerar.
