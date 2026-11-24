@@ -330,11 +330,11 @@ export function sectorsInZone(data: FishData, zone: string | null): FishSector[]
   return zone ? data.sectors.filter((s) => sectorZone(data, s) === zone) : data.sectors;
 }
 
-/** Peces de una zona, del que está en más tramos al que menos. */
+/** Peces de una zona, en orden alfabético. */
 export function speciesInZone(data: FishData, zone: string | null): FishSpecies[] {
   const sectors = sectorsInZone(data, zone);
   const count = (id: string) => sectors.filter((s) => s.species.some((x) => x.id === id)).length;
-  return data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => count(b.id) - count(a.id));
+  return data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => a.name.es.localeCompare(b.name.es, 'es'));
 }
 
 /** La zona del tramo más cercano a un punto (lon, lat), o `null` si no hay datos. */

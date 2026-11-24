@@ -38,6 +38,7 @@ function ZoneSpecies({ data, lang }: { data: FishData; lang: string }) {
 }
 
 function ZoneWaters({ data }: { data: FishData }) {
+  const { t } = useTranslation();
   const z = useFishZone(data);
   const zoneData = { ...data, sectors: sectorsInZone(data, z.zone) };
   return (
@@ -45,7 +46,12 @@ function ZoneWaters({ data }: { data: FishData }) {
       <ZonePicker data={data} {...z} />
       {waters(zoneData).map((w) => (
         <section key={w.water} className="stack">
-          <h2 className="section-title">{w.water}</h2>
+          <div className="fish-water-head">
+            <h2 className="section-title">{w.water}</h2>
+            <Link className="btn btn-small" to={`/fishing/map?sector=${w.sectors[0]!.id}`} aria-label={`${t('fishing.seeOnMap')}: ${w.water}`}>
+              <MapIcon size={18} aria-hidden /> {t('fishing.map')}
+            </Link>
+          </div>
           <SectorList data={data} sectors={w.sectors} />
         </section>
       ))}
@@ -414,6 +420,9 @@ export function FishSectorPage() {
         return (
           <div className="stack fish-screen" data-testid="fish-sector-page">
             <h1 className="page-title">{s.water}</h1>
+            <Link className="btn btn-primary btn-block" to={`/fishing/map?sector=${s.id}`} data-testid="fish-sector-map">
+              <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
+            </Link>
             {s.rules?.length ? (
               <>
                 <p className="fish-hint" data-testid="fish-shared">{t('fishing.shared', { list: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(s.rules.map((r) => r.regionName)) })}</p>

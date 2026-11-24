@@ -7176,3 +7176,9 @@ button.country-pack-del {
   font-size: var(--fs-lg);
   margin: 0;
 }
+.fish-water-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}

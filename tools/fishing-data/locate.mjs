@@ -338,7 +338,45 @@ const round = (c) => [Number(c[0].toFixed(5)), Number(c[1].toFixed(5))];
 
 /** Une los tramos de un río en líneas continuas (para «todo el río»). */
 function mergeWays(ways) {
-  return ways.map((w) => simplify(w.geometry.coordinates, 40).map(round)).filter((l) => l.length > 1);
+  // Se unen en cadenas largas los pedazos que comparten un extremo: de lejos el mapa descarta las líneas de menos de un píxel, y un
+  // río patagónico son cientos de pedazos cortos (no se veía con la provincia entera a la vista).
+  const key = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
+  const pool = ways.map((w) => [...w.geometry.coordinates]).filter((l) => l.length > 1);
+  const byEnd = new Map();
+  const index = () => {
+    byEnd.clear();
+    pool.forEach((l, i) => {
+      for (const c of [l[0], l[l.length - 1]]) byEnd.set(key(c), [...(byEnd.get(key(c)) ?? []), i]);
+    });
+  };
+  const out = [];
+  const used = new Set();
+  index();
+  for (let i = 0; i < pool.length; i++) {
+    if (used.has(i)) continue;
+    used.add(i);
+    let cur = pool[i];
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const [end, atStart] of [[cur[cur.length - 1], false], [cur[0], true]]) {
+        const next = (byEnd.get(key(end)) ?? []).find((j) => !used.has(j));
+        if (next === undefined) continue;
+        used.add(next);
+        let l = pool[next];
+        if (atStart) {
+          if (key(l[0]) === key(end)) l = [...l].reverse();
+          cur = [...l, ...cur.slice(1)];
+        } else {
+          if (key(l[l.length - 1]) === key(end)) l = [...l].reverse();
+          cur = [...cur, ...l.slice(1)];
+        }
+        grew = true;
+        break;
+      }
+    }
+    out.push(cur);
+  }
+  return out.map((l) => simplify(l, 40).map(round)).filter((l) => l.length > 1);
 }
 
 // --- Principal ---

@@ -220,8 +220,8 @@ const FISHING_DASH: Record<string, number[] | null> = { solid: null, dash: [2.4,
 export const FISHING_LAYERS = ['fishing-fill', ...Object.keys(FISHING_DASH).map((d) => `fishing-line-${d}`)];
 
 function addFishingLayers(map: MlMap, c: MapColors) {
-  const width: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 6, 2.5, 12, 5, 16, 8];
-  const casing: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 6, 5, 12, 9, 16, 13];
+  const width: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 3, 2.2, 6, 3, 12, 5, 16, 8];
+  const casing: ExpressionSpecification = ['interpolate', ['linear'], ['zoom'], 3, 3.5, 6, 5.5, 12, 9, 16, 13];
   map.addLayer({ id: 'fishing-fill', type: 'fill', source: 'fishing', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.28, 'fill-outline-color': ['get', 'color'] } });
   // Borde claro debajo de la línea, para que se lea sobre el agua y el relieve.
   map.addLayer({ id: 'fishing-casing', type: 'line', source: 'fishing', filter: ['!', ['has', 'nameLine']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.bg, 'line-width': casing, 'line-opacity': 0.9, 'line-offset': ['coalesce', ['get', 'offset'], 0] } });
@@ -265,7 +265,8 @@ function addFishingLayers(map: MlMap, c: MapColors) {
 /** Capas propias encima del estilo base; se vuelven a agregar cada vez que cambia el estilo (tema). */
 function addOverlays(map: MlMap, c: MapColors, p: Props) {
   const d = data(p);
-  for (const [id, fc] of Object.entries(d)) if (id !== 'ecoregions' && id !== 'geology' && !map.getSource(id)) map.addSource(id, { type: 'geojson', data: fc });
+  // Los tramos de pesca con menos simplificación: de lejos, los ríos chicos patagónicos desaparecían.
+  for (const [id, fc] of Object.entries(d)) if (id !== 'ecoregions' && id !== 'geology' && !map.getSource(id)) map.addSource(id, id === 'fishing' ? { type: 'geojson', data: fc, tolerance: 0.1 } : { type: 'geojson', data: fc });
   ensureAreaLayers(map, c, p);
   const mine = p.showMine ? 'visible' : 'none';
   // El contorno va debajo de todo lo dibujado del mapa, pero arriba del fondo.

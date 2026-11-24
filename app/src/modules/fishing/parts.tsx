@@ -203,14 +203,15 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
 }
 
 /** Elegir la zona (cuenca): por defecto la de tu lugar; se puede cambiar a mano. */
-export function ZonePicker({ data, zone, auto, manual, setZone }: { data: FishData; zone: string | null; auto: string | null; manual: boolean; setZone: (z: string | null) => void }) {
+export function ZonePicker({ data, zone, picked, auto, manual, setZone }: { data: FishData; zone: string | null; picked?: string | null; auto: string | null; manual: boolean; setZone: (z: string | null) => void }) {
   const { t, i18n } = useTranslation();
   const zones = data.zones ?? [];
   if (zones.length < 2) return null;
   return (
     <label className="fish-zone" data-testid="fish-zone">
       <span>{t('fishing.zone.label')}</span>
-      <select className="input" value={zone ?? ''} onChange={(e) => setZone(e.target.value === auto ? null : e.target.value)}>
+      <select className="input" value={picked ?? zone ?? ''} onChange={(e) => setZone(e.target.value === auto ? null : e.target.value)}>
+        <option value="all">{t('fishing.zone.all')}</option>
         {zones.map((z) => (
           <option key={z.id} value={z.id}>
             {zoneName(z, i18n.language)}

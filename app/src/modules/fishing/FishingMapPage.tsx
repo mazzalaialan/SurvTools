@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { useFishData } from './useFishData';
 
 const NONE: never[] = [];
 /** Color de los tramos en «Todos» (neutro: cada tramo lleva el número de especies). */
-const ALL_COLOR = '#5b6b7a';
+const ALL_COLOR = '#7f97ad';
 /** Pesca prohibida: rojo, y punteado para que se distinga también en el tema rojo. */
 const FORBIDDEN_COLOR = '#c62828';
 
@@ -176,8 +176,23 @@ function FishingMap({ data }: { data: FishData }) {
       // Con varios peces, cada uno corrido unos píxeles (0, +4, −4, +8): en los tramos que comparten se ven todas las líneas.
       features: [...chosen.flatMap((id, i) => sectorsWithSpecies(data, id).map((s) => feature(s, { color: FISH_STYLES[i]!.color, dash: FISH_STYLES[i]!.dash, offset: chosen.length > 1 ? [0, 4, -4, 8][i] : 0 }))), ...nameFeatures(shown)],
     };
-  }, [data, chosen.join(',')]);
+  }, [data, chosen.join(','), zoneSectors, shown]);
 
+  // Al cambiar de zona (o de tramo elegido) el mapa vuela a lo nuevo; si no, los ríos de la zona quedaban fuera de la vista.
+  const [fly, setFly] = useState<(ViewState & { key: number }) | null>(null);
+  const target = focus ? focus.id : `zone:${z.zone ?? 'all'}`;
+  const lastTarget = useRef(target);
+  useEffect(() => {
+    if (lastTarget.current === target) return;
+    lastTarget.current = target;
+    const b = boundsOf(focus ? [focus] : zoneSectors);
+    if (!b) return;
+    const span = Math.max(b[2] - b[0], (b[3] - b[1]) * 1.4, 0.02);
+    const v = { lat: (b[1] + b[3]) / 2, lon: (b[0] + b[2]) / 2, zoom: Math.max(3, Math.min(14, Math.log2(360 / span) + 0.6)) };
+    setFly({ ...v, key: Date.now() });
+    setView(v);
+    if (focus) setPicked([focus.id]);
+  }, [target]);
   const [start] = useState<{ view: ViewState; bounds?: Bounds }>(() => {
     const b = boundsOf(focus ? [focus] : chosen.length ? shown : zoneSectors) ?? [-72, -46, -66, -36];
     return { view: { lat: (b[1] + b[3]) / 2, lon: (b[0] + b[2]) / 2, zoom: 7 }, bounds: b };
@@ -188,15 +203,15 @@ function FishingMap({ data }: { data: FishData }) {
   const chipSpecies = useMemo(() => {
     const span = (360 / 2 ** view.zoom) * 2; // ~ 512 px de ancho de mapa
     const box = [view.lon - span, view.lat - span * 0.9, view.lon + span, view.lat + span * 0.9];
-    const visible = data.sectors.filter((s) => {
+    const visible = zoneSectors.filter((s) => {
       const b = boundsOf([s]);
       return b && b[0] <= box[2]! && b[2] >= box[0]! && b[1] <= box[3]! && b[3] >= box[1]!;
     });
     const count = (id: string) => visible.filter((s) => s.species.some((x) => x.id === id)).length;
-    const here = data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => count(b.id) - count(a.id));
+    const here = data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => speciesName(a, lang).localeCompare(speciesName(b, lang), lang));
     const list = here.length ? here : speciesInZone(data, z.zone);
     return [...chosen.map((id) => speciesById(data, id)!).filter((sp) => !list.includes(sp)), ...list];
-  }, [data, view.lat, view.lon, view.zoom, z.zone, chosen.join(',')]);
+  }, [data, view.lat, view.lon, view.zoom, z.zone, chosen.join(','), zoneSectors]);
 
   const pickedSectors = picked.map((id) => data.sectors.find((s) => s.id === id)).filter((s): s is FishSector => !!s);
   const title = chosen.length === 1 ? speciesName(speciesById(data, chosen[0]!)!, lang) : null;
@@ -216,7 +231,7 @@ function FishingMap({ data }: { data: FishData }) {
         zones={NONE}
         preview={null}
         outline={outline}
-        flyTo={null}
+        flyTo={fly}
         fishing={fc}
         onMove={setView}
         onWaypoint={() => undefined}
