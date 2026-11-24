@@ -7167,3 +7167,12 @@ button.country-pack-del {
   border-left: 4px solid var(--danger);
   background: color-mix(in srgb, var(--danger) 12%, var(--surface));
 }
+/* Ambiente compartido: el reglamento de cada jurisdicción en su bloque. */
+.fish-rule-set {
+  padding-top: var(--sp-2);
+  border-top: 2px solid var(--border);
+}
+.fish-rule-by {
+  font-size: var(--fs-lg);
+  margin: 0;
+}

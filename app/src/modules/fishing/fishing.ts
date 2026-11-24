@@ -71,6 +71,11 @@ export interface FishSector {
   closed?: boolean;
   /** La ubicación del tramo es aproximada (qué se aproximó). */
   approx?: string;
+  /**
+   * Ambiente compartido entre jurisdicciones: el reglamento de cada una, con a quién pertenece (la ficha los muestra todos). En ese
+   * caso `species` junta las especies de todas, con la regla más estricta, para el mapa y las listas.
+   */
+  rules?: (Partial<Omit<FishSector, 'rules' | 'geometry' | 'water' | 'id'>> & { region: string; regionName: string; species: SectorSpecies[] })[];
   source: string;
   /** Página, artículo o anexo del reglamento. */
   ref?: string;

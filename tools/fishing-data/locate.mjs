@@ -22,7 +22,7 @@ const BBOX = {
   Neuquén: [-71.95, -41.15, -67.9, -36.05],
   'Río Negro': [-72.0, -42.05, -62.7, -37.5],
   Chubut: [-72.2, -46.05, -63.5, -41.95],
-  'Parques Nacionales del Sur': [-73.6, -46.2, -62.7, -36.0],
+  'Parques Nacionales del Sur (APN)': [-73.8, -55.2, -62.7, -36.0],
 };
 const box = BBOX[jurisdiction];
 if (!box) throw new Error(`Jurisdicción sin recuadro: ${jurisdiction}`);
@@ -261,6 +261,17 @@ function resolvePoint(spec, nodes, ctx) {
     }
     return { ...nearestNode(nodes, at), how: `${spec.m} m desde ${base.how}` };
   }
+  // Donde el río cruza un paralelo («desde el paralelo 42°»): el punto del cauce más cerca de esa latitud.
+  if (spec.lat !== undefined) {
+    let best = null;
+    let bd = Infinity;
+    for (const [k, n] of nodes) {
+      if (ctx.allowed && !ctx.allowed.has(k)) continue;
+      const d = Math.abs(n.c[1] - spec.lat);
+      if (d < bd) (bd = d), (best = k);
+    }
+    return { key: best, d: Math.round(bd * 111_000), how: `paralelo ${spec.lat}` };
+  }
   if (spec.end) {
     // La naciente (o la desembocadura) es el extremo más lejano del otro punto, pero del lado contrario a `away`: si no, en un río
     // largo el «más lejano» puede quedar río abajo (la naciente del Neuquén salía en la confluencia con el Limay).
@@ -320,13 +331,16 @@ const ambientes = JSON.parse(readFileSync(ambientesFile, 'utf8')).filter((a) => 
 const out = {};
 const report = { ok: [], cut: [], missing: [], errors: [] };
 for (const a of ambientes) {
-  const key = norm(cuts[a.id]?.name ?? a.agua);
-  const isLake = /lag/i.test(a.tipo_agua);
+  // «Wintter (o Vintter)», «Pellegrini o Mosquito», «Huillines o Bullines»: se prueba cada nombre por separado.
+  const keys = [cuts[a.id]?.name ?? a.agua, ...(cuts[a.id]?.name ? [] : a.agua.replace(/[()]/g, ' ').split(/\s+o\s+|\s+y\s+|,/i))].map(norm).filter(Boolean);
+  const key = keys[0];
+  // Lagos, lagunas, embalses, diques y represas se buscan como cuerpos de agua (antes un «Embalse» se buscaba entre los ríos).
+  const isLake = /lag|embalse|represa|dique|derivador/i.test(a.tipo_agua);
   const cut = cuts[a.id];
   if (cut?.skip) continue;
   try {
     if (isLake) {
-      const lk = byName(lakes, key);
+      const lk = keys.map((k) => byName(lakes, k)).find((l) => l.length) ?? [];
       if (!lk.length) {
         report.missing.push(`${a.id} (${a.tipo_agua} ${a.agua})`);
         continue;
@@ -340,7 +354,7 @@ for (const a of ambientes) {
       report.ok.push(a.id);
       continue;
     }
-    const ways = byName(rivers, key);
+    const ways = keys.map((k) => byName(rivers, k)).find((w) => w.length) ?? [];
     if (!ways.length) {
       report.missing.push(`${a.id} (${a.tipo_agua} ${a.agua})`);
       continue;

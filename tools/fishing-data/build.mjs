@@ -122,7 +122,7 @@ function parseSector(a) {
   }
   if (allRelease) for (const id of species.keys()) set(id, { limit: 0 });
   // Si no nombra ninguna especie pero se pesca, al menos las truchas (en la Patagonia están en casi todos los ambientes con salmónidos).
-  const closed = (/pesca no autorizada|veda total|prohibida la pesca\s*(en todo|todo el a)/i.test(text) || /^\W*(neuqu[eé]n\W*)?prohibida la pesca\.?\s*$/i.test(text.replace(/^-\s*/, ''))) && !/LD/.test(text);
+  const closed = (/pesca no autorizada|no se permite la pesca|veda total|prohibida la pesca\s*(en todo|todo el a)/i.test(text) || /^\W*(neuqu[eé]n\W*)?prohibida la pesca\.?\s*$/i.test(text.replace(/^-\s*/, ''))) && !/LD/.test(text);
   // Sin especies nombradas (p. ej. «Devolución obligatoria.»): se toman las truchas, que están en casi todos los ríos y lagos patagónicos.
   const inferred = !species.size && !closed;
   if (inferred) for (const id of ['trucha-arcoiris', 'trucha-marron']) set(id, allRelease ? { limit: 0 } : {});
@@ -179,9 +179,46 @@ for (const jur of jurs.split(',')) {
       ...(cuts[a.id]?.approx && { approx: cuts[a.id].approx }),
       source: SOURCE.id,
       ref: `pág. ${a.fuente?.pagina_impresa ?? '?'}`,
+      _shared: !!a.compartido_con,
+      _regionName: jur,
     });
   }
 }
+
+// Ambientes compartidos (decisión del dueño): el mismo río o lago figura en el anexo de cada jurisdicción con reglas distintas. Se
+// dibuja una sola vez y la ficha muestra el reglamento de cada una, con a quién pertenece. Se juntan solo si el reglamento dice que es
+// compartido y además salieron sobre el mismo dibujo (así no se mezclan dos lagunas homónimas).
+const RULE_KEYS = ['season', 'closed', 'modality', 'catchAndRelease', 'species', 'notes', 'ref', 'name', 'approx', 'speciesInferred'];
+const byGeo = new Map();
+for (const s of sectors) {
+  if (!s._shared) continue;
+  const k = JSON.stringify(s.geometry);
+  byGeo.set(k, [...(byGeo.get(k) ?? []), s]);
+}
+const drop = new Set();
+let merged = 0;
+for (const group of byGeo.values()) {
+  const regions = new Set(group.map((x) => x.region));
+  if (regions.size < 2) continue;
+  const [first, ...rest] = group;
+  first.rules = group.map((x) => ({ region: x.region, regionName: x._regionName, ...Object.fromEntries(RULE_KEYS.filter((k) => x[k] !== undefined).map((k) => [k, x[k]])) }));
+  // Para el mapa y las listas: todas las especies de todas las jurisdicciones (con la regla más estricta).
+  const sp = new Map();
+  for (const x of group)
+    for (const e of x.species) {
+      const prev = sp.get(e.id);
+      const lim = (v) => (v === null ? Infinity : v ?? Infinity);
+      if (!prev || lim(e.limit) < lim(prev.limit)) sp.set(e.id, e);
+    }
+  first.species = [...sp.values()];
+  first.closed = group.every((x) => x.closed) || undefined;
+  for (const x of rest) drop.add(x);
+  merged++;
+}
+const finalSectors = sectors.filter((s) => !drop.has(s)).map(({ _shared, _regionName, ...s }) => s);
+sectors.length = 0;
+sectors.push(...finalSectors);
+if (merged) console.log(`${merged} ambientes compartidos juntados (${drop.size} entradas repetidas)`);
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
 const used = species.filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id))).map((sp) => ({ ...sp, ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
 // Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.

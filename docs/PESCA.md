@@ -98,3 +98,12 @@ Trabajo en `~/vikarg-fishing-work/` (fuera del repo, con las fuentes descargadas
 - **Vigilancia**: sumar a `FISHING_DOCS` (`server/src/fishing/watch.ts`) el reglamento de cada provincia nueva.
 
 **Pendientes chicos de Pesca:** cierre anticipado de la trucha de arroyo en ríos y arroyos (01/03/2027, reglamento pág. 13) como aviso en su ficha y tramos; los 11 ambientes de Neuquén sin ubicar (necesitan coordenada a mano); reemplazar las fotos provisorias de perca y pejerrey por ilustraciones de perfil si aparecen con licencia libre; imágenes de trucha de lago, salmón chinook y róbalo (candidatas en `~/vikarg-fishing-work/imagenes/imagenes.json`).
+
+## Patagonia completa (2026-11-23)
+
+Cargadas las cuatro jurisdicciones del reglamento 2026/27: **300 tramos** en el mapa (Neuquén 79, Río Negro 35, Chubut 73, Parques Nacionales del Sur 125, menos 12 entradas repetidas de ambientes compartidos), 11 vedados. **Paquete: 1,78 MB (504 KB comprimido).** Extracto de OSM ampliado hasta Tierra del Fuego (Los Glaciares y PN Tierra del Fuego). Nombres dobles («Wintter o Vintter») se prueban por separado; los embalses se buscan como lagos.
+- **Ambientes compartidos:** 12 juntados (mismo dibujo y el reglamento dice «compartido»); la ficha muestra el reglamento de cada jurisdicción en su bloque («Según Neuquén», «Según Río Negro»). En el mapa y las listas, las especies de todas con la regla más estricta.
+- **Cortes nuevos:** Limay y Neuquén Zona IV (Río Negro, como en Neuquén), río Negro (confluencia → Pomona → mar, aproximado en Pomona), río Chubut (paralelo 42° → Las Plumas; dique Florentino Ameghino → mar), Manso Superior (naciente → Mascardi). Aproximados: Manso Medio e Inferior (río entero), Piedra del Águila Zona II (lago entero). Sin ubicar: tramo 28 de Julio del río Chubut.
+- **Sin ubicar (40):** lagunas y arroyos sin nombre en OSM (lista en la salida de `build.mjs`); se agregan con coordenada a mano en `cuts.json`.
+- **Especies supuestas (145 tramos):** el texto no nombra especies (muy común en Parques: «Mosca solamente. Devolución obligatoria.»): se toman truchas arcoíris y marrón.
+- **Permisos:** Río Negro con su tienda oficial; Chubut y Parques sin enlace propio (vale el permiso de Neuquén o Río Negro en línea).

@@ -7,8 +7,8 @@ set -eu
 PBF=${1:?Uso: prepare.sh extracto.osm.pbf carpeta}
 OUT=${2:?Uso: prepare.sh extracto.osm.pbf carpeta}
 mkdir -p "$OUT"
-# Patagonia norte y centro (Neuquén, Río Negro, Chubut y los Parques Nacionales del Sur).
-osmium extract --overwrite -b -73.6,-46.2,-62.7,-36.0 "$PBF" -o "$OUT/patagonia.osm.pbf"
+# Patagonia hasta Tierra del Fuego (Neuquén, Río Negro, Chubut y los Parques Nacionales del Sur, que llegan a Los Glaciares y Tierra del Fuego).
+osmium extract --overwrite -b -73.8,-55.2,-62.7,-36.0 "$PBF" -o "$OUT/patagonia.osm.pbf"
 f() { osmium tags-filter --overwrite "$OUT/patagonia.osm.pbf" "$@"; }
 f w/waterway=river,stream,canal -o "$OUT/w-rivers.osm.pbf"
 f nwr/natural=water nwr/water=lake,reservoir,lagoon,pond nwr/landuse=reservoir -o "$OUT/w-lakes.osm.pbf"

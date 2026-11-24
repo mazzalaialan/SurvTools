@@ -206,5 +206,185 @@
  },
  "neuquen-ramos-mexia-ezequiel-el-chocon-lago": {
   "name": "Ezequiel Ramos Mexía"
+ },
+ "chubut-wintter-o-vintter-lago": {
+  "name": "Lago General Vintter / Lago Palena"
+ },
+ "chubut-temenuao-o-torres-laguna": {
+  "name": "Torres / Temenuao"
+ },
+ "chubut-las-mercedes-laguna": {
+  "name": "Laguna Mercedes"
+ },
+ "chubut-guacho-inferior-y-superior-lago": {
+  "name": "Lago Guacho",
+  "all": true
+ },
+ "chubut-corinto-rio": {
+  "name": "Río Corintos"
+ },
+ "apn-pudu-laguna": {
+  "name": "Laguna Pudú Pudú"
+ },
+ "rio_negro-moreno-lago": {
+  "name": "Lagos Moreno"
+ },
+ "rio_negro-ramos-mexia-ezequiel-el-chocon-lago": {
+  "name": "Ezequiel Ramos Mexía"
+ },
+ "rio_negro-limay-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan las zonas"
+ },
+ "rio_negro-limay-rio-zona-i": {
+  "from": {
+   "dam": "Piedra del Águila"
+  },
+  "to": {
+   "after": {
+    "firstBridgeFrom": {
+     "dam": "Piedra del Águila"
+    }
+   },
+   "m": 500,
+   "toward": {
+    "dam": "Pichi Picún Leufú"
+   }
+  },
+  "approx": "500 m aguas abajo de la presa no se aplica"
+ },
+ "rio_negro-limay-rio-zona-ii": {
+  "from": {
+   "firstBridgeFrom": {
+    "dam": "Pichi Picún Leufú"
+   }
+  },
+  "to": {
+   "after": {
+    "firstBridgeFrom": {
+     "dam": "Pichi Picún Leufú"
+    }
+   },
+   "m": 2000,
+   "toward": {
+    "lake": "Ezequiel Ramos Mexía"
+   }
+  }
+ },
+ "rio_negro-limay-rio-zona-iii": {
+  "from": {
+   "after": {
+    "firstBridgeFrom": {
+     "dam": "Pichi Picún Leufú"
+    }
+   },
+   "m": 2000,
+   "toward": {
+    "lake": "Ezequiel Ramos Mexía"
+   }
+  },
+  "to": {
+   "lake": "Ezequiel Ramos Mexía"
+  },
+  "approx": "hasta el paraje Álamo Guacho (no está en el mapa): se toma hasta la cola del embalse Ezequiel Ramos Mexía (El Chocón)"
+ },
+ "rio_negro-limay-rio-zona-iv": {
+  "from": {
+   "dam": "Arroyito"
+  },
+  "to": {
+   "confluence": "Neuquén"
+  }
+ },
+ "rio_negro-neuquen-rio": {
+  "skip": true,
+  "why": "entrada general: la zona compartida es la IV"
+ },
+ "rio_negro-neuquen-rio-zona-iv": {
+  "from": {
+   "named": "Villa Manzano"
+  },
+  "to": {
+   "confluence": "Limay"
+  }
+ },
+ "rio_negro-piedra-del-aguila-lago": {
+  "skip": true,
+  "why": "entrada general: se dibuja la zona"
+ },
+ "rio_negro-piedra-del-aguila-lago-zona-ii": {
+  "lakeZone": true,
+  "approx": "zona de un lago: por ahora el lago entero, con el texto de la zona"
+ },
+ "rio_negro-negro-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan los cursos"
+ },
+ "rio_negro-negro-rio-curso-superior-y-medio": {
+  "from": {
+   "confluence": "Neuquén"
+  },
+  "to": {
+   "named": "Pomona"
+  },
+  "approx": "hasta la toma del canal de Pomona: se toma el punto del río más cerca de Pomona"
+ },
+ "rio_negro-negro-rio-curso-inferior": {
+  "from": {
+   "named": "Pomona"
+  },
+  "to": [
+   -62.8,
+   -41.03
+  ],
+  "approx": "desde la toma del canal de Pomona: se toma el punto del río más cerca de Pomona"
+ },
+ "chubut-chubut-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan los tramos"
+ },
+ "chubut-chubut-rio-rio-chubut-superior": {
+  "from": {
+   "lat": -42.0
+  },
+  "to": {
+   "named": "Las Plumas"
+  }
+ },
+ "chubut-chubut-rio-rio-chubut-inferior": {
+  "from": {
+   "dam": "Florentino Ameghino"
+  },
+  "to": {
+   "end": "desembocadura",
+   "away": {
+    "named": "Las Plumas"
+   }
+  }
+ },
+ "chubut-chubut-rio-28-de-julio": {
+  "skip": true,
+  "why": "del salto de Boca Toma al puente de madera (28 de Julio): falta ubicarlo a mano"
+ },
+ "apn-manso-rio": {
+  "skip": true,
+  "why": "entrada general: se dibujan los tramos"
+ },
+ "apn-manso-rio-manso-superior": {
+  "from": {
+   "end": "naciente",
+   "away": {
+    "lake": "Mascardi"
+   }
+  },
+  "to": {
+   "lake": "Mascardi"
+  }
+ },
+ "apn-manso-rio-manso-medio": {
+  "approx": "el tramo entre los lagos Mascardi y Steffen no está completo en el mapa: se muestra el río entero; vale el texto del reglamento"
+ },
+ "apn-manso-rio-manso-inferior": {
+  "approx": "el tramo entre el lago Steffen y el río Villegas no está completo en el mapa: se muestra el río entero; vale el texto del reglamento"
  }
 }

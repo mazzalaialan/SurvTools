@@ -295,6 +295,59 @@ function NearSectors({ data, here }: { data: FishData; here: [number, number] | 
   );
 }
 
+/** Lo que dice un reglamento sobre un tramo: temporada, modalidad, peces con sus reglas, texto literal y permiso. */
+function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
+  const { t, i18n } = useTranslation();
+  const region = data.regions.find((r) => r.id === s.region);
+  return (
+    <>
+      <p>{s.name}</p>
+      <p>
+        <SectorSeasonBadge data={data} sector={s} />
+        {region && ` · ${region.name}`}
+      </p>
+      {s.approx && <p className="fish-stale">{t('fishing.approx', { what: s.approx })}</p>}
+      {s.closed && (
+        <p className="card fish-rule" data-rule="forbidden" data-testid="fish-forbidden">
+          <strong>{t('fishing.season.forbidden')}</strong>
+        </p>
+      )}
+      {(s.modality?.length || s.catchAndRelease) && (
+        <p>
+          {s.modality?.map((m) => t(`fishing.modality.${m}`)).join(' · ')}
+          {s.catchAndRelease && ` · ${t('fishing.rules.release')}`}
+        </p>
+      )}
+      <h2 className="section-title">{t('fishing.speciesHere', { count: s.species.length })}</h2>
+      <ul className="list" data-testid="fish-sector-species">
+        {s.species.map((x) => {
+          const sp = speciesById(data, x.id);
+          const rules = speciesRules(t, x, s);
+          return (
+            <li key={x.id}>
+              <Link className="list-row fish-rule" data-rule={keepRule(x, s)} to={`/fishing/fish/${x.id}`}>
+                <span className="list-main">
+            <span className="list-title">{sp ? speciesName(sp, i18n.language) : x.id}</span>
+            {rules.length > 0 && <span className="list-sub">{rules.join(' · ')}</span>}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="muted small">{t('fishing.colorsHint')}</p>
+      {s.notes && (
+        <section className="card stack">
+          <h2 className="section-title">{t('fishing.ruleText')}</h2>
+          <p className="fish-rule-text">{s.notes}</p>
+          <GroupHint text={s.notes} />
+        </section>
+      )}
+      {!s.closed && <PermitCard region={region} />}
+    </>
+  );
+}
+
 /** Ficha de un tramo: temporada, modalidad, peces con sus reglas y carnadas. */
 export function FishSectorPage() {
   const { id = '' } = useParams();
@@ -305,53 +358,22 @@ export function FishSectorPage() {
     <FishDataGate state={state}>
       {(data) => {
         const s = data.sectors.find((x) => x.id === id)!;
-        const region = data.regions.find((r) => r.id === s.region);
         return (
           <div className="stack fish-screen" data-testid="fish-sector-page">
             <h1 className="page-title">{s.water}</h1>
-            <p>{s.name}</p>
-            <p>
-              <SectorSeasonBadge data={data} sector={s} />
-              {region && ` · ${region.name}`}
-            </p>
-            {s.approx && <p className="fish-stale">{t('fishing.approx', { what: s.approx })}</p>}
-            {s.closed && (
-              <p className="card fish-rule" data-rule="forbidden" data-testid="fish-forbidden">
-                <strong>{t('fishing.season.forbidden')}</strong>
-              </p>
+            {s.rules?.length ? (
+              <>
+                <p className="fish-hint" data-testid="fish-shared">{t('fishing.shared', { list: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(s.rules.map((r) => r.regionName)) })}</p>
+                {s.rules.map((r) => (
+                  <section key={r.region} className="stack fish-rule-set" data-testid="fish-rule-set">
+                    <h2 className="fish-rule-by">{t('fishing.ruleBy', { region: r.regionName })}</h2>
+                    <SectorRules data={data} s={{ ...s, ...r, rules: undefined }} />
+                  </section>
+                ))}
+              </>
+            ) : (
+              <SectorRules data={data} s={s} />
             )}
-            {(s.modality?.length || s.catchAndRelease) && (
-              <p>
-                {s.modality?.map((m) => t(`fishing.modality.${m}`)).join(' · ')}
-                {s.catchAndRelease && ` · ${t('fishing.rules.release')}`}
-              </p>
-            )}
-            <h2 className="section-title">{t('fishing.speciesHere', { count: s.species.length })}</h2>
-            <ul className="list" data-testid="fish-sector-species">
-              {s.species.map((x) => {
-                const sp = speciesById(data, x.id);
-                const rules = speciesRules(t, x, s);
-                return (
-                  <li key={x.id}>
-                    <Link className="list-row fish-rule" data-rule={keepRule(x, s)} to={`/fishing/fish/${x.id}`}>
-                      <span className="list-main">
-                        <span className="list-title">{sp ? speciesName(sp, i18n.language) : x.id}</span>
-                        {rules.length > 0 && <span className="list-sub">{rules.join(' · ')}</span>}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <p className="muted small">{t('fishing.colorsHint')}</p>
-            {s.notes && (
-              <section className="card stack">
-                <h2 className="section-title">{t('fishing.ruleText')}</h2>
-                <p className="fish-rule-text">{s.notes}</p>
-                <GroupHint text={s.notes} />
-              </section>
-            )}
-            {!s.closed && <PermitCard region={region} />}
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>
