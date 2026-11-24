@@ -1,5 +1,5 @@
 {
- "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Provisorias: perca (foto chica, dorsales plegadas) y pejerrey (foto con mano; buscar ilustración de perfil).",
+ "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor).",
  "trucha-arcoiris": {
   "file": "trucha-arcoiris.webp",
   "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)",
@@ -32,15 +32,15 @@
  },
  "perca": {
   "file": "perca.webp",
-  "credit": "Pablo Reyes Lobao-Tello (Wikimedia Commons), río Manso; recortada",
-  "license": "CC BY 3.0",
-  "url": "https://commons.wikimedia.org/wiki/File:Percichthys_trucha.png"
+  "credit": "Lámina de Percichthys trucha en «Anales de la Sociedad Científica Argentina» (Congreso Científico Latino Americano, 1898), Internet Archive Book Images, via Wikimedia Commons / Flickr Commons; recortada y espejada (todas miran a la izquierda)",
+  "license": "Sin restricciones conocidas (Flickr Commons «No restrictions»); obra de 1898, dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Anales_de_la_Sociedad_Cientfica_Argentina_(18167458641).jpg"
  },
  "pejerrey": {
   "file": "pejerrey.webp",
-  "credit": "CHUCAO (Wikimedia Commons). Pejerrey bonaerense (Odontesthes bonariensis); el patagónico es muy parecido",
-  "license": "CC BY-SA 3.0",
-  "url": "https://commons.wikimedia.org/wiki/File:Odontesthes_bonariensis.JPG"
+  "credit": "hhulsberg / Hugo Hulsberg (iNaturalist), observación del 2010-04-19, San Luis; Odontesthes bonariensis; recortada",
+  "license": "CC0 1.0",
+  "url": "https://www.inaturalist.org/observations/65170016"
  },
  "trucha-lago": {
   "file": "trucha-lago.webp",
@@ -74,9 +74,9 @@
  },
  "pacu": {
   "file": "pacu.webp",
-  "credit": "Dick Culbert from Gibsons, B.C., Canada (Wikimedia Commons)",
-  "license": "CC BY 2.0",
-  "url": "https://commons.wikimedia.org/wiki/File:Piaractus_mesopotamicus_-_Flickr_-_Dick_Culbert.jpg"
+  "credit": "Ota, R. R.; Deprá, G. C.; Graça, W. J.; Pavanelli, C. S. (Peixes da planície de inundação do alto rio Paraná, Zenodo 3678425), via Wikimedia Commons; panel d: Piaractus mesopotamicus, 498 mm, ejemplar fresco; recortada",
+  "license": "CC BY 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Peixes_da_planície_de_inundação_do_alto_rio_Paraná_(3678425)_(cropped).png"
  },
  "sabalo": {
   "file": "sabalo.webp",
@@ -110,9 +110,9 @@
  },
  "bagre-blanco": {
   "file": "bagre-blanco.webp",
-  "credit": "Aaron Soderstrom (Wikimedia Commons); imagen chica, provisoria",
-  "license": "CC BY-SA 4.0",
-  "url": "https://commons.wikimedia.org/wiki/File:Pimelodus_albicans.png"
+  "credit": "hhulsberg / Hugo Hulsberg (iNaturalist), observación del 2022-08-20, Pirané, Formosa; Pimelodus albicans; recortada y espejada (todas miran a la izquierda)",
+  "license": "CC0 1.0",
+  "url": "https://www.inaturalist.org/observations/131959103"
  },
  "armado": {
   "file": "armado.webp",
@@ -152,9 +152,9 @@
  },
  "raya": {
   "file": "raya.webp",
-  "credit": "Karelj (Wikimedia Commons)",
-  "license": "Dominio público",
-  "url": "https://commons.wikimedia.org/wiki/File:Potamotrygon_motoro_1.jpg"
+  "credit": "Raimond Spekking, via Wikimedia Commons (Zoo Duisburg); recortada y espejada (todas miran a la izquierda)",
+  "license": "CC BY-SA 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Pfauenaugen-Stechrochen_-_Ocellate_river_stingray_-_Potamotrygon_motoro.jpg"
  },
  "manduvi": {
   "file": "manduvi.webp",
@@ -167,5 +167,35 @@
   "credit": "Paul Louis Oudart (Wikimedia Commons)",
   "license": "Dominio público",
   "url": "https://commons.wikimedia.org/wiki/File:Synbranchus_marmoratus1.jpg"
+ },
+ "corvina": {
+  "file": "corvina.webp",
+  "credit": "demianlescano (iNaturalist), observación del 2023-08-25, Santa Fe capital; Plagioscion ternetzi; recortada y espejada (todas miran a la izquierda)",
+  "license": "CC0 1.0",
+  "url": "https://www.inaturalist.org/observations/180192152"
+ },
+ "bagre-negro": {
+  "file": "bagre-negro.webp",
+  "credit": "Paul Louis Oudart (lámina «Pimelodus sapo» de Voyage dans l'Amérique méridionale, d'Orbigny), via Wikimedia Commons; recortada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Rhamdia_quelen.jpg"
+ },
+ "armado-chancho": {
+  "file": "armado-chancho.webp",
+  "credit": "demianlescano (iNaturalist), observación del 2024-04-02, Rosario; Oxydoras kneri; recortada y espejada (todas miran a la izquierda)",
+  "license": "CC0 1.0",
+  "url": "https://www.inaturalist.org/observations/205185033"
+ },
+ "robalo": {
+  "file": "robalo.webp",
+  "credit": "Hugo Hulsberg (iNaturalist, foto 104962113), via Wikimedia Commons; Eleginops maclovinus, Argentina; recortada",
+  "license": "CC0 1.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Eleginops_maclovinus_104962113.jpg"
+ },
+ "virreyna": {
+  "file": "virreyna.webp",
+  "credit": "demianlescano (iNaturalist), observación del 2018-10-14, Gral. Obligado, Santa Fe; Megalonema platanum (grado de investigación); recortada y espejada (todas miran a la izquierda)",
+  "license": "CC0 1.0",
+  "url": "https://www.inaturalist.org/observations/45619804"
  }
 }

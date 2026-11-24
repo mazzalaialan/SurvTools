@@ -393,7 +393,7 @@ sectors.length = 0;
 sectors.push(...finalSectors);
 if (merged) console.log(`${merged} ambientes compartidos juntados (${drop.size} entradas repetidas)`);
 // Fichas de los peces del Litoral (investigación del 2026-11-23: MAGyP, Santa Fe, FishBase y experiencia de pescadores).
-const LIT_ALIAS = { 'armado-comun': 'armado', 'salmon-de-rio': 'salmon-rio', 'raya-de-rio': 'raya' };
+const LIT_ALIAS = { 'armado-comun': 'armado', 'salmon-de-rio': 'salmon-rio', 'raya-de-rio': 'raya', 'corvina-de-rio': 'corvina' };
 const litFile = `${work}/litoral/especies.json`;
 if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
   const v = (x) => (x && typeof x === 'object' && 'valor' in x ? x.valor : x);
@@ -401,7 +401,10 @@ if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
   const extra = JSON.parse(readFileSync(fileURLToPath(new URL('./litoral-extra.json', import.meta.url)), 'utf8')).especies;
   for (const e of [...JSON.parse(readFileSync(litFile, 'utf8')).especies, ...extra]) {
     const id = LIT_ALIAS[e.id] ?? e.id;
-    if (species.some((x) => x.id === id)) continue; // carpa y pejerrey ya tienen ficha (Patagonia)
+    // Carpa y pejerrey ya tienen ficha (Patagonia); el róbalo solo tenía el nombre: se reemplaza por la ficha completa.
+    const prev = species.findIndex((x) => x.id === id);
+    if (prev >= 0 && species[prev].baits) continue;
+    if (prev >= 0) species.splice(prev, 1);
     const list = (x) => (Array.isArray(v(x)) ? v(x) : v(x) ? [v(x)] : []).filter((t) => typeof t === 'string' && !/^no encontrad/i.test(t));
     const danger = v(e.peligro);
     species.push({

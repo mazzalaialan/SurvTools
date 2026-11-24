@@ -1,5 +1,5 @@
 {
- "_": "Peces del Litoral cargados a mano (no estaban en la investigación). Ficha propia según FishBase (Synbranchus marmoratus) y conocimiento general; confianza media.",
+ "_": "Peces del Litoral cargados a mano (no estaban en la investigación). Ficha propia según FishBase (Synbranchus marmoratus) y conocimiento general; confianza media. Corvina de río, bagre negro y róbalo patagónico: investigación del 2026-11-24 (FishBase, MAGyP, UNaM, INALI, prensa y revistas de pesca; fuentes y confianza en cada dato).",
  "especies": [
   {
    "id": "anguila",
@@ -44,6 +44,563 @@
      "Trozos de pescado"
     ],
     "tip": "Buscala de noche en bañados, zanjas y bajo los camalotes; también se saca del barro en la sequía. Se come bien cocida, y es muy buena carnada para dorado y surubí."
+   }
+  },
+  {
+   "id": "corvina-de-rio",
+   "nombre": {
+    "es": "Corvina de río",
+    "en": "Freshwater croaker (river croaker)",
+    "pt": "Corvina (sin nombre portugués confirmado)"
+   },
+   "otros_nombres": [
+    "corvina de río grande",
+    "corvina"
+   ],
+   "cientifico": "Plagioscion ternetzi",
+   "cientifico_alternativo": "Plagioscion squamosissimus (corvina amazónica; Aichino 2023 dice que ambas viven en Argentina)",
+   "familia": "Sciaenidae",
+   "origen": {
+    "valor": "nativa (cuencas del Paraguay y bajo Paraná, Uruguay y Río de la Plata)",
+    "fuentes": [
+     "fishbase",
+     "aichino-2023",
+     "aire-sf-2026"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Máximo registrado en el Paraná de Misiones: 59,5 cm y 3,63 kg (Aichino). FishBase solo da 39 cm de largo estándar para P. ternetzi (y 80 cm / 4,5 kg para P. squamosissimus).",
+    "fuentes": [
+     "aichino-2023",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "CONTRADICCIÓN: 39 cm (FishBase, LS) contra 59,5 cm (UNaM, medido en Misiones). Se prefiere el dato regional. Ojo: el nombre «corvina de río» del MAGyP es OTRA especie, Pachyurus bonariensis (la corvina chica: 35 cm, 500 g, detritívora, se usa de carnada)."
+   },
+   "dieta": {
+    "valor": "Piscívora: viejas del agua, sabalitos, mojarras, bagres, cíclidos, morenas y anguila; también camarones de río y cangrejos. De día en zonas profundas; de noche se acerca a la margen a cazar.",
+    "fuentes": [
+     "aichino-2023",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "FishBase (para P. squamosissimus): juveniles comen larvas de crustáceos, insectos y copépodos; adultos, peces."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "peces pequeños (vivos o enteros)",
+     "trozos pequeños de otros peces"
+    ],
+    "fuentes": [
+     "aichino-2023"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente (especialista de la UNaM, pesca con línea de mano y anzuelos). La guía OnWater, que según el buscador diría lo mismo, bloquea al servidor con un 403 de CloudFront: no se leyó ni se salteó."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró un solo reporte de señuelos o mosca para corvina de río. Aichino la da como «especie blanco» de la pesca deportiva y dice que salta fuera del agua al sacarla, sin detallar el equipo."
+   },
+   "epoca": {
+    "valor": "Desove de septiembre a diciembre (inicia actividad en agosto, madura en septiembre). Según un investigador del INALI migra de norte a sur en verano y aparece más en el sur con crecidas; en Formosa la Fiesta Nacional de la Corvina de Río (Herradura) se hace en marzo.",
+    "fuentes": [
+     "aichino-2023",
+     "aire-sf-2026"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Aichino dice que NO es migradora; Scarabotti (INALI) dice que migra hacia el sur en verano. No coinciden."
+   },
+   "horario": {
+    "valor": "Del día en pozas profundas; de noche se acerca a la costa a comer (Aichino).",
+    "fuentes": [
+     "aichino-2023"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Inofensiva para las personas (FishBase y Aichino). Tiene dientes cónicos y espinas planas en el borde del opérculo y radios duros en la dorsal: agarrala con un trapo. Muere con facilidad al sacarla del agua (estrés), así que no conviene devolverla."
+    },
+    "fuentes": [
+     "fishbase",
+     "aichino-2023"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Lo de agarrarla con trapo es precaución general mía, no está en las fuentes."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Pececitos chicos (mojarra, sabalito)",
+     "Trocitos de pescado fresco"
+    ],
+    "tip": "Es cazadora de peces: línea de mano con anzuelo y pececito o trozo de pescado, en pozones profundos de día o cerca de la orilla de noche. Tiene muy buena carne y pocas espinas. Muere al sacarla, así que se come.",
+    "fuentes": [
+     "aichino-2023"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "normativa_nota": {
+    "valor": "Las fichas oficiales no traen veda. En Formosa hay una temporada de corvina que cierra en abril (según la prensa de la fiesta de 2022). No es objeto de esta ficha: confirmar con la norma de cada provincia.",
+    "fuentes": [
+     "aire-sf-2026"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "imagen_id": "corvina"
+  },
+  {
+   "id": "bagre-negro",
+   "nombre": {
+    "es": "Bagre negro",
+    "en": "South American catfish (silver catfish)",
+    "pt": "Jundiá"
+   },
+   "otros_nombres": [
+    "bagre sapo",
+    "moncholo lagunero",
+    "randiá",
+    "catfish sudamericano"
+   ],
+   "cientifico": "Rhamdia quelen",
+   "cientifico_alternativo": "Rhamdia sapo (nombre que usan manuales de cultivo del MAGyP)",
+   "familia": "Heptapteridae (FishBase); el MAGyP todavía lo pone en Pimelodidae",
+   "origen": {
+    "valor": "nativa (Pilcomayo, Paraná, Uruguay, Río de la Plata; arroyos y lagunas bonaerenses desde el Salado hasta Ventana; Córdoba, ríos Tercero y Cuarto)",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "oficial"
+   },
+   "tamano": {
+    "valor": "Alrededor de 55 cm de largo total (MAGyP). Otras fuentes: hasta 50 cm y 5 kg (MGAP Uruguay, Santa Fe), 61 cm y 4 kg (FishBase).",
+    "fuentes": [
+     "magyp",
+     "mgap-uy-bagre",
+     "sf-acuario-100",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "dieta": {
+    "valor": "Omnívoro con tendencia carnívora: peces chicos, crustáceos, insectos y zooplancton del fondo. De hábitos nocturnos, ve poco y tiene muy desarrollado el olfato.",
+    "fuentes": [
+     "magyp",
+     "mgap-uy-bagre",
+     "sf-acuario-100",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "lombriz",
+     "mojarra",
+     "hígado",
+     "carne blanca (la ficha oficial: espinel y línea flotante encarnada con esas carnadas)"
+    ],
+    "fuentes": [
+     "magyp"
+    ],
+    "confianza": "oficial",
+    "nota": "Es el único dato de carnada; no se encontró nada específico en foros, y las búsquedas no dieron ningún reporte de pique por especie."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado"
+   },
+   "epoca": {
+    "valor": "Hembras con huevos de septiembre a diciembre (desove en los meses cálidos). Sin época de pique documentada.",
+    "fuentes": [
+     "mgap-uy-bagre"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "horario": {
+    "valor": "Noche (hábitos nocturnos; de día se esconde en fondos con hojas y troncos).",
+    "fuentes": [
+     "mgap-uy-bagre",
+     "fishbase",
+     "sf-acuario-100"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Tiene espinas fuertes en las aletas dorsal y pectorales que pinchan y duelen (FishBase habla de «espinas venenosas»). Agarralo por el cuerpo con trapo o guante, sin meter la mano bajo las aletas, y sacá el anzuelo con alicate. No es peligroso si se lo maneja con cuidado."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Las fichas argentinas no mencionan las espinas; la advertencia viene de FishBase y es la misma que se dio para el bagre amarillo."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombrices",
+     "Pececitos chicos (mojarra)",
+     "Hígado o carne blanca"
+    ],
+    "tip": "Se pesca de noche en arroyos y lagunas de fondo barroso, con línea de fondo o espinel. Atención a las espinas de las aletas. Tiene muy buena carne; hay que cocinarlo bien.",
+    "fuentes": [
+     "magyp",
+     "mgap-uy-bagre"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "El MAGyP lo trata como especie de red agallera y espinel (pesca comercial). Falta la norma deportiva de cada provincia. Ojo: en Santa Cruz el «bagre nativo» (otra especie, Hatcheria) tiene prohibición absoluta de sacrificio."
+   },
+   "imagen_id": "bagre-negro"
+  },
+  {
+   "id": "robalo",
+   "nombre": {
+    "es": "Róbalo patagónico",
+    "en": "Patagonian blenny (róbalo)",
+    "pt": "Robalo-patagônico (traducción; sin uso documentado)"
+   },
+   "otros_nombres": [
+    "róbalo",
+    "robalo"
+   ],
+   "cientifico": "Eleginops maclovinus",
+   "familia": "Eleginopsidae (Perciformes/Notothenioidei)",
+   "origen": {
+    "valor": "nativa: Pacífico sudeste y Atlántico sudoccidental, de Valparaíso (Chile) y del golfo San Matías / Bahía San Blas (Argentina) hasta Tierra del Fuego",
+    "fuentes": [
+     "fishbase",
+     "boletin-pescador-2026",
+     "gastaldi-2009"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 90 cm (hembra). En bahía San Antonio (Río Negro) el máximo medido fue de 53 cm y 5 años de edad. Un reporte de revista cita ejemplares de más de 4 a 6 kg en el río Gallegos y la ría Deseado.",
+    "fuentes": [
+     "fishbase",
+     "gastaldi-2009",
+     "boletin-pescador-2026"
+    ],
+    "confianza": "confirmado por 2 fuentes",
+    "nota": "El dato de 4-6 kg es de una sola revista (sin confirmar). Cambia de sexo (macho a hembra) a unos 30 cm y 2 años (Gastaldi 2009): ver nota de la talla mínima de 30 cm."
+   },
+   "dieta": {
+    "valor": "Come en el fondo y en la costa: poliquetos y moluscos (ría Deseado, Santa Cruz); crustáceos (92 % de la dieta en un río de Chile); también peces chicos y se la ve alimentarse en la columna de agua en estuarios.",
+    "fuentes": [
+     "martin-bastida-2008",
+     "mma-cl-robalo"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Los dos resúmenes vienen del buscador; no se abrieron los PDF completos."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "pejerrey fresco (filet o tiritas)",
+     "langostino",
+     "camarón",
+     "anchoíta salada",
+     "lombriz de mar (muy buena en estuarios)",
+     "filet de carpa procesado",
+     "pulpo o calamar machacado"
+    ],
+    "fuentes": [
+     "boletin-pescador-2026"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola revista (2026-08-12). Línea de fondo con 1 o 2 anzuelos de pata larga del 2/0 al 5/0 y brazolada de 0,50 a 0,60 mm por las piedras y los mejillonares. IMPORTANTE: en Santa Cruz la carnada natural está prohibida (ver normativa_nota). Pesca en Argentina lista «carnada natural» como modalidad de la especie en general."
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "vinilos con cabeza plomada de 15 a 35 g, que imitan cangrejos o pececitos",
+     "minnows de paleta corta o media de 9 a 12 cm, plateados, blancos o verde oliva",
+     "tramo de fluorocarbono de 0,45 mm (1 m) por los mejillonares",
+     "mosca (fly): figura como modalidad en Pesca en Argentina; no se encontraron moscas concretas"
+    ],
+    "fuentes": [
+     "boletin-pescador-2026",
+     "pescaargentina-robalo"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Spinning de 2,40 a 3 m con multifilamento de 20 a 30 lb."
+   },
+   "epoca": {
+    "valor": "Pesca Argentina: de junio a septiembre. Reproducción de mayo a agosto (bahía San Antonio). En Santa Cruz la temporada deportiva 2025/26 fue del 1 de octubre al 1 de mayo; en las rías rinde con las pleamares.",
+    "fuentes": [
+     "pescaargentina-robalo",
+     "gastaldi-2009",
+     "boletin-pescador-2026",
+     "sc-norma-2026"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "CONTRADICCIÓN: junio-septiembre (portal) contra la temporada de Santa Cruz de octubre a mayo (la de 2026/27 no se confirmó en lo leído). Hay que preguntar a guías de Gallegos / Puerto Santa Cruz."
+   },
+   "horario": {
+    "valor": "Con la pleamar en rías y restingas (marea alta).",
+    "fuentes": [
+     "boletin-pescador-2026"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Inofensivo para las personas (FishBase). Tiene 7 u 8 espinas en la primera dorsal que pueden pinchar: agarralo por el cuerpo, firme y con trapo. En la orilla patagónica el riesgo real es el frío, el viento y las mareas que suben rápido en las rías y restingas (resbalones con mejillones y algas)."
+    },
+    "fuentes": [
+     "fishbase",
+     "boletin-pescador-2026"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Lo de las espinas sale de la descripción de FishBase; ninguna fuente lo da como problema. Lo de mareas y piedras es consejo mío."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombriz de mar, camarón o langostino",
+     "Trocitos de pescado fresco (pejerrey)",
+     "Cangrejos y mejillones triturados"
+    ],
+    "tip": "Pez de estuarios, rías y desembocaduras patagónicas: pescalo desde piedras y restingas con la marea alta, con línea de fondo y anzuelo grande. Come bien frito o a la parrilla. En emergencia la carnada natural sirve, pero en pesca deportiva en Santa Cruz está prohibida.",
+    "fuentes": [
+     "boletin-pescador-2026",
+     "martin-bastida-2008"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "normativa_nota": {
+    "valor": "Santa Cruz: nativa pescable (Anexo III, con perca y pejerrey). Dato del coordinador: 10 por día y talla mínima de 30 cm (no lo vi en el Anexo I). Una autoridad provincial dijo que está prohibido el uso de carnada natural, anzuelos múltiples y perros en los ambientes de pesca; el resumen de la norma 2026/7 dice que no se pueden usar peces ni almejas de carnada donde esté permitida carnada. En ríos y su desembocadura, 200 m: devolución obligatoria y un solo anzuelo con rebaba aplastada.",
+    "fuentes": [
+     "coordinador",
+     "sc-norma-2026",
+     "sc-noticias"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "CONTRADICCIÓN a resolver con el texto de la disposición (Disp. 241/2026 según el buscador): carnadas naturales prohibidas (declaración oficial) contra «peces y almejas prohibidos donde esté permitida» (resumen de prensa). Esto cambia lo que la app puede mostrar en carnadas."
+   },
+   "imagen_id": "robalo"
+  },
+  {
+   "id": "virreyna",
+   "nombre": {
+    "es": "Virreyna",
+    "en": "Sin nombre inglés usual (catfish de la familia Pimelodidae)",
+    "pt": "Sin nombre portugués confirmado"
+   },
+   "otros_nombres": [
+    "virreina (escritura del MAGyP)"
+   ],
+   "cientifico": "Megalonema platanum",
+   "familia": "Pimelodidae",
+   "origen": {
+    "valor": "nativa (cuenca del Paraná)",
+    "fuentes": [
+     "fishbase",
+     "magyp-it62"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "tamano": {
+    "valor": "Hasta unos 40 cm de largo estándar y 387 g (MAGyP IT 62 y FishBase, que parece citar la misma tabla). Es un bagre chico.",
+    "fuentes": [
+     "magyp-it62",
+     "fishbase"
+    ],
+    "confianza": "oficial"
+   },
+   "dieta": {
+    "valor": "Piscívoro-invertívoro (come peces e invertebrados). Hábito migratorio (M).",
+    "fuentes": [
+     "magyp-it62"
+    ],
+    "confianza": "oficial"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró ningún reporte de carnada específica. Como bagre de fondo piscívoro-invertívoro, probablemente sirvan lombriz o trocitos de pescado, pero es suposición, no dato."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado"
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado"
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Es un bagre (Pimelodidae): puede tener espinas en dorsal y pectorales que pinchan. Agarralo por el cuerpo con trapo o guante y sacá el anzuelo con alicate. FishBase lo da como inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La advertencia de espinas es la general de los bagres; ninguna fuente la da para esta especie."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombrices (suposición)",
+     "Trocitos de pescado (suposición)"
+    ],
+    "tip": "Bagre chico de fondo del Paraná y el Yacyretá. Probá línea de fondo con anzuelo chico y lombriz o pescado, y tené cuidado con las espinas. Es de la lista de especies que Corrientes regula.",
+    "fuentes": [
+     "magyp-it62"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "normativa_nota": {
+    "valor": "Corrientes (Disposición 853/22): talla mínima 30 cm, cupo 5 por día. La tabla del MAGyP (IT 62, 2021) lista 30 cm como talla mínima en varias jurisdicciones (con cupos distintos entre paréntesis: 10, 2, 10, 5) y 35 cm en otra; no se identificó qué columna es cuál.",
+    "fuentes": [
+     "corrientes-853-22",
+     "magyp-it62"
+    ],
+    "confianza": "oficial",
+    "nota": "Hay que mirar el encabezado de la tabla de IT 62 antes de usar las otras provincias."
+   },
+   "imagen_id": "virreyna"
+  }
+ ],
+ "fuentes": [
+  {
+   "magyp": {
+    "nombre": "MAGyP, Pesca Continental, fichas de especies (corvina de río = Pachyurus bonariensis; bagre negro o sapo = Rhamdia quelen)",
+    "url": "https://www.magyp.gob.ar/sitio/areas/pesca_continental/especies/bagre_negro.php  y  .../corvina_de_rio.php",
+    "tipo": "oficial",
+    "fecha_dato": "sin fecha propia (texto SAGPyA 2007)",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin aviso de derechos en la página ni en el índice; argentina.gob.ar licencia sus contenidos CC BY 4.0 (https://www.argentina.gob.ar/terminos-y-condiciones). Se usa con crédito.",
+    "descarga_masiva": "sin prohibición declarada"
+   },
+   "fishbase": {
+    "nombre": "FishBase, resumen por especie",
+    "url": "https://www.fishbase.se/summary/<Genero-especie>.html (Plagioscion-ternetzi, Plagioscion-squamosissimus, Leporinus-obtusidens, Leporinus-acutidens, Rhamdia-quelen, Eleginops-maclovinus)",
+    "tipo": "base científica",
+    "fecha_dato": "varía por registro",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "CC BY-NC (la app es gratuita y sin publicidad)",
+    "descarga_masiva": "no"
+   },
+   "aichino-2023": {
+    "nombre": "Aichino, D. R. (Biología Pesquera Regional, FCEQyN-UNaM), «Peces del río Paraná: Plagioscion ternetzi», Primera Edición (Misiones)",
+    "url": "https://www.primeraedicion.com.ar/nota/100740163/peces-del-rio-parana-plagioscion-ternetzi/",
+    "tipo": "divulgación de un especialista universitario",
+    "fecha_dato": "2023-09-21",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada (se trata como CC BY)"
+   },
+   "aire-sf-2026": {
+    "nombre": "Aire de Santa Fe, «Qué dice la ciencia sobre la aparición de corvinas en la Laguna Setúbal» (entrevista a Pablo Scarabotti, INALI CONICET-UNL)",
+    "url": "https://www.airedesantafe.com.ar/santa-fe/pesca-corvinas-santa-fe-que-aparece-esta-especie-la-laguna-setubal-y-otros-rios-n637350",
+    "tipo": "prensa con experto",
+    "fecha_dato": "2026-11 (nota con fecha del 23-11-2026 en la página)",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "conicet-2013": {
+    "nombre": "CONICET, Ciclo de entrevistas: «Corvina de río: puede convertirse en una alternativa sustentable...» (N. Schenone, CECOAL)",
+    "url": "https://www.conicet.gov.ar/wp-content/uploads/divulgacion/2013/04/Gacetilla-Corvina-de-rio-puede-convertirse-en-una-alternativa-sustentable-y-economicamente-productiva.pdf",
+    "tipo": "oficial (organismo científico)",
+    "fecha_dato": "2013-04-12",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "mgap-uy-bagre": {
+    "nombre": "MGAP Uruguay, ficha «Bagre negro» (acuicultura)",
+    "url": "https://www.gub.uy/ministerio-ganaderia-agricultura-pesca/sites/ministerio-ganaderia-agricultura-pesca/files/documentos/publicaciones/Bagre%20negro_ap.pdf",
+    "tipo": "oficial (otro país, misma población del Río de la Plata)",
+    "fecha_dato": "sin fecha",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "sf-acuario-100": {
+    "nombre": "Acuario del Río Paraná (Gobierno de Santa Fe), fichas de 100 especies: «Bagre sapo»",
+    "url": "https://www.santafe.gob.ar/acuario/download/fichas-100-especies-formato-3-647890d040a8c.pdf",
+    "tipo": "oficial",
+    "fecha_dato": "2023 (estimada por el nombre del archivo)",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "boletin-pescador-2026": {
+    "nombre": "El Boletín del Pescador, «La Pesca del Róbalo (Eleginops maclovinus), desde Bahía San Blas hasta la Patagonia Profunda»",
+    "url": "https://boletindelpescador.com.ar/la-pesca-del-robalo-eleginops-maclovinus-desde-bahia-san-blas-hasta-la-patagonia-profunda/",
+    "tipo": "revista de pesca (un autor)",
+    "fecha_dato": "2026-08-12",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "pescaargentina-robalo": {
+    "nombre": "Pesca en Argentina, ficha «Róbalo»",
+    "url": "https://www.pescaargentina.com.ar/contenidos/especies-argentinas/robalo/",
+    "tipo": "portal de pesca",
+    "fecha_dato": "sin fecha (página consultada 2026-11-24)",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "gastaldi-2009": {
+    "nombre": "Gastaldi y col. (2009), edad, crecimiento y reproducción del róbalo en bahía San Antonio (resumen en el repositorio CONICET; no se leyó el artículo completo)",
+    "url": "https://ri.conicet.gov.ar/handle/11336/240846",
+    "tipo": "paper (resumen)",
+    "fecha_dato": "2009",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "martin-bastida-2008": {
+    "nombre": "Martin y Bastida (2008), dieta del róbalo y comunidades bentónicas, ría Deseado (resumen del buscador; PDF no abierto)",
+    "url": "https://www.redalyc.org/pdf/1750/175014500001.pdf",
+    "tipo": "paper (sin confirmar el texto)",
+    "fecha_dato": "2008",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "mma-cl-robalo": {
+    "nombre": "Ministerio del Medio Ambiente de Chile, ficha de clasificación de especies, Eleginops maclovinus (dieta en el río Andalién, 92 % crustáceos; resumen del buscador)",
+    "url": "https://clasificacionespecies.mma.gob.cl/wp-content/uploads/2019/10/Eleginops_maclovinus-_10RCE_01_PAC.pdf",
+    "tipo": "oficial (Chile)",
+    "fecha_dato": "2019",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "sc-norma-2026": {
+    "nombre": "Revista Aire Libre, «Temporada de pesca 2026/7 en Santa Cruz» (resume la disposición; Anexo III lista al róbalo como nativa pescable)",
+    "url": "https://www.revista-airelibre.com/2026/10/13/temporada-pesca-2026-2027-santa-cruz/",
+    "tipo": "prensa (resumen de norma)",
+    "fecha_dato": "2026-10-13",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "sc-noticias": {
+    "nombre": "Gobierno de Santa Cruz, nota con Carlos Maturana (Pesca Continental)",
+    "url": "https://noticias.santacruz.gob.ar/organismos/produccion/marcos-el-desafio-es-que-todos-puedan-acceder-a-la-pesca-deportiva-en-santa-cruz",
+    "tipo": "oficial (declaración)",
+    "fecha_dato": "sin fecha visible en lo leído",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "sin licencia declarada"
+   },
+   "coordinador": {
+    "nombre": "Dato pasado por el coordinador del proyecto (10 por día, talla mínima 30 cm en Santa Cruz); no verificado por mí en el Anexo I",
+    "url": "no aplica",
+    "tipo": "sin verificar",
+    "fecha_dato": "2026-11-24",
+    "fecha_consulta": "2026-11-24",
+    "licencia": "no aplica"
    }
   }
  ]
