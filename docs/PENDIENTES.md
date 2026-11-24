@@ -798,3 +798,11 @@ Propuesta: una sección **Supervivencia** (hoy no existe) que junte lo que sirve
 ## Pendiente: sección Fauna (pedido del dueño, 2026-11-23)
 
 Sección nueva (aparte de Pesca): qué animales salvajes se pueden encontrar en cada zona (mamíferos, aves, reptiles; cuáles son peligrosos y qué hacer ante un encuentro) y, si hay **caza autorizada** de alguna especie, con su temporada y requisitos según la provincia (normativa con fuente y fecha, como en Pesca; «informativo, consultá el reglamento vigente»). Datos posibles: GBIF (ocurrencias, CC BY), las ecorregiones que ya tiene la app, reglamentos de caza provinciales y de Parques Nacionales. Reusar el diseño de Pesca (portada, mapa, ficha por especie). Sin investigar ni estimar todavía.
+
+## Pendiente: sección Fuego (pedido del dueño, 2026-11-24)
+
+Una sección para saber **si se puede hacer fuego** donde estoy o en un waypoint, y para **ver en el mapa** las zonas donde está prohibido o permitido. Ideas a investigar:
+- **Prohibiciones permanentes:** parques nacionales y provinciales (fogones solo en lugares habilitados; la APN y cada provincia tienen su reglamento), reservas, campings, zonas de bosque nativo; el reglamento de pesca de Santa Cruz y la Resolución ADA 395/2017 (Paso de las Piedras) ya prohíben encender fuego en algunos ambientes.
+- **Prohibiciones temporales por riesgo de incendio:** índice de peligro de incendio (Servicio Nacional de Manejo del Fuego, SMN, provincias: Patagonia, Córdoba, Sierras), vedas de fuego de temporada y decretos de emergencia ígnea; ver si hay fuentes con datos abiertos (API, mapas, boletines) y su licencia.
+- **En la app:** consulta por ubicación actual o waypoint (como Meteorología y la Huerta), capa en el mapa con zonas prohibidas o permitidas y el nivel de riesgo del día, aviso «informativo, no oficial» como las alertas, y que funcione sin conexión con los datos bajados (lo temporal, con su fecha).
+- Se relaciona con **Supervivencia** (fuego en una emergencia) y con los parques que ya tiene el mapa. Sin investigar ni estimar todavía.
