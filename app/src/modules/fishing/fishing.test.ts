@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { distanceToSector, isStale, seasonStatus, sectorsInZone, sectorsNear, sectorsWithSpecies, speciesClosedUntil, speciesInZone, waters, zoneNear, type FishData, type FishSector } from './fishing';
+import { releaseActive, distanceToSector, isStale, seasonStatus, sectorsInZone, sectorsNear, sectorsWithSpecies, speciesClosedUntil, speciesInZone, waters, zoneNear, type FishData, type FishSector } from './fishing';
 
 const sector = (id: string, water: string, coords: [number, number][], species: string[]): FishSector => ({
   id,
@@ -99,5 +99,20 @@ describe('pesca: zonas y vedas por especie', () => {
   it('veda anual de una especie (surubí del 1/11 al 31/12)', () => {
     expect(speciesClosedUntil({ id: 's', closures: [{ from: '11-01', to: '12-31' }] }, new Date(2026, 10, 24))?.getMonth()).toBe(11);
     expect(speciesClosedUntil({ id: 's', closures: [{ from: '11-01', to: '12-31' }] }, new Date(2026, 1, 1))).toBeNull();
+  });
+});
+
+describe('pesca: reglas por fecha', () => {
+  it('devolución obligatoria desde una fecha', () => {
+    const sp = { id: 'arcoiris', limit: 1, releaseFrom: '2027-05-02' };
+    expect(releaseActive(sp, new Date(2027, 4, 1))).toBe(false);
+    expect(releaseActive(sp, new Date(2027, 4, 2))).toBe(true);
+  });
+  it('temporada con un período extra (octubre)', () => {
+    const season = { from: '2026-11-01', to: '2027-05-31', also: [{ from: '2027-10-01', to: '2027-10-31' }] };
+    expect(seasonStatus(season, new Date(2027, 6, 1)).state).toBe('closed');
+    const st = seasonStatus(season, new Date(2027, 6, 1));
+    expect(st.state === 'closed' && st.from?.getMonth()).toBe(9);
+    expect(seasonStatus(season, new Date(2027, 9, 15)).state).toBe('open');
   });
 });

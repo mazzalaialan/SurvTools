@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
+import { releaseActive, sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
 /** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
@@ -69,7 +69,7 @@ export function keepRule(sp: SectorSpecies | undefined, sector: FishSector): Kee
   if (!sp) return 'unknown';
   // Prohibida todo el año o en veda hoy: rojo.
   if (sp.forbidden || speciesClosedUntil(sp)) return 'forbidden';
-  if (sector.catchAndRelease || sp.limit === 0) return 'release';
+  if (sector.catchAndRelease || sp.limit === 0 || releaseActive(sp)) return 'release';
   if (sp.limit === null) return 'free';
   if (sp.limit && sp.limit > 0) return 'keep';
   return 'unknown';
@@ -84,8 +84,11 @@ export function speciesRules(t: (k: string, o?: Record<string, unknown>) => stri
   if (sp.forbidden) return [t('fishing.rules.forbidden'), ...(sp.note ? [sp.note] : [])];
   const until = speciesClosedUntil(sp);
   if (until) out.push(t('fishing.rules.closedUntil', { date: until.toLocaleDateString(undefined, { day: 'numeric', month: 'long' }) }));
-  if (sector.catchAndRelease || sp.limit === 0) out.push(t('fishing.rules.release'));
-  else if (sp.limit) out.push(t('fishing.rules.limit', { n: sp.limit }));
+  const fmtD = (iso: string) => iso.split('-').reverse().map(Number).slice(0, 2).join('/');
+  const releaseNow = releaseActive(sp);
+  if (sector.catchAndRelease || sp.limit === 0 || releaseNow) out.push(releaseNow && sp.limit !== 0 && !sector.catchAndRelease ? t('fishing.rules.releaseSince', { date: fmtD(sp.releaseFrom!) }) : t('fishing.rules.release'));
+  else if (sp.limit) out.push(sp.groupLimit ? t('fishing.rules.limitGroup', { n: sp.limit }) : t('fishing.rules.limit', { n: sp.limit }));
+  if (sp.releaseFrom && !releaseNow && sp.limit !== 0 && !sector.catchAndRelease) out.push(t('fishing.rules.releaseFrom', { date: fmtD(sp.releaseFrom) }));
   else if (sp.limit === null) out.push(t('fishing.rules.free'));
   if (sp.minSizeCm) out.push(t('fishing.rules.minSize', { cm: sp.minSizeCm }));
   if (sp.maxSizeCm) out.push(t('fishing.rules.maxSize', { cm: sp.maxSizeCm }));

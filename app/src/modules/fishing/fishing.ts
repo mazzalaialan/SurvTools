@@ -54,6 +54,17 @@ export interface SectorSpecies {
   note?: string;
   /** El dato sale de la autoridad citada en prensa o de una fuente secundaria, no del texto oficial. */
   unconfirmed?: boolean;
+  /** Desde esta fecha («AAAA-MM-DD»), solo devolución («A partir del 02/05/2027: devolución obligatoria…»). */
+  releaseFrom?: string;
+  /** El cupo es en total para varias especies («1 trucha», «2 salmónidos»), no uno por especie. */
+  groupLimit?: boolean;
+}
+
+/** ¿Ya rige la devolución obligatoria por fecha? */
+export function releaseActive(sp: SectorSpecies, now: Date = new Date()): boolean {
+  if (!sp.releaseFrom) return false;
+  const [y, m, d] = sp.releaseFrom.split('-').map(Number);
+  return now >= new Date(y!, m! - 1, d!);
 }
 
 /** ¿Está la especie en veda hoy? Devuelve hasta cuándo, si está. */
@@ -79,6 +90,8 @@ export interface Season {
   from?: string;
   to?: string;
   allYear?: boolean;
+  /** Otros períodos abiertos («y durante octubre de 2027»). */
+  also?: { from: string; to: string }[];
 }
 
 export interface FishSector {
@@ -198,6 +211,14 @@ function parse(s: string, year: number): Date {
  */
 export function seasonStatus(season: Season | undefined, now: Date = new Date()): SeasonStatus {
   if (!season) return { state: 'unknown' };
+  // Con otros períodos (p. ej. «y durante octubre»): abierta si alguno lo está; si no, en veda hasta el próximo que abra.
+  if (season.also?.length) {
+    const all = [{ from: season.from, to: season.to }, ...season.also].map((p) => seasonStatus({ from: p.from, to: p.to }, now));
+    const open = all.find((x) => x.state === 'open');
+    if (open) return open;
+    const next = all.filter((x): x is { state: 'closed'; from: Date } => x.state === 'closed' && !!x.from).sort((a, b) => a.from.getTime() - b.from.getTime())[0];
+    return next ?? { state: 'closed' };
+  }
   if (season.allYear) return { state: 'open' };
   if (!season.from || !season.to) return { state: 'unknown' };
   const today = day(now.getFullYear(), now.getMonth() + 1, now.getDate());

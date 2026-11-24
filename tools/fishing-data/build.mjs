@@ -106,7 +106,12 @@ function parseSector(a) {
   // Cupo diario: «LD: 1 trucha arco iris, 2 percas y 10 pejerreyes y carpas sin límite».
   for (const m of text.matchAll(/LD:?\s*([^.]*)/g)) {
     const ld = m[1].split(/-\s*devoluci|,?\s*devoluci/i)[0];
-    for (const item of ld.matchAll(/(\d+)\s+([a-záéíóúñ ]+?)(?=,|\sy\s\d|\sy\s[a-z]+\s+sin|$|\s+excepto)/gi)) for (const id of speciesOf(item[2])) set(id, { limit: Number(item[1]) });
+    for (const item of ld.matchAll(/(\d+)\s+([a-záéíóúñ ]+?)(?=,|\sy\s\d|\sy\s[a-z]+\s+sin|$|\s+excepto)/gi)) {
+      const ids = speciesOf(item[2]);
+      // «1 trucha» o «2 salmónidos»: un cupo en total para todas, no uno por especie.
+      const group = ids.length > 1;
+      for (const id of ids) set(id, { limit: Number(item[1]), ...(group && { groupLimit: true }) });
+    }
     if (/carpas? sin l[ií]mite/i.test(ld)) set('carpa', { limit: null });
     // «LD: sin límites de captura para la trucha de lago (bocón) y salmón Chinook, otros salmónidos 2 ejemplares» (Parques Nacionales).
     const free = ld.match(/sin l[ií]mites? de (?:captura|extracci[oó]n) para ([^,]*)/i);
@@ -117,7 +122,7 @@ function parseSector(a) {
     for (const item of ld.matchAll(/(?:otros\s+)?([a-záéíóúñ ]+?)\s+(\d+)\s+ejemplares?/gi)) {
       const ids = speciesOf(item[1]);
       const others = /otros/i.test(item[0]);
-      for (const id of /salm[oó]nid/i.test(item[1]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo'] : ids) if (!(others && species.has(id))) set(id, { limit: Number(item[2]) });
+      for (const id of /salm[oó]nid/i.test(item[1]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo'] : ids) if (!(others && species.has(id))) set(id, { limit: Number(item[2]), ...(/salm[oó]nid|truchas?\b/i.test(item[1]) && { groupLimit: true }) });
     }
   }
   // Cualquier oración con «sin límite»: «Carpas sin límite.», «salmónidos sin límite de captura», «sin límites de percas y salmónidos».
@@ -141,6 +146,15 @@ function parseSector(a) {
     for (const part of what.split(/,|\sy\s/)) for (const id of speciesOf(/salm[oó]nidos/i.test(what) && !/encerrado/i.test(part) ? 'salmonidos' : part)) set(id, { limit: 0 });
   }
   if (allRelease) for (const id of species.keys()) set(id, { limit: 0 });
+  // «A partir del 02/05/2027: devolución obligatoria de todos los salmónidos» / «Desde el 01/04/2027 devolución obligatoria»:
+  // hasta esa fecha rige el cupo; desde ahí, solo devolución.
+  for (const m of text.matchAll(/(?:a partir del?|desde el)\s*(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s*:?\s*((?:(?!\.\s)[^.])*?)devoluci[oó]n obligatoria(?:\s+de\s+(todos los salm[oó]nidos|todas las capturas|todos los peces|todas las especies))?/gi)) {
+    if (/\bal\s+\d{1,2}\/\d{1,2}/i.test(m[4])) continue; // «desde el … al …»: es un período, queda en el texto
+    const yy = m[3].length === 2 ? `20${m[3]}` : m[3];
+    const from = `${yy}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+    const targets = m[5] && /salm/i.test(m[5]) ? ['trucha-arcoiris', 'trucha-marron', 'trucha-arroyo', 'trucha-lago', 'salmon-atlantico', 'salmon-pacifico'] : [...species.keys()];
+    for (const id of targets) if (species.has(id)) set(id, { releaseFrom: from });
+  }
   // Si no nombra ninguna especie pero se pesca, al menos las truchas (en la Patagonia están en casi todos los ambientes con salmónidos).
   const closed = (/pesca no autorizada|no se permite la pesca|veda total|prohibida la pesca\s*(en todo|todo el a)/i.test(text) || /^\W*(neuqu[eé]n\W*)?prohibida la pesca\.?\s*$/i.test(text.replace(/^-\s*/, ''))) && !/LD/.test(text);
   // Sin especies nombradas (p. ej. «Devolución obligatoria.»): se toman las truchas, que están en casi todos los ríos y lagos patagónicos.
@@ -154,7 +168,8 @@ function parseSector(a) {
   const span = text.match(/desde el (\d{1,2}\/\d{1,2}\/\d{4}) (?:al|hasta el) (\d{1,2}\/\d{1,2}\/\d{4})/i);
   const open = text.match(/Apertura:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[1]]);
   const close = text.match(/Cierre:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) ?? (span && [span[0], span[2]]);
-  const season = closed ? undefined : open && close ? { from: iso(open[1]), to: iso(close[1]) } : undefined;
+  const oct = text.match(/durante (?:el mes de )?octubre del?\s*(\d{4})/i);
+  const season = closed ? undefined : open && close ? { from: iso(open[1]), to: iso(close[1]), ...(oct && { also: [{ from: `${oct[1]}-10-01`, to: `${oct[1]}-10-31` }] }) } : undefined;
   return { species: [...species.values()], modality: [...mods], season, closed, inferred, catchAndRelease: allRelease || undefined };
 }
 
@@ -183,6 +198,8 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       continue;
     }
     const p = parseSector(a);
+    // Cierre anticipado de la trucha de arroyo en ríos y arroyos: desde el 01/03/2027, devolución obligatoria (Reglamento 2026/27, pág. 13, 2.b).
+    if (/r[ií]o|arroyo/i.test(a.tipo_agua)) for (const e of p.species) if (e.id === 'trucha-arroyo' && e.limit !== 0) e.releaseFrom ??= '2027-03-01';
     const general = ambientes.find((x) => x.id === a.id.replace(/-zona-[ivx]+$/, '') && x.id !== a.id);
     const kind = a.tipo_agua.replace(/s$/, '');
     sectors.push({

@@ -364,6 +364,13 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
         <SectorSeasonBadge data={data} sector={s} />
         {region && `${sectorSeason(data, s) || s.closed ? ' · ' : ''}${region.name}`}
       </p>
+      {sectorSeason(data, s)?.also?.length ? (
+        <p className="small">
+          {t('fishing.rules.alsoOpen', {
+            list: sectorSeason(data, s)!.also!.map((p) => `${p.from.split('-').reverse().slice(0, 2).map(Number).join('/')}–${p.to.split('-').reverse().slice(0, 2).map(Number).join('/')}`).join(', '),
+          })}
+        </p>
+      ) : null}
       {s.approx && <p className="fish-stale">{t('fishing.approx', { what: s.approx })}</p>}
       {s.closed && (
         <p className="card fish-rule" data-rule="forbidden" data-testid="fish-forbidden">
