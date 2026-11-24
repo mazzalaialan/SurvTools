@@ -125,3 +125,23 @@ Con la búsqueda de coordenadas (`~/vikarg-fishing-work/coordenadas.json`: IGN W
 ## Reglas por fecha (2026-11-24)
 
 Se leen del texto del tramo y se muestran en cada pez: «A partir del / Desde el …: devolución obligatoria (de todos los salmónidos)» → `releaseFrom` (hasta esa fecha rige el cupo; después, amarillo); cierre anticipado de la trucha de arroyo en ríos y arroyos desde el 01/03/2027 (Reglamento, pág. 13, 2.b); «durante octubre de 2027» → segundo período de temporada (`season.also`); «1 trucha», «2 salmónidos» → cupo en total para el grupo (`groupLimit`). Siguen solo en el texto: «desde el … al …» con reglas propias de ese período y los horarios por mes del Limay en PN.
+
+## Santa Cruz y Tierra del Fuego (2026-11-24)
+
+- **Normas:** Santa Cruz, Disposición N.º 241/2026 de la Secretaría de Estado de Pesca y Acuicultura (temporada 01/10/2026 al 30/09/2027; ríos y arroyos cierran casi todos el 03/05/2027; lagos grandes todo el año). El PDF es escaneado: transcripción a mano. El pie del portal dice «Todos los derechos reservados»; el dueño decidió usar los datos con atribución (la leyenda es del sitio, no de la disposición). Tierra del Fuego, Resolución S.A. N.º 259/2026 (30/10/2026 al 02/05/2027; río Grande y afluentes hasta el 18/04/2027; devolución obligatoria en toda la provincia desde el 01/03/2027; la arco iris con devolución hasta el 01/01/2027; cupo general 1 por día). Fuentes, transcripción y permisos en `~/vikarg-fishing-work/sur/`.
+- **En el mapa:** Santa Cruz 53 tramos, Tierra del Fuego 30 (436 en total). Los ríos que OSM no tiene salen de las cartas del IGN (capas de hidrografía del WFS, copiadas a `~/vikarg-fishing-work/ign/`; `ign` en `cuts.json`).
+- **Subtramos plegados** (`fold` en `cuts.json`): vedas junto a puentes, ventana de extracción de febrero en el Gallegos, régimen del chinook, róbalo y trolling en el río Santa Cruz: van como nota del tramo general. Las reglas por especie con redacción libre se cargaron a mano (`species` en `cuts.json`): steelhead del río Santa Cruz (1 por temporada, devolución desde el 15/03/2027), chinook (temporada 01/08–30/11/2027), róbalo (10 por día, 30 cm), chinook de Las Vueltas y La Leona.
+- **Trucha de mar:** las dos normas la tratan como trucha marrón (Gallegos, Grande, Coyle: devolución obligatoria; Gallegos permite 1 por día del 01 al 28/02/2027).
+- **Vigilancia:** `FISHING_DOCS` del servidor revisa cada norma desde 45 días antes de su propio vencimiento (`validUntil`).
+- **Dudas:** en Tierra del Fuego la página oficial dice devolución en el Grande «hasta el 13 de abril» y la resolución fija el cierre el 18/04 (se usó la resolución); Pierrestegui «Apertura: 01/1/2026» (errata probable de 01/10/2026); compra de permisos de Tierra del Fuego sin enlace oficial verificado.
+
+## Sin ubicar (2026-11-24)
+
+27 ambientes se ven en las listas con su reglamento pero no en el mapa (búsqueda en IGN, OSM, GeoNames, prensa y guías: `~/vikarg-fishing-work/coordenadas2.json`):
+- **Neuquén:** lagunas Doña Pancha (Nedalafquen), El Aparato, Matetue, Puyulafquen; El Palau (¿laguna Palao o Palau Mahuida?).
+- **Chubut:** Derivador Azud, arroyos Rifleros y Vicente; el tramo 28 de Julio del río Chubut está a medias (falta el «puente de madera»).
+- **Parques Nacionales:** arroyo Canal de Doña Rosa (o de Alarcón), lago Los Raulíes, laguna Media Luna, río Nuevo, río Rillaqueo (¿Millaqueo?).
+- **Santa Cruz:** laguna Cuesta de la Pava, arroyo Del Hacha, río Senger sector Los Monos.
+- **Tierra del Fuego:** ríos Rasmussen, Indio, Palacios y Malanguena, arroyos Videla, Subiabre y Mimica, lagunas Palacios, Bombilla y Tres Marías (el IGN la pone al norte; el reglamento, en una bahía del Fagnano), chorrillo Los Salmones.
+- **Equivalencias deducidas, marcadas como aproximadas:** Colehual = arroyo Calihuel, Peloue = río Pelque.
+- **A quién preguntar:** Dirección de Fauna de Neuquén, Instituto Provincial del Agua de Chubut, intendencias de los PN Nahuel Huapi y Los Alerces, Dirección de Pesca Continental de Santa Cruz y Secretaría de Ambiente de Tierra del Fuego (pescacontinentaltdf@gmail.com, el contacto que publica la resolución).
