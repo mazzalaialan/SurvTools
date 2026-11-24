@@ -26,11 +26,13 @@ const BBOX = {
   'Santa Cruz': [-73.7, -52.5, -65.6, -45.9],
   'Tierra del Fuego': [-68.8, -55.2, -63.7, -52.6],
   // Litoral (Entre Ríos, Santa Fe, Corrientes, Misiones, Chaco, Formosa, Buenos Aires y el río Uruguay compartido).
-  Litoral: [-62.9, -38.6, -53.5, -21.9],
+  // Litoral, y al sur de -34° más al oeste (lagunas del oeste y el sur de Buenos Aires) sin entrar en Salta ni Santiago del Estero.
+  Litoral: [[-62.9, -38.6, -53.5, -21.9], [-64.0, -40.2, -56.0, -34.0]],
 };
 const box = BBOX[jurisdiction];
 if (!box) throw new Error(`Jurisdicción sin recuadro: ${jurisdiction}`);
-const inBox = ([x, y]) => x >= box[0] && x <= box[2] && y >= box[1] && y <= box[3];
+const boxes = Array.isArray(box[0]) ? box : [box];
+const inBox = ([x, y]) => boxes.some((b) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]);
 
 export const norm = (s) =>
   (s ?? '')

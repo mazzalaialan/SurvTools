@@ -6,7 +6,7 @@
 set -eu
 PBF=${1:?Uso: prepare.sh extracto.osm.pbf carpeta}
 OUT=${2:?Uso: prepare.sh extracto.osm.pbf carpeta}
-# Por defecto, la Patagonia hasta Tierra del Fuego; para el Litoral: -62.9,-38.6,-53.5,-21.9
+# Por defecto, la Patagonia hasta Tierra del Fuego; para el Litoral y Buenos Aires: -64.0,-40.2,-53.5,-21.9
 BBOX=${3:--73.8,-55.2,-62.7,-36.0}
 mkdir -p "$OUT"
 # Patagonia hasta Tierra del Fuego (Neuquén, Río Negro, Chubut y los Parques Nacionales del Sur, que llegan a Los Glaciares y Tierra del Fuego).
