@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { COUNTRIES, useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { downloadCountryPack } from './country';
-import { deleteCountryPack, deleteSector, downloadSector } from './countryDelete';
-import { countryPackState, sectorPackState, type PackState } from './countryDownload';
+import { deleteCountryPack, deleteFishPack, deleteSector, downloadFishPack, downloadSector } from './countryDelete';
+import { countryPackState, fishPackState, sectorPackState, type PackState } from './countryDownload';
 import { BR_SECTOR_IDS } from './sectors';
 
 export interface Pack {
@@ -18,6 +18,11 @@ export interface SectorPack extends Pack {
 
 interface PacksState {
   packs: Partial<Record<Country, Pack>>;
+  /** Paquete de pesca de cada país que lo tiene (descarga aparte). */
+  fish: Partial<Record<Country, SectorPack>>;
+  busyFish: Country | null;
+  downloadFish: (c: Country) => Promise<void>;
+  removeFish: (c: Country) => Promise<void>;
   sectors: Partial<Record<BrSector, SectorPack>>;
   busy: Country | null;
   busySector: BrSector | null;
@@ -31,6 +36,8 @@ interface PacksState {
 /** Un solo estado para todos los que lo muestran (el selector de Ajustes y el mapa de países): si uno baja un país, el otro se entera. */
 export const useCountryPackStore = create<PacksState>((set, get) => ({
   packs: {},
+  fish: {},
+  busyFish: null,
   sectors: {},
   busy: null,
   busySector: null,
@@ -39,6 +46,10 @@ export const useCountryPackStore = create<PacksState>((set, get) => ({
       // Brasil se baja por sectores: sin ninguno elegido no hay nada bajado.
       const p = c === 'BR' && useSettings.getState().settings.brSectors.length === 0 ? { state: 'missing' as PackState, bytes: 0 } : await countryPackState(c, force).catch(() => null);
       if (p) set((prev) => ({ packs: { ...prev.packs, [c]: { state: p.state, bytes: p.bytes } } }));
+    }
+    for (const c of COUNTRIES) {
+      const f = await fishPackState(c, force).catch(() => null);
+      if (f) set((prev) => ({ fish: { ...prev.fish, [c]: f } }));
     }
     for (const id of BR_SECTOR_IDS) {
       const p = await sectorPackState(id, force).catch(() => null);
@@ -51,6 +62,24 @@ export const useCountryPackStore = create<PacksState>((set, get) => ({
       await downloadCountryPack(c);
     } finally {
       set({ busy: null });
+      void get().check(true);
+    }
+  },
+  async downloadFish(c) {
+    set({ busyFish: c });
+    try {
+      await downloadFishPack(c);
+    } finally {
+      set({ busyFish: null });
+      void get().check(true);
+    }
+  },
+  async removeFish(c) {
+    set({ busyFish: c });
+    try {
+      await deleteFishPack(c);
+    } finally {
+      set({ busyFish: null });
       void get().check(true);
     }
   },

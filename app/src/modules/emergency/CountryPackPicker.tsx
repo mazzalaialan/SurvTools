@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Loader2, Map as MapIcon, MapPin, RefreshCw, Trash2 } from 'lucide-react';
+import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Fish, Loader2, Map as MapIcon, MapPin, RefreshCw, Trash2 } from 'lucide-react';
 import { CONTINENTS, useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { confirmAction } from '@/ui/confirm';
 import { filesToDelete } from './countryDelete';
@@ -26,7 +26,7 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
   const { t, i18n } = useTranslation();
   const country = useSettings((s) => s.settings.country);
   const update = useSettings((s) => s.update);
-  const { packs, sectors, busy, busySector, download, downloadSector, remove, removeSector } = useCountryPacks();
+  const { packs, sectors, fish, busyFish, busy, busySector, download, downloadSector, downloadFish, remove, removeFish, removeSector } = useCountryPacks();
   const [mapOpen, setMapOpen] = useState(false);
   /** Los sectores de Brasil se muestran al tocar Brasil (y se esconden al volver a tocarlo). */
   const [brOpen, setBrOpen] = useState(false);
@@ -116,6 +116,7 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                 return (
                   <Fragment key={c}>
                   <div className="country-pack-item" data-testid={`country-pack-${c}`} data-state={state ?? 'unknown'}>
+                    <span className="country-pack-main">
                     <button
                       type="button"
                       className="country-pack-select"
@@ -132,6 +133,7 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                     </button>
                     {/* La leyenda va fuera del botón (superpuesta a su derecha) para no cambiar su texto ni su nombre accesible. */}
                     {manage && country === c && <span className="country-pack-now" aria-hidden>{t('country.map.legendMain')}</span>}
+                    </span>
                     {manage && c === 'BR' ? (
                       // Brasil es un botón como los demás (lo marca como país actual); sus sectores se despliegan con este control, al costado.
                       <button
@@ -174,6 +176,46 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                       </button>
                     ) : null}
                     {manage && canDelete && busy !== c ? deleteButton(name, bytesToFree, () => remove(c), `country-pack-del-${c}`) : null}
+                    {/* Pesca: descarga aparte, con un pez (tramos, vedas, permisos y fichas de los peces). */}
+                    {manage && fish[c] && (() => {
+                      const f = fish[c]!;
+                      const fishName = t('country.pack.fishName', { country: name });
+                      const fishSize = formatBytes(f.state === 'missing' ? f.total : f.bytes || f.total, i18n.language);
+                      if (busyFish === c)
+                        return (
+                          <span className="country-pack-icon country-pack-fish" role="img" aria-label={t('country.pack.downloading', { country: fishName })} title={t('country.pack.downloading', { country: fishName })}>
+                            <Loader2 size={16} className="spin" aria-hidden />
+                          </span>
+                        );
+                      if (f.state === 'ready')
+                        return (
+                          <button
+                            type="button"
+                            className="country-pack-icon country-pack-fish country-pack-ready"
+                            data-testid={`country-fish-del-${c}`}
+                            aria-label={`${t('country.pack.ready', { country: fishName })}. ${t('country.pack.delete', { country: fishName })}`}
+                            title={`${t('country.pack.ready', { country: fishName })}. ${t('country.pack.delete', { country: fishName })}`}
+                            onClick={() => void askRemove(fishName, f.total, () => removeFish(c))}
+                          >
+                            <Fish size={16} aria-hidden />
+                            <Check size={14} aria-hidden />
+                          </button>
+                        );
+                      return (
+                        <button
+                          type="button"
+                          className="country-pack-icon country-pack-fish country-pack-get"
+                          data-testid={`country-fish-get-${c}`}
+                          aria-label={`${t(f.state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: fishName })} (${fishSize})`}
+                          title={`${t(f.state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: fishName })} (${fishSize})`}
+                          onClick={() => void downloadFish(c)}
+                        >
+                          <Fish size={16} aria-hidden />
+                          {f.state === 'outdated' ? <RefreshCw size={14} aria-hidden /> : <ArrowDownToLine size={14} aria-hidden />}
+                          <span className="country-pack-size">{fishSize}</span>
+                        </button>
+                      );
+                    })()}
                   </div>
                   {/* Los sectores de Brasil van pegados a la fila de Brasil, sangrados, para que se entienda a qué país pertenecen. */}
           {manage && c === 'BR' && brOpen && (

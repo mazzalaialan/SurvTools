@@ -19,7 +19,10 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   // La sección está en Inicio.
   await expect(page.locator('main').getByRole('link', { name: /Mapa de pesca/ })).toBeVisible();
 
+  // Pesca es una descarga aparte: la sección ofrece bajarla.
   await page.goto('/#/fishing');
+  await expect(page.getByTestId('fish-pack-offer')).toBeVisible();
+  await page.getByTestId('fish-pack-get').click();
   await expect(page.getByTestId('fish-status')).toContainText('2 peces');
   await expect(page.getByTestId('fish-notice')).toContainText('No es oficial');
 

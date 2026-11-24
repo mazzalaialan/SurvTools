@@ -177,6 +177,11 @@ export const FISH_COUNTRIES: Country[] = ['AR'];
 const cache = new Map<string, Promise<FishData | null>>();
 
 /** Los datos de pesca del país, o `null` si no se bajaron o no hay. */
+/** Que la próxima lectura vuelva a leer lo guardado (después de bajar o borrar el paquete de pesca). */
+export function forgetLoadedFish(): void {
+  cache.clear();
+}
+
 export function loadFishData(country: Country): Promise<FishData | null> {
   if (!FISH_COUNTRIES.includes(country)) return Promise.resolve(null);
   const file = fishFile(country);

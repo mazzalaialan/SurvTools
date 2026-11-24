@@ -6693,10 +6693,24 @@ button.country-pack-del {
 [data-area='country-picker'] .country-pack-item {
   position: relative;
 }
+/* Botón del país + leyenda: la leyenda se ubica contra el borde derecho del botón, haya uno o dos botones al costado (datos y pesca). */
+[data-area='country-picker'] .country-pack-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+/* En el celular, con los dos botones al costado (datos y pesca), la leyenda no entra y se encimaba con el nombre: se oculta. El país actual
+   igual se distingue (botón relleno con el ícono de ubicación) y figura arriba de la lista («País actual: …»). */
+@media (max-width: 520px) {
+  [data-area='country-picker'] .country-pack-item:has(.country-pack-fish) .country-pack-now {
+    display: none;
+  }
+}
 [data-area='country-picker'] .country-pack-now {
   position: absolute;
   top: 50%;
-  right: calc(72px + var(--sp-2) + var(--sp-3));
+  right: var(--sp-3);
   transform: translateY(-50%);
   pointer-events: none;
   font-size: var(--fs-xs);

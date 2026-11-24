@@ -24,13 +24,29 @@ export function countryFiles(country: Country): string[] {
   if (country === 'AR' || country === 'UY') files.push('tides-official.json');
   // Pisos de vegetación de Chile (Luebert y Pliscoff, ~3,5 MB): ecorregión fina de Chile.
   if (country === 'CL') files.push('vegetation-CL.json');
-  // Pesca (tramos, vedas y carnadas): solo los países que ya tienen paquete (ver modules/fishing).
-  if (fileBytes(`fish-${country}.json`) > 0) files.push(`fish-${country}.json`);
   for (const cat of SERVICE_CATEGORIES) files.push(`${cat}-${country}.json`);
   // Parques y repetidoras oficiales de Chile también sirven con Argentina (por la cordillera).
   if (country === 'AR' || country === 'CL') files.push('parks-CL.json', 'repeaters-CL.json');
   if (country === 'BO' || country === 'PE' || country === 'PY' || country === 'UY') files.push(`parks-${country}.json`);
   return files;
+}
+
+/**
+ * Pesca (tramos, vedas, permisos y fichas de peces): es una descarga APARTE de la del país (decisión del dueño, 2026-11-24), con su botón
+ * con un pez al lado del de los datos generales. Solo los países que tienen paquete (ver modules/fishing).
+ */
+export function fishFiles(country: Country): string[] {
+  return fileBytes(`fish-${country}.json`) > 0 ? [`fish-${country}.json`] : [];
+}
+
+/** Cómo está el paquete de pesca de un país (null si el país no tiene). */
+export async function fishPackState(country: Country, force = false): Promise<{ state: PackState; bytes: number; total: number } | null> {
+  const all = fishFiles(country);
+  if (!all.length) return null;
+  const states = await fileStates(all, force);
+  const files = all.filter((f) => states[f] !== 'ok');
+  const state: PackState = all.some((f) => states[f] === 'missing') ? 'missing' : files.length ? 'outdated' : 'ready';
+  return { state, bytes: files.reduce((n, f) => n + fileBytes(f), 0), total: all.reduce((n, f) => n + fileBytes(f), 0) };
 }
 
 const SIZES = sizes as Record<string, number>;

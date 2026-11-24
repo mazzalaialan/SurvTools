@@ -1,6 +1,9 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { Fish, Loader2 } from 'lucide-react';
+import { useSettings } from '@/core/settings/settings';
+import { formatBytes } from '@/modules/emergency/countryDownload';
+import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { releaseActive, sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
@@ -142,15 +145,7 @@ export function FishDataGate({ state, children }: { state: FishDataState; childr
         <p>{t('fishing.noCountry')}</p>
       </div>
     );
-  if (state.status === 'missing')
-    return (
-      <div className="card" data-testid="fish-missing">
-        <p>{t('fishing.missing')}</p>
-        <Link className="btn" to="/settings">
-          {t('fishing.download')}
-        </Link>
-      </div>
-    );
+  if (state.status === 'notDownloaded' || state.status === 'missing') return <FishPackOffer offline={state.status === 'missing'} />;
   return <>{children(state.data)}</>;
 }
 
@@ -232,5 +227,36 @@ export function ZonePicker({ data, zone, picked, auto, manual, setZone }: { data
         </button>
       )}
     </label>
+  );
+}
+
+/**
+ * Ofrece bajar (o actualizar) el paquete de pesca del país, que es una descarga aparte de los datos generales. Se muestra en la sección
+ * cuando falta, y como aviso chico en la portada cuando hay una versión nueva.
+ */
+export function FishPackOffer({ offline = false, compact = false }: { offline?: boolean; compact?: boolean }) {
+  const { t, i18n } = useTranslation();
+  const country = useSettings((s) => s.settings.country);
+  const { fish, busyFish, downloadFish, check } = useCountryPackStore();
+  useEffect(() => {
+    void check();
+  }, [check]);
+  const f = fish[country];
+  const name = t(`country.${country}`);
+  const busy = busyFish === country;
+  if (compact && f?.state !== 'outdated') return null;
+  const size = f ? formatBytes(f.state === 'missing' ? f.total : f.bytes || f.total, i18n.language) : '';
+  return (
+    <div className={compact ? 'fish-pack-offer fish-pack-compact' : 'card stack fish-pack-offer'} data-testid={compact ? 'fish-pack-update' : 'fish-pack-offer'}>
+      <p>{compact ? t('fishing.pack.outdated', { country: name }) : offline && !navigator.onLine ? t('fishing.missing') : t('fishing.pack.offer', { country: name })}</p>
+      <div>
+        <button className={compact ? 'btn btn-small' : 'btn btn-primary'} type="button" disabled={busy || !navigator.onLine} onClick={() => void downloadFish(country)} data-testid="fish-pack-get">
+          {busy ? <Loader2 size={18} className="spin" aria-hidden /> : <Fish size={18} aria-hidden />}{' '}
+          {busy ? t('fishing.pack.downloading') : f?.state === 'outdated' ? t('fishing.pack.update') : t('fishing.pack.get')}
+          {size && !busy ? ` (${size})` : ''}
+        </button>
+      </div>
+      {!compact && <p className="muted small">{t('fishing.pack.hint')}</p>}
+    </div>
   );
 }

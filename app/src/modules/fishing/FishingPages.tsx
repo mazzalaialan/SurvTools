@@ -7,7 +7,7 @@ import { useGeolocation } from '@/core/geo/useGeolocation';
 import { useZonePlace } from '@/modules/garden/status';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import { isStale, sectorClosure, sectorSeason, sectorsInZone, sectorsNear, speciesInZone, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
-import { FishDataGate, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules, ZonePicker } from './parts';
+import { FishDataGate, FishPackOffer, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules, ZonePicker } from './parts';
 import { useFishZone } from './useFishZone';
 import { useFishData } from './useFishData';
 
@@ -85,6 +85,7 @@ export function FishingHomePage() {
             <ZoneControl data={data} />
             <p>{t('fishing.status', { season: data.seasonLabel ?? '', species: data.species.length, sectors: data.sectors.length })}</p>
             {isStale(data) && <p className="fish-stale">{t('fishing.stale')}</p>}
+            <FishPackOffer compact />
             <RulesNotice data={data} />
             <Link className="btn btn-primary btn-block" to="/fishing/map" data-testid="fish-open-map">
               <MapIcon size={20} aria-hidden /> {t('fishing.openMap')}

@@ -1,8 +1,9 @@
 import { useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { forgetLoadedCountry, prefetchCountry } from './country';
-import { deletableFiles } from './countryDownload';
+import { deletableFiles, fishFiles } from './countryDownload';
 import { forgetLoadedParks } from './data';
-import { forgetDataFile, refreshStored } from './dataFile';
+import { forgetDataFile, loadDataFile, refreshStored } from './dataFile';
+import { forgetLoadedFish } from '@/modules/fishing/fishing';
 import { sectorFiles } from './sectors';
 import { forgetLoadedService, SERVICE_CATEGORIES } from './services';
 
@@ -44,4 +45,17 @@ export async function deleteSector(id: BrSector): Promise<void> {
   // Si se borra a propósito, la detección por ubicación no lo vuelve a bajar sola.
   await useSettings.getState().update({ brSectors: current.filter((s) => s !== id), brSectorsDeclined: declined.includes(id) ? declined : [...declined, id] });
   await forget(sectorFiles(id));
+}
+
+/** Baja (o actualiza) el paquete de pesca del país: es aparte de los datos generales (botón con un pez en Ajustes). */
+export async function downloadFishPack(country: Country): Promise<void> {
+  for (const f of fishFiles(country)) await loadDataFile(f);
+  await refreshStored(fishFiles(country), true).catch(() => 0);
+  forgetLoadedFish();
+}
+
+/** Borra el paquete de pesca del país. */
+export async function deleteFishPack(country: Country): Promise<void> {
+  await forget(fishFiles(country));
+  forgetLoadedFish();
 }
