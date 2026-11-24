@@ -169,16 +169,17 @@
   "why": "entrada general: se dibujan las zonas"
  },
  "neuquen-pulmari-rio-zona-i": {
-  "from": {
-   "end": "naciente",
-   "away": {
-    "confluence": "Aluminé"
-   }
-  },
-  "to": {
-   "lake": "Pulmarí"
-  },
-  "approx": "desde el límite del PN Lanín: se toma desde la naciente"
+  "path": [
+   [
+    -71.24981,
+    -39.14828
+   ],
+   [
+    -71.1187,
+    -39.12635
+   ]
+  ],
+  "approx": "desde el desagüe del lago Ñorquinco (el límite con el PN Lanín no está confirmado)"
  },
  "neuquen-pulmari-rio-zona-ii": {
   "from": {
@@ -214,7 +215,7 @@
   "name": "Torres / Temenuao"
  },
  "chubut-las-mercedes-laguna": {
-  "name": "Laguna Mercedes"
+  "name": "Laguna Chulta"
  },
  "chubut-guacho-inferior-y-superior-lago": {
   "name": "Lago Guacho",
@@ -386,5 +387,119 @@
  },
  "apn-manso-rio-manso-inferior": {
   "approx": "el tramo entre el lago Steffen y el río Villegas no está completo en el mapa: se muestra el río entero; vale el texto del reglamento"
+ },
+ "neuquen-aquihueco-laguna": {
+  "at": [
+   -70.5122,
+   -37.0667
+  ]
+ },
+ "neuquen-epu-lauquen-lagunas": {
+  "at": [
+   -71.0567,
+   -36.8334
+  ]
+ },
+ "neuquen-kilka-rio": {
+  "path": [
+   [
+    -70.81375,
+    -38.90435
+   ],
+   [
+    -70.93572,
+    -39.14004
+   ]
+  ]
+ },
+ "neuquen-ruca-choroy-rio": {
+  "name": "Río Rucachoroi"
+ },
+ "chubut-caradogh-laguna": {
+  "name": "Laguna Carao"
+ },
+ "chubut-fiti-rhuin-arroyo": {
+  "path": [
+   [
+    -71.25598,
+    -42.21534
+   ],
+   [
+    -71.12815,
+    -42.26036
+   ]
+  ]
+ },
+ "chubut-lago-1-lago": {
+  "name": "Lago Pico Número Uno"
+ },
+ "chubut-lago-2-lago": {
+  "name": "Lago Pico Número Dos"
+ },
+ "chubut-lago-3-lago": {
+  "name": "Lago Pico Número Tres"
+ },
+ "chubut-lago-4-lago": {
+  "name": "Lago Pico Número Cuatro"
+ },
+ "chubut-lago-5-lago": {
+  "name": "Lago Pico Número Cinco"
+ },
+ "chubut-lezana-lago": {
+  "name": "Lago Lezama"
+ },
+ "apn-calcuco-arroyo": {
+  "path": [
+   [
+    -71.71727,
+    -40.59307
+   ],
+   [
+    -71.68355,
+    -40.57533
+   ]
+  ]
+ },
+ "apn-calfiquitra-arroyo": {
+  "path": [
+   [
+    -71.29883,
+    -39.21002
+   ],
+   [
+    -71.20976,
+    -39.24704
+   ]
+  ]
+ },
+ "apn-caterina-rio": {
+  "name": "Río Catarina"
+ },
+ "apn-curruhue-chico-lago": {
+  "name": "Lago Currhué Chico"
+ },
+ "apn-curruhue-grande-lago": {
+  "name": "Lago Currhué"
+ },
+ "apn-estrecho-de-los-monstruos-angostura": {
+  "at": [
+   -71.7418,
+   -42.8659
+  ]
+ },
+ "apn-neuquen-co-arroyo": {
+  "name": "Arroyo Neuquenco"
+ },
+ "apn-pichi-cuyin-angostura": {
+  "at": [
+   -71.5191,
+   -39.7505
+  ]
+ },
+ "apn-ruca-choroy-lago": {
+  "name": "Lago Rucachoroi"
+ },
+ "apn-ruca-choroy-rio": {
+  "name": "Río Rucachoroi"
  }
 }
