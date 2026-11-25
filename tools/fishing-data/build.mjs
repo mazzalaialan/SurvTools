@@ -505,7 +505,7 @@ if (jurs.split(',').includes('Litoral')) {
     sectors.push({
       id: w.id, region: sets[0]?.region ?? 'lit', water: `${w.tipo_agua} ${w.agua}`, name: w.descripcion_tramo_literal, geometry: g.geometry,
       species: [...sp.values()], ...(sets.length > 1 ? { rules: sets } : { ...sets[0], region: sets[0]?.region }),
-      ...(cuts[w.id]?.approx && { approx: cuts[w.id].approx }), source: sets[0]?.region ?? 'lit',
+      ...(cuts[w.id]?.approx && { approx: cuts[w.id].approx }), ...(cuts[w.id]?.brackish && { brackish: true }), source: sets[0]?.region ?? 'lit',
     });
   }
 }
@@ -576,6 +576,17 @@ if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
 }
 for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.push({ id, scientific: '', native: true, name: { es: LITORAL_NAMES[id] ?? id } });
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
+/**
+ * Ambiente de cada pez (NO es agua dulce o salada: hay lagunas continentales saladas o salobres): «continental» = ríos, lagos, lagunas y
+ * embalses; «marine» = costa, estuario y embarcado. Los que viven en los dos (o entran del mar a los ríos y lagunas costeras) llevan ambos.
+ */
+const HABITAT = {
+  robalo: ['continental', 'marine'],
+  lisa: ['continental', 'marine'],
+  pejerrey: ['continental', 'marine'],
+  corvina: ['continental', 'marine'],
+  'trucha-marron': ['continental', 'marine'],
+};
 // Otros nombres comunes (investigación con fuentes en ~/vikarg-fishing-work/otros-nombres.json; copia revisada en aka.json).
 const AKA_FILE = fileURLToPath(new URL('./aka.json', import.meta.url));
 const aka = existsSync(AKA_FILE) ? JSON.parse(readFileSync(AKA_FILE, 'utf8')) : {};
@@ -590,7 +601,7 @@ const aka = existsSync(AKA_FILE) ? JSON.parse(readFileSync(AKA_FILE, 'utf8')) : 
 }
 const used = species
   .filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id)))
-  .map((sp) => ({ ...sp, ...(aka[sp.id]?.es?.length && { aka: aka[sp.id].es }), ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
+  .map((sp) => ({ ...sp, habitat: HABITAT[sp.id] ?? ['continental'], ...(aka[sp.id]?.es?.length && { aka: aka[sp.id].es }), ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
 // Fecha y hora (no solo el día): la app reemplaza su copia guardada solo si la nueva es posterior, y el mismo día se regenera varias veces.
 // Zonas (por cuenca): la app muestra los peces, la normativa y los permisos de la zona donde estás.
 const ZONES = [

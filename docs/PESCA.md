@@ -235,3 +235,7 @@ Revisar al menos una vez por mes (y cuando llegue un aviso del servidor) si apar
 | Litoral (Chaco, Misiones, Formosa) | Tallas y cupos de 2019 (compendio del MAGyP) | Normas provinciales vigentes | sitios provinciales |
 
 Próximos vencimientos: Salta y Catamarca 31/08/2027; Córdoba y Santa Cruz 30/09/2027; Tierra del Fuego 29/10/2027; Patagonia común y Mendoza 31/10/2027. El servidor (`server/src/fishing/watch.ts`) los revisa solo desde 45 días antes y avisa por mail.
+
+## Ambiente: ríos, lagos y lagunas / mar (2026-11-25)
+
+No se divide por agua dulce o salada (hay lagunas continentales saladas o salobres, como Mar Chiquita, La Salina o La Salada de Pedro Luro), sino por **ambiente**: `habitat` de cada pez = `continental` (ríos, lagos, lagunas y embalses) y/o `marine` (costa, estuario, embarcado). Hoy llevan los dos el róbalo, la lisa, el pejerrey, la corvina y la trucha marrón (de mar). La lista de peces y la fila del mapa filtran «Todos / Ríos, lagos y lagunas / Mar» (recordado en el dispositivo). Las lagunas saladas o salobres llevan `brackish` (cuts.json) y su ficha lo dice. Mar: investigación en `~/vikarg-fishing-work/mar/` (normas, 32 especies, 99 lugares, `propuesta.md`); todavía no se cargan lugares ni reglas de mar en la app (el dueño revisa la propuesta).

@@ -8,9 +8,9 @@ import { MapView, type ViewState } from '@/modules/maps/MapView';
 import { outlineFeatures } from '@/modules/maps/outline';
 import { loadGeoData } from '@/modules/weathermap/geo';
 import { FullscreenStage } from '@/ui/FullscreenStage';
-import { sectorsInZone, sectorsWithSpecies, speciesById, speciesInZone, speciesName, zoneName, type FishData, type FishSector } from './fishing';
+import { sectorsInZone, sectorsWithSpecies, speciesById, speciesInZone, speciesName, zoneName, matchesHabitat, type FishData, type FishSector } from './fishing';
 import { useFishZone } from './useFishZone';
-import { FISH_STYLES, FishDataGate, MAX_FISH, SectorSeasonBadge, ZonePicker } from './parts';
+import { FISH_STYLES, FishDataGate, HabitatPicker, MAX_FISH, SectorSeasonBadge, useHabitatFilter, ZonePicker } from './parts';
 import { useFishData } from './useFishData';
 
 const NONE: never[] = [];
@@ -202,6 +202,7 @@ function FishingMap({ data }: { data: FishData }) {
 
   // Peces de lo que se ve: los que tienen algún tramo dentro del área visible (calculada con el centro y el zoom); los elegidos siempre.
   const [view, setView] = useState<ViewState>(start.view);
+  const [habitat, setHabitat] = useHabitatFilter();
   const chipSpecies = useMemo(() => {
     const span = (360 / 2 ** view.zoom) * 2; // ~ 512 px de ancho de mapa
     const box = [view.lon - span, view.lat - span * 0.9, view.lon + span, view.lat + span * 0.9];
@@ -211,9 +212,9 @@ function FishingMap({ data }: { data: FishData }) {
     });
     const count = (id: string) => visible.filter((s) => s.species.some((x) => x.id === id)).length;
     const here = data.species.filter((sp) => count(sp.id) > 0).sort((a, b) => speciesName(a, lang).localeCompare(speciesName(b, lang), lang));
-    const list = here.length ? here : speciesInZone(data, z.zone);
+    const list = (here.length ? here : speciesInZone(data, z.zone)).filter((sp) => matchesHabitat(sp, habitat));
     return [...chosen.map((id) => speciesById(data, id)!).filter((sp) => !list.includes(sp)), ...list];
-  }, [data, view.lat, view.lon, view.zoom, z.zone, chosen.join(','), zoneSectors]);
+  }, [data, view.lat, view.lon, view.zoom, z.zone, chosen.join(','), zoneSectors, habitat]);
 
   const pickedSectors = picked.map((id) => data.sectors.find((s) => s.id === id)).filter((s): s is FishSector => !!s);
   const title = chosen.length === 1 ? speciesName(speciesById(data, chosen[0]!)!, lang) : null;
@@ -279,6 +280,7 @@ function FishingMap({ data }: { data: FishData }) {
           </button>
         )}
         {/* La zona ocupa lugar sobre el mapa: plegada muestra solo su nombre; se despliega para cambiarla. */}
+        {!pickedSectors.length && <HabitatPicker value={habitat} onChange={setHabitat} />}
         {!pickedSectors.length &&
           (zoneOpen ? (
             <div className="fish-zone-open">

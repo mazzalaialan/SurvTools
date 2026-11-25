@@ -1,10 +1,10 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Fish, Loader2, Mail, Phone } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { useTranslation } from 'react-i18next';
-import { releaseActive, rulesExpired, sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
+import { type HabitatFilter, releaseActive, rulesExpired, sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
 /** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
@@ -294,6 +294,44 @@ export function FishPackOffer({ offline = false, compact = false }: { offline?: 
         </button>
       </div>
       {!compact && <p className="muted small">{t('fishing.pack.hint')}</p>}
+    </div>
+  );
+}
+
+const HABITAT_KEY = 'vikarg.fishing.habitat';
+/** Filtro de ambiente (ríos, lagos y lagunas / mar / todos), recordado en el dispositivo. */
+export function useHabitatFilter(): [HabitatFilter, (f: HabitatFilter) => void] {
+  const [f, setF] = useState<HabitatFilter>(() => {
+    try {
+      const v = localStorage.getItem(HABITAT_KEY);
+      return v === 'continental' || v === 'marine' ? v : 'all';
+    } catch {
+      return 'all';
+    }
+  });
+  return [
+    f,
+    (v) => {
+      setF(v);
+      try {
+        localStorage.setItem(HABITAT_KEY, v);
+      } catch {
+        /* sin almacenamiento: igual filtra */
+      }
+    },
+  ];
+}
+
+/** Elegir el ambiente: no es agua dulce o salada (hay lagunas saladas continentales), sino ríos, lagos y lagunas o mar. */
+export function HabitatPicker({ value, onChange }: { value: HabitatFilter; onChange: (f: HabitatFilter) => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="fish-habitat" role="group" aria-label={t('fishing.habitat.label')} data-testid="fish-habitat">
+      {(['all', 'continental', 'marine'] as const).map((k) => (
+        <button key={k} type="button" className="chip" aria-pressed={value === k} onClick={() => onChange(k)} data-testid={`fish-habitat-${k}`}>
+          {t(`fishing.habitat.${k}`)}
+        </button>
+      ))}
     </div>
   );
 }

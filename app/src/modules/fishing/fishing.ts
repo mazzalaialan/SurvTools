@@ -24,6 +24,8 @@ export interface FishSpecies {
   scientific: string;
   native: boolean;
   name: { es: string; en?: string; pt?: string };
+  /** Ambiente: aguas continentales (ríos, lagos, lagunas y embalses, dulces o salobres) y/o mar (costa, estuario, embarcado). */
+  habitat?: ('continental' | 'marine')[];
   /** Otros nombres comunes regionales («patí blanco», «patí canal»…), para mostrarlos y para el buscador. */
   aka?: string[];
   /** Tamaño típico en la región (texto propio, p. ej. «30–50 cm»). */
@@ -112,7 +114,14 @@ export interface Season {
   also?: { from: string; to: string }[];
 }
 
+/** Filtro de ambiente de la lista de peces. */
+export type HabitatFilter = 'all' | 'continental' | 'marine';
+export const habitatOf = (sp: FishSpecies): ('continental' | 'marine')[] => sp.habitat ?? ['continental'];
+export const matchesHabitat = (sp: FishSpecies, f: HabitatFilter): boolean => f === 'all' || habitatOf(sp).includes(f);
+
 export interface FishSector {
+  /** Ambiente continental de agua salobre o salada (laguna Mar Chiquita, La Salina…). */
+  brackish?: boolean;
   /** Aviso fijo de la jurisdicción para todos sus tramos (p. ej. especies vedadas que no son peces: cangrejos en Mendoza). */
   alert?: string;
   /** Hasta cuándo vale la norma cargada (ver `rulesExpired`). */

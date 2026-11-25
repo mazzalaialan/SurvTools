@@ -6,8 +6,8 @@ import { Fish, LocateFixed, Map as MapIcon } from 'lucide-react';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { useZonePlace } from '@/modules/garden/status';
 import { ModuleGrid } from '@/ui/ModuleGrid';
-import { isStale, sectorClosure, sectorSeason, sectorsInZone, sectorsNear, speciesInZone, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies } from './fishing';
-import { FishDataGate, FishPackOffer, GroupHint, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules, ZonePicker } from './parts';
+import { isStale, sectorClosure, sectorSeason, sectorsInZone, sectorsNear, speciesInZone, sectorsWithSpecies, speciesById, speciesName, waters, type FishData, type FishSector, type FishSpecies , matchesHabitat } from './fishing';
+import { FishDataGate, FishPackOffer, GroupHint, HabitatPicker, useHabitatFilter, keepRule, PermitCard, RulesNotice, SeasonBadge, SectorSeasonBadge, speciesRules, ZonePicker } from './parts';
 import { useFishZone } from './useFishZone';
 import { useFishData } from './useFishData';
 
@@ -25,10 +25,12 @@ function ZoneSpecies({ data, lang }: { data: FishData; lang: string }) {
   const z = useFishZone(data);
   const [q, setQ] = useState('');
   const norm = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const list = speciesInZone(data, z.zone).filter((sp) => !q.trim() || norm(`${speciesName(sp, lang)} ${sp.scientific} ${(sp.aka ?? []).join(' ')}`).includes(norm(q.trim())));
+  const [habitat, setHabitat] = useHabitatFilter();
+  const list = speciesInZone(data, z.zone).filter((sp) => matchesHabitat(sp, habitat)).filter((sp) => !q.trim() || norm(`${speciesName(sp, lang)} ${sp.scientific} ${(sp.aka ?? []).join(' ')}`).includes(norm(q.trim())));
   return (
     <>
       <ZonePicker data={data} {...z} />
+      <HabitatPicker value={habitat} onChange={setHabitat} />
       <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fishing.searchFish')} aria-label={t('fishing.searchFish')} />
       {/* Cuadrícula con la imagen de cada pez (en la compu entran varios por fila; en el celular, uno abajo del otro). */}
       <ul className="fish-grid" data-testid="fish-species-list">
@@ -381,6 +383,7 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
   return (
     <>
       <p>{s.name}</p>
+      {s.brackish && <p className="small muted">{t('fishing.habitat.brackish')}</p>}
       {s.alert && (
         <p className="fish-rule" data-rule="forbidden" data-testid="fish-sector-alert">
           {s.alert}

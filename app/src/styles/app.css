@@ -6940,6 +6940,11 @@ button.country-pack-del {
   max-width: 100%;
   overflow-wrap: anywhere;
 }
+.fish-habitat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 .fish-grid {
   list-style: none;
   margin: 0;

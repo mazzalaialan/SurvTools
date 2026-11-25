@@ -960,7 +960,8 @@
   "osm": "relation/9168292"
  },
  "lit-la-salada-pedro-luro": {
-  "osm": "relation/11549159"
+  "osm": "relation/11549159",
+  "brackish": true
  },
  "lit-blanca-grande": {
   "osm": "way/431485876"
@@ -975,7 +976,8 @@
   "osm": "relation/5857741"
  },
  "lit-salada-grande": {
-  "osm": "relation/2621564"
+  "osm": "relation/2621564",
+  "brackish": true
  },
  "lit-las-flores": {
   "osm": "way/117672676"
@@ -996,7 +998,8 @@
   "osm": "relation/3329132"
  },
  "lit-chasico": {
-  "osm": "relation/10983279"
+  "osm": "relation/10983279",
+  "brackish": true
  },
  "lit-los-horcones": {
   "osm": "relation/12193979"
