@@ -27,6 +27,10 @@ import { DismissNoticeButton, Notice, useNotice } from '@/ui/Notice';
  */
 const DISTRESS = [
   { id: 'marine', freq: '156,800 MHz' },
+  // Socorro marítimo por voz en onda media y corta (BLU), para barcos lejos de la costa donde el VHF no llega (Reglamento de
+  // Radiocomunicaciones de la UIT, SMSSM). Hoy pocas estaciones costeras mantienen escucha permanente: el canal 16 sigue primero.
+  { id: 'marineMf', freq: '2182 kHz' },
+  { id: 'marineHf', freq: '4125 kHz' },
   { id: 'air', freq: '121,500 MHz' },
 ] as const;
 

@@ -746,7 +746,9 @@
     "distressTitle": "International distress frequencies",
     "distress": {
       "marine": { "name": "Marine · VHF channel 16", "desc": "Distress at sea and on navigable rivers and lakes. Monitored by the Coast Guard and ships" },
-      "air": { "name": "Aviation · emergency", "desc": "Monitored by aircraft and control towers" }
+      "air": { "name": "Aviation · emergency", "desc": "Monitored by aircraft and control towers" },
+      "marineMf": { "name": "Maritime · MF (SSB)", "desc": "Voice distress and calling at sea with single-sideband (SSB) radio, beyond VHF range. Few stations keep a permanent watch today: try channel 16 first" },
+      "marineHf": { "name": "Maritime · HF (SSB)", "desc": "Voice distress on HF, for sailing far from the coast. Like 2182 kHz, watch is limited; use it when VHF does not reach" }
     },
     "mountainTitleOne": "Mountain frequencies",
     "mountainTitle": "Mountain frequencies (Argentina and Chile)",

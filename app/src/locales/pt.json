@@ -1311,15 +1311,11 @@
   "packageMissing": "As emissoras de {{country}} vêm nos dados offline do país: são baixadas sozinhas na primeira vez que houver conexão.",
   "distressTitle": "Frequências internacionais de socorro",
   "distress": {
-   "marine": {
-    "name": "Marítima · VHF canal 16",
-    "desc": "Socorro no mar, rios e lagos navegáveis. É escutada pela Prefectura Naval e pelos barcos"
-   },
-   "air": {
-    "name": "Aeronáutica · emergência",
-    "desc": "É escutada por aviões e torres de controle"
-   }
-  },
+      "marine": { "name": "Marítima · VHF canal 16", "desc": "Socorro no mar, rios e lagos navegáveis. É escutada pela Prefectura Naval e pelos barcos" },
+      "air": { "name": "Aeronáutica · emergência", "desc": "É escutada por aviões e torres de controle" },
+      "marineMf": { "name": "Marítima · onda média (BLU)", "desc": "Socorro e chamada por voz no mar com rádio de banda lateral única (BLU), além do alcance do VHF. Hoje poucas estações fazem escuta permanente: tente primeiro o canal 16" },
+      "marineHf": { "name": "Marítima · onda curta (BLU)", "desc": "Socorro por voz em onda curta, para navegação longe da costa. Como 2182 kHz, escuta reduzida; use se o VHF não alcançar" }
+    },
   "mountainTitleOne": "Frequências de montanha",
   "mountainTitle": "Frequências de montanha (Argentina e Chile)",
   "mountainIntroBoth": "Na cordilheira você está a poucos quilômetros do outro país: servem as dos dois lados.",

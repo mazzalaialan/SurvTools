@@ -746,7 +746,9 @@
     "distressTitle": "Frecuencias internacionales de socorro",
     "distress": {
       "marine": { "name": "Marítima · VHF canal 16", "desc": "Socorro en el mar, ríos y lagos navegables. La escucha Prefectura Naval y los barcos" },
-      "air": { "name": "Aeronáutica · emergencia", "desc": "La escuchan aviones y torres de control" }
+      "air": { "name": "Aeronáutica · emergencia", "desc": "La escuchan aviones y torres de control" },
+      "marineMf": { "name": "Marítima · onda media (BLU)", "desc": "Socorro y llamada por voz en el mar con equipo de banda lateral única (BLU), más allá del alcance del VHF. Hoy pocas estaciones escuchan en forma permanente: probá primero el canal 16" },
+      "marineHf": { "name": "Marítima · onda corta (BLU)", "desc": "Socorro por voz en onda corta, para navegación lejos de la costa. Igual que 2182 kHz: escucha reducida; usala si el VHF no alcanza" }
     },
     "mountainTitleOne": "Frecuencias de montaña",
     "mountainTitle": "Frecuencias de montaña (Argentina y Chile)",
