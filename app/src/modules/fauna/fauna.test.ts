@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { fieldText, provinceBySlug, STATUSES, whereHunted, type FaunaData } from './fauna';
+import { deptState, fieldText, provinceBySlug, STATUSES, whereHunted, type FaunaData } from './fauna';
 
 const data = JSON.parse(readFileSync(new URL('../../../public/data/fauna-AR.json', import.meta.url), 'utf8')) as FaunaData;
 
@@ -35,6 +35,15 @@ describe('datos de fauna', () => {
       expect(data.species.find((s) => s.id === id)?.threatened).toBe('Amenazada');
       expect(whereHunted(data, id)).toEqual([]);
     }
+  });
+
+  it('mapa por departamentos: Entre Ríos pinta La Paz entera, Diamante en parte y Paraná en veda', () => {
+    const er = provinceBySlug(data, 'entre-rios')!;
+    expect(er.departments?.length).toBe(17);
+    const z = er.zones.find((x) => x.id === 'er-menor-habilitado');
+    expect(deptState(z, 'La Paz').state).toBe('total');
+    expect(deptState(z, 'Diamante').state).toBe('partial');
+    expect(deptState(z, 'Paraná').state).toBe('closed');
   });
 
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {

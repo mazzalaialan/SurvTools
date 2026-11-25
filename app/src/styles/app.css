@@ -7473,3 +7473,16 @@ button.country-pack-del {
   font-weight: 600;
   color: var(--danger);
 }
+
+/* Mapa de caza por departamentos. */
+.fauna-dept-map svg {
+  width: 100%;
+  max-height: 60vh;
+  display: block;
+}
+.fauna-dot-partial {
+  background: repeating-linear-gradient(45deg, var(--ok) 0 3px, color-mix(in srgb, var(--ok) 35%, transparent) 3px 6px);
+}
+.fauna-dept-picked {
+  margin: 0;
+}

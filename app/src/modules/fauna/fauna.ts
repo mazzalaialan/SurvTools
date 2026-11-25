@@ -33,6 +33,8 @@ export interface HuntZone {
   methods?: string;
   reserves?: string;
   closed: boolean | null;
+  /** Qué departamentos toca la zona según la norma (nombres del IGN). `rest`: qué pasa con los que no nombra. */
+  departments?: { total: string[]; partial: Record<string, string>; closed: string[]; rest: 'total' | 'veda' | null; note?: string; approx?: boolean };
   season?: { from?: string; to?: string; note?: string };
   species: ZoneSpecies[];
 }
@@ -46,6 +48,8 @@ export interface HuntProvince {
   /** Aviso destacado (caza judicializada, prohibida, sin norma…). */
   warning?: string;
   zones: HuntZone[];
+  /** Departamentos de la provincia (IGN, CC BY 4.0), con sus anillos [lon, lat, …], para el mapa de caza. */
+  departments?: { name: string; rings: number[][] }[];
   permit?: {
     buyUrl?: string;
     infoUrl?: string;
@@ -157,4 +161,18 @@ export function fieldText(v: unknown): { label?: string; text: string }[] {
   if (v && typeof v === 'object')
     return Object.entries(v as Record<string, unknown>).flatMap(([label, x]) => (typeof x === 'string' && x.trim() ? [{ label, text: x }] : []));
   return [];
+}
+
+export type DeptState = 'total' | 'partial' | 'closed' | 'unknown';
+
+/** Estado de un departamento para una zona: habilitado entero, en parte, en veda o sin dato. */
+export function deptState(zone: HuntZone | undefined, name: string): { state: DeptState; text?: string } {
+  const d = zone?.departments;
+  if (!d) return { state: 'unknown' };
+  if (d.closed.includes(name)) return { state: 'closed' };
+  if (d.total.includes(name)) return { state: 'total' };
+  if (name in d.partial) return { state: 'partial', text: d.partial[name] };
+  if (d.rest === 'total') return { state: 'total' };
+  if (d.rest === 'veda') return { state: 'closed' };
+  return { state: 'unknown' };
 }

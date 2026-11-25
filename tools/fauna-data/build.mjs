@@ -189,6 +189,36 @@ const known = new Set(species.map((s) => s.id));
 const unknown = new Set(provinces.flatMap((p) => p.zones.flatMap((z) => z.species.map((s) => s.id))).filter((id) => !known.has(id)));
 if (unknown.size) console.warn(`Especies de las zonas sin ficha: ${[...unknown].join(', ')}`);
 
+// Departamentos (IGN, simplificados por departments.mjs) y qué departamentos toca cada zona (departamentos-zonas.json, del relevamiento).
+const depts = opt(join(work, 'ign', 'departamentos-simple.json'));
+const deptZones = opt(join(work, 'departamentos-zonas.json')) ?? {};
+/** Fuera del mapa de la provincia: la Antártida y las islas del Atlántico Sur estiran el de Tierra del Fuego hasta hacerlo ilegible. */
+const SKIP_DEPT = /antártida|atlántico sur/i;
+if (depts)
+  for (const p of provinces) {
+    const list = (depts.provinces[p.name] ?? []).filter((d) => !SKIP_DEPT.test(d.name));
+    if (!list.length) continue;
+    p.departments = list.map((d) => ({ name: d.name, rings: d.rings }));
+    const names = new Set(list.map((d) => d.name));
+    for (const z of p.zones) {
+      const dz = deptZones[z.id];
+      if (!dz) continue;
+      const ok = (n) => {
+        if (!names.has(n)) console.warn(`${z.id}: departamento desconocido «${n}»`);
+        return names.has(n);
+      };
+      z.departments = {
+        total: (dz.total ?? []).filter(ok),
+        partial: Object.fromEntries(Object.entries(dz.parcial ?? {}).filter(([n]) => ok(n))),
+        closed: (dz.veda ?? []).filter(ok),
+        rest: dz.resto ?? null,
+        note: dz.nota || undefined,
+        // Ubicado a mano por rutas, sin mapa oficial: la app lo avisa como aproximado.
+        approx: dz.aproximado || undefined,
+      };
+    }
+  }
+
 const out = {
   version: 1,
   // Con hora: la app compara esta marca para saber si la copia guardada es vieja (con solo la fecha, dos versiones del mismo día no se actualizaban).

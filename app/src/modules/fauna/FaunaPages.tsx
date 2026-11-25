@@ -10,6 +10,8 @@ import { SeasonBadge } from '@/modules/fishing/parts';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import {
   FAUNA_COUNTRIES,
+  deptState,
+  type DeptState,
   hasFaunaData,
   faunaName,
   fieldText,
@@ -303,6 +305,7 @@ export function FaunaProvincePage() {
             )}
             {p.status === 'vieja' && <p className="fish-stale">{t('fauna.oldNorm')}</p>}
             <Notice data={data} />
+            <DeptMap province={p} />
             {p.zones
               .filter((z) => z.species.length || z.season?.from || z.closed)
               .map((z) => (
@@ -555,5 +558,106 @@ export function FaunaSpeciesDetailPage() {
         );
       }}
     </Gate>
+  );
+}
+
+const DEPT_FILL: Record<DeptState, string> = {
+  total: 'var(--ok)',
+  partial: 'url(#fauna-hatch)',
+  closed: 'var(--danger)',
+  unknown: 'var(--text-muted)',
+};
+
+/**
+ * Mapa de la provincia por departamentos (IGN): verde se caza en todo el departamento, rayado solo en una parte, rojo en veda y gris
+ * sin dato. Ninguna provincia publica coordenadas de sus zonas: lo que se pinta sale de los departamentos que nombra la norma; las
+ * partes cortadas por rutas no se dibujan exactas (van rayadas, con el texto de la norma al tocarlas).
+ */
+function DeptMap({ province }: { province: HuntProvince }) {
+  const { t } = useTranslation();
+  // Solo las zonas que pintan algo (las de «solo en cotos» no nombran departamentos y quedarían todas en gris).
+  const zones = province.zones.filter((z) => province.departments?.some((d) => deptState(z, d.name).state !== 'unknown'));
+  const [zoneId, setZoneId] = useState(zones[0]?.id);
+  const [picked, setPicked] = useState<string | null>(null);
+  const depts = province.departments;
+  const box = useMemo(() => {
+    if (!depts?.length) return null;
+    let w = 180, e = -180, s = 90, n = -90;
+    for (const d of depts)
+      for (const r of d.rings)
+        for (let i = 0; i < r.length; i += 2) {
+          w = Math.min(w, r[i]!); e = Math.max(e, r[i]!); s = Math.min(s, r[i + 1]!); n = Math.max(n, r[i + 1]!);
+        }
+    return { w, e, s, n, k: Math.cos((((s + n) / 2) * Math.PI) / 180) };
+  }, [depts]);
+  if (!depts?.length || !box || !zones.length) return null;
+  const zone = zones.find((z) => z.id === zoneId) ?? zones[0]!;
+  const scale = 1000 / Math.max((box.e - box.w) * box.k, box.n - box.s);
+  const x = (lon: number) => (lon - box.w) * box.k * scale;
+  const y = (lat: number) => (box.n - lat) * scale;
+  const path = (ring: number[]) => {
+    let d = '';
+    for (let i = 0; i < ring.length; i += 2) d += `${i ? 'L' : 'M'}${x(ring[i]!).toFixed(1)},${y(ring[i + 1]!).toFixed(1)}`;
+    return `${d}Z`;
+  };
+  const sel = picked ? deptState(zone, picked) : null;
+  return (
+    <figure className="card stack fauna-dept-map" data-testid="fauna-dept-map">
+      <h2 className="section-title">{t('fauna.deptMap')}</h2>
+      {zones.length > 1 && (
+        <div className="chips" role="group" aria-label={t('fauna.deptZone')}>
+          {zones.map((z) => (
+            <button key={z.id} type="button" className="chip" aria-pressed={z.id === zone.id} onClick={() => { setZoneId(z.id); setPicked(null); }}>
+              {z.name}
+            </button>
+          ))}
+        </div>
+      )}
+      <svg viewBox={`-4 -4 ${(x(box.e) + 8).toFixed(0)} ${(y(box.s) + 8).toFixed(0)}`} role="img" aria-label={`${t('fauna.deptMap')}: ${province.name}`}>
+        <defs>
+          <pattern id="fauna-hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="14" height="14" fill="var(--ok)" fillOpacity="0.35" />
+            <line x1="0" y1="0" x2="0" y2="14" stroke="var(--ok)" strokeWidth="7" />
+          </pattern>
+        </defs>
+        {depts.map((d) => {
+          const st = deptState(zone, d.name).state;
+          return (
+            <path
+              key={d.name}
+              d={d.rings.map(path).join('')}
+              fill={DEPT_FILL[st]}
+              fillOpacity={st === 'unknown' ? 0.25 : st === 'partial' ? 1 : 0.7}
+              stroke={picked === d.name ? 'var(--text)' : 'var(--bg)'}
+              strokeWidth={picked === d.name ? 4 : 1.5}
+              data-dept={d.name}
+              data-state={st}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setPicked(d.name)}
+            >
+              <title>{`${d.name}: ${t(`fauna.dept.${st}`)}`}</title>
+            </path>
+          );
+        })}
+      </svg>
+      <figcaption className="stack">
+        <span className="fauna-legend">
+          {(['total', 'partial', 'closed', 'unknown'] as const).map((s) => (
+            <span key={s}>
+              <span className={`fauna-dot fauna-dot-${s}`} style={{ background: s === 'partial' ? undefined : DEPT_FILL[s] }} aria-hidden /> {t(`fauna.dept.${s}`)}
+            </span>
+          ))}
+        </span>
+        {picked && sel && (
+          <p className="fauna-dept-picked" data-testid="fauna-dept-picked">
+            <strong>{picked}:</strong> {t(`fauna.dept.${sel.state}`)}
+            {sel.text && <> — {sel.text}</>}
+          </p>
+        )}
+        {zone.departments?.approx && <p className="fauna-warning" data-testid="fauna-dept-approx">{t('fauna.deptApprox')}</p>}
+        {zone.departments?.note && <p className="muted small">{zone.departments.note}</p>}
+        <p className="muted small">{t('fauna.deptNote')}</p>
+      </figcaption>
+    </figure>
   );
 }

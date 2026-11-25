@@ -25,6 +25,9 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
   // Entre Ríos: aviso de judicializada.
   await page.getByTestId('fauna-provinces').getByRole('link', { name: /Entre Ríos/ }).click();
   await expect(page.getByTestId('fauna-warning')).toContainText('judicializada');
+  // Mapa por departamentos: tocar uno rayado muestra qué dice la norma.
+  await page.getByTestId('fauna-dept-map').locator('path[data-dept="Diamante"]').click();
+  await expect(page.getByTestId('fauna-dept-picked')).toContainText('Se caza solo en una parte');
 
   // Catamarca: el loro barranquero va como protegido.
   await page.goto('/#/fauna/p/catamarca');
