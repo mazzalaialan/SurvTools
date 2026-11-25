@@ -7486,3 +7486,15 @@ button.country-pack-del {
 .fauna-dept-picked {
   margin: 0;
 }
+
+/* Aviso «no es oficial» de Fauna: resaltado, para que nadie salga a cazar fiándose solo de la app. */
+.fauna-notice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.fauna-notice-icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--fauna-legal);
+}

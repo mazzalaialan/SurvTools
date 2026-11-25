@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Loader2, PawPrint } from 'lucide-react';
+import { AlertTriangle, Loader2, PawPrint } from 'lucide-react';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useSettings } from '@/core/settings/settings';
@@ -96,8 +96,11 @@ function Gate({ children }: { children: (data: FaunaData) => ReactNode }) {
 function Notice({ data }: { data: FaunaData }) {
   const { t } = useTranslation();
   return (
-    <p className="fish-notice" data-testid="fauna-notice">
-      {t('fauna.notice', { date: data.generatedAt.slice(0, 10) })}
+    <p className="fauna-warning fauna-notice" role="note" data-testid="fauna-notice">
+      <AlertTriangle size={18} aria-hidden className="fauna-notice-icon" />
+      <span>
+        <strong>{t('fauna.noticeTitle')}</strong> {t('fauna.notice', { date: data.generatedAt.slice(0, 10) })}
+      </span>
     </p>
   );
 }
