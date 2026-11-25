@@ -109,6 +109,7 @@ const FishSectorPage = page(() => import('@/modules/fishing/FishingPages').then(
 const FishRulesPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishRulesPage })));
 const FishSurvivalPage = page(() => import('@/modules/fishing/FishSurvivalPage').then((m) => ({ default: m.FishSurvivalPage })));
 const FaunaHomePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaHomePage })));
+const FaunaProvincesPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaProvincesPage })));
 const FaunaProvincePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaProvincePage })));
 const FaunaSpeciesPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaSpeciesPage })));
 const FaunaSpeciesDetailPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaSpeciesDetailPage })));
@@ -223,6 +224,7 @@ const router = createHashRouter([
       { path: '/fishing/rules', element: <FishRulesPage /> },
       { path: '/fishing/survival', element: <FishSurvivalPage /> },
       { path: '/fauna', element: <FaunaHomePage /> },
+      { path: '/fauna/provinces', element: <FaunaProvincesPage /> },
       { path: '/fauna/p/:slug', element: <FaunaProvincePage /> },
       { path: '/fauna/species', element: <FaunaSpeciesPage /> },
       { path: '/fauna/species/:id', element: <FaunaSpeciesDetailPage /> },

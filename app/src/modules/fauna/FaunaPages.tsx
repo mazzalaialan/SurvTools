@@ -135,12 +135,23 @@ function ProvinceMap({ data }: { data: FaunaData }) {
   );
 }
 
-/** Portada de Fauna: mapa de provincias por estado de la norma y la lista para tocar. */
+/** Portada de Fauna: las fichas de la sección (caza por provincia, especies). */
 export function FaunaHomePage() {
   const { t } = useTranslation();
   return (
     <div className="stack">
       <h1 className="page-title">{t('sections.fauna')}</h1>
+      <ModuleGrid section="fauna" />
+    </div>
+  );
+}
+
+/** Caza por provincia: mapa pintado por estado de la norma y la lista para tocar. */
+export function FaunaProvincesPage() {
+  const { t } = useTranslation();
+  return (
+    <div className="stack">
+      <h1 className="page-title">{t('modules.faunaProvinces.title')}</h1>
       <Gate>
         {(data) => (
           <>
@@ -163,7 +174,6 @@ export function FaunaHomePage() {
           </>
         )}
       </Gate>
-      <ModuleGrid section="fauna" />
     </div>
   );
 }
@@ -242,7 +252,7 @@ export function FaunaProvincePage() {
     <Gate>
       {(data) => {
         const p = provinceBySlug(data, slug);
-        if (!p) return <Navigate to="/fauna" replace />;
+        if (!p) return <Navigate to="/fauna/provinces" replace />;
         return (
           <div className="stack">
             <h1 className="page-title">{p.name}</h1>
