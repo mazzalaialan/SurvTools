@@ -41,14 +41,19 @@ export function HistoryPage() {
 
   // El GPS se mueve metros todo el tiempo: la carga depende de la celda (`key`) y de la fecha, no de cada fix.
   const where = useRef({ lat, lon, alt });
+  // Cada carga lleva un número: si mientras tanto se eligió otra fecha, la respuesta vieja se descarta (si no, pisaba el día elegido).
+  const request = useRef(0);
   where.current = { lat, lon, alt };
 
   const load = useCallback(
     async (force = false) => {
       const { lat, lon, alt } = where.current;
       if (lat === null || lon === null || !key) return;
+      const id = ++request.current;
+      const stale = () => id !== request.current;
       setError(null);
       const cached = await cachedHistory(key);
+      if (stale()) return;
       if (cached) {
         setHistory(cached);
         setViewDate(cached.date);
@@ -67,12 +72,13 @@ export function HistoryPage() {
       try {
         const fresh = await fetchHistory(base, lat, lon, date, today, alt);
         await storeHistory(key, fresh);
+        if (stale()) return;
         setHistory(fresh);
         setViewDate((v) => (v && fresh.days.some((d) => d.date === v) && cached ? v : fresh.date));
       } catch (e) {
-        setError(e instanceof HistoryError ? e.code : 'unreachable');
+        if (!stale()) setError(e instanceof HistoryError ? e.code : 'unreachable');
       } finally {
-        setLoading(false);
+        if (!stale()) setLoading(false);
       }
     },
     [key, base, date, today],
