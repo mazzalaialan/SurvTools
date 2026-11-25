@@ -2,7 +2,7 @@
  * Datos de la sección Fauna (tools/fauna-data/build.mjs → `fauna-AR.json`): caza deportiva por provincia (zonas, temporadas,
  * cupos, permisos, áreas protegidas, fuentes) y fichas de las especies cazables. Todo es informativo: la norma vigente manda.
  */
-import { loadDataFile } from '@/modules/emergency/dataFile';
+import { hasDataFile, loadDataFile } from '@/modules/emergency/dataFile';
 import type { Country } from '@/core/settings/settings';
 
 /** Estado de la norma de caza de la provincia (lo decide quien relevó las fuentes, en tools/fauna-data/status.json). */
@@ -87,6 +87,15 @@ export const FAUNA_COUNTRIES: Country[] = ['AR'];
 export const faunaFile = (country: Country) => `fauna-${country}.json`;
 
 const cache = new Map<string, Promise<FaunaData | null>>();
+
+/** Que la próxima lectura vuelva a leer lo guardado (después de bajar o borrar el paquete de fauna). */
+export function forgetLoadedFauna(): void {
+  cache.clear();
+}
+
+export async function hasFaunaData(country: Country): Promise<boolean> {
+  return FAUNA_COUNTRIES.includes(country) && hasDataFile(faunaFile(country));
+}
 
 /** Los datos de fauna del país (se bajan la primera vez y quedan guardados), o `null` si no hay. */
 export function loadFaunaData(country: Country): Promise<FaunaData | null> {

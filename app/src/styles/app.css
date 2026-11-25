@@ -6706,6 +6706,23 @@ button.country-pack-del {
   [data-area='country-picker'] .country-pack-item:has(.country-pack-fish) .country-pack-now {
     display: none;
   }
+  /* Con tres botones al costado (datos, pesca y fauna) el nombre del país se partía en sílabas: los botones van más angostos. */
+  [data-area='country-picker'] .country-pack-item:has(.country-pack-fauna) {
+    gap: 6px;
+  }
+  [data-area='country-picker'] .country-pack-item:has(.country-pack-fauna) .country-pack-icon {
+    min-width: 0;
+    flex: 0 0 auto;
+    padding: 0 4px;
+  }
+  [data-area='country-picker'] .country-pack-item:has(.country-pack-fauna) .country-pack-size {
+    font-size: 0.72rem;
+  }
+  [data-area='country-picker'] .country-pack-item:has(.country-pack-fauna) .country-pack-name {
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
+  }
 }
 [data-area='country-picker'] .country-pack-now {
   position: absolute;

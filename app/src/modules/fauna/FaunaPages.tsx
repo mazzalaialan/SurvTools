@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { PawPrint } from 'lucide-react';
+import { Loader2, PawPrint } from 'lucide-react';
+import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
+import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useSettings } from '@/core/settings/settings';
 import { loadGeoData, type GeoRegion } from '@/modules/weathermap/geo';
 import { SeasonBadge } from '@/modules/fishing/parts';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import {
   FAUNA_COUNTRIES,
+  hasFaunaData,
   faunaName,
   fieldText,
   loadFaunaData,
@@ -23,23 +26,58 @@ import {
   type HuntZone,
 } from './fauna';
 
-type State = { status: 'loading' } | { status: 'none' } | { status: 'missing' } | { status: 'ready'; data: FaunaData };
+type State = { status: 'loading' } | { status: 'none' } | { status: 'missing' } | { status: 'notDownloaded' } | { status: 'ready'; data: FaunaData };
 
 function useFaunaData(): State {
   const country = useSettings((s) => s.settings.country);
   const [state, setState] = useState<State>({ status: 'loading' });
+  // Se vuelve a leer cuando termina de bajarse o se borra el paquete (desde Ajustes o desde la sección).
+  const version = useCountryPackStore((s) => (s.busyFauna ? -1 : JSON.stringify(s.fauna[country] ?? null)));
   useEffect(() => {
     if (!FAUNA_COUNTRIES.includes(country)) {
       setState({ status: 'none' });
       return;
     }
     let alive = true;
-    void loadFaunaData(country).then((data) => alive && setState(data ? { status: 'ready', data } : { status: 'missing' }));
+    // El paquete de fauna es una descarga aparte (como pesca): si no está guardado, no se baja solo; la pantalla ofrece bajarlo.
+    void hasFaunaData(country).then(async (stored) => {
+      if (!stored) {
+        if (alive) setState({ status: 'notDownloaded' });
+        return;
+      }
+      const data = await loadFaunaData(country);
+      if (alive) setState(data ? { status: 'ready', data } : { status: 'missing' });
+    });
     return () => {
       alive = false;
     };
-  }, [country]);
+  }, [country, version]);
   return state;
+}
+
+/** Ofrece bajar el paquete de fauna del país (descarga aparte, como el de pesca). */
+function FaunaPackOffer() {
+  const { t, i18n } = useTranslation();
+  const country = useSettings((s) => s.settings.country);
+  const { fauna, busyFauna, downloadFauna, check } = useCountryPackStore();
+  useEffect(() => {
+    void check();
+  }, [check]);
+  const f = fauna[country];
+  const busy = busyFauna === country;
+  const size = f ? formatBytes(f.state === 'missing' ? f.total : f.bytes || f.total, i18n.language) : '';
+  return (
+    <div className="card stack" data-testid="fauna-pack-offer">
+      <p>{navigator.onLine ? t('fauna.pack.offer', { country: t(`country.${country}`) }) : t('fauna.missing')}</p>
+      <div>
+        <button className="btn btn-primary" type="button" disabled={busy || !navigator.onLine} onClick={() => void downloadFauna(country)} data-testid="fauna-pack-get">
+          {busy ? <Loader2 size={18} className="spin" aria-hidden /> : <PawPrint size={18} aria-hidden />} {busy ? t('fauna.pack.downloading') : t('fauna.pack.get')}
+          {size && !busy ? ` (${size})` : ''}
+        </button>
+      </div>
+      <p className="muted small">{t('fauna.pack.hint')}</p>
+    </div>
+  );
 }
 
 function Gate({ children }: { children: (data: FaunaData) => ReactNode }) {
@@ -48,6 +86,7 @@ function Gate({ children }: { children: (data: FaunaData) => ReactNode }) {
   if (state.status === 'loading') return <p className="muted">{t('fauna.loading')}</p>;
   if (state.status === 'none') return <p className="card" data-testid="fauna-none">{t('fauna.noCountry')}</p>;
   if (state.status === 'missing') return <p className="card">{t('fauna.missing')}</p>;
+  if (state.status === 'notDownloaded') return <FaunaPackOffer />;
   return <>{children(state.data)}</>;
 }
 

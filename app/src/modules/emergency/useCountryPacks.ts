@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { COUNTRIES, useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { downloadCountryPack } from './country';
-import { deleteCountryPack, deleteFishPack, deleteSector, downloadFishPack, downloadSector } from './countryDelete';
-import { countryPackState, fishPackState, sectorPackState, type PackState } from './countryDownload';
+import { deleteCountryPack, deleteFaunaPack, deleteFishPack, deleteSector, downloadFaunaPack, downloadFishPack, downloadSector } from './countryDelete';
+import { countryPackState, faunaPackState, fishPackState, sectorPackState, type PackState } from './countryDownload';
 import { BR_SECTOR_IDS } from './sectors';
 
 export interface Pack {
@@ -23,6 +23,11 @@ interface PacksState {
   busyFish: Country | null;
   downloadFish: (c: Country) => Promise<void>;
   removeFish: (c: Country) => Promise<void>;
+  /** Paquete de fauna de cada país que lo tiene (descarga aparte, como pesca). */
+  fauna: Partial<Record<Country, SectorPack>>;
+  busyFauna: Country | null;
+  downloadFauna: (c: Country) => Promise<void>;
+  removeFauna: (c: Country) => Promise<void>;
   sectors: Partial<Record<BrSector, SectorPack>>;
   busy: Country | null;
   busySector: BrSector | null;
@@ -38,6 +43,8 @@ export const useCountryPackStore = create<PacksState>((set, get) => ({
   packs: {},
   fish: {},
   busyFish: null,
+  fauna: {},
+  busyFauna: null,
   sectors: {},
   busy: null,
   busySector: null,
@@ -50,6 +57,8 @@ export const useCountryPackStore = create<PacksState>((set, get) => ({
     for (const c of COUNTRIES) {
       const f = await fishPackState(c, force).catch(() => null);
       if (f) set((prev) => ({ fish: { ...prev.fish, [c]: f } }));
+      const a = await faunaPackState(c, force).catch(() => null);
+      if (a) set((prev) => ({ fauna: { ...prev.fauna, [c]: a } }));
     }
     for (const id of BR_SECTOR_IDS) {
       const p = await sectorPackState(id, force).catch(() => null);
@@ -80,6 +89,24 @@ export const useCountryPackStore = create<PacksState>((set, get) => ({
       await deleteFishPack(c);
     } finally {
       set({ busyFish: null });
+      void get().check(true);
+    }
+  },
+  async downloadFauna(c) {
+    set({ busyFauna: c });
+    try {
+      await downloadFaunaPack(c);
+    } finally {
+      set({ busyFauna: null });
+      void get().check(true);
+    }
+  },
+  async removeFauna(c) {
+    set({ busyFauna: c });
+    try {
+      await deleteFaunaPack(c);
+    } finally {
+      set({ busyFauna: null });
       void get().check(true);
     }
   },

@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Fish, Loader2, Map as MapIcon, MapPin, RefreshCw, Trash2 } from 'lucide-react';
+import { ArrowDownToLine, Check, ChevronDown, ChevronUp, Fish, Loader2, Map as MapIcon, MapPin, PawPrint, RefreshCw, Trash2 } from 'lucide-react';
 import { CONTINENTS, useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { confirmAction } from '@/ui/confirm';
 import { filesToDelete } from './countryDelete';
@@ -26,7 +26,7 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
   const { t, i18n } = useTranslation();
   const country = useSettings((s) => s.settings.country);
   const update = useSettings((s) => s.update);
-  const { packs, sectors, fish, busyFish, busy, busySector, download, downloadSector, downloadFish, remove, removeFish, removeSector } = useCountryPacks();
+  const { packs, sectors, fish, busyFish, fauna, busyFauna, busy, busySector, download, downloadSector, downloadFish, downloadFauna, remove, removeFish, removeFauna, removeSector } = useCountryPacks();
   const [mapOpen, setMapOpen] = useState(false);
   /** Los sectores de Brasil se muestran al tocar Brasil (y se esconden al volver a tocarlo). */
   const [brOpen, setBrOpen] = useState(false);
@@ -213,6 +213,46 @@ export function CountryPackPicker({ mode = 'manage' }: { mode?: 'manage' | 'choo
                           <Fish size={16} aria-hidden />
                           {f.state === 'outdated' ? <RefreshCw size={14} aria-hidden /> : <ArrowDownToLine size={14} aria-hidden />}
                           <span className="country-pack-size">{fishSize}</span>
+                        </button>
+                      );
+                    })()}
+                    {/* Fauna: descarga aparte, con una huella (caza por provincia y fichas de especies). */}
+                    {manage && fauna[c] && (() => {
+                      const f = fauna[c]!;
+                      const faunaName = t('country.pack.faunaName', { country: name });
+                      const faunaSize = formatBytes(f.state === 'missing' ? f.total : f.bytes || f.total, i18n.language);
+                      if (busyFauna === c)
+                        return (
+                          <span className="country-pack-icon country-pack-fish country-pack-fauna" role="img" aria-label={t('country.pack.downloading', { country: faunaName })} title={t('country.pack.downloading', { country: faunaName })}>
+                            <Loader2 size={16} className="spin" aria-hidden />
+                          </span>
+                        );
+                      if (f.state === 'ready')
+                        return (
+                          <button
+                            type="button"
+                            className="country-pack-icon country-pack-fish country-pack-fauna country-pack-ready"
+                            data-testid={`country-fauna-del-${c}`}
+                            aria-label={`${t('country.pack.ready', { country: faunaName })}. ${t('country.pack.delete', { country: faunaName })}`}
+                            title={`${t('country.pack.ready', { country: faunaName })}. ${t('country.pack.delete', { country: faunaName })}`}
+                            onClick={() => void askRemove(faunaName, f.total, () => removeFauna(c))}
+                          >
+                            <PawPrint size={16} aria-hidden />
+                            <Check size={14} aria-hidden />
+                          </button>
+                        );
+                      return (
+                        <button
+                          type="button"
+                          className="country-pack-icon country-pack-fish country-pack-fauna country-pack-get"
+                          data-testid={`country-fauna-get-${c}`}
+                          aria-label={`${t(f.state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: faunaName })} (${faunaSize})`}
+                          title={`${t(f.state === 'outdated' ? 'country.pack.update' : 'country.pack.download', { country: faunaName })} (${faunaSize})`}
+                          onClick={() => void downloadFauna(c)}
+                        >
+                          <PawPrint size={16} aria-hidden />
+                          {f.state === 'outdated' ? <RefreshCw size={14} aria-hidden /> : <ArrowDownToLine size={14} aria-hidden />}
+                          <span className="country-pack-size">{faunaSize}</span>
                         </button>
                       );
                     })()}

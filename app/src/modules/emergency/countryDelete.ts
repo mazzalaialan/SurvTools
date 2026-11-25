@@ -1,9 +1,10 @@
 import { useSettings, type BrSector, type Country } from '@/core/settings/settings';
 import { forgetLoadedCountry, prefetchCountry } from './country';
-import { deletableFiles, fishFiles } from './countryDownload';
+import { deletableFiles, faunaFiles, fishFiles } from './countryDownload';
 import { forgetLoadedParks } from './data';
 import { forgetDataFile, loadDataFile, refreshStored } from './dataFile';
 import { forgetLoadedFish } from '@/modules/fishing/fishing';
+import { forgetLoadedFauna } from '@/modules/fauna/fauna';
 import { sectorFiles } from './sectors';
 import { forgetLoadedService, SERVICE_CATEGORIES } from './services';
 
@@ -58,4 +59,17 @@ export async function downloadFishPack(country: Country): Promise<void> {
 export async function deleteFishPack(country: Country): Promise<void> {
   await forget(fishFiles(country));
   forgetLoadedFish();
+}
+
+/** Baja (o actualiza) el paquete de fauna del país: es aparte de los datos generales (botón con una huella en Ajustes). */
+export async function downloadFaunaPack(country: Country): Promise<void> {
+  for (const f of faunaFiles(country)) await loadDataFile(f);
+  await refreshStored(faunaFiles(country), true).catch(() => 0);
+  forgetLoadedFauna();
+}
+
+/** Borra el paquete de fauna del país. */
+export async function deleteFaunaPack(country: Country): Promise<void> {
+  await forget(faunaFiles(country));
+  forgetLoadedFauna();
 }

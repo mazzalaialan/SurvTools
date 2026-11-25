@@ -49,6 +49,21 @@ export async function fishPackState(country: Country, force = false): Promise<{ 
   return { state, bytes: files.reduce((n, f) => n + fileBytes(f), 0), total: all.reduce((n, f) => n + fileBytes(f), 0) };
 }
 
+/** Fauna (caza por provincia y fichas de especies): otra descarga aparte, con su botón con una huella al lado del de pesca. */
+export function faunaFiles(country: Country): string[] {
+  return fileBytes(`fauna-${country}.json`) > 0 ? [`fauna-${country}.json`] : [];
+}
+
+/** Cómo está el paquete de fauna de un país (null si el país no tiene). */
+export async function faunaPackState(country: Country, force = false): Promise<{ state: PackState; bytes: number; total: number } | null> {
+  const all = faunaFiles(country);
+  if (!all.length) return null;
+  const states = await fileStates(all, force);
+  const files = all.filter((f) => states[f] !== 'ok');
+  const state: PackState = all.some((f) => states[f] === 'missing') ? 'missing' : files.length ? 'outdated' : 'ready';
+  return { state, bytes: files.reduce((n, f) => n + fileBytes(f), 0), total: all.reduce((n, f) => n + fileBytes(f), 0) };
+}
+
 const SIZES = sizes as Record<string, number>;
 export const fileBytes = (file: string): number => SIZES[file] ?? 0;
 
