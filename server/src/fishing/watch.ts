@@ -18,6 +18,8 @@ export interface WatchedDoc {
   url: string;
   /** Fin de la vigencia de ese documento, si no es la del reglamento patagónico común. */
   validUntil?: string;
+  /** Dirección probable de la norma siguiente (se prueba si existe y se avisa una vez). */
+  next?: string;
 }
 
 /** Fin de la vigencia del reglamento cargado (los permisos de temporada 2026/27 valen hasta el 31/10/2027). */
@@ -37,6 +39,10 @@ export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'Santa Cruz: Reglamento de Pesca Deportiva Continental 2026/2027', url: 'https://pesca.santacruz.gob.ar/static/docs/reglamento-pesca-2026-2027.pdf', validUntil: '2027-09-30' },
   // Tierra del Fuego: Resolución S.A. 259/2026 (temporada hasta el 02/05/2027; la nueva sale en septiembre u octubre).
   { label: 'Tierra del Fuego: Resolución de la temporada de pesca 2026/2027', url: 'https://prodyambiente.tierradelfuego.gob.ar/wp-content/uploads/2026/10/Resolucion-N259-Temporada-pesca-2026.pdf', validUntil: '2027-10-01' },
+  // San Luis: Calendario Íctico 2026 (año calendario; el de 2027 se publica a fines de diciembre o en enero).
+  { label: 'San Luis: Calendario Íctico 2026', url: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2026.pdf', validUntil: '2026-12-31', next: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2027.pdf' },
+  // San Juan: reglamento «de cada año»: se revisa antes del fin de la temporada de diques (19/08).
+  { label: 'San Juan: Reglamento de Pesca Deportiva y Sustentable', url: 'https://tramite.sanjuan.gob.ar/tramite/dla/1320', validUntil: '2027-08-19' },
   // Mendoza: Res. 322/2026 (pejerrey y perca hasta el 30/09/2027; la resolución nueva sale en octubre).
   { label: 'Mendoza: Resolución de pesca deportiva 2026/2027 (copia del Boletín Oficial)', url: 'https://www.elsol.com.ar/wp-content/uploads/2026/11/Pesca-Resolucion.pdf', validUntil: '2027-09-30' },
   { label: 'Tierra del Fuego: página de pesca deportiva (anuncia la resolución nueva)', url: 'https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/', validUntil: '2027-10-01' },
@@ -91,7 +97,8 @@ export async function runFishingWatch(
       log('no se pudo revisar un documento de pesca', { url: doc.url, err: String(err) });
     }
   }
-  for (const doc of watchDue(now) ? nextSeasonUrls(now) : []) {
+  const nexts = [...(watchDue(now) ? nextSeasonUrls(now) : []), ...docs.filter((d) => d.next && watchDue(now, d.validUntil)).map((d) => ({ label: `${d.label} (siguiente)`, url: d.next! }))];
+  for (const doc of nexts) {
     if (getSetting(db, KEY(doc.url))) continue; // ya se avisó
     try {
       const res = await fetchImpl(doc.url, { method: 'HEAD', signal: AbortSignal.timeout(30_000), headers: { 'user-agent': 'VikArg-server/1.0' } });

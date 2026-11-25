@@ -21,9 +21,17 @@ const ambientes = [
   ...read('ambientes.json'),
   ...(existsSync(`${work}/sur/ambientes.json`) ? read('sur/ambientes.json') : []),
   ...(existsSync(`${work}/cuyo/ambientes.json`) ? read('cuyo/ambientes.json') : []),
+  ...(existsSync(`${work}/cuyo/ambientes-sj.json`) ? read('cuyo/ambientes-sj.json') : []),
+  ...(existsSync(`${work}/cuyo/ambientes-sl.json`) ? read('cuyo/ambientes-sl.json') : []),
 ];
 const reglasSur = existsSync(`${work}/sur/reglas_generales.json`) ? read('sur/reglas_generales.json') : { reglas: [] };
-if (existsSync(`${work}/cuyo/reglas_generales.json`)) reglasSur.reglas.push(...read('cuyo/reglas_generales.json').reglas.map((r) => ({ jurisdiccion: 'Mendoza', ...r })));
+if (existsSync(`${work}/cuyo/reglas_generales.json`)) {
+  const rg = read('cuyo/reglas_generales.json');
+  // Una lista de bloques por provincia (Mendoza, San Juan, San Luis); antes era un solo bloque de Mendoza.
+  for (const b of Array.isArray(rg) ? rg : [{ jurisdiccion: 'Mendoza', ...rg }]) reglasSur.reglas.push(...(b.reglas ?? []).map((r) => ({ jurisdiccion: b.jurisdiccion, ...r })));
+}
+/** Fuentes de San Juan y San Luis (las anota la investigación en cuyo/fuentes.json). */
+const cuyoSources = existsSync(`${work}/cuyo/fuentes.json`) ? read('cuyo/fuentes.json') : null;
 const carnadas = read('carnadas.json');
 const reglas = read('reglas_generales.json');
 const cuts = JSON.parse(readFileSync(fileURLToPath(new URL('./cuts.json', import.meta.url)), 'utf8'));
@@ -69,6 +77,30 @@ const OWN = {
     // Anexo IV, 1.a: hasta el 01/01/2027, devolución obligatoria de la trucha arco iris en todos los ambientes provinciales.
     releaseUntil: { 'trucha-arcoiris': '2027-01-01' },
   },
+};
+OWN['San Juan'] = {
+  source: {
+    id: 'sj-res-956-2025',
+    name: 'San Juan: Reglamento de Pesca Deportiva y Sustentable (Ley 606-L y Res. 956-SEAYDS-2025, Secretaría de Ambiente y Desarrollo Sustentable)',
+    url: 'https://tramite.sanjuan.gob.ar/tramite/dla/1320',
+    license: 'Normativa pública sin licencia declarada: se usa con atribución',
+    date: '2025-12-01',
+  },
+  // «De cada año»: diques del 01/12 al 19/08; ríos del 15/09 al 30/06. Sin vencimiento propio (se revisa cada temporada).
+  season: { from: '2026-12-01', to: '2027-08-19' },
+  validUntil: null,
+};
+OWN['San Luis'] = {
+  source: {
+    id: 'sl-res-395-2025',
+    name: 'San Luis: Resolución N.º 395 DB-SAyDS-2025, Calendario Íctico 2026 (Dirección de Biodiversidad)',
+    url: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2026.pdf',
+    license: 'Normativa pública sin licencia declarada: se usa con atribución',
+    date: '2025-12-30',
+  },
+  season: { from: '2026-01-01', to: '2026-12-31' },
+  // Calendario de año calendario: el de 2027 sale a fines de diciembre o en enero.
+  validUntil: '2026-12-31',
 };
 OWN.Mendoza = {
   source: {
@@ -271,7 +303,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
     ...(permits[jur] && { permit: permits[jur] }),
     source: OWN[jur]?.source.id ?? SOURCE.id,
     // Hasta cuándo vale la norma cargada (después, si no se actualizó, la app dice «Sin regla específica encontrada»).
-    validUntil: OWN[jur]?.validUntil ?? PDCP_VALID_UNTIL,
+    validUntil: (OWN[jur] && 'validUntil' in OWN[jur] ? OWN[jur].validUntil : PDCP_VALID_UNTIL) ?? undefined,
   });
   // Subtramos que son una regla puntual del mismo río (veda junto a un puente, ventana de extracción, régimen de una especie):
   // van como nota del tramo general («fold» en cuts.json), no como otro dibujo encima del mismo río.
@@ -293,6 +325,30 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       for (const e of q.species) if (!p.species.some((x) => x.id === e.id) && !q.inferred) p.species.push(e);
     }
     // «replaceSpecies»: las especies salen solo de cuts.json (Mendoza: el texto junta las reglas generales y el lector se confunde).
+    // «reglas_app»: reglas ya estructuradas por la investigación (San Juan y San Luis), revisadas contra el texto literal.
+    const ra = a.reglas_app;
+    if (ra) {
+      const md = (iso, delta) => {
+        const d = new Date(`${iso}T12:00:00Z`);
+        d.setUTCDate(d.getUTCDate() + delta);
+        return d.toISOString().slice(5, 10);
+      };
+      const ALIAS = { sogyo: 'carpa-herbivora' };
+      p.species = Object.entries(ra.especies ?? {}).map(([k, x]) => ({
+        id: ALIAS[k] ?? k,
+        ...(x.limit !== undefined && { limit: x.limit }),
+        ...(x.minSizeCm && { minSizeCm: x.minSizeCm }),
+        ...(x.maxSizeCm && { maxSizeCm: x.maxSizeCm }),
+        // Temporada propia de la especie (p. ej. la tararira en San Luis del 15/12 al 31/12): fuera de ella, veda.
+        ...(x.temporada?.from && x.temporada?.to && { closures: [{ from: md(x.temporada.to, 1), to: md(x.temporada.from, -1) }] }),
+        ...(x.note && { note: x.note }),
+      }));
+      p.inferred = false;
+      // «Devolución» del ambiente vale para todo solo si ninguna especie tiene cupo (en los ríos de San Luis la carpa sigue sin límite).
+      p.catchAndRelease = (ra.devolucion && p.species.every((e) => e.limit === 0)) || undefined;
+      p.closed = !!ra.cerrado;
+      p.season = ra.temporada ?? undefined;
+    }
     if (cuts[a.id]?.replaceSpecies) (p.species = []), (p.inferred = false), (p.catchAndRelease = cuts[a.id].release === true || undefined);
     if (cuts[a.id]?.closedForce) p.closed = true;
     if (cuts[a.id]?.season) p.season = cuts[a.id].season;
@@ -333,7 +389,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
         .join(' — '),
       ...((cuts[a.id]?.approx || g.approxPoint) && { approx: cuts[a.id]?.approx ?? 'ubicado por coordenada; el agua no está dibujada en el mapa base' }),
       source: OWN[jur]?.source.id ?? SOURCE.id,
-      validUntil: OWN[jur]?.validUntil ?? PDCP_VALID_UNTIL,
+      validUntil: (OWN[jur] && 'validUntil' in OWN[jur] ? OWN[jur].validUntil : PDCP_VALID_UNTIL) ?? undefined,
       ref: `pág. ${a.fuente?.pagina_impresa ?? a.fuente?.pagina ?? a.fuente?.pagina_pdf ?? '?'}`,
       _shared: !!a.compartido_con,
       _regionName: jur,

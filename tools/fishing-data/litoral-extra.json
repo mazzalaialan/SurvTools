@@ -2134,6 +2134,110 @@
     "nota": "No se buscó."
    },
    "imagen_id": "pirana"
+  },
+  {
+   "id": "carpa-herbivora",
+   "nombre": {
+    "es": "Carpa herbívora (amur, sogyo)",
+    "en": "Grass carp",
+    "pt": "Carpa-capim"
+   },
+   "otros_nombres": [
+    "sogyo",
+    "amur",
+    "salmón siberiano"
+   ],
+   "cientifico": "Ctenopharyngodon idella",
+   "familia": "Cyprinidae",
+   "origen": {
+    "valor": "introducida (originaria de Asia; en Argentina en Misiones, Corrientes, Formosa, Buenos Aires y Mendoza)",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "oficial"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 150 cm. El MAGyP no da tamaño.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "dieta": {
+    "valor": "Herbívora: vegetales acuáticos y pastos sumergidos; los juveniles comen zooplancton. FishBase suma algo de detritus e insectos.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "confirmado por 2 fuentes"
+   },
+   "carnadas_naturales": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontraron carnadas confirmadas para esta carpa en Argentina. Por su dieta (vegetal) se infiere pasto, lechuga, maíz o masa, pero sin fuente."
+   },
+   "senuelos_moscas": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "epoca": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "horario": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se encontró."
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "ninguno",
+     "texto": "Inofensiva; es invasora (FishBase: plaga en la mayoría de los países por el daño a la vegetación sumergida). No la liberes en otro ambiente."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Vegetales (inferencia): lechuga, maíz, masa. Sin fuente."
+    ],
+    "tip": "Comestible: FishBase dice que se come al vapor, frita, a la plancha o al horno. El MAGyP la da como especie para limitar vegetación en lagunas y arroyos privados, y cultivada en Formosa. En ambiente natural se la encuentra en lagunas con plantas.",
+    "fuentes": [
+     "magyp",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "donde_vive": {
+    "valor": [],
+    "detalle": "El MAGyP dice «introducida en Misiones, Corrientes, Formosa, Buenos Aires y Mendoza» (cultivo y control de vegetación en lagunas y arroyos privados). EcoRegistros tiene registros en la Ciudad de Buenos Aires (Parque Centenario, 2020) y en Necochea (2018).",
+    "fuentes": [
+     "magyp",
+     "ecoregistros"
+    ],
+    "confianza": "sin confirmar",
+    "sin_confirmar": [
+     "lagunas_litoral",
+     "rios_litoral"
+    ],
+    "nota": "No se encontró un registro en ríos del Litoral ni en la Patagonia. Dudoso para cargar en el mapa; si se carga, como lagunas."
+   },
+   "normativa_nota": {
+    "valor": null,
+    "fuentes": [],
+    "confianza": "no encontrado",
+    "nota": "No se buscó."
+   },
+   "imagen_id": "carpa-herbivora"
   }
  ],
  "fuentes": [

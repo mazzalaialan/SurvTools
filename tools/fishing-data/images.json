@@ -1,5 +1,5 @@
 {
- "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor). Especies del MAGyP sumadas el 2026-11-24 (anchoa de río … piraña). Provisorias: cucharon (en acuario, con otro pez atrás), chanchita (en una mano), lisa (grabado de una especie cercana), manduba (lámina de Ageneiosus militaris, con aletas rojas: buscar A. inermis gris).",
+ "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor). Especies del MAGyP sumadas el 2026-11-24 (anchoa de río … piraña). Provisorias: cucharon (en acuario, con otro pez atrás), chanchita (en una mano), lisa (grabado de una especie cercana), manduba (lámina de Ageneiosus militaris, con aletas rojas: buscar A. inermis gris), carpa herbívora (de tres cuartos, con la cola cortada).",
  "trucha-arcoiris": {
   "file": "trucha-arcoiris.webp",
   "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)",
@@ -287,5 +287,11 @@
   "credit": "FF23-fr, Pygocentrus nattereri; vía Wikimedia Commons; recortada",
   "license": "CC BY-SA 3.0",
   "url": "https://commons.wikimedia.org/wiki/File:Pygocentrus_nattereri_(ok).JPG"
+ },
+ "carpa-herbivora": {
+  "file": "carpa-herbivora.webp",
+  "credit": "Ryan Hagerty / USFWS, Grass carp portrait; vía Wikimedia Commons; recortada y espejada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Grass_carp_portrait.jpg"
  }
 }

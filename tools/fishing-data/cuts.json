@@ -1704,5 +1704,152 @@
  },
  "mendoza-llancanelo-laguna": {
   "closedForce": true
+ },
+ "san-juan-dique-de-ullum-embalse": {
+  "name": "Embalse Dique de Ullum"
+ },
+ "san-juan-punta-negra-embalse": {
+  "name": "Dique Punta Negra"
+ },
+ "san-juan-cuesta-del-viento-embalse": {
+  "name": "Dique Cuesta del Viento"
+ },
+ "san-juan-san-agustin-embalse": {
+  "name": "Embalse San Agustín"
+ },
+ "san-juan-caracoles-embalse": {
+  "name": "Dique Caracoles"
+ },
+ "san-juan-los-cauquenes-embalse": {
+  "name": "Embalse Los Cauquenes"
+ },
+ "san-juan-castano-rio": {
+  "name": "Río Castaño"
+ },
+ "san-juan-los-patos-rio": {
+  "name": "Río Los Patos"
+ },
+ "san-juan-blanco-rio": {
+  "name": "Río Blanco",
+  "clip": [
+   -70.5,
+   -32.5,
+   -69.3,
+   -31.5
+  ]
+ },
+ "san-juan-calingasta-rio": {
+  "name": "Río Calingasta"
+ },
+ "san-juan-san-juan-rio": {
+  "name": "Río San Juan",
+  "to": [
+   -69.1001,
+   -31.284
+  ]
+ },
+ "san-juan-san-juan-sector-2-rio": {
+  "name": "Río San Juan",
+  "from": [
+   -69.1001,
+   -31.284
+  ],
+  "to": [
+   -69.0,
+   -31.4
+  ]
+ },
+ "san-juan-agua-negra-arroyo": {
+  "name": "Arroyo Agua Negra",
+  "clip": [
+   -70.1,
+   -30.6,
+   -69.0,
+   -30.0
+  ]
+ },
+ "san-juan-agua-negra-sector-2-arroyo": {
+  "name": "Arroyo Agua Negra",
+  "clip": [
+   -70.1,
+   -30.6,
+   -69.0,
+   -30.0
+  ]
+ },
+ "san-juan-jachal-rio": {
+  "name": "Río Jáchal"
+ },
+ "san-juan-blanco-iglesia-rio": {
+  "name": "Río Blanco",
+  "clip": [
+   -69.8,
+   -30.6,
+   -68.9,
+   -29.5
+  ]
+ },
+ "san-luis-antonio-esteban-aguero-embalse": {
+  "name": "Embalse Antonio Esteban Agüero"
+ },
+ "san-luis-las-palmeras-embalse": {
+  "name": "Embalse Las Palmeras"
+ },
+ "san-luis-paso-de-las-carretas-embalse": {
+  "name": "Embalse Paso de las Carretas"
+ },
+ "san-luis-la-huertita-embalse": {
+  "name": "Embalse La Huertita"
+ },
+ "san-luis-la-florida-embalse": {
+  "name": "Embalse La Florida"
+ },
+ "san-luis-san-felipe-embalse": {
+  "name": "Embalse San Felipe"
+ },
+ "san-luis-cruz-de-piedra-embalse": {
+  "name": "Embalse Cruz de Piedra"
+ },
+ "san-luis-potrero-de-los-funes-embalse": {
+  "name": "Embalse Potrero de los Funes"
+ },
+ "san-luis-saladillo-embalse": {
+  "name": "Embalse Saladillo"
+ },
+ "san-luis-la-estrechura-embalse": {
+  "name": "Embalse La Estrechura"
+ },
+ "san-luis-nogoli-embalse": {
+  "name": "Embalse Nogolí"
+ },
+ "san-luis-lujan-embalse": {
+  "name": "Embalse Luján"
+ },
+ "san-luis-berta-vidal-de-battini-embalse": {
+  "name": "Dique Berta Vidal de Battini"
+ },
+ "san-luis-boca-del-rio-embalse": {
+  "name": "Dique Boca del Río"
+ },
+ "san-luis-chico-embalse": {
+  "name": "Embalse Dique Chico"
+ },
+ "san-luis-piscu-yaco-embalse": {
+  "name": "Dique Piscu Yaco"
+ },
+ "san-luis-san-pedro-embalse": {
+  "name": "Embalse San Pedro"
+ },
+ "san-luis-vulpiani-embalse": {
+  "name": "Vulpiani"
+ },
+ "san-luis-quinto-rio": {
+  "name": "Río Quinto"
+ },
+ "san-luis-conlara-rio": {
+  "name": "Río Conlara"
+ },
+ "san-luis-grande-rio": {
+  "name": "Río Grande"
  }
 }
