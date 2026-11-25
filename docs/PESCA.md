@@ -184,3 +184,17 @@ Decisión del dueño: los datos de pesca son una **descarga aparte** de los del 
 - **San Luis:** Res. 395 DB-SAyDS-2025, Calendario Íctico 2026 (vence el 31/12/2026; el servidor prueba el de 2027). 21 de 23 ambientes en el mapa (faltan Villa Mercedes y Los Manantiales, sin nombre en OSM): 17 embalses con cupo de pejerrey (10 a 35), trucha 1 en diques (0 en La Estrechura) y tararira con su temporada; 3 vedados (Piscu Yaco, San Pedro, Vulpiani); ríos Quinto, Conlara y Grande con devolución de truchas.
 - **Reglas estructuradas:** la investigación entrega `reglas_app` por ambiente (temporada, cerrado, devolución, especies con cupo, tallas y temporada propia); el build las usa tal cual (`reglas_app` en `build.mjs`).
 - **Dudas:** Los Patos (prensa habla de un sector 2 y una actualización no publicada), cupo conjunto «10 pejerreyes y/o 5 sogyos» de San Agustín, precios 2026 de San Juan y San Luis sin confirmar, fechas de veda del pejerrey de San Luis (las fija la autoridad).
+
+## Permisos: contactos y pantalla (2026-11-25)
+
+- **Contactos oficiales** en `tools/fishing-data/permits.json`, por jurisdicción: `buyUrl` (sitio de compra o trámite), `infoUrl`, `phone` y `email` (listas; lo que va entre paréntesis es la aclaración, por ejemplo a qué oficina corresponde), `where` (trámite en persona) y `extra` (avisos: dato de prensa, correo de 2022, «la CARU no emite permiso»). Investigación del 2026-11-25 en `~/vikarg-fishing-work/permisos-contacto.json` (fuente y fecha de cada dato).
+- **Sin contacto completo:** Mendoza (el sitio oficial bloquea los accesos automáticos; solo puntos de venta de 2021), San Juan (solo el trámite en Ciudadano Digital), Santa Fe y Corrientes (solo correo), Entre Ríos y Misiones (teléfonos de prensa, marcados para confirmar).
+- **En la app** (`PermitCard` en `modules/fishing/parts.tsx`): botones para llamar (`tel:`) y escribir (`mailto:`) con solo el número o la dirección; la aclaración se lee debajo en letra chica (en el celular no hay «pasar el mouse»).
+
+## Mapa: panel de zona y tramos (2026-11-25)
+
+En `FishingMapPage.tsx`: la zona va plegada («Zona: Patagonia ▾», se despliega para cambiarla) y el panel entero se puede ocultar con la flecha de arriba a la derecha; queda el botón «Mostrar zona y tramos». Al tocar un tramo, el panel aparece igual con sus peces.
+
+## Orden de los peces en un tramo (2026-11-25)
+
+Por regla y, dentro de cada grupo, alfabético: prohibidos o en veda hoy, devolución, con cupo, sin límite, sin regla (`RULE_ORDER` en `FishingPages.tsx`). La regla es la de hoy: un pez cambia de grupo el día que entra en veda o pasa a devolución.
