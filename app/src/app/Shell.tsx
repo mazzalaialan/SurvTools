@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, CloudSun, Compass, Ellipsis, FileText, Fish, House, Lasso, Lock, Package, Settings, Siren, Sprout, Activity } from 'lucide-react';
+import { BookOpen, CloudSun, Compass, Ellipsis, FileText, Fish, House, Lasso, Lock, Package, PawPrint, Settings, Siren, Sprout, Activity } from 'lucide-react';
 import { useVault } from '@/core/security/useVault';
 import { useEmergencyCardSync } from '@/modules/firstAid/emergencyCard';
 import { YOUTUBE_URL } from '@/core/about';
@@ -45,6 +45,7 @@ const MORE = [
   { to: '/knots', key: 'knots', icon: Lasso },
   { to: '/garden', key: 'garden', icon: Sprout },
   { to: '/fishing', key: 'fishing', icon: Fish },
+  { to: '/fauna', key: 'fauna', icon: PawPrint },
   { to: '/library', key: 'library', icon: BookOpen },
 ] as const;
 

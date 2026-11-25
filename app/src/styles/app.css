@@ -7381,3 +7381,65 @@ button.country-pack-del {
   white-space: nowrap;
   vertical-align: middle;
 }
+
+/* Fauna: mapa de provincias por estado de la norma de caza. */
+:root {
+  --fauna-legal: #e08a2c; /* naranja: caza judicializada */
+}
+.fauna-map svg {
+  width: 100%;
+  max-height: 70vh;
+  display: block;
+}
+.fauna-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: var(--fs-sm);
+  margin-top: 8px;
+}
+.fauna-dot {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 50%;
+  vertical-align: -0.05em;
+  margin-right: 4px;
+}
+.fauna-chip {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.fauna-warning {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 4px solid var(--fauna-legal);
+  background: color-mix(in srgb, var(--fauna-legal) 14%, transparent);
+}
+.fauna-warning[data-status='prohibida'] {
+  border-left-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+.fauna-warning[data-status='sin-norma'] {
+  border-left-color: var(--text-muted);
+  background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+}
+.fauna-literal {
+  font-size: var(--fs-sm);
+  white-space: pre-wrap;
+}
+.fauna-photo {
+  margin: 0;
+}
+.fauna-photo img {
+  width: 100%;
+  max-width: 720px;
+  border-radius: 8px;
+}
+.fauna-survival {
+  border-left: 4px solid var(--warn);
+}
+:root[data-theme='red'] .fauna-photo img {
+  filter: grayscale(1) contrast(1.1);
+}

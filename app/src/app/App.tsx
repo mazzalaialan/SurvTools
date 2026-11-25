@@ -108,6 +108,10 @@ const FishWatersPage = page(() => import('@/modules/fishing/FishingPages').then(
 const FishSectorPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishSectorPage })));
 const FishRulesPage = page(() => import('@/modules/fishing/FishingPages').then((m) => ({ default: m.FishRulesPage })));
 const FishSurvivalPage = page(() => import('@/modules/fishing/FishSurvivalPage').then((m) => ({ default: m.FishSurvivalPage })));
+const FaunaHomePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaHomePage })));
+const FaunaProvincePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaProvincePage })));
+const FaunaSpeciesPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaSpeciesPage })));
+const FaunaSpeciesDetailPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaSpeciesDetailPage })));
 const FishingMapPage = page(() => import('@/modules/fishing/FishingMapPage').then((m) => ({ default: m.FishingMapPage })));
 const GardenPage = page(() => import('@/modules/garden/GardenPage').then((m) => ({ default: m.GardenPage })));
 const SettingsPage = page(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
@@ -218,6 +222,10 @@ const router = createHashRouter([
       { path: '/fishing/sector/:id', element: <FishSectorPage /> },
       { path: '/fishing/rules', element: <FishRulesPage /> },
       { path: '/fishing/survival', element: <FishSurvivalPage /> },
+      { path: '/fauna', element: <FaunaHomePage /> },
+      { path: '/fauna/p/:slug', element: <FaunaProvincePage /> },
+      { path: '/fauna/species', element: <FaunaSpeciesPage /> },
+      { path: '/fauna/species/:id', element: <FaunaSpeciesDetailPage /> },
       { path: '/library', element: <SectionPage section="library" /> },
       { path: '/library/books', element: <LibraryPage /> },
       { path: '/library/search', element: <LibrarySearchPage /> },
