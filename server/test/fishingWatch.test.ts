@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { getSetting, openDb } from '../src/db.ts';
-import { nextSeasonUrls, runFishingWatch, watchDue } from '../src/fishing/watch.ts';
+import { keywordLines, nextSeasonUrls, runFishingWatch, watchDue } from '../src/fishing/watch.ts';
 
 const DOCS = [{ label: 'Reglamento', url: 'https://example.org/reglamento.pdf' }];
 
@@ -87,4 +87,11 @@ test('pesca: vencida la norma sin la nueva, avisa una sola vez y deja guardada l
   assert.deepEqual(r.expired, []);
   assert.equal(sent.filter((t) => /Venció/.test(t)).length, 1);
   assert.match(getSetting(db, 'fishing-watch:last') ?? '', /"checked":1/);
+});
+
+test('pesca: en un sitio que cambia mucho, solo cuentan las líneas de pesca', () => {
+  const a = keywordLines('<p>Noticia del lunes</p><p>Veda de pesca en el río Salí</p>', ['pesca', 'veda']);
+  const b = keywordLines('<p>Otra noticia del martes</p><p>Veda de pesca en el río Salí</p>', ['pesca', 'veda']);
+  assert.equal(a, b);
+  assert.equal(a, 'Veda de pesca en el río Salí');
 });

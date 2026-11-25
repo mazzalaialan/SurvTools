@@ -218,7 +218,7 @@ Investigación en `~/vikarg-fishing-work/noa/` (una provincia por archivo; fuent
 
 ## Reglamentos vencidos o sin norma vigente: revisar periódicamente (al 2026-11-25)
 
-Revisar al menos una vez por mes (y cuando llegue un aviso del servidor) si apareció la norma nueva; al cargarla, actualizar `validUntil`, la fuente y `FISHING_DOCS` del servidor.
+Revisar al menos una vez por mes (y cuando llegue un aviso del servidor) si apareció la norma nueva. El servidor mira cada día la página siguiente de AICACYP y los sitios oficiales de Tucumán (Producción y Boletín Oficial), Santiago del Estero (Bosques y Fauna) y La Rioja (Ambiente), comparando solo las líneas que dicen «pesca» o «veda»; al cargarla, actualizar `validUntil`, la fuente y `FISHING_DOCS` del servidor.
 
 | Jurisdicción | Estado | Qué buscar | Dónde |
 |---|---|---|---|

@@ -20,6 +20,11 @@ export interface WatchedDoc {
   validUntil?: string;
   /** Dirección probable de la norma siguiente (se prueba si existe y se avisa una vez). */
   next?: string;
+  /**
+   * Sitio oficial que cambia todos los días (portada, boletín): la huella se toma solo de las líneas de texto que dicen alguna de estas
+   * palabras («pesca», «veda»), así avisa cuando aparece o cambia algo de pesca y no por cada noticia nueva.
+   */
+  keywords?: string[];
 }
 
 /** Fin de la vigencia del reglamento cargado (los permisos de temporada 2026/27 valen hasta el 31/10/2027). */
@@ -47,6 +52,11 @@ export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'Tucumán: habilitación de pesca en ríos (vencida el 20/09/2026)', url: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2026-tucuman/', validUntil: '2026-09-20', next: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2027-tucuman/' },
   { label: 'Santiago del Estero: reglamento de pesca (último publicado: 2024)', url: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2024-santiago-del-estero/', validUntil: '2025-12-31', next: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2026-santiago-del-estero/' },
   { label: 'La Rioja: resolución anual de pesca (no publicada)', url: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2020-en-la-rioja/', validUntil: '2020-12-31', next: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2026-en-la-rioja/' },
+  // Sitios oficiales de las provincias sin norma vigente: se avisa si cambia lo que dicen de pesca o veda.
+  { label: 'Tucumán: Ministerio de Producción (novedades de pesca)', url: 'https://producciontucuman.gob.ar/', validUntil: '2026-09-20', keywords: ['pesca', 'veda'] },
+  { label: 'Tucumán: Boletín Oficial (pesca)', url: 'https://boletin.tucuman.gov.ar/', validUntil: '2026-09-20', keywords: ['pesca', 'veda'] },
+  { label: 'Santiago del Estero: Dirección General de Bosques y Fauna', url: 'https://dgbyf.gob.ar/', validUntil: '2025-12-31', keywords: ['pesca', 'veda'] },
+  { label: 'La Rioja: Secretaría de Ambiente (pesca)', url: 'https://ambiente.larioja.gob.ar/', validUntil: '2020-12-31', keywords: ['pesca', 'veda'] },
   // NOA: Salta (Res. 567/2026, temporada hasta el 31/08/2027) y Catamarca (Disp. 309/2026, hasta el 31/08/2027).
   { label: 'Salta: Resolución 567/2026, anexo de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/08/anexo-salta-pesca-2026-7.pdf', validUntil: '2027-08-31' },
   { label: 'Catamarca: Disposición 309/2026, temporada de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/11/Disposicion-Temporada-de-pesca-2026-2027.pdf', validUntil: '2027-08-31' },
@@ -74,6 +84,17 @@ export interface FishingWatchResult {
 
 const KEY = (url: string) => `fishing-watch:${url}`;
 
+/** Las líneas de texto (sin etiquetas HTML) que dicen alguna palabra clave, para comparar solo lo de pesca de una página que cambia mucho. */
+export function keywordLines(html: string, keywords: string[]): string {
+  const text = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, '\n');
+  const re = new RegExp(keywords.join('|'), 'i');
+  return text
+    .split('\n')
+    .map((l) => l.replace(/\s+/g, ' ').trim())
+    .filter((l) => l && re.test(l))
+    .join('\n');
+}
+
 export async function runFishingWatch(
   db: Db,
   notifier: AdminNotifier | null,
@@ -90,7 +111,8 @@ export async function runFishingWatch(
     try {
       const res = await fetchImpl(doc.url, { signal: AbortSignal.timeout(60_000), headers: { 'user-agent': 'VikArg-server/1.0' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const hash = createHash('sha256').update(Buffer.from(await res.arrayBuffer())).digest('hex');
+      const body = Buffer.from(await res.arrayBuffer());
+      const hash = createHash('sha256').update(doc.keywords ? keywordLines(body.toString('utf8'), doc.keywords) : body).digest('hex');
       result.checked++;
       const before = getSetting(db, KEY(doc.url));
       setSetting(db, KEY(doc.url), hash);
