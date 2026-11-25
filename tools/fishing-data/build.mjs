@@ -17,8 +17,13 @@ if (!jurs) {
 const OUT = outArg ?? fileURLToPath(new URL('../../app/public/data/fish-AR.json', import.meta.url));
 const read = (f) => JSON.parse(readFileSync(`${work}/${f}`, 'utf8'));
 // Patagonia (reglamento común) + Santa Cruz y Tierra del Fuego (normas provinciales propias, en sur/).
-const ambientes = [...read('ambientes.json'), ...(existsSync(`${work}/sur/ambientes.json`) ? read('sur/ambientes.json') : [])];
+const ambientes = [
+  ...read('ambientes.json'),
+  ...(existsSync(`${work}/sur/ambientes.json`) ? read('sur/ambientes.json') : []),
+  ...(existsSync(`${work}/cuyo/ambientes.json`) ? read('cuyo/ambientes.json') : []),
+];
 const reglasSur = existsSync(`${work}/sur/reglas_generales.json`) ? read('sur/reglas_generales.json') : { reglas: [] };
+if (existsSync(`${work}/cuyo/reglas_generales.json`)) reglasSur.reglas.push(...read('cuyo/reglas_generales.json').reglas.map((r) => ({ jurisdiccion: 'Mendoza', ...r })));
 const carnadas = read('carnadas.json');
 const reglas = read('reglas_generales.json');
 const cuts = JSON.parse(readFileSync(fileURLToPath(new URL('./cuts.json', import.meta.url)), 'utf8'));
@@ -60,6 +65,22 @@ const OWN = {
     defaultLimit: 1,
     // Anexo IV, 1.a: hasta el 01/01/2027, devolución obligatoria de la trucha arco iris en todos los ambientes provinciales.
     releaseUntil: { 'trucha-arcoiris': '2027-01-01' },
+  },
+};
+OWN.Mendoza = {
+  source: {
+    id: 'mza-res-322-2026',
+    name: 'Mendoza: Resolución N.º 322/2026 de la Subsecretaría de Ambiente (pesca deportiva 2026/2027; Boletín Oficial N.º 32709, 30/10/2026)',
+    url: 'https://www.elsol.com.ar/wp-content/uploads/2026/11/Pesca-Resolucion.pdf',
+    license: 'Normativa pública sin licencia declarada: se usa con atribución (copia del Boletín Oficial publicada por el diario El Sol)',
+    date: '2026-10-30',
+  },
+  // Art. 2: salmónidos del 01/11/2026 al 01/05/2027 (solo señuelo artificial); pejerrey y perca del 01/12/2026 al 30/09/2027; carpas,
+  // dientudos y mojarras todo el año; bagres, cangrejos y anguilas vedados todo el año.
+  season: { from: '2026-11-01', to: '2027-05-01' },
+  extraSpecies: {
+    pejerrey: { closures: [{ from: '10-01', to: '11-30' }], note: 'Temporada del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2).' },
+    carpa: { limit: null, note: 'Todo el año (Res. 322/2026, art. 2).' },
   },
 };
 const SOURCES = [
@@ -263,6 +284,10 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       const q = parseSector(f);
       for (const e of q.species) if (!p.species.some((x) => x.id === e.id) && !q.inferred) p.species.push(e);
     }
+    // «replaceSpecies»: las especies salen solo de cuts.json (Mendoza: el texto junta las reglas generales y el lector se confunde).
+    if (cuts[a.id]?.replaceSpecies) (p.species = []), (p.inferred = false), (p.catchAndRelease = cuts[a.id].release === true || undefined);
+    if (cuts[a.id]?.closedForce) p.closed = true;
+    if (cuts[a.id]?.season) p.season = cuts[a.id].season;
     // Reglas por especie que el texto da con redacción libre (cuts.json → «species»: se revisan a mano contra la norma).
     for (const [id, patch] of Object.entries(cuts[a.id]?.species ?? {})) {
       const e = p.species.find((x) => x.id === id);
@@ -271,6 +296,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
     }
     if (cuts[a.id]?.release === false) p.catchAndRelease = undefined;
     const own = OWN[jur];
+    for (const [id, patch] of Object.entries(own?.extraSpecies ?? {})) if (!p.closed && !p.species.some((e) => e.id === id) && new RegExp(id, 'i').test(a.descripcion_tramo_literal)) p.species.push({ id, ...patch });
     for (const e of p.species) {
       if (!own || e.limit === 0 || p.catchAndRelease) continue;
       if (own.defaultLimit !== undefined && e.limit === undefined) Object.assign(e, { limit: own.defaultLimit, groupLimit: true });
@@ -443,8 +469,9 @@ const used = species
 const ZONES = [
   { id: 'patagonia', name: { es: 'Patagonia', en: 'Patagonia', pt: 'Patagônia' } },
   { id: 'litoral', name: { es: 'Litoral (Paraná, Uruguay y Delta)', en: 'Litoral (Paraná, Uruguay and Delta)', pt: 'Litoral (Paraná, Uruguai e Delta)' } },
+  { id: 'cuyo', name: { es: 'Cuyo', en: 'Cuyo', pt: 'Cuyo' } },
 ];
-for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : 'patagonia';
+for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : 'patagonia';
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', zones: ZONES.filter((z) => regions.some((r) => r.zone === z.id)), sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);

@@ -25,6 +25,7 @@ const BBOX = {
   'Parques Nacionales del Sur (APN)': [-73.8, -55.2, -62.7, -36.0],
   'Santa Cruz': [-73.7, -52.5, -65.6, -45.9],
   'Tierra del Fuego': [-68.8, -55.2, -63.7, -52.6],
+  Mendoza: [-70.7, -37.7, -66.4, -31.9],
   // Litoral (Entre Ríos, Santa Fe, Corrientes, Misiones, Chaco, Formosa, Buenos Aires y el río Uruguay compartido).
   // Litoral, y al sur de -34° más al oeste (lagunas del oeste y el sur de Buenos Aires) sin entrar en Salta ni Santiago del Estero.
   Litoral: [[-62.9, -38.6, -53.5, -21.9], [-64.0, -40.2, -56.0, -34.0]],

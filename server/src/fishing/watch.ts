@@ -37,6 +37,8 @@ export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'Santa Cruz: Reglamento de Pesca Deportiva Continental 2026/2027', url: 'https://pesca.santacruz.gob.ar/static/docs/reglamento-pesca-2026-2027.pdf', validUntil: '2027-09-30' },
   // Tierra del Fuego: Resolución S.A. 259/2026 (temporada hasta el 02/05/2027; la nueva sale en septiembre u octubre).
   { label: 'Tierra del Fuego: Resolución de la temporada de pesca 2026/2027', url: 'https://prodyambiente.tierradelfuego.gob.ar/wp-content/uploads/2026/10/Resolucion-N259-Temporada-pesca-2026.pdf', validUntil: '2027-10-01' },
+  // Mendoza: Res. 322/2026 (pejerrey y perca hasta el 30/09/2027; la resolución nueva sale en octubre).
+  { label: 'Mendoza: Resolución de pesca deportiva 2026/2027 (copia del Boletín Oficial)', url: 'https://www.elsol.com.ar/wp-content/uploads/2026/11/Pesca-Resolucion.pdf', validUntil: '2027-09-30' },
   { label: 'Tierra del Fuego: página de pesca deportiva (anuncia la resolución nueva)', url: 'https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/', validUntil: '2027-10-01' },
 ];
 

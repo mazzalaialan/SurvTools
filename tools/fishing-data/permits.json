@@ -476,5 +476,20 @@
   "requirements": "Documento de identidad y permiso (o comprobante de pago, o permiso digital en la «app pesca deportiva»). Los menores los saca el padre, madre o tutor.",
   "where": "El permiso lo venden comercializadores habilitados que registran al pescador en www.siped.ar (Resolución 259/2026, Anexo II, punto 1). NO se encontró un enlace oficial de compra en línea verificado: siped.ar respondió 301 y luego no respondió desde este servidor. Información oficial: Secretaría de Ambiente, Dirección General de Recursos Hídricos; pescacontinentaltdf@gmail.com.",
   "date": "2026-11-24"
+ },
+ "Mendoza": {
+  "items": [],
+  "extra": [
+   "Hay nueve categorías de carnet; no encontramos los importes 2026 publicados.",
+   "Obligatorio: la Res. 322/2026 exige 'contar con el carnet de pesca al día' (Art. 1, pág. 2).",
+   "Se vende en agentes de venta habilitados, delegaciones regionales (Zona Este, Valle de Uco, San Rafael, General Alvear, Malargüe) e Informador Turístico del Parque General San Martín (L a V 9 a 13 h), según nota de 2021; en delegaciones se pide un código previo y se paga con tarjeta. Datos de 2021, verificar.",
+   "Denuncia de sobreprecios: https://www.mendoza.gov.ar/ambiente/consulta/ (nota 2021)."
+  ],
+  "buyUrl": null,
+  "infoUrl": "https://www.mendoza.gov.ar/prensa/permiso-de-pesca-deportiva-nuevas-tarifas-y-canal-electronico-para-denunciar-sobreprecios/",
+  "otherLinks": [
+   "https://www.mendoza.gov.ar/drnr/pesca (lista de agentes; no verificado)"
+  ],
+  "fecha": "2026-11-24"
  }
 }

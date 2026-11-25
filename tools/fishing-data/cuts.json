@@ -1073,5 +1073,636 @@
    -54.53,
    -25.55
   ]
+ },
+ "mendoza-agua-del-toro-embalse": {
+  "name": "Embalse Aqua del Toro",
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 4,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "trucha-marron": {
+    "limit": 4,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "trucha-arroyo": {
+    "limit": 4,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "pejerrey": {
+    "limit": 30,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Pejerrey: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true,
+  "season": {
+   "from": "2026-12-01",
+   "to": "2027-09-30"
+  }
+ },
+ "mendoza-atuel-rio": {
+  "to": {
+   "lake": "El Nihuil"
+  },
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "perca": {
+    "limit": 5,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Perca: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-atuel-rio-aguas-abajo-valle-grande": {
+  "from": {
+   "dam": "Presa Valle Grande"
+  },
+  "to": [
+   -67.15,
+   -35.9
+  ],
+  "gapM": 3000,
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "perca": {
+    "limit": 15,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Perca: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-diamante-coto-de-pesca": {
+  "from": {
+   "dam": "Dique Los Reyunos"
+  },
+  "to": {
+   "dam": "Azud Galileo Vitali"
+  },
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 0
+   },
+   "trucha-marron": {
+    "limit": 0
+   },
+   "trucha-arroyo": {
+    "limit": 0
+   }
+  },
+  "release": true,
+  "replaceSpecies": true
+ },
+ "mendoza-diamante-rio-en-laguna-del-diamante": {
+  "fold": "mendoza-diamante-laguna-laguna"
+ },
+ "mendoza-salado-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "perca": {
+    "limit": 5,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Perca: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-malargue-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-grande-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "perca": {
+    "forbidden": true,
+    "note": "Perca vedada en toda la cuenca del río Grande (Res. 322/2026, art. 5)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-grande-valle-hermoso": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-barrancas-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "perca": {
+    "limit": 5,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Perca: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-el-alambrado-laguna": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-vaca-lauquen-laguna": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 2,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 2,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-sosneado-laguna": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 4,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-los-reyunos-embalse": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 4,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "trucha-marron": {
+    "limit": 4,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "trucha-arroyo": {
+    "limit": 4,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "pejerrey": {
+    "limit": 30,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Pejerrey: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true,
+  "season": {
+   "from": "2026-12-01",
+   "to": "2027-09-30"
+  }
+ },
+ "mendoza-diamante-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-el-nihuil-embalse": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 1,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "trucha-marron": {
+    "limit": 1,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "trucha-arroyo": {
+    "limit": 1,
+    "groupLimit": true,
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ],
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2)."
+   },
+   "perca": {
+    "limit": 10,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Perca: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   },
+   "pejerrey": {
+    "limit": 25,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Pejerrey: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true,
+  "season": {
+   "from": "2026-12-01",
+   "to": "2027-09-30"
+  }
+ },
+ "mendoza-valle-grande-embalse": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 5,
+    "groupLimit": true,
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2).",
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ]
+   },
+   "trucha-marron": {
+    "limit": 5,
+    "groupLimit": true,
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2).",
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ]
+   },
+   "trucha-arroyo": {
+    "limit": 5,
+    "groupLimit": true,
+    "note": "Salmónidos: del 01/12/2026 al 01/05/2027 en este embalse (Res. 322/2026, art. 2).",
+    "closures": [
+     {
+      "from": "05-02",
+      "to": "11-30"
+     }
+    ]
+   },
+   "pejerrey": {
+    "limit": 30,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Pejerrey: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2)."
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true,
+  "season": {
+   "from": "2026-12-01",
+   "to": "2027-09-30"
+  }
+ },
+ "mendoza-diamante-laguna-laguna": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 4,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": null,
+    "note": "Fontinalis sin límite de cantidad (Res. 322/2026, art. 4 C)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-tunuyan-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 5,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-mendoza-rio": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 5,
+    "groupLimit": true
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-potrerillos-embalse": {
+  "species": {
+   "trucha-arcoiris": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "trucha-marron": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "trucha-arroyo": {
+    "limit": 5,
+    "groupLimit": true
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true
+ },
+ "mendoza-el-carrizal-embalse": {
+  "species": {
+   "pejerrey": {
+    "limit": 40,
+    "closures": [
+     {
+      "from": "10-01",
+      "to": "11-30"
+     }
+    ],
+    "note": "Pejerrey: del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2). Fines de semana y feriados en veda: solo embarcado o a más de 300 m de la costa, hasta 15 pejerreyes."
+   },
+   "carpa": {
+    "limit": null,
+    "note": "Todo el año (Res. 322/2026, art. 2)."
+   },
+   "perca": {
+    "forbidden": true,
+    "note": "Perca vedada en El Carrizal (Res. 322/2026, art. 5)."
+   }
+  },
+  "release": false,
+  "replaceSpecies": true,
+  "season": {
+   "from": "2026-12-01",
+   "to": "2027-09-30"
+  }
+ },
+ "mendoza-llancanelo-laguna": {
+  "closedForce": true
  }
 }
