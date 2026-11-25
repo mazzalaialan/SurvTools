@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { deptState, fieldText, provinceBySlug, STATUSES, whereHunted, type FaunaData } from './fauna';
+import { deptState, fieldText, locateDept, provinceBySlug, STATUSES, whereHunted, type FaunaData } from './fauna';
 
 const data = JSON.parse(readFileSync(new URL('../../../public/data/fauna-AR.json', import.meta.url), 'utf8')) as FaunaData;
 
@@ -44,6 +44,12 @@ describe('datos de fauna', () => {
     expect(deptState(z, 'La Paz').state).toBe('total');
     expect(deptState(z, 'Diamante').state).toBe('partial');
     expect(deptState(z, 'Paraná').state).toBe('closed');
+  });
+
+  it('ubica un punto en su departamento: Paraná (Entre Ríos), Villa Gesell (Buenos Aires); fuera del país, null', () => {
+    expect(locateDept(data, -31.73, -60.52)).toMatchObject({ dept: 'Paraná', province: { name: 'Entre Ríos' } });
+    expect(locateDept(data, -37.26, -56.98)?.province.name).toBe('Buenos Aires');
+    expect(locateDept(data, -34.9, -56.16)).toBeNull();
   });
 
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {

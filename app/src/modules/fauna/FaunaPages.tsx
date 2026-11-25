@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
 import { AlertTriangle, Loader2, PawPrint } from 'lucide-react';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { formatBytes } from '@/modules/emergency/countryDownload';
@@ -13,6 +14,7 @@ import {
   deptState,
   type DeptState,
   hasFaunaData,
+  locateDept,
   faunaName,
   fieldText,
   loadFaunaData,
@@ -200,6 +202,7 @@ export function FaunaProvincesPage() {
         {(data) => (
           <>
             <Notice data={data} />
+            <ZoneFinder data={data} />
             <ProvinceMap data={data} />
             <ul className="list" data-testid="fauna-provinces">
               {[...data.provinces]
@@ -582,7 +585,13 @@ function DeptMap({ province }: { province: HuntProvince }) {
   // Solo las zonas que pintan algo (las de «solo en cotos» no nombran departamentos y quedarían todas en gris).
   const zones = province.zones.filter((z) => province.departments?.some((d) => deptState(z, d.name).state !== 'unknown'));
   const [zoneId, setZoneId] = useState(zones[0]?.id);
-  const [picked, setPicked] = useState<string | null>(null);
+  const [params] = useSearchParams();
+  const fromUrl = params.get('dept');
+  const [picked, setPicked] = useState<string | null>(fromUrl && province.departments?.some((d) => d.name === fromUrl) ? fromUrl : null);
+  const mapRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (fromUrl) mapRef.current?.scrollIntoView({ block: 'start' });
+  }, [fromUrl]);
   const depts = province.departments;
   const box = useMemo(() => {
     if (!depts?.length) return null;
@@ -606,8 +615,8 @@ function DeptMap({ province }: { province: HuntProvince }) {
   };
   const sel = picked ? deptState(zone, picked) : null;
   return (
-    <figure className="card stack fauna-dept-map" data-testid="fauna-dept-map">
-      <h2 className="section-title">{t('fauna.deptMap')}</h2>
+    <figure ref={mapRef} className="card stack fauna-dept-map" data-testid="fauna-dept-map">
+      <h2 className="section-title">{t(province.name === 'Buenos Aires' ? 'fauna.deptMapBA' : 'fauna.deptMap')}</h2>
       {zones.length > 1 && (
         <div className="chips" role="group" aria-label={t('fauna.deptZone')}>
           {zones.map((z) => (
@@ -663,5 +672,31 @@ function DeptMap({ province }: { province: HuntProvince }) {
         <p className="muted small">{t('fauna.deptNote')}</p>
       </figcaption>
     </figure>
+  );
+}
+
+/** Elegir un lugar (GPS, waypoint o coordenadas, como en Clima) y saltar al departamento de su provincia. */
+function ZoneFinder({ data }: { data: FaunaData }) {
+  const { t } = useTranslation();
+  const { place, picker } = usePlacePicker();
+  const found = place ? locateDept(data, place.lat, place.lon) : null;
+  return (
+    <section className="card stack" data-testid="fauna-zone-finder">
+      <h2 className="section-title">{t('fauna.finder.title')}</h2>
+      {picker}
+      {place &&
+        (found ? (
+          <>
+            <p data-testid="fauna-zone-found">
+              {t(found.province.name === 'Buenos Aires' ? 'fauna.finder.inBA' : 'fauna.finder.in', { dept: found.dept, province: found.province.name })}
+            </p>
+            <Link className="btn btn-primary btn-block" to={`/fauna/p/${provinceSlug(found.province.name)}?dept=${encodeURIComponent(found.dept)}`} data-testid="fauna-go-zone">
+              {t('fauna.finder.go')}
+            </Link>
+          </>
+        ) : (
+          <p className="muted">{t('fauna.finder.outside')}</p>
+        ))}
+    </section>
   );
 }

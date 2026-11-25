@@ -7505,3 +7505,7 @@ button.country-pack-del {
   margin-top: 2px;
   color: var(--fauna-legal);
 }
+.fauna-dept-map {
+  /* Al llegar con «Ir a la zona», que el título del mapa no quede debajo de la barra superior. */
+  scroll-margin-top: 72px;
+}

@@ -176,3 +176,20 @@ export function deptState(zone: HuntZone | undefined, name: string): { state: De
   if (d.rest === 'veda') return { state: 'closed' };
   return { state: 'unknown' };
 }
+
+/** ¿El punto cae dentro del anillo [lon, lat, …]? (rayo horizontal; alcanza con los contornos simplificados). */
+function inRing(ring: number[], lon: number, lat: number): boolean {
+  let inside = false;
+  for (let i = 0, j = ring.length - 2; i < ring.length; j = i, i += 2) {
+    const xi = ring[i]!, yi = ring[i + 1]!, xj = ring[j]!, yj = ring[j + 1]!;
+    if (yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+/** Provincia y departamento (partido en Buenos Aires) donde cae un punto, o `null` si está fuera de los cargados. */
+export function locateDept(data: FaunaData, lat: number, lon: number): { province: HuntProvince; dept: string } | null {
+  for (const p of data.provinces)
+    for (const d of p.departments ?? []) if (d.rings.some((r) => inRing(r, lon, lat))) return { province: p, dept: d.name };
+  return null;
+}
