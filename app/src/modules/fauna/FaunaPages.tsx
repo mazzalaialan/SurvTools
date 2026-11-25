@@ -256,7 +256,7 @@ function ZoneCard({ zone, data, lang }: { zone: HuntZone; data: FaunaData; lang:
         </span>
       }
     >
-      {zone.closed ? <span className="fish-season" data-state="closed">{t('fauna.closed')}</span> : zone.season?.from && <SeasonBadge season={{ from: zone.season.from, to: zone.season.to ?? zone.season.from }} />}
+      {/* La temporada (abierta, en veda, cerrada) ya está en el encabezado: no se repite al desplegar. */}
       {zone.season?.note && <p className="muted">{zone.season.note}</p>}
       {zone.limits && !vagueLimits && (
         <p>
