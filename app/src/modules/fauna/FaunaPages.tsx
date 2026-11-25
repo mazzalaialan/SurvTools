@@ -631,12 +631,30 @@ function DeptMap({ province }: { province: HuntProvince }) {
     <Collapsible id="fauna-dept-map" title={t(province.name === 'Buenos Aires' ? 'fauna.deptMapBA' : 'fauna.deptMap')} defaultOpen summary={picked ? t(province.name === 'Buenos Aires' ? 'fauna.partyOf' : 'fauna.deptOf', { name: picked }) : undefined}>
     <figure ref={mapRef} className="stack fauna-dept-map" data-testid="fauna-dept-map">
       {zones.length > 1 && (
-        <div className="chips" role="group" aria-label={t('fauna.deptZone')}>
-          {zones.map((z) => (
-            <button key={z.id} type="button" className="chip" aria-pressed={z.id === zone.id} onClick={() => { setZoneId(z.id); setPicked(null); }}>
-              {z.name}
-            </button>
-          ))}
+        <div className="fauna-zone-pick" role="radiogroup" aria-label={t('fauna.deptZone')}>
+          {zones.map((z) => {
+            const { title, detail } = zoneLabel(z.name, province.name);
+            const on = z.id === zone.id;
+            return (
+              <button
+                key={z.id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                className="fauna-zone-option"
+                onClick={() => {
+                  setZoneId(z.id);
+                  setPicked(null);
+                }}
+              >
+                <span className="fauna-zone-radio" aria-hidden />
+                <span className="fauna-zone-text">
+                  <span className="fauna-zone-title">{title}</span>
+                  {detail && <span className="fauna-zone-detail">{detail}</span>}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
       <svg viewBox={`-4 -4 ${(x(box.e) + 8).toFixed(0)} ${(y(box.s) + 8).toFixed(0)}`} role="img" aria-label={`${t('fauna.deptMap')}: ${province.name}`}>
@@ -718,4 +736,19 @@ function ZoneFinder({ data }: { data: FaunaData }) {
         ))}
     </section>
   );
+}
+
+/**
+ * Nombre corto de una zona para el selector del mapa: sin el nombre de la provincia adelante («Córdoba: …», «Provincia de Buenos
+ * Aires: …») y con lo que va entre paréntesis como detalle abajo.
+ */
+function zoneLabel(name: string, province: string): { title: string; detail?: string } {
+  let s = name.replace(new RegExp(`^(provincia de )?${province.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[:,-]\\s*`, 'i'), '');
+  const m = s.match(/^(.*?)\s*\((.*)\)\s*$/);
+  let detail: string | undefined;
+  if (m) {
+    s = m[1]!;
+    detail = m[2];
+  }
+  return { title: s.charAt(0).toUpperCase() + s.slice(1), detail };
 }

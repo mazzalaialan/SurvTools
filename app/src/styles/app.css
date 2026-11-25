@@ -7541,3 +7541,56 @@ button.country-pack-del {
   gap: 4px 10px;
   align-items: center;
 }
+
+/* Selector de zona del mapa por departamentos: lista de opciones con botón de radio, título corto y detalle. */
+.fauna-zone-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fauna-zone-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-ctl);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.fauna-zone-option[aria-checked='true'] {
+  border-color: var(--text);
+  background: color-mix(in srgb, var(--text) 8%, var(--surface));
+}
+.fauna-zone-radio {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-muted);
+  border-radius: 50%;
+}
+.fauna-zone-option[aria-checked='true'] .fauna-zone-radio {
+  border-color: var(--text);
+  background: radial-gradient(circle, var(--text) 0 4px, transparent 5px);
+}
+.fauna-zone-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.fauna-zone-title {
+  font-weight: 600;
+}
+.fauna-zone-detail {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+figure.fauna-dept-map {
+  /* El navegador le pone 40 px de margen a los <figure>: dentro del desplegable el mapa quedaba angosto. */
+  margin: 0;
+}
