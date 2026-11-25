@@ -7443,3 +7443,16 @@ button.country-pack-del {
 :root[data-theme='red'] .fauna-photo img {
   filter: grayscale(1) contrast(1.1);
 }
+
+/* Especie amenazada: la tarjeta va en rojo y dice que no se caza. */
+.fish-card[data-threatened] {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 16%, var(--surface));
+}
+.fauna-banned {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--danger);
+}

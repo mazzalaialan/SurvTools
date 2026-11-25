@@ -30,6 +30,13 @@ describe('datos de fauna', () => {
     }
   });
 
+  it('las especies amenazadas (pecarí, loro barranquero, pato criollo) no se cazan en ninguna provincia', () => {
+    for (const id of ['pecari-de-collar', 'loro-barranquero', 'pato-criollo']) {
+      expect(data.species.find((s) => s.id === id)?.threatened).toBe('Amenazada');
+      expect(whereHunted(data, id)).toEqual([]);
+    }
+  });
+
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {
     for (const sp of data.species) expect(sp.nombre.es).toBeTruthy();
     expect(whereHunted(data, 'jabali').length).toBeGreaterThan(3);

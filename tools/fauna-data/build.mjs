@@ -169,6 +169,22 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
     species.push({ ...rest, group, image, imageCredit: c ? { author: c.credit, license: c.license, url: c.url } : undefined });
   }
 }
+// Especie amenazada en la categorización nacional (Amenazada, Vulnerable, En peligro): no se caza en ninguna provincia, aunque una
+// norma le dé cupo. Sale de las zonas y la provincia que la nombraba la muestra en «Dónde no se caza».
+const THREAT = /^(amenazada|vulnerable|en peligro)/i;
+for (const sp of species) {
+  const ec = sp.estado_conservacion ?? {};
+  const nat = String(ec.nacional_argentina ?? ec.argentina ?? '').trim();
+  if (THREAT.test(nat)) sp.threatened = nat.replace(/\s*\(.*$/, '');
+}
+const threatened = new Map(species.filter((s) => s.threatened).map((s) => [s.id, s.threatened]));
+for (const p of provinces)
+  for (const z of p.zones) {
+    for (const s of z.species)
+      if (threatened.has(s.id) && !p.protectedSpecies?.some((x) => x.id === s.id))
+        (p.protectedSpecies ??= []).push({ id: s.id, note: `La norma le da cupo, pero hoy es especie ${threatened.get(s.id)} en la categorización nacional: no se caza.` });
+    z.species = z.species.filter((s) => !threatened.has(s.id));
+  }
 const known = new Set(species.map((s) => s.id));
 const unknown = new Set(provinces.flatMap((p) => p.zones.flatMap((z) => z.species.map((s) => s.id))).filter((id) => !known.has(id)));
 if (unknown.size) console.warn(`Especies de las zonas sin ficha: ${[...unknown].join(', ')}`);

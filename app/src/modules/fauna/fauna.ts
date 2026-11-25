@@ -71,6 +71,8 @@ export interface FaunaSpecies {
   cientifico?: string;
   origen?: string;
   image?: string;
+  /** Categoría nacional de amenaza (p. ej. «Amenazada»): la caza no está permitida en ningún lado. */
+  threatened?: string;
   [field: string]: unknown;
 }
 

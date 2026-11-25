@@ -349,9 +349,10 @@ export function FaunaProvincePage() {
 }
 
 function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
+  const { t } = useTranslation();
   return (
     <li>
-      <Link className="fish-card" to={`/fauna/species/${sp.id}`}>
+      <Link className="fish-card" data-threatened={sp.threatened ? '' : undefined} to={`/fauna/species/${sp.id}`}>
         <span className="fish-card-img">{sp.image ? <img src={`${import.meta.env.BASE_URL}fauna/${sp.image}`} alt="" loading="lazy" /> : <PawPrint size={36} aria-hidden />}</span>
         <span>
           <span className="list-main">{faunaName(sp, sp.id, lang)}</span>
@@ -360,6 +361,7 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
               <i>{sp.cientifico}</i>
             </span>
           )}
+          {sp.threatened && <span className="fauna-banned">{t('fauna.threatened', { status: sp.threatened })}</span>}
         </span>
       </Link>
     </li>
@@ -444,6 +446,11 @@ export function FaunaSpeciesDetailPage() {
               </figure>
             )}
             {sp.otros_nombres?.length ? <p className="muted">{t('fauna.aka', { names: sp.otros_nombres.join(', ') })}</p> : null}
+            {sp.threatened && (
+              <p className="fauna-warning" data-status="prohibida" data-testid="fauna-threatened">
+                <strong>{t('fauna.threatened', { status: sp.threatened })}</strong>
+              </p>
+            )}
             {typeof sp.aviso === 'string' && <p className="fauna-warning">{sp.aviso}</p>}
             {typeof sp.aviso_identificacion === 'string' && <p className="fauna-warning">{sp.aviso_identificacion}</p>}
             {FIELDS.map((f) => {
