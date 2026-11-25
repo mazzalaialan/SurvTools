@@ -7360,3 +7360,17 @@ button.country-pack-del {
   justify-content: space-between;
   gap: var(--sp-2);
 }
+
+/* Banda y modo de una frecuencia de radio (VHF · FM, HF · BLU…), al lado del número. */
+.radio-band {
+  display: inline-block;
+  margin-left: var(--sp-2);
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  vertical-align: middle;
+}

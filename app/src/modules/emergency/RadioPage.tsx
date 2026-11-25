@@ -25,6 +25,35 @@ import { DismissNoticeButton, Notice, useNotice } from '@/ui/Notice';
  * tu vida depende de eso". No incluye las de Gendarmería ni policía: no son
  * públicas y muchas están cifradas.
  */
+/**
+ * Banda de una frecuencia («VHF», «UHF», «HF», «onda media») y modo cuando se sabe (FM, AM, BLU). La banda sale del número; el modo, de
+ * la frecuencia: la aeronáutica de 121,5 MHz es AM, el socorro marítimo en onda media y corta es BLU, y el resto de VHF/UHF de voz, FM.
+ */
+export function bandOf(freq: string): { band: string; mode?: string } | null {
+  const m = freq.replace(',', '.').match(/([\d.]+)\s*(k|M)Hz/i);
+  if (!m) return null;
+  const mhz = Number(m[1]) / (m[2]!.toLowerCase() === 'k' ? 1000 : 1);
+  if (!Number.isFinite(mhz)) return null;
+  if (mhz >= 300) return { band: 'UHF', mode: 'FM' };
+  if (mhz >= 30) return { band: 'VHF', mode: mhz >= 108 && mhz < 137 ? 'AM' : 'FM' };
+  if (mhz >= 3) return { band: 'HF', mode: Math.abs(mhz - 4.125) < 0.001 ? 'BLU' : undefined };
+  if (mhz >= 0.3) return { band: 'MF', mode: Math.abs(mhz - 2.182) < 0.001 ? 'BLU' : undefined };
+  return null;
+}
+
+/** Etiqueta chica con la banda y el modo, al lado de la frecuencia. */
+function FreqBand({ freq }: { freq: string }) {
+  const { t } = useTranslation();
+  const b = bandOf(freq);
+  if (!b) return null;
+  return (
+    <span className="radio-band" title={t(`radio.band.${b.band}`)}>
+      {b.band}
+      {b.mode ? ` · ${b.mode}` : ''}
+    </span>
+  );
+}
+
 const DISTRESS = [
   { id: 'marine', freq: '156,800 MHz' },
   // Socorro marítimo por voz en onda media y corta (BLU), para barcos lejos de la costa donde el VHF no llega (Reglamento de
@@ -142,6 +171,7 @@ export function RadioPage() {
                 </span>
                 <span className="contact-actions">
                   <strong className="radio-freqs">{c.frequency}</strong>
+              <FreqBand freq={c.frequency ?? ''} />
                   <CopyButton text={[c.frequency, c.tone].filter(Boolean).join(' ')} label={t('radio.copyFrequency', { name: c.name })} />
                   <Link className="icon-btn" to={`/first-aid/radio/${c.id}`} aria-label={t('emergency.editContact', { name: c.name })}>
                     <Pencil size={18} />
@@ -199,6 +229,7 @@ export function RadioPage() {
                 <span className="list-sub">{t(`radio.distress.${d.id}.desc`)}</span>
               </span>
               <strong className="radio-freqs">{d.freq}</strong>
+              <FreqBand freq={d.freq} />
             </li>
           ))}
         </ul>
@@ -261,6 +292,7 @@ function MountainSection({ place }: { place: { lat: number; lon: number } | null
             </span>
             <span className="contact-actions">
               <strong className="radio-freqs">{m.freq}</strong>
+              <FreqBand freq={m.freq} />
               <CopyButton text={m.freq} label={t('radio.copyFrequency', { name: t(`radio.mountain.${m.id}.name`) })} />
             </span>
           </li>
@@ -343,6 +375,7 @@ function BrazilRadioSection({ place }: { place: { lat: number; lon: number } | n
             </span>
             <span className="contact-actions">
               <strong className="radio-freqs">{r.freq}</strong>
+              <FreqBand freq={r.freq} />
               <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.br.${r.id}.name`) })} />
             </span>
           </li>
@@ -396,6 +429,7 @@ function RenerSection({ place }: { place: { lat: number; lon: number } | null })
             </span>
             <span className="contact-actions">
               <strong className="radio-freqs">{r.freq}</strong>
+              <FreqBand freq={r.freq} />
               <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.rener.${r.id}.name`) })} />
             </span>
           </li>
@@ -416,6 +450,7 @@ function RenerSection({ place }: { place: { lat: number; lon: number } | null })
             </span>
             <span className="contact-actions">
               <strong className="radio-freqs">{r.freq}</strong>
+              <FreqBand freq={r.freq} />
               <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.peFree.${r.id}.name`) })} />
             </span>
           </li>

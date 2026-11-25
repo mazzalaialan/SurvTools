@@ -743,6 +743,7 @@
     "nacionalTitleCL": "Nearest nationwide radio station",
     "nacionalNoteCL": "Chile has no national public radio: this shows the Radio Bío-Bío network (private, with stations in every region), which reports emergencies. SENAPRED official alerts also reach phones through the Emergency Alert System (SAE). Frequencies via Wikipedia; check them with your radio.",
     "packageMissing": "The {{country}} stations come with the country's offline data: it downloads automatically the first time there is a connection.",
+    "band": {"VHF": "VHF: very high frequency (30–300 MHz), line of sight", "UHF": "UHF: ultra high frequency (300–3000 MHz), line of sight", "HF": "HF: shortwave (3–30 MHz), long range", "MF": "MF: medium wave (0.3–3 MHz)"},
     "distressTitle": "International distress frequencies",
     "distress": {
       "marine": { "name": "Marine · VHF channel 16", "desc": "Distress at sea and on navigable rivers and lakes. Monitored by the Coast Guard and ships" },

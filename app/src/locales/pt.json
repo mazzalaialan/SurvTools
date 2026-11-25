@@ -1309,7 +1309,8 @@
   "nacionalTitleCL": "Rádio com cobertura nacional mais próxima",
   "nacionalNoteCL": "O Chile não tem rádio pública nacional: é mostrada a rede da Radio Bío-Bío (privada, com emissoras em todas as regiões), que informa as emergências. Os alertas oficiais da SENAPRED chegam também ao celular pelo Sistema de Alerta de Emergencia (SAE). Frequências via Wikipédia; confirme-as com o seu rádio.",
   "packageMissing": "As emissoras de {{country}} vêm nos dados offline do país: são baixadas sozinhas na primeira vez que houver conexão.",
-  "distressTitle": "Frequências internacionais de socorro",
+  "band": {"VHF": "VHF: frequência muito alta (30–300 MHz), alcance visual", "UHF": "UHF: frequência ultra alta (300–3000 MHz), alcance visual", "HF": "HF: ondas curtas (3–30 MHz), longo alcance", "MF": "MF: onda média (0,3–3 MHz)"},
+    "distressTitle": "Frequências internacionais de socorro",
   "distress": {
       "marine": { "name": "Marítima · VHF canal 16", "desc": "Socorro no mar, rios e lagos navegáveis. É escutada pela Prefectura Naval e pelos barcos" },
       "air": { "name": "Aeronáutica · emergência", "desc": "É escutada por aviões e torres de controle" },
