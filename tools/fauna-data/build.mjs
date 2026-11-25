@@ -191,7 +191,8 @@ if (unknown.size) console.warn(`Especies de las zonas sin ficha: ${[...unknown].
 
 const out = {
   version: 1,
-  generatedAt: new Date().toISOString().slice(0, 10),
+  // Con hora: la app compara esta marca para saber si la copia guardada es vieja (con solo la fecha, dos versiones del mismo día no se actualizaban).
+  generatedAt: new Date().toISOString().slice(0, 19) + 'Z',
   provinces,
   species,
 };

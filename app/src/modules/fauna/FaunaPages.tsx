@@ -56,7 +56,7 @@ function Notice({ data }: { data: FaunaData }) {
   const { t } = useTranslation();
   return (
     <p className="fish-notice" data-testid="fauna-notice">
-      {t('fauna.notice', { date: data.generatedAt })}
+      {t('fauna.notice', { date: data.generatedAt.slice(0, 10) })}
     </p>
   );
 }
