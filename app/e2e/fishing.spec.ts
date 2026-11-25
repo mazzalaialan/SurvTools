@@ -32,7 +32,12 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   await expect(page.getByTestId('fish-map').locator('[data-fishing]')).toHaveAttribute('data-fishing', '3');
   await page.getByTestId('fish-chip-perca').click();
   await expect(page.getByTestId('fish-count')).toHaveText('1 tramo con Perca criolla');
-  await page.getByRole('button', { name: 'Ver lista' }).click();
+  // Al elegir el pez el mapa vuela al tramo; si el toque cae justo durante ese vuelo, se vuelve a intentar.
+  await expect(async () => {
+    const btn = page.getByRole('button', { name: 'Ver lista' });
+    if (await btn.isVisible()) await btn.click();
+    await expect(page.getByTestId('fish-sheet').getByRole('link', { name: /Río Aluminé/ })).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 15000 });
   await page.getByTestId('fish-sheet').getByRole('link', { name: /Río Aluminé/ }).click();
 
   // Ficha del tramo: peces con sus reglas.
