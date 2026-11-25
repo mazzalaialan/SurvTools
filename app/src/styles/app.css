@@ -6913,6 +6913,7 @@ button.country-pack-del {
 .fish-zone-toggle {
   align-self: flex-start;
   gap: 4px;
+  white-space: nowrap;
 }
 .fish-zone-open {
   display: flex;
@@ -6944,6 +6945,24 @@ button.country-pack-del {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+/* En el panel del mapa: chips más chicos en una sola línea y la fila de zona, cantidad y «Ver lista» sin cortes. */
+.fish-sheet .fish-habitat {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.fish-sheet .fish-habitat .chip {
+  padding: 4px 10px;
+  min-height: 36px;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.fish-sheet-head [data-testid='fish-count'] {
+  white-space: nowrap;
+  flex: 1;
+}
+.fish-sheet-head .btn {
+  white-space: nowrap;
 }
 .fish-grid {
   list-style: none;

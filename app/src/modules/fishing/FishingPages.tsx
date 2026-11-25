@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Fish, LocateFixed, Map as MapIcon } from 'lucide-react';
+import { SectorTides } from './SectorTides';
 import { useGeolocation } from '@/core/geo/useGeolocation';
 import { useZonePlace } from '@/modules/garden/status';
 import { ModuleGrid } from '@/ui/ModuleGrid';
@@ -486,6 +487,7 @@ export function FishSectorPage() {
             ) : (
               <SectorRules data={data} s={s} />
             )}
+            {s.marine && <SectorTides sector={s} />}
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>

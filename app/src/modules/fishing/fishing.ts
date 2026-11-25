@@ -120,6 +120,8 @@ export const habitatOf = (sp: FishSpecies): ('continental' | 'marine')[] => sp.h
 export const matchesHabitat = (sp: FishSpecies, f: HabitatFilter): boolean => f === 'all' || habitatOf(sp).includes(f);
 
 export interface FishSector {
+  /** Lugar de pesca de mar (costa atlántica): se muestran las mareas del puerto más cercano. */
+  marine?: boolean;
   /** Ambiente continental de agua salobre o salada (laguna Mar Chiquita, La Salina…). */
   brackish?: boolean;
   /** Aviso fijo de la jurisdicción para todos sus tramos (p. ej. especies vedadas que no son peces: cangrejos en Mendoza). */

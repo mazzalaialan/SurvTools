@@ -154,6 +154,16 @@ function FishingMap({ data }: { data: FishData }) {
   const [listOpen, setListOpen] = useState(false);
   const [zoneOpen, setZoneOpen] = useState(false);
   const [sheetHidden, setSheetHidden] = useState(false);
+  // El texto de ayuda («Tocá un tramo…») sale las primeras 3 veces que se abre el mapa; después ya se sabe y ocupa lugar.
+  const [showHint] = useState(() => {
+    try {
+      const n = Number(localStorage.getItem('vikarg.fishing.hintSeen') ?? 0);
+      localStorage.setItem('vikarg.fishing.hintSeen', String(n + 1));
+      return n < 3;
+    } catch {
+      return true;
+    }
+  });
 
   const setChosen = (ids: string[]) => {
     const next = new URLSearchParams(params);
@@ -296,10 +306,6 @@ function FishingMap({ data }: { data: FishData }) {
                 <X size={20} />
               </button>
             </div>
-          ) : (data.zones?.length ?? 0) > 1 ? (
-            <button type="button" className="btn btn-small fish-zone-toggle" aria-expanded={false} onClick={() => setZoneOpen(true)} data-testid="fish-zone-toggle">
-              {t('fishing.zone.label')}: {z.zone ? zoneName(data.zones!.find((x) => x.id === z.zone)!, lang) : t('fishing.zone.all')} <ChevronDown size={16} aria-hidden />
-            </button>
           ) : null)}
         {pickedSectors.length > 0 ? (
           <>
@@ -332,7 +338,13 @@ function FishingMap({ data }: { data: FishData }) {
           </>
         ) : (
           <>
+            {/* Zona (plegada), cantidad de tramos y «Ver lista» en una sola fila, para que el panel ocupe menos. */}
             <div className="fish-sheet-head">
+              {!zoneOpen && (data.zones?.length ?? 0) > 1 && (
+                <button type="button" className="btn btn-small fish-zone-toggle" aria-expanded={false} onClick={() => setZoneOpen(true)} data-testid="fish-zone-toggle">
+                  {z.zone ? zoneName(data.zones!.find((x) => x.id === z.zone)!, lang) : t('fishing.zone.all')} <ChevronDown size={16} aria-hidden />
+                </button>
+              )}
               <span data-testid="fish-count">{title ? t('fishing.sectorsWith', { count: shown.length, fish: title }) : t('fishing.sectorsShown', { count: shown.length })}</span>
               <button className="btn" type="button" onClick={() => setListOpen((v) => !v)} aria-expanded={listOpen}>
                 {listOpen ? t('common.close') : t('fishing.seeList')}
@@ -354,7 +366,7 @@ function FishingMap({ data }: { data: FishData }) {
                 ))}
               </ul>
             )}
-            {!chosen.length && <p className="muted small">{t('fishing.tapHint')}</p>}
+            {!chosen.length && showHint && <p className="muted small">{t('fishing.tapHint')}</p>}
           </>
         )}
       </div>
