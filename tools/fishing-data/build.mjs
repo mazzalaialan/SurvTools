@@ -619,7 +619,8 @@ if (jurs.split(',').includes('Mar')) {
   for (const [prov, r] of Object.entries(marRules)) {
     if (prov === '_') continue;
     const rid = `mar-${lower(prov).replace(/[^a-z]+/g, '-')}`;
-    regions.push({ id: rid, name: r.name, rules: [r.norm, ...r.rules], season: { allYear: true }, ...(permits[prov] && { permit: permits[prov] }), source: rid });
+    if (prov.startsWith('_')) continue;
+    regions.push({ id: rid, name: r.name, rules: [r.norm, ...r.rules, ...(marRules._embarcada ?? [])], season: { allYear: true }, ...(permits[prov] && { permit: permits[prov] }), source: rid });
     SOURCES.push({ id: rid, name: `${r.name}: ${r.norm}`, url: r.url, license: 'Normativa pública sin licencia declarada: se usa con atribución', date: r.date });
   }
   const ring = ([x, y]) => Array.from({ length: 13 }, (_, i) => { const t = (i / 12) * 2 * Math.PI; return [+(x + (0.002 / Math.cos((y * Math.PI) / 180)) * Math.cos(t)).toFixed(5), +(y + 0.002 * Math.sin(t)).toFixed(5)]; });
@@ -651,6 +652,12 @@ if (jurs.split(',').includes('Mar')) {
       geometry: { type: 'Polygon', coordinates: [ring(l.lonlat)] },
       species: sp,
       marine: true,
+      // Dentro (aproximado: la mitad del radio de su recuadro en OSM, que lo sobrestima) de un área protegida costera: aviso fijo con lo que dice de la pesca.
+      ...(() => {
+        const [x, y] = l.lonlat;
+        const hit = (marRules._areas ?? []).find((a) => Math.hypot((a.center[0] - x) * 111 * Math.cos((y * Math.PI) / 180), (a.center[1] - y) * 111) <= a.km * 0.5);
+        return hit ? { alert: hit.text } : {};
+      })(),
       ...(/sin confirmar|localidad/i.test(l.confianza ?? '') && { approx: 'ubicado en la localidad que cita la prensa, no en el punto exacto de pesca' }),
       notes: r.rules.join(' — '),
       source: `mar-${lower(prov).replace(/[^a-z]+/g, '-')}`,

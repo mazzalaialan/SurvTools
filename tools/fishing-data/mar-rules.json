@@ -91,5 +91,389 @@
    "Sin cupos ni tallas de mar en las normas halladas."
   ],
   "release": []
- }
+ },
+ "_areas": [
+  {
+   "id": "ba-samborombon",
+   "center": [
+    -57.3043,
+    -36.0324
+   ],
+   "km": 25.0,
+   "text": "Bahía Samborombón (reserva): prohibido en la Reserva Integral; en la franja costera de Objetivo Definido no hay norma clara: consultá al Ministerio de Ambiente."
+  },
+  {
+   "id": "ba-samborombon",
+   "center": [
+    -57.2692,
+    -35.8678
+   ],
+   "km": 49.5,
+   "text": "Bahía Samborombón (reserva): prohibido en la Reserva Integral; en la franja costera de Objetivo Definido no hay norma clara: consultá al Ministerio de Ambiente."
+  },
+  {
+   "id": "ba-samborombon",
+   "center": [
+    -57.2953,
+    -35.9821
+   ],
+   "km": 60,
+   "text": "Bahía Samborombón (reserva): prohibido en la Reserva Integral; en la franja costera de Objetivo Definido no hay norma clara: consultá al Ministerio de Ambiente."
+  },
+  {
+   "id": "ba-rincon-del-ajo",
+   "center": [
+    -57.0145,
+    -36.3216
+   ],
+   "km": 10.1,
+   "text": "Rincón de Ajó (reserva): prohibido en la zona integral; en la costa, sin norma clara: consultá."
+  },
+  {
+   "id": "ba-rincon-del-ajo",
+   "center": [
+    -56.9493,
+    -36.3265
+   ],
+   "km": 17.9,
+   "text": "Rincón de Ajó (reserva): prohibido en la zona integral; en la costa, sin norma clara: consultá."
+  },
+  {
+   "id": "ba-campos-del-tuyu",
+   "center": [
+    -56.8724,
+    -36.3578
+   ],
+   "km": 5.4,
+   "text": "Parque Nacional Campos del Tuyú (Punta Rasa) (área protegida): no encontramos su norma de pesca; consultá al organismo (Administración de Parques Nacionales)."
+  },
+  {
+   "id": "ba-mar-chiquita",
+   "center": [
+    -57.2955,
+    -37.6322
+   ],
+   "km": 12.0,
+   "text": "Reserva Natural Provincial de Uso Múltiple Mar Chiquita (albufera) y Refugio de Vida Silvestre; Reserva de Biosfera Parque Atlántico Mar Chiquita (área protegida): no encontramos su norma de pesca; consultá al organismo (Ministerio de Ambiente de la Provincia de Buenos Aires)."
+  },
+  {
+   "id": "ba-mar-chiquita",
+   "center": [
+    -57.3867,
+    -37.5815
+   ],
+   "km": 25.1,
+   "text": "Reserva Natural Provincial de Uso Múltiple Mar Chiquita (albufera) y Refugio de Vida Silvestre; Reserva de Biosfera Parque Atlántico Mar Chiquita (área protegida): no encontramos su norma de pesca; consultá al organismo (Ministerio de Ambiente de la Provincia de Buenos Aires)."
+  },
+  {
+   "id": "ba-bahia-blanca",
+   "center": [
+    -62.1131,
+    -39.3341
+   ],
+   "km": 60,
+   "text": "Reserva Natural Provincial de Usos Múltiples «Bahía Blanca, Bahía Falsa y Bahía Verde» (área protegida): no encontramos su norma de pesca; consultá al organismo (Ministerio de Ambiente de la Provincia de Buenos Aires)."
+  },
+  {
+   "id": "ba-otras",
+   "center": [
+    -62.1427,
+    -40.3045
+   ],
+   "km": 59.7,
+   "text": "Otras reservas bonaerenses de costa (Bahía San Blas, Pehuén-Co, Restinga del Faro, Puerto Mar del Plata) (área protegida): no encontramos su norma de pesca; consultá al organismo (Ministerio de Ambiente de la Provincia de Buenos Aires)."
+  },
+  {
+   "id": "ba-otras",
+   "center": [
+    -61.5,
+    -38.9989
+   ],
+   "km": 13.0,
+   "text": "Otras reservas bonaerenses de costa (Bahía San Blas, Pehuén-Co, Restinga del Faro, Puerto Mar del Plata) (área protegida): no encontramos su norma de pesca; consultá al organismo (Ministerio de Ambiente de la Provincia de Buenos Aires)."
+  },
+  {
+   "id": "rn-bahia-san-antonio",
+   "center": [
+    -64.9396,
+    -40.8272
+   ],
+   "km": 22.8,
+   "text": "Área Natural Protegida Bahía de San Antonio (área protegida): no encontramos su norma de pesca; consultá al organismo (Secretaría de Ambiente y Cambio Climático de Río Negro (Servicio de Áreas Naturales Protegidas))."
+  },
+  {
+   "id": "rn-punta-bermeja",
+   "center": [
+    -63.1295,
+    -41.1582
+   ],
+   "km": 5.7,
+   "text": "Punta Bermeja (reserva): prohibido pescar tiburones, rayas y quimeras (Res. 999/2015, sin confirmar) y prohibida la pesca en las zonas estrictas."
+  },
+  {
+   "id": "rn-otras",
+   "center": [
+    -64.1676,
+    -41.0201
+   ],
+   "km": 10.3,
+   "text": "Otras áreas rionegrinas costeras (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "rn-otras",
+   "center": [
+    -65.0191,
+    -41.496
+   ],
+   "km": 14.8,
+   "text": "Otras áreas rionegrinas costeras (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "cb-peninsula-valdes",
+   "center": [
+    -64.0392,
+    -42.4753
+   ],
+   "km": 58.3,
+   "text": "Península Valdés (área protegida): pesca de costa solo cerca de El Riacho y Larralde, con permiso; embarcada en el golfo San José solo fuera de zonas intangibles y con guía autorizado (Plan de Manejo)."
+  },
+  {
+   "id": "cb-peninsula-valdes",
+   "center": [
+    -64.3311,
+    -42.3371
+   ],
+   "km": 26.4,
+   "text": "Península Valdés (área protegida): pesca de costa solo cerca de El Riacho y Larralde, con permiso; embarcada en el golfo San José solo fuera de zonas intangibles y con guía autorizado (Plan de Manejo)."
+  },
+  {
+   "id": "cb-peninsula-valdes",
+   "center": [
+    -63.6169,
+    -42.3995
+   ],
+   "km": 10.3,
+   "text": "Península Valdés (área protegida): pesca de costa solo cerca de El Riacho y Larralde, con permiso; embarcada en el golfo San José solo fuera de zonas intangibles y con guía autorizado (Plan de Manejo)."
+  },
+  {
+   "id": "cb-peninsula-valdes",
+   "center": [
+    -63.7585,
+    -42.0793
+   ],
+   "km": 0.3,
+   "text": "Península Valdés (área protegida): pesca de costa solo cerca de El Riacho y Larralde, con permiso; embarcada en el golfo San José solo fuera de zonas intangibles y con guía autorizado (Plan de Manejo)."
+  },
+  {
+   "id": "cb-peninsula-valdes",
+   "center": [
+    -64.3338,
+    -42.4772
+   ],
+   "km": 38.3,
+   "text": "Península Valdés (área protegida): pesca de costa solo cerca de El Riacho y Larralde, con permiso; embarcada en el golfo San José solo fuera de zonas intangibles y con guía autorizado (Plan de Manejo)."
+  },
+  {
+   "id": "cb-punta-tombo",
+   "center": [
+    -65.2176,
+    -44.0458
+   ],
+   "km": 2.7,
+   "text": "Área Natural Protegida Punta Tombo (Reserva Natural Turística de Objetivo Específico; ampliada en 2025) (área protegida): no encontramos su norma de pesca; consultá al organismo (Gobierno de Chubut (áreas protegidas))."
+  },
+  {
+   "id": "cb-pimcpa",
+   "center": [
+    -66.0301,
+    -45.0822
+   ],
+   "km": 57.7,
+   "text": "Parque Interjurisdiccional Marino Costero Patagonia Austral (Golfo San Jorge, Chubut) (área protegida): no encontramos su norma de pesca; consultá al organismo (Administración de Parques Nacionales + Provincia del Chubut (Comisión Ejecutiva de Manejo))."
+  },
+  {
+   "id": "cb-otras",
+   "center": [
+    -65.5517,
+    -44.9145
+   ],
+   "km": 2.1,
+   "text": "Otras áreas chubutenses de costa (Cabo Dos Bahías, Punta Marqués, Punta León, Punta Loma, Caleta Valdés, Parque Provincial Patagonia Azul, Reserva de Biosfera Patagonia Azul) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "cb-otras",
+   "center": [
+    -67.5449,
+    -45.9622
+   ],
+   "km": 2.7,
+   "text": "Otras áreas chubutenses de costa (Cabo Dos Bahías, Punta Marqués, Punta León, Punta Loma, Caleta Valdés, Parque Provincial Patagonia Azul, Reserva de Biosfera Patagonia Azul) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "cb-otras",
+   "center": [
+    -64.4465,
+    -43.0571
+   ],
+   "km": 2.0,
+   "text": "Otras áreas chubutenses de costa (Cabo Dos Bahías, Punta Marqués, Punta León, Punta Loma, Caleta Valdés, Parque Provincial Patagonia Azul, Reserva de Biosfera Patagonia Azul) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "cb-otras",
+   "center": [
+    -64.8683,
+    -42.8263
+   ],
+   "km": 5.3,
+   "text": "Otras áreas chubutenses de costa (Cabo Dos Bahías, Punta Marqués, Punta León, Punta Loma, Caleta Valdés, Parque Provincial Patagonia Azul, Reserva de Biosfera Patagonia Azul) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "cb-otras",
+   "center": [
+    -66.2143,
+    -44.6803
+   ],
+   "km": 60,
+   "text": "Otras áreas chubutenses de costa (Cabo Dos Bahías, Punta Marqués, Punta León, Punta Loma, Caleta Valdés, Parque Provincial Patagonia Azul, Reserva de Biosfera Patagonia Azul) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-monte-leon",
+   "center": [
+    -68.9175,
+    -50.3372
+   ],
+   "km": 25.0,
+   "text": "Parque Nacional Monte León: pesca solo en la playa Juan Quiñonez, con permiso gratuito, del 1/1 al 30/4, de 10 a 18 h."
+  },
+  {
+   "id": "sc-monte-leon",
+   "center": [
+    -68.976,
+    -50.2466
+   ],
+   "km": 7.7,
+   "text": "Parque Nacional Monte León: pesca solo en la playa Juan Quiñonez, con permiso gratuito, del 1/1 al 30/4, de 10 a 18 h."
+  },
+  {
+   "id": "sc-ria-deseado",
+   "center": [
+    -66.097,
+    -47.7977
+   ],
+   "km": 16.7,
+   "text": "Reserva Natural Provincial Ría Deseado (+ Isla Pingüino provincial y PIM Isla Pingüino) (área protegida): no encontramos su norma de pesca; consultá al organismo (Consejo Agrario Provincial / Secretaría de Estado de Ambiente de Santa Cruz; PIM: APN)."
+  },
+  {
+   "id": "sc-ria-deseado",
+   "center": [
+    -65.7189,
+    -47.9104
+   ],
+   "km": 0.9,
+   "text": "Reserva Natural Provincial Ría Deseado (+ Isla Pingüino provincial y PIM Isla Pingüino) (área protegida): no encontramos su norma de pesca; consultá al organismo (Consejo Agrario Provincial / Secretaría de Estado de Ambiente de Santa Cruz; PIM: APN)."
+  },
+  {
+   "id": "sc-ria-deseado",
+   "center": [
+    -66.0205,
+    -48.0931
+   ],
+   "km": 50.3,
+   "text": "Reserva Natural Provincial Ría Deseado (+ Isla Pingüino provincial y PIM Isla Pingüino) (área protegida): no encontramos su norma de pesca; consultá al organismo (Consejo Agrario Provincial / Secretaría de Estado de Ambiente de Santa Cruz; PIM: APN)."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -68.3941,
+    -52.3473
+   ],
+   "km": 6.3,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -67.6507,
+    -49.5053
+   ],
+   "km": 41.3,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -67.6642,
+    -49.3277
+   ],
+   "km": 9.8,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -67.4576,
+    -46.1667
+   ],
+   "km": 22.7,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -68.4586,
+    -50.0652
+   ],
+   "km": 3.2,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -67.7077,
+    -49.2822
+   ],
+   "km": 2.6,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -66.4156,
+    -48.3884
+   ],
+   "km": 7.8,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "sc-otras",
+   "center": [
+    -65.7834,
+    -47.1875
+   ],
+   "km": 5.7,
+   "text": "Otras áreas santacruceñas de costa (Cabo Vírgenes, Makenke, Bahía San Julián, Costa Norte, Isla Leones, Islas Cormorán y Justicia, Bahía Laura, Cabo Blanco) (área protegida): no encontramos su norma de pesca; consultá al organismo ()."
+  },
+  {
+   "id": "tdf-pn-tierra-del-fuego",
+   "center": [
+    -68.4796,
+    -54.6532
+   ],
+   "km": 24.4,
+   "text": "Parque Nacional Tierra del Fuego: el reglamento de pesca de Parques solo habilita los ríos y lagos de su lista; en el mar o la costa no hay habilitación: consultá a la intendencia."
+  },
+  {
+   "id": "tdf-costa-atlantica",
+   "center": [
+    -67.878,
+    -53.5461
+   ],
+   "km": 60,
+   "text": "Reserva Costa Atlántica de Tierra del Fuego (Reserva Costera Natural; Cabo Nombre a desembocadura del Río Ewan) (área protegida): no encontramos su norma de pesca; consultá al organismo (Secretaría de Ambiente de Tierra del Fuego)."
+  }
+ ],
+ "_embarcada": [
+  "Pesca embarcada (Prefectura Naval): despacho con rol, certificado de matrícula, certificado náutico deportivo (Conductor Náutico: hasta 10 m y 150 HP, hasta 5 millas de la costa) y DNI de todos; zarpar dentro de las 24 h.",
+  "Elementos de seguridad (Ordenanza 1-18, Anexo A): chaleco salvavidas para cada persona, 2 bengalas de mano rojas, bengalas con paracaídas según la zona y radio VHF (puede ser portátil)."
+ ]
 }
