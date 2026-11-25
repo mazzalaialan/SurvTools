@@ -9,6 +9,7 @@ import { useSettings } from '@/core/settings/settings';
 import { loadGeoData, type GeoRegion } from '@/modules/weathermap/geo';
 import { SeasonBadge } from '@/modules/fishing/parts';
 import { ModuleGrid } from '@/ui/ModuleGrid';
+import { Collapsible } from '@/ui/Collapsible';
 import {
   FAUNA_COUNTRIES,
   deptState,
@@ -240,8 +241,21 @@ function ZoneCard({ zone, data, lang }: { zone: HuntZone; data: FaunaData; lang:
   const vagueLimits = !zone.limits || /^por .*sin coordenadas\.?$/i.test(zone.limits.trim());
   const [open, setOpen] = useState(vagueLimits);
   return (
-    <section className="card stack" data-testid="fauna-zone">
-      <h2 className="section-title">{zone.name}</h2>
+    <Collapsible
+      id={`fauna-zone-${zone.id}`}
+      testId="fauna-zone"
+      title={zone.name}
+      summary={
+        <span className="fauna-zone-summary">
+          {zone.closed ? (
+            <span className="fish-season" data-state="closed">{t('fauna.closed')}</span>
+          ) : (
+            zone.season?.from && <SeasonBadge season={{ from: zone.season.from, to: zone.season.to ?? zone.season.from }} />
+          )}
+          {zone.species.length > 0 && <span>{t('fauna.speciesCount', { count: zone.species.length })}</span>}
+        </span>
+      }
+    >
       {zone.closed ? <span className="fish-season" data-state="closed">{t('fauna.closed')}</span> : zone.season?.from && <SeasonBadge season={{ from: zone.season.from, to: zone.season.to ?? zone.season.from }} />}
       {zone.season?.note && <p className="muted">{zone.season.note}</p>}
       {zone.limits && !vagueLimits && (
@@ -287,7 +301,7 @@ function ZoneCard({ zone, data, lang }: { zone: HuntZone; data: FaunaData; lang:
           {open && <p className="fauna-literal">{zone.text}</p>}
         </>
       )}
-    </section>
+    </Collapsible>
   );
 }
 
@@ -318,8 +332,7 @@ export function FaunaProvincePage() {
                 <ZoneCard key={z.id} zone={z} data={data} lang={i18n.language} />
               ))}
             {p.permit && (
-              <section className="card stack">
-                <h2 className="section-title">{t('fauna.permit')}</h2>
+              <Collapsible id="fauna-permit" title={t('fauna.permit')} summary={p.permit.prices?.[0] ? `${p.permit.prices[0].type}: ${p.permit.prices[0].price}` : p.permit.requirements?.length ? t('fauna.reqCount', { count: p.permit.requirements.length }) : undefined}>
                 {p.permit.requirements?.length ? (
                   <ul>
                     {p.permit.requirements.map((r) => (
@@ -345,11 +358,10 @@ export function FaunaProvincePage() {
                     {t('fauna.info')}
                   </a>
                 )}
-              </section>
+              </Collapsible>
             )}
             {(p.protected.length > 0 || p.protectedSpecies?.length) && (
-              <section className="card stack">
-                <h2 className="section-title">{t('fauna.protected')}</h2>
+              <Collapsible id="fauna-protected" title={t('fauna.protected')} defaultOpen={!!p.protectedSpecies?.length} summary={t('fauna.placesCount', { count: p.protected.length + (p.protectedSpecies?.length ?? 0) })}>
                 {p.protectedSpecies?.map((x) => (
                   <p key={x.id} className="fauna-warning" data-status="prohibida" data-testid="fauna-protected-species">
                     <strong>
@@ -367,11 +379,10 @@ export function FaunaProvincePage() {
                     </li>
                   ))}
                 </ul>
-              </section>
+              </Collapsible>
             )}
             {p.sources.length > 0 && (
-              <section className="card stack">
-                <h2 className="section-title">{t('fauna.sources')}</h2>
+              <Collapsible id="fauna-sources" title={t('fauna.sources')} summary={t('fauna.sourcesCount', { count: p.sources.length })}>
                 <ul>
                   {p.sources.map((s) => (
                     <li key={s.title}>
@@ -387,7 +398,7 @@ export function FaunaProvincePage() {
                     </li>
                   ))}
                 </ul>
-              </section>
+              </Collapsible>
             )}
           </div>
         );
@@ -617,8 +628,8 @@ function DeptMap({ province }: { province: HuntProvince }) {
   // En Buenos Aires la división se llama «partido».
   const deptKey = province.name === 'Buenos Aires' ? 'fauna.deptBA' : 'fauna.dept';
   return (
-    <figure ref={mapRef} className="card stack fauna-dept-map" data-testid="fauna-dept-map">
-      <h2 className="section-title">{t(province.name === 'Buenos Aires' ? 'fauna.deptMapBA' : 'fauna.deptMap')}</h2>
+    <Collapsible id="fauna-dept-map" title={t(province.name === 'Buenos Aires' ? 'fauna.deptMapBA' : 'fauna.deptMap')} defaultOpen summary={picked ? t(province.name === 'Buenos Aires' ? 'fauna.partyOf' : 'fauna.deptOf', { name: picked }) : undefined}>
+    <figure ref={mapRef} className="stack fauna-dept-map" data-testid="fauna-dept-map">
       {zones.length > 1 && (
         <div className="chips" role="group" aria-label={t('fauna.deptZone')}>
           {zones.map((z) => (
@@ -679,6 +690,7 @@ function DeptMap({ province }: { province: HuntProvince }) {
         <p className="muted small">{t('fauna.deptNote')}</p>
       </figcaption>
     </figure>
+    </Collapsible>
   );
 }
 

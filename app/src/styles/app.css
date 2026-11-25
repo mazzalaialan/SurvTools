@@ -7534,3 +7534,10 @@ button.country-pack-del {
   /* Al llegar con «Ir a la zona», que el título del mapa no quede debajo de la barra superior. */
   scroll-margin-top: 72px;
 }
+
+.fauna-zone-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+}
