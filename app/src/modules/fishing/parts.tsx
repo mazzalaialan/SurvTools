@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { Fish, Loader2 } from 'lucide-react';
+import { Fish, Loader2, Mail, Phone } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
@@ -196,6 +196,23 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
         <a href={p.infoUrl} target="_blank" rel="noreferrer">
           {t('fishing.permit.info')}
         </a>
+      )}
+      {/* Teléfono y correo oficiales para sacarlo o consultar (aunque no haya precio ni trámite en línea). */}
+      {(p?.phone?.length || p?.email?.length) && (
+        <p className="fish-permit-contact" data-testid="fish-permit-contact">
+          {p?.phone?.map((n) => (
+            // Lo que va entre paréntesis (a quién corresponde, «WhatsApp») va como título, para que el botón quede corto.
+            <a key={n} className="btn btn-small" href={`tel:${n.split('(')[0]!.replace(/[^\d+]/g, '')}`} title={n}>
+              <Phone size={16} aria-hidden /> {n.split('(')[0]!.trim()}
+              {/whatsapp/i.test(n) ? ' (WhatsApp)' : ''}
+            </a>
+          ))}
+          {p?.email?.map((m) => (
+            <a key={m} className="btn btn-small" href={`mailto:${m.split(/\s/)[0]}`} title={m}>
+              <Mail size={16} aria-hidden /> {m.split(/\s/)[0]}
+            </a>
+          ))}
+        </p>
       )}
       {/* Aclaraciones: después de los precios y del botón, más chicas, para que lo importante se vea primero. */}
       <div className="fish-permit-notes">

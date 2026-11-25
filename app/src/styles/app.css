@@ -6909,6 +6909,12 @@ button.country-pack-del {
 .fish-zone-open .fish-zone {
   flex: 1;
 }
+.fish-permit-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
 .fish-grid {
   list-style: none;
   margin: 0;

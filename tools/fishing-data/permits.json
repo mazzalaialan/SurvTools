@@ -48,7 +48,16 @@
   "infoUrl": "https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf",
   "requirements": "Se saca con el DNI; es personal e intransferible y hay que llevarlo encima.",
   "where": "Venta en línea desde el 15/10/2026 (Dirección de Fauna de Neuquén).",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 299 454-3767",
+   "+54 299 449-5685",
+   "+54 800 666-6636 (0800, denuncias e información)"
+  ],
+  "email": [
+   "pesca@neuquen.gov.ar",
+   "faunadenuncias@neuquen.gov.ar"
+  ]
  },
  "Río Negro": {
   "items": [
@@ -97,7 +106,18 @@
   "infoUrl": "https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf",
   "requirements": "Se saca con el DNI; es personal e intransferible y hay que llevarlo encima.",
   "where": "Tienda de la Mesa Directiva de Pesca Deportiva Zona Andina, enlazada por el Gobierno de Río Negro (nota del 02/11/2026). El permiso vale también en Neuquén, Chubut y los Parques Nacionales.",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 294 456-9703",
+   "+54 2920 420326",
+   "+54 294 442-1515",
+   "+54 800 777-3722 (Guardapescas, info y denuncias)"
+  ],
+  "email": [
+   "info@permisosdepesca.com.ar",
+   "pescadeportivarn@gmail.com",
+   "gerente@mesapescaandina.org.ar"
+  ]
  },
  "Chubut": {
   "items": [
@@ -145,7 +165,15 @@
   "infoUrl": "https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf",
   "requirements": "Se saca con el DNI; es personal e intransferible y hay que llevarlo encima.",
   "where": "No encontramos un enlace oficial de compra verificable (los medios mencionan el asistente «DINO» del Gobierno de Chubut). El permiso de Neuquén o de Río Negro en línea también vale en Chubut.",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "buyUrl": "https://pescacontinental.gob.ar/",
+  "phone": [
+   "+54 2945 336131",
+   "+54 9 280 460-3466 (WhatsApp del asistente DINO: enviar la frase 'Permisos de Pesca')"
+  ],
+  "email": [
+   "pescacontinentalchubut@gmail.com (casilla que publica la Dirección de Pesca Continental en su sitio oficial gob.ar)"
+  ]
  },
  "Parques Nacionales del Sur (APN)": {
   "items": [
@@ -194,7 +222,24 @@
   "infoUrl": "https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf",
   "requirements": "Se saca con el DNI; es personal e intransferible y hay que llevarlo encima.",
   "where": "Parques Nacionales no tiene un portal propio: reconoce los permisos provinciales (Neuquén, Río Negro o Chubut), que valen en los parques.",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 11 3985-3800",
+   "+54 2944 425436",
+   "+54 2944 423111",
+   "+54 2944 423121",
+   "+54 2972 427233",
+   "+54 2901 577931"
+  ],
+  "email": [
+   "informes@apn.gob.ar",
+   "drp@apn.gob.ar",
+   "nahuelhuapi@apn.gob.ar",
+   "lanin@apn.gob.ar",
+   "losalerces@apn.gob.ar",
+   "pnpuelo@parquesnacionales.gob.ar",
+   "lagunablanca@apn.gob.ar"
+  ]
  },
  "Entre Ríos": {
   "items": [
@@ -221,11 +266,18 @@
   ],
   "extra": [
    "Socios de entidades de caza y pesca de Entre Ríos: 50 % de descuento en los permisos anuales.",
-   "Desde diciembre de 2025 la licencia de residente vale también en Santa Fe, Chaco y Corrientes (en aguas compartidas)."
+   "Desde diciembre de 2025 la licencia de residente vale también en Santa Fe, Chaco y Corrientes (en aguas compartidas).",
+   "Teléfono tomado de prensa: confirmalo."
   ],
   "buyUrl": "https://portal.entrerios.gov.ar/pf/buscador/tramite?708",
   "requirements": "Precios del Boletín Oficial del 28/05/2026 (Res. 117/26 MDE).",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "infoUrl": "https://portal.entrerios.gov.ar/pf/buscador/tramite?708",
+  "phone": [
+   "+54 343 422-7398",
+   "+54 343 420-8897"
+  ],
+  "where": "En persona: Dirección de Recursos Naturales y Fiscalización (Secretaría de Agricultura, Ganadería y Pesca), Alameda de la Federación 354, 1er piso, Paraná (lunes a viernes 7:30 a 13 h); también puestos de control habilitados en Paraná, Diamante, La Paz, Concordia, Brazo Largo y Casa de Entre Ríos. No se halló sistema de compra en línea oficial."
  },
  "Santa Fe": {
   "items": [
@@ -257,11 +309,16 @@
   "extra": [
    "Importes en módulos tributarios (MT de $13 desde el 01/01/2026, Ley 14.426); la cantidad de módulos de cada licencia sale de prensa (31/12/2025): confirmalo en el trámite oficial.",
    "Vence el 31 de diciembre. El trámite es digital con la ID Ciudadana (santafe.gob.ar → Gestiones Ciudadanas → «Pesca»); el carnet tiene QR y tarda unas 72 horas hábiles.",
-   "La licencia de residente de Entre Ríos, Chaco o Corrientes vale en Santa Fe (Res. 336/25)."
+   "La licencia de residente de Entre Ríos, Chaco o Corrientes vale en Santa Fe (Res. 336/25).",
+   "Correo de un trámite de 2022: puede no estar vigente."
   ],
-  "buyUrl": "https://www.santafe.gob.ar/ms/ambiente/tramites/",
+  "buyUrl": "https://www.santafe.gob.ar/gestionesciudadanas/tramite/6a5a060a3f8f9163a3381f11",
   "infoUrl": "https://www.santafe.gov.ar/index.php/content/download/263365/1381255/file/Valor%20MT%202026.pdf",
-  "date": "2026-11-24"
+  "date": "2026-11-25",
+  "email": [
+   "licenciaspesca@santafe.gov.ar (del trámite por mail de 2022; el sistema actual es en línea con ID Ciudadana, verificar que siga vigente)"
+  ],
+  "where": "En línea: crear ID Ciudadana (santafe.gob.ar/idciudadana/registro), buscar 'Pesca' en Gestiones Ciudadanas, iniciar gestión online, adjuntar documentación y comprobante de pago; demora mínimo 72 h hábiles y llega carné con QR. Autoridad: Ministerio de Ambiente y Cambio Climático, Dirección General de Manejo Sustentable de los Recursos Pesqueros. Sin ventanilla en persona publicada."
  },
  "Corrientes": {
   "items": [],
@@ -270,7 +327,11 @@
   ],
   "buyUrl": "https://www.recnaturalesctes.gob.ar/login",
   "infoUrl": "https://corrientes.tur.ar/la-pesca-deportiva-retoma-su-actividad-plena-en-corrientes-tras-el-levantamiento-de-la-veda-extraordinaria/",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "email": [
+   "ventas@recnaturalesctes.gob.ar"
+  ],
+  "where": "En línea: registrarse en el sistema de la Dirección de Recursos Naturales (Ministerio de Turismo) y adquirir licencias y precintos deportivos; las licencias se ven en 'Mis licencias'. Oficina presencial y teléfono: no encontrados."
  },
  "Buenos Aires": {
   "items": [
@@ -308,7 +369,17 @@
   ],
   "buyUrl": "https://mi.mda.gba.gob.ar/pesca/licencia/validacion",
   "infoUrl": "https://normas.gba.gob.ar/documentos/Bd5moXfD.html",
-  "date": "2026-11-24"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 221 429-5336",
+   "+54 221 429-5315",
+   "+54 221 429-5301 (Ministerio de Desarrollo Agrario)"
+  ],
+  "email": [
+   "pesca@mda.gba.gob.ar",
+   "dapa@mda.gba.gob.ar"
+  ],
+  "where": "En línea: se solicita la licencia con el DNI, se imprime la boleta y se paga en cualquier sucursal del Banco Provincia o BAPRO Pagos; a las 72 h se imprime el carnet. Consultas en Torre Gubernamental I, calle 12 y 51, piso 5, La Plata (lunes a viernes 8 a 18 h). Sin costo: jubilados, pensionados, discapacitados, veteranos de Malvinas y menores de 14."
  },
  "Chaco": {
   "items": [],
@@ -316,7 +387,15 @@
    "No encontramos los precios 2026 oficiales."
   ],
   "buyUrl": "https://carnet.chaco.gob.ar/",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "infoUrl": "https://carnet.chaco.gob.ar/about",
+  "phone": [
+   "+54 362 4970604"
+  ],
+  "email": [
+   "licenciasambiente@chaco.gob.ar"
+  ],
+  "where": "En línea (crear cuenta en carnet.chaco.gob.ar); consultas por WhatsApp/teléfono del Ministerio de la Producción y el Desarrollo Económico Sostenible. Instructivo: https://carnet.chaco.gob.ar/assets/docs/gestion_de_licencias_instructivo.pdf"
  },
  "Formosa": {
   "items": [
@@ -349,16 +428,28 @@
    "Importes tal cual figuran en el Mi Portal de Formosa (página consultada el 23-24/11/2026); parecen desactualizados por su magnitud: confirmar en la Dirección de Registro, Control y Fiscalización (Clorinda: Libertad 1168; El Colorado: Buenos Aires y San Juan). Requisitos: DNI, 2 fotos 3x3, constancia de domicilio y depósito solo en Banco de Formosa."
   ],
   "infoUrl": "https://www.formosa.gob.ar/tramite/136/licencia_para_pesca_deportiva__recreativa",
-  "date": "2026-11-24"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 370 4436322"
+  ],
+  "where": "Trámite personal (no hay venta en línea): Dirección de Registro, Control y Fiscalización, Ministerio de la Producción y Ambiente, Belgrano 1090, Formosa (CP 3600); también oficinas en Clorinda (Libertad 1168), El Colorado, Pirané, Ingeniero Juárez y Posta Cambio Zalazar. Llevar DNI, 2 fotos 3x3, constancia de domicilio y comprobante de depósito en el Banco de Formosa (cuenta 000269470/11). Duración aprox. 30 minutos."
  },
  "Misiones": {
   "items": [],
   "extra": [
-   "Licencia digital por el portal de autogestión (pago en línea y carnet por correo). No encontramos los precios 2026."
+   "Licencia digital por el portal de autogestión (pago en línea y carnet por correo). No encontramos los precios 2026.",
+   "Teléfono tomado de prensa: confirmalo."
   ],
   "buyUrl": "https://licenciadepesca.ecologia.misiones.gob.ar/app/login",
   "infoUrl": "https://ecologia.misiones.gob.ar/autogestion-de-licencias-de-pesca/",
-  "date": "2026-11-23"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 376 444-7593 (SIN CONFIRMAR: figura en prensa, no lo vi en la web oficial)"
+  ],
+  "email": [
+   "prensa@ecologia.misiones.gob.ar"
+  ],
+  "where": "En línea (registro, formulario, pago digital; el carnet llega por mail). Oficina del Ministerio de Ecología: San Lorenzo 1530, Posadas."
  },
  "CARU - Rio Uruguay": {
   "items": [],
@@ -366,7 +457,15 @@
    "La CARU no emite licencia: vale la licencia provincial (Entre Ríos o Corrientes)."
   ],
   "infoUrl": "https://www.argentina.gob.ar/normativa/nacional/norma-50733/actualizacion",
-  "date": "2026-11-23"
+  "date": "2026-11-23",
+  "phone": [
+   "+598 4722 5400",
+   "+598 4722 5500 (sede Paysandú, Uruguay; no atiende permisos)"
+  ],
+  "email": [
+   "info@caru.org.ar (oficina argentina, Colón, Entre Ríos)",
+   "info@caru.org.uy"
+  ]
  },
  "Santa Cruz": {
   "items": [
@@ -420,7 +519,14 @@
   "infoUrl": "https://pesca.santacruz.gob.ar/valores/",
   "requirements": "DNI; los menores los saca el padre, madre o tutor. Registro con cuenta en el sitio (inicio de sesión); no se probó el trámite.",
   "where": "En línea en pesca.santacruz.gob.ar (Secretaría de Estado de Pesca y Acuicultura). Consultas: Dirección de Pesca Continental, Avellaneda 801 1° piso, Río Gallegos, +54 2966 429462, pesca-continental@santacruz.gob.ar. La nota oficial del 01/10/2026 nombra al «Sistema de Coordinación Pesquera, SIPESQ» como el sistema de gestión (sin URL verificada).",
-  "date": "2026-11-24"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 2966 429462"
+  ],
+  "email": [
+   "pesca-continental@santacruz.gob.ar",
+   "pesca@santacruz.gob.ar (soporte técnico del sistema)"
+  ]
  },
  "Tierra del Fuego": {
   "items": [
@@ -471,11 +577,19 @@
    "Los cotos privados (estancias) cobran aparte; los residentes con permiso acceden gratis a algunos por el sistema de reservas SAPTDF (https://saptdf.ar, verificado, requiere usuario).",
    "Temporada 30/10/2026 al 02/05/2027. El permiso es válido en todo el ámbito provincial."
   ],
-  "buyUrl": null,
+  "buyUrl": "https://siped.ar/pesca-deportiva",
   "infoUrl": "https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/",
   "requirements": "Documento de identidad y permiso (o comprobante de pago, o permiso digital en la «app pesca deportiva»). Los menores los saca el padre, madre o tutor.",
   "where": "El permiso lo venden comercializadores habilitados que registran al pescador en www.siped.ar (Resolución 259/2026, Anexo II, punto 1). NO se encontró un enlace oficial de compra en línea verificado: siped.ar respondió 301 y luego no respondió desde este servidor. Información oficial: Secretaría de Ambiente, Dirección General de Recursos Hídricos; pescacontinentaltdf@gmail.com.",
-  "date": "2026-11-24"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 2901 434674 (Secretaría de Ambiente, Ushuaia)",
+   "+54 2901 441100 (Casa de Gobierno, Ushuaia)"
+  ],
+  "email": [
+   "tdfhidricos@gmail.com (Dirección General de Recursos Hídricos, publicado por el organismo)",
+   "pescacontinentaltdf@gmail.com (justificaciones de pesca, publicado por el organismo)"
+  ]
  },
  "Mendoza": {
   "items": [],
@@ -490,7 +604,9 @@
   "otherLinks": [
    "https://www.mendoza.gov.ar/drnr/pesca (lista de agentes; no verificado)"
   ],
-  "fecha": "2026-11-24"
+  "fecha": "2026-11-24",
+  "where": "Agentes de venta habilitados (comercios por departamento, p. ej. Casa de campo/armerías/clubes: Club de Pescadores de San Rafael, Buenos Aires 172, 0260 426087), delegaciones regionales (Zona Este, Valle de Uco, San Rafael, General Alvear, Malargüe) e Informador Turístico del Parque General San Martín (L a V 9 a 13 h), comprando antes un código; tarjeta. Datos de 2020-2021, verificar. Autoridad actual: Subsecretaría de Ambiente, Dirección de Biodiversidad y Ecoparque (Res. 322/2026).",
+  "date": "2026-11-25"
  },
  "San Juan": {
   "items": [
@@ -512,14 +628,14 @@
    "Los valores son los que informó el secretario de Ambiente el 01/12/2025 («se mantienen los montos vigentes»); no se halló tabla 2026 oficial: sin confirmar.",
    "Temporada en diques: del 01/12 al 19/08."
   ],
-  "buyUrl": null,
+  "buyUrl": "https://cidi.sanjuan.gob.ar/",
   "infoUrl": "https://tramite.sanjuan.gob.ar/tramite/dla/1320",
   "otherLinks": [
    "https://www.diariodecuyo.com.ar/sanjuan/a-partir-de-ahora-se-puede-tramitar-de-manera-online-los-permisos-para-pescar-conoce-todos-los-detalles-del-procedimiento-1805114.html"
   ],
   "requirements": "Permiso personal e intransferible, hay que exhibirlo; cada integrante de un grupo necesita el suyo.",
   "where": "App Ciudadano Digital (CiDi) de San Juan; enlace directo de compra no verificado.",
-  "date": "2026-11-24"
+  "date": "2026-11-25"
  },
  "San Luis": {
   "items": [
@@ -549,6 +665,12 @@
   ],
   "requirements": "Permiso personal e intransferible, con DNI o cédula CIPE; hay que portarlo y exhibirlo.",
   "where": "Portal digital oficial del Gobierno de San Luis (aplicación web; carga solo con JavaScript).",
-  "date": "2026-11-24"
+  "date": "2026-11-25",
+  "phone": [
+   "+54 2664 452000 (int. 3372)"
+  ],
+  "email": [
+   "permisodepescasanluis@gmail.com (casilla de reclamos que publica el propio portal oficial)"
+  ]
  }
 }
