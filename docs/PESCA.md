@@ -204,3 +204,14 @@ Por regla y, dentro de cada grupo, alfabético: prohibidos o en veda hoy, devolu
 - **Córdoba:** Res. 318/2026 (BO 02/10/2026; copia de AICACYP, el sitio oficial bloquea accesos automáticos). 24 de 26 ambientes en el mapa (faltan las lagunas Viamonte y La Margarita, sin OSM): 14 embalses y 5 lagunas con cupo de pejerrey (10 a 50, talla 25 cm, del 01/12 al 31/08), carpa, tararira, bagres y mojarra; La Quebrada vedada; ríos de truchas de las Sierras con devolución (trucha marrón y perca vedadas hasta el 31/12/2027). Veda nocturna en lagos y lagunas. Vence el 30/09/2027. Mar Chiquita (Ansenuza) no figura en la norma.
 - **La Pampa:** Disp. 011/2026 (sin vencimiento: rige hasta la siguiente). 12 ambientes: río Quinto y lagunas (pejerrey 25 de 25 cm, bagre sapo, tararira con devolución, carpa libre), río Colorado y Casa de Piedra (pejerrey y 2 truchas; Casa de Piedra por analogía, sin confirmar), y vedados el Salado, Chadileuvú, Curacó y el Atuel (recortados a la provincia).
 - **Permisos:** Córdoba por Ciudadano Digital (precios de prensa, sin confirmar); La Pampa en tramitesdrn.lapampa.gob.ar con teléfonos y correo de la Dirección de Recursos Naturales. Datos en `~/vikarg-fishing-work/pampeana/`.
+
+## NOA (2026-11-25)
+
+Investigación en `~/vikarg-fishing-work/noa/` (una provincia por archivo; fuentes casi todas copias de AICACYP). 33 tramos en el mapa (618 en total).
+- **Tucumán:** Res. 117/2026 (ríos: pejerrey 30, bagre 8, tararira 3, boga 8; habilitación hasta el 20/09/2026, así que hoy esos ríos figuran «sin regla específica»); Res. 385/2026: diques El Cadillal, Escaba y La Angostura vedados sin fecha de fin. Sin norma de truchas para Tafí ni El Siambón.
+- **Santiago del Estero:** sin reglamento 2026/27 publicado: cupos de 2024 (bagre, boga, sábalo, tararira), sin confirmar; vedas por resolución, casi siempre en diciembre.
+- **Salta:** Res. 567/2026 (vence el 31/08/2027): 13 ambientes; dorado solo con devolución, sábalo prohibido, tararira vedada del 15/11 al 15/01; Bermejo con veda total desde el 02/11/2026 (Res. 821/2026); Arenales vedado.
+- **Jujuy:** ríos San Francisco y Lavayén vedados desde el 21/10/2026 (Res. 131/2026, sin fecha de fin); diques Las Maderas, La Ciénaga y Los Alisos con cupos de la Res. 60/2022.
+- **Catamarca:** Disp. 309/2026 (ríos del 01/11 al 30/04, diques al 31/08/2027; solo viernes a domingo y feriados): diques y ríos con pejerrey 30, trucha 5, perca 5. La Puntilla, reserva por 2 años.
+- **La Rioja:** sin norma de temporada publicada (Ley 4.678 delega en un acto anual que no aparece): solo Los Sauces en el mapa, sin reglas; preguntar a la Secretaría de Ambiente.
+- **Sin ficha:** dientudo, bocacha, yusca, bagre cuchara: quedan solo en el texto de cada ambiente.

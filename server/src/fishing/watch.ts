@@ -43,6 +43,9 @@ export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'San Luis: Calendario Íctico 2026', url: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2026.pdf', validUntil: '2026-12-31', next: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2027.pdf' },
   // San Juan: reglamento «de cada año»: se revisa antes del fin de la temporada de diques (19/08).
   { label: 'San Juan: Reglamento de Pesca Deportiva y Sustentable', url: 'https://tramite.sanjuan.gob.ar/tramite/dla/1320', validUntil: '2027-08-19' },
+  // NOA: Salta (Res. 567/2026, temporada hasta el 31/08/2027) y Catamarca (Disp. 309/2026, hasta el 31/08/2027).
+  { label: 'Salta: Resolución 567/2026, anexo de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/08/anexo-salta-pesca-2026-7.pdf', validUntil: '2027-08-31' },
+  { label: 'Catamarca: Disposición 309/2026, temporada de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/11/Disposicion-Temporada-de-pesca-2026-2027.pdf', validUntil: '2027-08-31' },
   // Mendoza: Res. 322/2026 (pejerrey y perca hasta el 30/09/2027; la resolución nueva sale en octubre).
   { label: 'Mendoza: Resolución de pesca deportiva 2026/2027 (copia del Boletín Oficial)', url: 'https://www.elsol.com.ar/wp-content/uploads/2026/11/Pesca-Resolucion.pdf', validUntil: '2027-09-30' },
   { label: 'Tierra del Fuego: página de pesca deportiva (anuncia la resolución nueva)', url: 'https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/', validUntil: '2027-10-01' },

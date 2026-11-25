@@ -735,5 +735,222 @@
    "faunarecursosnaturales@gmail.com (casilla de Fauna que publica el propio portal oficial tramitesdrn.lapampa.gob.ar)"
   ],
   "no_encontrado": "Precio 2026 del permiso (Ley Impositiva de La Pampa no encontrada)."
+ },
+ "Tucumán": {
+  "items": [
+   {
+    "type": "Licencia de pesca activos (anual)",
+    "price": "$10.000"
+   },
+   {
+    "type": "Licencia de pesca jubilados (anual)",
+    "price": "$5.000"
+   },
+   {
+    "type": "Permiso para turistas por un día",
+    "price": "$3.000"
+   },
+   {
+    "type": "Discapacitados",
+    "price": "sin monto en la tabla"
+   }
+  ],
+  "extra": [
+   "Tabla de aranceles leída del sistema oficial de licencias (24/11/2026). La Res. 241/2026 (comunicado 29/06/2026) actualizó aranceles pero su PDF es un escaneo ilegible: no se sabe si la tabla ya incluye esa actualización (sin confirmar).",
+   "Trámite en línea: se sube DNI, comprobante de pago (transferencia/Pago Fácil) y, si corresponde, recibo de jubilado o carnet de discapacidad; no tener multas. La licencia llega por mail; si no llega en 48 h, comunicarse con la DFFSyS. Turistas: pedirla con 3 días hábiles de anticipación indicando el día de pesca.",
+   "Pago presencial «no disponible momentáneamente» (Tesorería Subsecretaría de Asuntos Agrarios, Córdoba 1039, lunes a viernes 9 a 12 h)."
+  ],
+  "buyUrl": "https://sistema.producciontucuman.gob.ar/ffsys/cyp/pesca",
+  "infoUrl": "https://producciontucuman.gob.ar/actualizacion-de-aranceles-para-licencias-de-pesca-y-caza-deportiva/",
+  "otherLinks": [
+   "https://www.aicacyp.ar/blog/temporada-de-pesca-2026-tucuman/"
+  ],
+  "requirements": "DNI, comprobante de pago, sin multas vigentes de pesca/caza; personal e intransferible.",
+  "where": "En línea (sistema de licencias de la DFFSyS, Secretaría de Producción de Tucumán).",
+  "date": "2026-11-25",
+  "phone": [],
+  "email": [
+   "piscicultura@producciontucuman.gov.ar"
+  ],
+  "no_encontrado": "Teléfono y dirección de la oficina de la DFFSyS: no encontrados en el sistema de licencias ni en producciontucuman.gob.ar. (Teléfonos de Turismo (0381) 4303644 / 4222199 son de Ente de Turismo, no del permiso.) Correo tal cual figura en el sitio (dominio .gov.ar)."
+ },
+ "Santiago del Estero": {
+  "items": [
+   {
+    "type": "Licencia de pesca local anual (residente)",
+    "price": "$30.000"
+   },
+   {
+    "type": "Licencia de pesca foránea anual",
+    "price": "$60.000"
+   },
+   {
+    "type": "Licencia de pesca para extranjeros",
+    "price": "$100.000"
+   },
+   {
+    "type": "Licencia provisoria / excursión",
+    "price": "$20.000"
+   },
+   {
+    "type": "Nota de solicitud timbrada (sellado)",
+    "price": "$400"
+   }
+  ],
+  "extra": [
+   "Montos de la página oficial dgbyf.gob.ar (sin fecha; leída el 25/11/2026): pueden estar desactualizados.",
+   "Trámite: imprimir la nota de solicitud, timbrarla en Rentas o Banco Santiago del Estero ($400), pagar la licencia (cuenta Fondo Fauna y Fomento, BSE) y enviar todo en PDF por mail; el carnet se habilita en 48 h y se imprime desde la página."
+  ],
+  "buyUrl": "http://dgbyf.gob.ar/PermisoPesca.aspx",
+  "infoUrl": "http://dgbyf.gob.ar/",
+  "otherLinks": [
+   "https://www.aicacyp.ar/blog/veda-de-pesca-2025-6-santiago-del-estero/"
+  ],
+  "requirements": "Nota de solicitud timbrada, comprobante de pago, foto carnet, DNI.",
+  "where": "Por mail a la Subdirección de Fauna (documentación en PDF); timbrado/pago en Rentas o Banco Santiago del Estero (caja 20 casa central). Oficina: Dirección General de Bosques y Fauna, Andes 30, Torre Andes, pisos 1 y 2, Complejo Belgrano, Santiago del Estero.",
+  "date": "2026-11-25",
+  "phone": [
+   "434-9810",
+   "434-9820 (Dirección General de Bosques y Fauna; sin código de área en la fuente: Santiago capital 0385; según comunicado de la DGByF vía AICACYP, dic. 2025)"
+  ],
+  "email": [
+   "subdirecciondefaunasde@gmail.com (figura en el instructivo oficial; casilla institucional de la Subdirección de Fauna)"
+  ],
+  "no_encontrado": "Precios 2026 confirmados con fecha; teléfono con código de área."
+ },
+ "Salta": {
+  "items": [
+   {
+    "type": "Pesca deportiva anual libre",
+    "price": "$10.000"
+   },
+   {
+    "type": "Pesca deportiva anual federado",
+    "price": "$5.000"
+   },
+   {
+    "type": "Anual menor de 18 años libre",
+    "price": "$5.000"
+   },
+   {
+    "type": "Permiso diario (residentes y no residentes)",
+    "price": "$2.000"
+   },
+   {
+    "type": "Jubilados, discapacitados y menores de 12 años",
+    "price": "Sin cargo"
+   }
+  ],
+  "extra": [
+   "Precios del art. 4 del Anexo I de la Res. 567/2026 (temporada 2026-27); coinciden con TodoJujuy 04/08/2026. Comercios y clubes con convenio compran con 20% de descuento pero deben vender al público al precio oficial.",
+   "Primera licencia anual: 2 fotos 4x4 a color, DNI original y fotocopia (residentes: domicilio en Salta en el DNI). Renovación: licencia anterior.",
+   "Hoja de ruta para pescadores que circulan por otras jurisdicciones: se saca en la Secretaría (programa Biodiversidad), no en comercios ni municipios."
+  ],
+  "buyUrl": "https://iddi.salta.gob.ar/modules/ventanillaDigital/procedures/licenciaDePescaDeportivaAnualParaResidentesEnLaProvinciaDeSalta",
+  "infoUrl": "https://www.aicacyp.ar/wp-content/uploads/2026/08/anexo-salta-pesca-2026-7.pdf",
+  "otherLinks": [
+   "https://www.aicacyp.ar/blog/temporada-de-pesca-2026-2027-salta/"
+  ],
+  "requirements": "DNI y 2 fotos 4x4 (primera vez); personal e intransferible; portar visible.",
+  "where": "Presencial en Santiago del Estero 2245, Edificio B (Secretaría de Ambiente y Desarrollo Sustentable), en comercios habilitados o en línea (ventanilla digital IDDI).",
+  "date": "2026-11-25",
+  "phone": [],
+  "email": [
+   "biodiversidad@salta.gov.ar (Programa Biodiversidad; figura en el Anexo, art. 8, para guías)"
+  ],
+  "no_encontrado": "Teléfono oficial de la Secretaría de Ambiente / Programa Biodiversidad: no encontrado en la norma."
+ },
+ "Jujuy": {
+  "items": [
+   {
+    "type": "Permiso diario y licencia anual",
+    "price": "no encontrado para 2026"
+   }
+  ],
+  "extra": [
+   "Los montos 2026 no se hallaron. Una nota periodística (TodoJujuy, 2022) daba permiso diario 200, carnet libre 750; los precios se actualizan según el precio de la nafta premium: sin valor para 2026.",
+   "Trámite de la licencia anual: copia de DNI (ambos lados) y 2 fotos 4x4; lunes a viernes de 7 a 13 h en República de Siria 147, San Salvador de Jujuy (según TodoJujuy 2026 citando al Ministerio de Ambiente; otra nota antigua decía Siria 150)."
+  ],
+  "buyUrl": null,
+  "infoUrl": "https://www.aicacyp.ar/blog/temporada-de-pesca-2026-jujuy/",
+  "otherLinks": [
+   "https://ambiente.jujuy.gob.ar/",
+   "https://www.todojujuy.com/jujuy/habilitacion-pesca-deportiva-y-recreativa-jujuy-horarios-modalidad-y-lugares-n286936"
+  ],
+  "requirements": "DNI (ambos lados) y 2 fotos 4x4; personal e intransferible.",
+  "where": "Ministerio de Ambiente y Cambio Climático, República de Siria 147, San Salvador de Jujuy (lunes a viernes 7 a 13 h).",
+  "date": "2026-11-25",
+  "phone": [],
+  "email": [],
+  "no_encontrado": "Precios 2026 (permiso diario, licencia anual), teléfono, correo y trámite en línea: no encontrados (ambiente.jujuy.gob.ar responde 200 pero sin sección de pesca; /pesca da 404)."
+ },
+ "Catamarca": {
+  "items": [
+   {
+    "type": "Permiso anual (residentes de Catamarca)",
+    "price": "$8.000"
+   },
+   {
+    "type": "Permiso anual jubilados residentes",
+    "price": "$6.000"
+   },
+   {
+    "type": "Provisorio por excursión de 4 días, residentes",
+    "price": "$6.000"
+   },
+   {
+    "type": "Provisorio por excursión de 4 días, jubilados residentes",
+    "price": "$4.000"
+   },
+   {
+    "type": "Provisorio por excursión de 4 días, no residentes",
+    "price": "$8.000"
+   },
+   {
+    "type": "Provisorio por excursión de 4 días, extranjeros",
+    "price": "$90.000"
+   }
+  ],
+  "extra": [
+   "Precios de los arts. 10 y 12 de la Disposición 309/2026. Para no residentes y extranjeros no hay permiso anual: solo el provisorio de 4 días (los arts. 10 y 12 no fijan anual para ellos).",
+   "Permiso anual válido 01/11/2026 al 31/08/2027; requisito: mayor de 14 años, comprobante de pago y DNI en el formulario en línea.",
+   "Reventa autorizada a municipios, clubes, guías y comercios con un 25% de descuento, a precio público oficial."
+  ],
+  "buyUrl": "https://tinyurl.com/carnetpesca",
+  "infoUrl": "https://www.aicacyp.ar/blog/temporada-de-pesca-2026-7-catamarca/",
+  "otherLinks": [
+   "https://www.elancasti.com.ar/informacion-general/habilitan-la-temporada-pesca-20252026-catamarca-n598026"
+  ],
+  "requirements": "Mayor de 14 años; DNI y comprobante de pago; formulario en línea.",
+  "where": "En línea (formulario del enlace oficial de la Disposición, tinyurl.com/carnetpesca). Según El Ancasti (03/11/2025, temporada anterior) también en persona en el pabellón 22 del C.A.P.E., lunes a viernes de 8 a 12 h; el permiso en línea demora 24 a 48 h hábiles.",
+  "date": "2026-11-25",
+  "phone": [],
+  "email": [],
+  "no_encontrado": "Teléfono y correo de la Dirección de Recursos Forestales, Suelo y Biodiversidad: no encontrados. La dirección del C.A.P.E. es de 2025, sin confirmar para 2026. El enlace tinyurl se leyó en la disposición pero no se abrió (redirección de terceros)."
+ },
+ "La Rioja": {
+  "items": [
+   {
+    "type": "Licencia de pesca",
+    "price": "no encontrado"
+   }
+  ],
+  "extra": [
+   "Datos de trámite de una guía de 2024 (sin confirmar): Secretaría de Ambiente, Hipólito Irigoyen 148 (subsuelo), de 8 a 12:30 h, con fotos, copia del DNI y pago del arancel. La ficha de PESQA recomienda confirmar por WhatsApp al 3804669066 (fuente no oficial).",
+   "No hay temporada, cupos ni tallas publicados: confirmar con la Secretaría de Ambiente antes de pescar."
+  ],
+  "buyUrl": null,
+  "infoUrl": "https://www.aicacyp.ar/blog/temporada-de-pesca-2020-en-la-rioja/",
+  "otherLinks": [
+   "https://pesqa.ar/lugar/dique-los-sauces"
+  ],
+  "requirements": "Licencia y permiso anual (según PESQA, sin confirmar); sin engodar.",
+  "where": "Secretaría de Ambiente de La Rioja (Hipólito Irigoyen 148, subsuelo, capital) - dato de 2024, sin confirmar.",
+  "date": "2026-11-25",
+  "phone": [
+   "3804669066 (WhatsApp de la Secretaría de Ambiente según PESQA; fuente no oficial: sin confirmar)"
+  ],
+  "email": [],
+  "no_encontrado": "Norma de temporada, precios, correo oficial y trámite en línea: no encontrados. Búsquedas web devolvieron casi solo La Rioja de España (no se usaron)."
  }
 }

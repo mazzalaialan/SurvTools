@@ -1986,5 +1986,125 @@
    -63.38,
    -35.0
   ]
+ },
+ "santiago-del-estero-termas-de-rio-hondo-embalse": {
+  "name": "Embalse Río Hondo"
+ },
+ "santiago-del-estero-dulce-rio": {
+  "name": "Río Dulce"
+ },
+ "santiago-del-estero-los-quiroga-embalse": {
+  "name": "Embalse Los Quiroga"
+ },
+ "santiago-del-estero-salado-rio": {
+  "name": "Río Salado"
+ },
+ "salta-cabra-corral-embalse": {
+  "name": "Embalse Cabra Corral"
+ },
+ "salta-campo-alegre-embalse": {
+  "name": "Embalse Campo Alegre"
+ },
+ "salta-las-lomitas-embalse": {
+  "name": "Dique Las Lomitas"
+ },
+ "salta-el-tunal-embalse": {
+  "name": "Lago Embalse El Tunal"
+ },
+ "salta-itiyuro-embalse": {
+  "name": "Embalse Itiyuro"
+ },
+ "salta-arenales-rio": {
+  "name": "Río Arenales"
+ },
+ "salta-juramento-rio": {
+  "name": "Río Juramento"
+ },
+ "salta-medina-rio": {
+  "name": "Río Medina"
+ },
+ "salta-dorado-del-valle-seco-rio": {
+  "name": "Río Dorado"
+ },
+ "salta-lipeo-rio": {
+  "name": "Río Lipeo"
+ },
+ "salta-bermejo-rio": {
+  "name": "Río Bermejo",
+  "closedForce": true
+ },
+ "salta-pescado-rio": {
+  "name": "Río Pescado"
+ },
+ "salta-pilcomayo-rio": {
+  "name": "Río Pilcomayo"
+ },
+ "la-rioja-los-sauces-embalse": {
+  "name": "Dique Los Sauces"
+ },
+ "catamarca-las-pirquitas-embalse": {
+  "name": "Dique Las Pirquitas"
+ },
+ "catamarca-el-jumeal-embalse": {
+  "name": "Embalse El Jumeal"
+ },
+ "catamarca-el-tala-rio": {
+  "name": "Río El Tala"
+ },
+ "catamarca-ambato-rio": {
+  "name": "Río Ambato"
+ },
+ "catamarca-cortaderas-rio": {
+  "name": "Arroyo Cortaderas"
+ },
+ "tucuman-el-cadillal-embalse": {
+  "name": "Embalse El Cadillal"
+ },
+ "tucuman-escaba-embalse": {
+  "name": "Dique Escaba"
+ },
+ "tucuman-la-angostura-embalse": {
+  "name": "Embalse La Angostura"
+ },
+ "tucuman-tafi-rio": {
+  "name": "Río Tafi",
+  "validUntil": "2026-09-20"
+ },
+ "tucuman-sali-rio": {
+  "name": "Río Salí",
+  "validUntil": "2026-09-20"
+ },
+ "tucuman-marapa-rio": {
+  "name": "Río Marapa",
+  "validUntil": "2026-09-20"
+ },
+ "tucuman-los-sosa-rio": {
+  "name": "Río Los Sosa",
+  "validUntil": "2026-09-20"
+ },
+ "tucuman-chavarria-rio": {
+  "name": "Río Chavarría",
+  "validUntil": "2026-09-20"
+ },
+ "tucuman-termas-del-rio-hondo-embalse": {
+  "name": "Embalse Río Hondo",
+  "validUntil": "2026-09-20"
+ },
+ "jujuy-san-francisco-rio": {
+  "name": "Río San Francisco",
+  "closedForce": true
+ },
+ "jujuy-lavayen-rio": {
+  "name": "Río Lavayén",
+  "closedForce": true
+ },
+ "jujuy-las-maderas-embalse": {
+  "name": "Embalse Las Maderas"
+ },
+ "jujuy-la-cienaga-embalse": {
+  "name": "Dique La Ciénaga"
+ },
+ "jujuy-los-alisos-embalse": {
+  "name": "Dique Los Alisos"
  }
 }

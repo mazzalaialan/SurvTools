@@ -135,6 +135,18 @@ OWN['La Pampa'] = {
   season: { allYear: true },
   validUntil: null,
 };
+// NOA: fuentes, temporada y vigencia de cada provincia tal como las anota la investigación (noa/fuentes.json).
+const NOA_JURS = { tucuman: 'Tucumán', 'santiago-del-estero': 'Santiago del Estero', salta: 'Salta', jujuy: 'Jujuy', catamarca: 'Catamarca', 'la-rioja': 'La Rioja' };
+if (existsSync(`${work}/noa/fuentes.json`))
+  for (const [k, raw] of Object.entries(read('noa/fuentes.json'))) {
+    const f = Array.isArray(raw) ? raw[0] : raw;
+    if (!NOA_JURS[k]) continue;
+    OWN[NOA_JURS[k]] = {
+      source: { id: `noa-${k}`, name: `${NOA_JURS[k]}: ${f.documento}`, url: String(f.url_leida ?? '').split(' ')[0], license: 'Normativa pública sin licencia declarada: se usa con atribución', date: String(f.fecha ?? '') },
+      season: { allYear: true },
+      validUntil: f.vigencia_hasta ?? null,
+    };
+  }
 OWN.Mendoza = {
   source: {
     id: 'mza-res-322-2026',
@@ -361,6 +373,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       for (const e of q.species) if (!p.species.some((x) => x.id === e.id) && !q.inferred) p.species.push(e);
     }
     // «replaceSpecies»: las especies salen solo de cuts.json (Mendoza: el texto junta las reglas generales y el lector se confunde).
+    if (a.reglas_app && !a.reglas_app.cerrado && !Object.keys(a.reglas_app.especies ?? a.reglas_app.esp ?? {}).length) continue;
     // «reglas_app»: reglas ya estructuradas por la investigación (San Juan y San Luis), revisadas contra el texto literal.
     const ra = a.reglas_app;
     if (ra) {
@@ -369,7 +382,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
         d.setUTCDate(d.getUTCDate() + delta);
         return d.toISOString().slice(5, 10);
       };
-      const ALIAS = { sogyo: 'carpa-herbivora', 'bagre-sapo': 'bagre-negro' };
+      const ALIAS = { sogyo: 'carpa-herbivora', 'bagre-sapo': 'bagre-negro', 'vieja-del-agua': 'vieja-de-agua', 'armado-amarillo': 'armado' };
       p.species = Object.entries(ra.especies ?? {}).map(([k, x]) => ({
         id: ALIAS[k] ?? k,
         ...(x.limit !== undefined && { limit: x.limit }),
@@ -428,6 +441,8 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       source: OWN[jur]?.source.id ?? SOURCE.id,
       ...(OWN[jur]?.alert && { alert: OWN[jur].alert }),
       validUntil: (OWN[jur] && 'validUntil' in OWN[jur] ? OWN[jur].validUntil : PDCP_VALID_UNTIL) ?? undefined,
+      // Vigencia propia del tramo (Tucumán: la habilitación de los ríos era hasta el 20/09/2026).
+      ...(cuts[a.id]?.validUntil && { validUntil: cuts[a.id].validUntil }),
       ref: `pág. ${a.fuente?.pagina_impresa ?? a.fuente?.pagina ?? a.fuente?.pagina_pdf ?? '?'}`,
       _shared: !!a.compartido_con,
       _regionName: jur,
@@ -564,6 +579,15 @@ for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.
 // Otros nombres comunes (investigación con fuentes en ~/vikarg-fishing-work/otros-nombres.json; copia revisada en aka.json).
 const AKA_FILE = fileURLToPath(new URL('./aka.json', import.meta.url));
 const aka = existsSync(AKA_FILE) ? JSON.parse(readFileSync(AKA_FILE, 'utf8')) : {};
+// Especies sin ficha en la app (dientudo, bocacha, yusca…: los nombra alguna norma, sin datos propios): fuera de las listas; su regla
+// sigue en el texto del ambiente.
+{
+  const known = new Set(species.map((x) => x.id));
+  for (const s of sectors) {
+    s.species = s.species.filter((e) => known.has(e.id));
+    for (const r of s.rules ?? []) r.species = (r.species ?? []).filter((e) => known.has(e.id));
+  }
+}
 const used = species
   .filter((sp) => sectors.some((s) => s.species.some((x) => x.id === sp.id)))
   .map((sp) => ({ ...sp, ...(aka[sp.id]?.es?.length && { aka: aka[sp.id].es }), ...(images[sp.id] && { image: images[sp.id] }), ...(survival[sp.id] && { survival: survival[sp.id] }) }));
