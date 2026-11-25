@@ -95,3 +95,12 @@ test('pesca: en un sitio que cambia mucho, solo cuentan las líneas de pesca', (
   assert.equal(a, b);
   assert.equal(a, 'Veda de pesca en el río Salí');
 });
+
+test('pesca: una página web que responde 200 para cualquier dirección no cuenta como norma nueva', async () => {
+  const db = openDb(':memory:');
+  const docs = [{ label: 'San Luis', url: 'https://example.org/2026.pdf', validUntil: '2026-12-31', next: 'https://example.org/2027.pdf' }];
+  const f = (async (url: string | URL) =>
+    String(url).endsWith('2027.pdf') ? new Response('<!doctype html>', { headers: { 'content-type': 'text/html' } }) : new Response('pdf', { headers: { 'content-type': 'application/pdf' } })) as typeof fetch;
+  const r = await runFishingWatch(db, null, () => undefined, f, new Date('2026-11-25T12:00:00Z'), docs);
+  assert.deepEqual(r.found, []);
+});

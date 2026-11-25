@@ -83,6 +83,7 @@ export interface FishingWatchResult {
 }
 
 const KEY = (url: string) => `fishing-watch:${url}`;
+const NEXT_KEY = (url: string) => `fishing-watch:next:${url}`;
 
 /** Las líneas de texto (sin etiquetas HTML) que dicen alguna palabra clave, para comparar solo lo de pesca de una página que cambia mucho. */
 export function keywordLines(html: string, keywords: string[]): string {
@@ -128,11 +129,13 @@ export async function runFishingWatch(
   }
   const nexts = [...(watchDue(now) ? nextSeasonUrls(now) : []), ...docs.filter((d) => d.next && watchDue(now, d.validUntil)).map((d) => ({ label: `${d.label} (siguiente)`, url: d.next! }))];
   for (const doc of nexts) {
-    if (getSetting(db, KEY(doc.url))) continue; // ya se avisó
+    // Clave propia («next:»): la versión anterior marcaba «encontrado» también las páginas web que devuelven 200 para cualquier dirección.
+    if (getSetting(db, NEXT_KEY(doc.url))) continue; // ya se avisó
     try {
       const res = await fetchImpl(doc.url, { method: 'HEAD', signal: AbortSignal.timeout(30_000), headers: { 'user-agent': 'VikArg-server/1.0' } });
-      if (res.ok) {
-        setSetting(db, KEY(doc.url), 'encontrado');
+      // Solo cuenta un documento de verdad: algunos sitios (San Luis) devuelven 200 con su página web para cualquier dirección.
+      if (res.ok && !/text\/html/i.test(res.headers.get('content-type') ?? '')) {
+        setSetting(db, NEXT_KEY(doc.url), 'encontrado');
         result.found.push(doc.label);
         notes.push(`Se publicó: ${doc.label}\n${doc.url}`);
       }
