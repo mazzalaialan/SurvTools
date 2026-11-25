@@ -7362,9 +7362,16 @@ button.country-pack-del {
 }
 
 /* Banda y modo de una frecuencia de radio (VHF · FM, HF · BLU…), al lado del número. */
+/* Número arriba y banda abajo, alineados a la derecha: así la etiqueta no le come el ancho a la descripción. */
+.radio-freq-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
 .radio-band {
   display: inline-block;
-  margin-left: var(--sp-2);
   padding: 1px 6px;
   border: 1px solid var(--border);
   border-radius: 6px;

@@ -170,8 +170,10 @@ export function RadioPage() {
                   {c.lat !== null && <MapLink address="" lat={c.lat} lon={c.lon} />}
                 </span>
                 <span className="contact-actions">
-                  <strong className="radio-freqs">{c.frequency}</strong>
-              <FreqBand freq={c.frequency ?? ''} />
+                  <span className="radio-freq-col">
+                    <strong className="radio-freqs">{c.frequency}</strong>
+                    <FreqBand freq={c.frequency ?? ''} />
+                  </span>
                   <CopyButton text={[c.frequency, c.tone].filter(Boolean).join(' ')} label={t('radio.copyFrequency', { name: c.name })} />
                   <Link className="icon-btn" to={`/first-aid/radio/${c.id}`} aria-label={t('emergency.editContact', { name: c.name })}>
                     <Pencil size={18} />
@@ -228,8 +230,10 @@ export function RadioPage() {
                 <span className="list-title">{t(`radio.distress.${d.id}.name`)}</span>
                 <span className="list-sub">{t(`radio.distress.${d.id}.desc`)}</span>
               </span>
-              <strong className="radio-freqs">{d.freq}</strong>
-              <FreqBand freq={d.freq} />
+              <span className="radio-freq-col">
+                <strong className="radio-freqs">{d.freq}</strong>
+                <FreqBand freq={d.freq} />
+              </span>
             </li>
           ))}
         </ul>
@@ -291,8 +295,10 @@ function MountainSection({ place }: { place: { lat: number; lon: number } | null
               <span className="list-sub">{t(`radio.mountain.${m.id}.desc`)}</span>
             </span>
             <span className="contact-actions">
-              <strong className="radio-freqs">{m.freq}</strong>
-              <FreqBand freq={m.freq} />
+              <span className="radio-freq-col">
+                <strong className="radio-freqs">{m.freq}</strong>
+                <FreqBand freq={m.freq} />
+              </span>
               <CopyButton text={m.freq} label={t('radio.copyFrequency', { name: t(`radio.mountain.${m.id}.name`) })} />
             </span>
           </li>
@@ -374,8 +380,10 @@ function BrazilRadioSection({ place }: { place: { lat: number; lon: number } | n
               <span className="list-sub">{t(`radio.br.${r.id}.desc`)}</span>
             </span>
             <span className="contact-actions">
-              <strong className="radio-freqs">{r.freq}</strong>
-              <FreqBand freq={r.freq} />
+              <span className="radio-freq-col">
+                <strong className="radio-freqs">{r.freq}</strong>
+                <FreqBand freq={r.freq} />
+              </span>
               <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.br.${r.id}.name`) })} />
             </span>
           </li>
@@ -428,8 +436,10 @@ function RenerSection({ place }: { place: { lat: number; lon: number } | null })
               <span className="list-sub">{t(`radio.rener.${r.id}.desc`)}</span>
             </span>
             <span className="contact-actions">
-              <strong className="radio-freqs">{r.freq}</strong>
-              <FreqBand freq={r.freq} />
+              <span className="radio-freq-col">
+                <strong className="radio-freqs">{r.freq}</strong>
+                <FreqBand freq={r.freq} />
+              </span>
               <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.rener.${r.id}.name`) })} />
             </span>
           </li>
@@ -449,8 +459,10 @@ function RenerSection({ place }: { place: { lat: number; lon: number } | null })
               <span className="list-sub">{t(`radio.peFree.${r.id}.desc`)}</span>
             </span>
             <span className="contact-actions">
-              <strong className="radio-freqs">{r.freq}</strong>
-              <FreqBand freq={r.freq} />
+              <span className="radio-freq-col">
+                <strong className="radio-freqs">{r.freq}</strong>
+                <FreqBand freq={r.freq} />
+              </span>
               <CopyButton text={r.freq} label={t('radio.copyFrequency', { name: t(`radio.peFree.${r.id}.name`) })} />
             </span>
           </li>
