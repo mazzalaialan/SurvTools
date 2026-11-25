@@ -15,7 +15,7 @@
   "San Luis": { "status": "vigente" },
   "Neuquén": { "status": "vieja", "normYear": 2025 },
   "Mendoza": { "status": "vieja", "normYear": 2019 },
-  "Formosa": { "status": "vieja", "normYear": 2012 },
+  "Formosa": { "status": "vieja", "normYear": 2012, "protectedSpecies": { "pecari-de-collar": "La Disp. Conj. 28/2012 le daba cupo, pero hoy es especie Amenazada en la categorización nacional (Res. 316/2021). Sin una norma más reciente que lo habilite, se toma como no permitida.", "pato-criollo": "La Disp. Conj. 28/2012 le daba cupo (lo llama «pato picazo»), pero hoy es especie Amenazada en la categorización nacional (Res. 795-E/2017). Sin una norma más reciente que lo habilite, se toma como no permitida." } },
   "Catamarca": { "status": "vieja", "normYear": 2024, "protectedSpecies": { "loro-barranquero": "La Disp. 141/2024 lo lista como cazable (art. 4) y también entre las especies protegidas (art. 5 b). Ante la contradicción se toma como protegido: no se caza." } },
   "Santiago del Estero": { "status": "vieja", "warning": "Solo se encontró un afiche oficial de la temporada, no la resolución." },
   "Tierra del Fuego": { "status": "vieja", "normYear": 2021, "warning": "Solo se encontraron notas de prensa de 2021, no la norma." },

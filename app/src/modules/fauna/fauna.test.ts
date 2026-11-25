@@ -22,6 +22,14 @@ describe('datos de fauna', () => {
     expect(cat?.zones.some((z) => z.species.some((s) => s.id === 'loro-barranquero'))).toBe(false);
   });
 
+  it('Formosa: pecarí y pato criollo (amenazados, cupo de 2012) no figuran como cazables', () => {
+    const fo = provinceBySlug(data, 'formosa');
+    for (const id of ['pecari-de-collar', 'pato-criollo']) {
+      expect(fo?.protectedSpecies?.map((x) => x.id)).toContain(id);
+      expect(whereHunted(data, id)).toEqual([]);
+    }
+  });
+
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {
     for (const sp of data.species) expect(sp.nombre.es).toBeTruthy();
     expect(whereHunted(data, 'jabali').length).toBeGreaterThan(3);
