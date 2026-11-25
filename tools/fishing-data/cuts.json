@@ -1851,5 +1851,140 @@
  },
  "san-luis-grande-rio": {
   "name": "Río Grande"
+ },
+ "cordoba-cruz-del-eje-embalse": {
+  "name": "Embalse de Cruz del Eje"
+ },
+ "cordoba-san-roque-embalse": {
+  "name": "Embalse San Roque"
+ },
+ "cordoba-la-falda-embalse": {
+  "name": "Lago de La Falda"
+ },
+ "cordoba-los-molinos-embalse": {
+  "name": "Embalse Los Molinos"
+ },
+ "cordoba-pichanas-embalse": {
+  "name": "Embalse Pichanas"
+ },
+ "cordoba-el-cajon-embalse": {
+  "name": "Dique El Cajón"
+ },
+ "cordoba-san-jeronimo-embalse": {
+  "name": "Dique San Jerónimo"
+ },
+ "cordoba-cerro-pelado-embalse": {
+  "name": "Embalse Cerro Pelado"
+ },
+ "cordoba-arroyo-corto-embalse": {
+  "name": "Embalse Ministro Juan Pistarini"
+ },
+ "cordoba-piedras-moras-embalse": {
+  "name": "Embalse Piedras Moras"
+ },
+ "cordoba-la-vina-embalse": {
+  "name": "Embalse Ingeniero Antonio Medina Allende"
+ },
+ "cordoba-achiras-embalse": {
+  "name": "Embalse Achiras"
+ },
+ "cordoba-las-lajas-embalse": {
+  "name": "Presa Las Lajas"
+ },
+ "cordoba-la-chanchera-laguna": {
+  "name": "Laguna La Chanchera"
+ },
+ "cordoba-la-helvecia-laguna": {
+  "name": "Laguna La Helvecia"
+ },
+ "cordoba-suco-laguna": {
+  "name": "Laguna de Suco"
+ },
+ "cordoba-boca-del-rio-embalse": {
+  "name": "Dique Nivelador Boca del Río"
+ },
+ "cordoba-la-quebrada-embalse": {
+  "name": "Dique La Quebrada"
+ },
+ "cordoba-los-reartes-rio": {
+  "name": "Río Los Reartes"
+ },
+ "cordoba-santa-rosa-rio": {
+  "name": "Río Santa Rosa"
+ },
+ "cordoba-yuspe-rio": {
+  "name": "Río Yuspe"
+ },
+ "cordoba-san-antonio-rio": {
+  "name": "Río San Antonio"
+ },
+ "cordoba-del-medio-rio": {
+  "name": "Río del Medio"
+ },
+ "la-pampa-quinto-rio": {
+  "name": "Río Quinto"
+ },
+ "la-pampa-don-tomas-laguna": {
+  "name": "Laguna Don Tomás"
+ },
+ "la-pampa-la-arocena-laguna": {
+  "name": "Laguna La Arocena"
+ },
+ "la-pampa-bajo-giuliani-laguna": {
+  "name": "Laguna del Bajo Giuliani o Loán Lauquén"
+ },
+ "la-pampa-quetre-huitru-laguna": {
+  "name": "Laguna Quetre Huitru"
+ },
+ "la-pampa-la-dulce-laguna": {
+  "name": "Laguna La Dulce"
+ },
+ "la-pampa-colorado-rio": {
+  "name": "Río Colorado",
+  "clip": [
+   -68.3,
+   -39.4,
+   -63.38,
+   -36.0
+  ]
+ },
+ "la-pampa-casa-de-piedra-embalse": {
+  "name": "Embalse Casa de Piedra"
+ },
+ "la-pampa-salado-rio": {
+  "name": "Río Salado",
+  "clip": [
+   -68.3,
+   -39.4,
+   -63.38,
+   -35.0
+  ]
+ },
+ "la-pampa-chadileuvu-rio": {
+  "name": "Río Chadileuvú",
+  "clip": [
+   -68.3,
+   -39.4,
+   -63.38,
+   -35.0
+  ]
+ },
+ "la-pampa-curaco-rio": {
+  "name": "Río Curacó",
+  "clip": [
+   -68.3,
+   -39.4,
+   -63.38,
+   -35.0
+  ]
+ },
+ "la-pampa-atuel-rio": {
+  "name": "Río Atuel",
+  "clip": [
+   -68.3,
+   -39.4,
+   -63.38,
+   -35.0
+  ]
  }
 }

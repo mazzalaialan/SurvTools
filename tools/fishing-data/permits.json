@@ -672,5 +672,68 @@
   "email": [
    "permisodepescasanluis@gmail.com (casilla de reclamos que publica el propio portal oficial)"
   ]
+ },
+ "Córdoba": {
+  "items": [
+   {
+    "type": "Licencia anual (año calendario, vence el 31/12)",
+    "price": "$6.960"
+   },
+   {
+    "type": "Licencia por día",
+    "price": "$1.030"
+   }
+  ],
+  "extra": [
+   "Los precios 2026 salen de una sola fuente no oficial (guía de AICACYP/Revista Aire Libre, que cita la Ley 11090, Ley Impositiva 2026): sin confirmar. No se pudo leer la ley ni el sitio oficial (cba.gov.ar da 403 desde este servidor). Una página vieja del Portal de Trámites (~2020) hablaba de $466 anual, $91 diaria y tarifas para federados y jubilados; ya no responde (404).",
+   "Se tramita en línea con Ciudadano Digital (CiDi) nivel 2; la licencia es personal e intransferible y hay que portarla (Res. 250/2024 art. 5; Res. 318/2026 art. 8). Menores de 18: acompañados por un adulto.",
+   "La licencia por día tiene carácter de declaración jurada y vale para un lugar y día determinados (según AICACYP)."
+  ],
+  "buyUrl": "https://cidi.cba.gov.ar/portal-publico/",
+  "infoUrl": "https://www.aicacyp.ar/wp-content/uploads/2026/10/Temporada-Pesca-Cordoba-2026-7.pdf",
+  "otherLinks": [
+   "https://www.aicacyp.ar/blog/temporada-de-pesca-2024-26-cordoba/",
+   "https://www.revista-airelibre.com/2026/10/13/cordoba-temporada-pesca-2026-2027/"
+  ],
+  "requirements": "Cuenta CiDi nivel 2; licencia personal e intransferible; portarla.",
+  "where": "Plataforma Ciudadano Digital (CiDi), trámite «Solicitud de licencia de pesca deportiva» (Secretaría de Ambiente). Sin punto de venta físico confirmado.",
+  "date": "2026-11-25",
+  "phone": [],
+  "email": [],
+  "no_encontrado": "Teléfono y correo oficiales de la Secretaría de Ambiente/Policía Ambiental: no encontrados (cba.gov.ar bloqueado; cazaypesca.cba.gov.ar muestra la página por defecto de IIS). Enlace buyUrl: la portada de CiDi respondió 200 pero no muestra el trámite sin ingresar."
+ },
+ "La Pampa": {
+  "items": [
+   {
+    "type": "Permiso de pesca deportiva",
+    "price": "no encontrado (lo fija la Ley Impositiva anual)"
+   },
+   {
+    "type": "Sin cargo",
+    "who": "jubilados y pensionados (Disp. 011/2026, Anexo art. 2)"
+   }
+  ],
+  "extra": [
+   "Se tramita solo en línea (sin papel) en la Plataforma de Gestión de Trámites de la Dirección General de Recursos Naturales; el permiso lleva código QR para validarlo. Hace falta DNI, certificado de libre deuda de multas (Ley 1194) y comprobante de pago de la tasa.",
+   "Además hace falta la autorización de dueño de campo para lagunas privadas inscriptas (se emite también en línea; se imprime y se lleva). En ríos y lagunas públicos manejados por un ente gubernamental alcanza con el permiso.",
+   "Según Weekend (20/02/2026) el permiso también se consigue en casas de pesca del ramo, y según AICACYP en la DRN (Sarmiento 161, Santa Rosa) y en delegaciones del Ministerio de la Producción en General Acha y General Pico (dato de AICACYP sin fecha, sin confirmar)."
+  ],
+  "buyUrl": "https://tramitesdrn.lapampa.gob.ar/",
+  "infoUrl": "https://www.aicacyp.ar/wp-content/uploads/2026/02/DISPOSICION_011-26_-_PESCA_DEPORTIVA_-_2026_LA_PAMPA-ANEXO.pdf",
+  "otherLinks": [
+   "https://www.aicacyp.ar/blog/temporada-de-pesca-2026-7-la-pampa/"
+  ],
+  "requirements": "DNI, libre deuda de la DRN, pago de la tasa (salvo jubilados y pensionados); personal e intransferible.",
+  "where": "Plataforma de Gestión de Trámites de la Dirección General de Recursos Naturales (Sarmiento 161, Santa Rosa).",
+  "date": "2026-11-25",
+  "phone": [
+   "+54 2954 452600",
+   "+54 2954 455384",
+   "+54 2954 425172"
+  ],
+  "email": [
+   "faunarecursosnaturales@gmail.com (casilla de Fauna que publica el propio portal oficial tramitesdrn.lapampa.gob.ar)"
+  ],
+  "no_encontrado": "Precio 2026 del permiso (Ley Impositiva de La Pampa no encontrada)."
  }
 }

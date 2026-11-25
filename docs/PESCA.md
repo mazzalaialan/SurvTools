@@ -198,3 +198,9 @@ En `FishingMapPage.tsx`: la zona va plegada («Zona: Patagonia ▾», se desplie
 ## Orden de los peces en un tramo (2026-11-25)
 
 Por regla y, dentro de cada grupo, alfabético: prohibidos o en veda hoy, devolución, con cupo, sin límite, sin regla (`RULE_ORDER` en `FishingPages.tsx`). La regla es la de hoy: un pez cambia de grupo el día que entra en veda o pasa a devolución.
+
+## Córdoba y La Pampa (2026-11-25)
+
+- **Córdoba:** Res. 318/2026 (BO 02/10/2026; copia de AICACYP, el sitio oficial bloquea accesos automáticos). 24 de 26 ambientes en el mapa (faltan las lagunas Viamonte y La Margarita, sin OSM): 14 embalses y 5 lagunas con cupo de pejerrey (10 a 50, talla 25 cm, del 01/12 al 31/08), carpa, tararira, bagres y mojarra; La Quebrada vedada; ríos de truchas de las Sierras con devolución (trucha marrón y perca vedadas hasta el 31/12/2027). Veda nocturna en lagos y lagunas. Vence el 30/09/2027. Mar Chiquita (Ansenuza) no figura en la norma.
+- **La Pampa:** Disp. 011/2026 (sin vencimiento: rige hasta la siguiente). 12 ambientes: río Quinto y lagunas (pejerrey 25 de 25 cm, bagre sapo, tararira con devolución, carpa libre), río Colorado y Casa de Piedra (pejerrey y 2 truchas; Casa de Piedra por analogía, sin confirmar), y vedados el Salado, Chadileuvú, Curacó y el Atuel (recortados a la provincia).
+- **Permisos:** Córdoba por Ciudadano Digital (precios de prensa, sin confirmar); La Pampa en tramitesdrn.lapampa.gob.ar con teléfonos y correo de la Dirección de Recursos Naturales. Datos en `~/vikarg-fishing-work/pampeana/`.

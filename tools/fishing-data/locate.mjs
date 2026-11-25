@@ -28,6 +28,8 @@ const BBOX = {
   Mendoza: [-70.7, -37.7, -66.4, -31.9],
   'San Juan': [-70.7, -32.7, -66.9, -28.3],
   'San Luis': [-67.5, -36.1, -64.9, -31.8],
+  Córdoba: [-65.9, -35.1, -61.7, -29.4],
+  'La Pampa': [-68.4, -39.4, -63.3, -34.9],
   // Litoral (Entre Ríos, Santa Fe, Corrientes, Misiones, Chaco, Formosa, Buenos Aires y el río Uruguay compartido).
   // Litoral, y al sur de -34° más al oeste (lagunas del oeste y el sur de Buenos Aires) sin entrar en Salta ni Santiago del Estero.
   Litoral: [[-62.9, -38.6, -53.5, -21.9], [-64.0, -40.2, -56.0, -34.0]],

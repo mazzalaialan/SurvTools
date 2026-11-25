@@ -23,8 +23,13 @@ const ambientes = [
   ...(existsSync(`${work}/cuyo/ambientes.json`) ? read('cuyo/ambientes.json') : []),
   ...(existsSync(`${work}/cuyo/ambientes-sj.json`) ? read('cuyo/ambientes-sj.json') : []),
   ...(existsSync(`${work}/cuyo/ambientes-sl.json`) ? read('cuyo/ambientes-sl.json') : []),
+  ...(existsSync(`${work}/pampeana/ambientes-cba.json`) ? read('pampeana/ambientes-cba.json') : []),
+  ...(existsSync(`${work}/pampeana/ambientes-lp.json`) ? read('pampeana/ambientes-lp.json') : []),
 ];
 const reglasSur = existsSync(`${work}/sur/reglas_generales.json`) ? read('sur/reglas_generales.json') : { reglas: [] };
+// Región pampeana interior (Córdoba, La Pampa): reglas generales y fuentes, con el mismo formato que Cuyo.
+if (existsSync(`${work}/pampeana/reglas_generales.json`))
+  for (const b of read('pampeana/reglas_generales.json')) reglasSur.reglas.push(...(b.reglas ?? []).map((r) => ({ jurisdiccion: b.jurisdiccion, ...r })));
 if (existsSync(`${work}/cuyo/reglas_generales.json`)) {
   const rg = read('cuyo/reglas_generales.json');
   // Una lista de bloques por provincia (Mendoza, San Juan, San Luis); antes era un solo bloque de Mendoza.
@@ -101,6 +106,30 @@ OWN['San Luis'] = {
   season: { from: '2026-01-01', to: '2026-12-31' },
   // Calendario de año calendario: el de 2027 sale a fines de diciembre o en enero.
   validUntil: '2026-12-31',
+};
+OWN['Córdoba'] = {
+  source: {
+    id: 'cba-res-318-2026',
+    name: 'Córdoba: Resolución N.º 318/2026 de la Secretaría General de Ambiente, Economía Circular y Biociudadanía (temporada 2026/2027, Anexo I con cupos por cuerpo de agua; BO N.º 193, 02/10/2026)',
+    url: 'https://www.aicacyp.ar/wp-content/uploads/2026/10/Temporada-Pesca-Cordoba-2026-7.pdf',
+    license: 'Normativa pública sin licencia declarada: se usa con atribución (copia del Boletín Oficial)',
+    date: '2026-10-02',
+  },
+  // Truchas hasta el 31/05/2027, pejerrey del 01/12/2026 al 31/08/2027, dorado hasta el 30/09/2027.
+  season: { from: '2026-12-01', to: '2027-08-31' },
+  validUntil: '2027-09-30',
+};
+OWN['La Pampa'] = {
+  source: {
+    id: 'lp-disp-011-2026',
+    name: 'La Pampa: Disposición N.º 011/2026 de la Subsecretaría de Asuntos Agrarios (pesca deportiva; BO del 13/02/2026)',
+    url: 'https://tramitesdrn.lapampa.gob.ar/',
+    license: 'Normativa pública sin licencia declarada: se usa con atribución',
+    date: '2026-02-13',
+  },
+  // Rige 2026 y sigue desde el 01/01/2027 hasta que salga la siguiente: sin vencimiento propio.
+  season: { allYear: true },
+  validUntil: null,
 };
 OWN.Mendoza = {
   source: {
@@ -333,7 +362,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
         d.setUTCDate(d.getUTCDate() + delta);
         return d.toISOString().slice(5, 10);
       };
-      const ALIAS = { sogyo: 'carpa-herbivora' };
+      const ALIAS = { sogyo: 'carpa-herbivora', 'bagre-sapo': 'bagre-negro' };
       p.species = Object.entries(ra.especies ?? {}).map(([k, x]) => ({
         id: ALIAS[k] ?? k,
         ...(x.limit !== undefined && { limit: x.limit }),
@@ -535,8 +564,9 @@ const ZONES = [
   { id: 'patagonia', name: { es: 'Patagonia', en: 'Patagonia', pt: 'Patagônia' } },
   { id: 'litoral', name: { es: 'Litoral (Paraná, Uruguay y Delta)', en: 'Litoral (Paraná, Uruguay and Delta)', pt: 'Litoral (Paraná, Uruguai e Delta)' } },
   { id: 'cuyo', name: { es: 'Cuyo', en: 'Cuyo', pt: 'Cuyo' } },
+  { id: 'pampeana', name: { es: 'Córdoba y La Pampa', en: 'Córdoba and La Pampa', pt: 'Córdoba e La Pampa' } },
 ];
-for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : 'patagonia';
+for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : r.id === 'cordoba' || r.id === 'la-pampa' ? 'pampeana' : 'patagonia';
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', zones: ZONES.filter((z) => regions.some((r) => r.zone === z.id)), sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);
