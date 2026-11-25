@@ -199,20 +199,32 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
       )}
       {/* Teléfono y correo oficiales para sacarlo o consultar (aunque no haya precio ni trámite en línea). */}
       {(p?.phone?.length || p?.email?.length) && (
-        <p className="fish-permit-contact" data-testid="fish-permit-contact">
-          {p?.phone?.map((n) => (
-            // Lo que va entre paréntesis (a quién corresponde, «WhatsApp») va como título, para que el botón quede corto.
-            <a key={n} className="btn btn-small" href={`tel:${n.split('(')[0]!.replace(/[^\d+]/g, '')}`} title={n}>
-              <Phone size={16} aria-hidden /> {n.split('(')[0]!.trim()}
-              {/whatsapp/i.test(n) ? ' (WhatsApp)' : ''}
-            </a>
-          ))}
-          {p?.email?.map((m) => (
-            <a key={m} className="btn btn-small" href={`mailto:${m.split(/\s/)[0]}`} title={m}>
-              <Mail size={16} aria-hidden /> {m.split(/\s/)[0]}
-            </a>
-          ))}
-        </p>
+        <ul className="fish-permit-contact" data-testid="fish-permit-contact">
+          {/* El botón lleva solo el número o el correo; lo que va entre paréntesis (a qué oficina corresponde) se lee abajo, en chico. */}
+          {p?.phone?.map((n) => {
+            const note = n.includes('(') ? n.slice(n.indexOf('(') + 1).replace(/\)\s*$/, '') : '';
+            return (
+              <li key={n}>
+                <a className="btn btn-small" href={`tel:${n.split('(')[0]!.replace(/[^\d+]/g, '')}`}>
+                  <Phone size={16} aria-hidden /> {n.split('(')[0]!.trim()}
+                </a>
+                {note && <span className="small muted">{note}</span>}
+              </li>
+            );
+          })}
+          {p?.email?.map((m) => {
+            const addr = m.split(/\s/)[0]!;
+            const note = m.slice(addr.length).trim().replace(/^\(|\)$/g, '');
+            return (
+              <li key={m}>
+                <a className="btn btn-small" href={`mailto:${addr}`}>
+                  <Mail size={16} aria-hidden /> {addr}
+                </a>
+                {note && <span className="small muted">{note}</span>}
+              </li>
+            );
+          })}
+        </ul>
       )}
       {/* Aclaraciones: después de los precios y del botón, más chicas, para que lo importante se vea primero. */}
       <div className="fish-permit-notes">

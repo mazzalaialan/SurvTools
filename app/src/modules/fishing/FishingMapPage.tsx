@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { MapView, type ViewState } from '@/modules/maps/MapView';
 import { outlineFeatures } from '@/modules/maps/outline';
@@ -153,6 +153,7 @@ function FishingMap({ data }: { data: FishData }) {
   const [picked, setPicked] = useState<string[]>(focus ? [focus.id] : []);
   const [listOpen, setListOpen] = useState(false);
   const [zoneOpen, setZoneOpen] = useState(false);
+  const [sheetHidden, setSheetHidden] = useState(false);
 
   const setChosen = (ids: string[]) => {
     const next = new URLSearchParams(params);
@@ -265,7 +266,18 @@ function FishingMap({ data }: { data: FishData }) {
           );
         })}
       </div>
+      {/* El panel de zona y tramos se puede ocultar para ver el mapa entero; queda un botón chico para volver a mostrarlo. */}
+      {sheetHidden && !pickedSectors.length ? (
+        <button type="button" className="btn btn-small fish-sheet-show" onClick={() => setSheetHidden(false)} data-testid="fish-sheet-show">
+          <ChevronUp size={16} aria-hidden /> {t('fishing.showPanel')}
+        </button>
+      ) : (
       <div className="card fish-sheet" data-testid="fish-sheet">
+        {!pickedSectors.length && (
+          <button type="button" className="icon-btn fish-sheet-hide" aria-label={t('fishing.hidePanel')} title={t('fishing.hidePanel')} onClick={() => setSheetHidden(true)} data-testid="fish-sheet-hide">
+            <ChevronDown size={20} aria-hidden />
+          </button>
+        )}
         {/* La zona ocupa lugar sobre el mapa: plegada muestra solo su nombre; se despliega para cambiarla. */}
         {!pickedSectors.length &&
           (zoneOpen ? (
@@ -344,6 +356,7 @@ function FishingMap({ data }: { data: FishData }) {
           </>
         )}
       </div>
+      )}
     </FullscreenStage>
   );
 }

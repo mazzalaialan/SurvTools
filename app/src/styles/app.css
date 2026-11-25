@@ -6897,6 +6897,19 @@ button.country-pack-del {
 
 /* ---- Pesca (modules/fishing) ---- */
 /* Lista de peces: en el celular una fila con la imagen chica a la izquierda; desde 640 px, cuadrícula de tarjetas con la imagen arriba. */
+.fish-sheet-hide {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+.fish-sheet-show {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 2;
+  white-space: nowrap;
+}
 .fish-zone-toggle {
   align-self: flex-start;
   gap: 4px;
@@ -6910,10 +6923,22 @@ button.country-pack-del {
   flex: 1;
 }
 .fish-permit-contact {
+  list-style: none;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
   margin: 0;
+  padding: 0;
+}
+.fish-permit-contact li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.fish-permit-contact .btn {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .fish-grid {
   list-style: none;
