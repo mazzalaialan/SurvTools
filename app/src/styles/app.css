@@ -7484,7 +7484,32 @@ button.country-pack-del {
   background: repeating-linear-gradient(45deg, var(--ok) 0 3px, color-mix(in srgb, var(--ok) 35%, transparent) 3px 6px);
 }
 .fauna-dept-picked {
-  margin: 0;
+  align-self: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--text-muted);
+  background: var(--surface-2, var(--surface));
+}
+.fauna-dept-picked[data-state='total'],
+.fauna-dept-picked[data-state='partial'] {
+  border-left-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 14%, var(--surface));
+}
+.fauna-dept-picked[data-state='closed'] {
+  border-left-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, var(--surface));
+}
+.fauna-dept-picked-name {
+  font-size: var(--fs-lg, 1.15rem);
+}
+.fauna-dept-picked-state {
+  font-weight: 600;
 }
 
 /* Aviso «no es oficial» (Fauna, Pesca, Clima): resaltado y arriba, para que nadie se fíe solo de la app. */

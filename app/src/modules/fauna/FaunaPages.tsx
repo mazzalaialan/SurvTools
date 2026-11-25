@@ -614,6 +614,8 @@ function DeptMap({ province }: { province: HuntProvince }) {
     return `${d}Z`;
   };
   const sel = picked ? deptState(zone, picked) : null;
+  // En Buenos Aires la división se llama «partido».
+  const deptKey = province.name === 'Buenos Aires' ? 'fauna.deptBA' : 'fauna.dept';
   return (
     <figure ref={mapRef} className="card stack fauna-dept-map" data-testid="fauna-dept-map">
       <h2 className="section-title">{t(province.name === 'Buenos Aires' ? 'fauna.deptMapBA' : 'fauna.deptMap')}</h2>
@@ -648,7 +650,7 @@ function DeptMap({ province }: { province: HuntProvince }) {
               style={{ cursor: 'pointer' }}
               onClick={() => setPicked(d.name)}
             >
-              <title>{`${d.name}: ${t(`fauna.dept.${st}`)}`}</title>
+              <title>{`${d.name}: ${t(`${deptKey}.${st}`)}`}</title>
             </path>
           );
         })}
@@ -657,15 +659,20 @@ function DeptMap({ province }: { province: HuntProvince }) {
         <span className="fauna-legend">
           {(['total', 'partial', 'closed', 'unknown'] as const).map((s) => (
             <span key={s}>
-              <span className={`fauna-dot fauna-dot-${s}`} style={{ background: s === 'partial' ? undefined : DEPT_FILL[s] }} aria-hidden /> {t(`fauna.dept.${s}`)}
+              <span className={`fauna-dot fauna-dot-${s}`} style={{ background: s === 'partial' ? undefined : DEPT_FILL[s] }} aria-hidden /> {t(`${deptKey}.${s}`)}
             </span>
           ))}
         </span>
         {picked && sel && (
-          <p className="fauna-dept-picked" data-testid="fauna-dept-picked">
-            <strong>{picked}:</strong> {t(`fauna.dept.${sel.state}`)}
-            {sel.text && <> — {sel.text}</>}
-          </p>
+          <div className="fauna-dept-picked" data-state={sel.state} data-testid="fauna-dept-picked" role="status">
+            <strong className="fauna-dept-picked-name">
+              {t(province.name === 'Buenos Aires' ? 'fauna.partyOf' : 'fauna.deptOf', { name: picked })}
+            </strong>
+            <span className="fauna-dept-picked-state">
+              <span className={`fauna-dot fauna-dot-${sel.state}`} style={{ background: sel.state === 'partial' ? undefined : DEPT_FILL[sel.state] }} aria-hidden /> {t(`${deptKey}.${sel.state}`)}
+            </span>
+            {sel.text && <span>{sel.text}</span>}
+          </div>
         )}
         {zone.departments?.approx && <p className="fauna-warning" data-testid="fauna-dept-approx">{t('fauna.deptApprox')}</p>}
         {zone.departments?.note && <p className="muted small">{zone.departments.note}</p>}
