@@ -427,6 +427,7 @@ export function FaunaSpeciesDetailPage() {
             )}
             {sp.otros_nombres?.length ? <p className="muted">{t('fauna.aka', { names: sp.otros_nombres.join(', ') })}</p> : null}
             {typeof sp.aviso === 'string' && <p className="fauna-warning">{sp.aviso}</p>}
+            {typeof sp.aviso_identificacion === 'string' && <p className="fauna-warning">{sp.aviso_identificacion}</p>}
             {FIELDS.map((f) => {
               const parts = fieldText(sp[f]);
               if (!parts.length) return null;
