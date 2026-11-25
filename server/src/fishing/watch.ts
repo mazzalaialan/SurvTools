@@ -43,6 +43,10 @@ export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'San Luis: Calendario Íctico 2026', url: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2026.pdf', validUntil: '2026-12-31', next: 'https://permisosdepesca.sanluis.gov.ar/Calendario_Ictico_2027.pdf' },
   // San Juan: reglamento «de cada año»: se revisa antes del fin de la temporada de diques (19/08).
   { label: 'San Juan: Reglamento de Pesca Deportiva y Sustentable', url: 'https://tramite.sanjuan.gob.ar/tramite/dla/1320', validUntil: '2027-08-19' },
+  // Sin norma vigente (ver docs/PESCA.md, «Reglamentos vencidos»): se prueba cada día si aparece la nueva publicación.
+  { label: 'Tucumán: habilitación de pesca en ríos (vencida el 20/09/2026)', url: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2026-tucuman/', validUntil: '2026-09-20', next: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2027-tucuman/' },
+  { label: 'Santiago del Estero: reglamento de pesca (último publicado: 2024)', url: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2024-santiago-del-estero/', validUntil: '2025-12-31', next: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2026-santiago-del-estero/' },
+  { label: 'La Rioja: resolución anual de pesca (no publicada)', url: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2020-en-la-rioja/', validUntil: '2020-12-31', next: 'https://www.aicacyp.ar/blog/temporada-de-pesca-2026-en-la-rioja/' },
   // NOA: Salta (Res. 567/2026, temporada hasta el 31/08/2027) y Catamarca (Disp. 309/2026, hasta el 31/08/2027).
   { label: 'Salta: Resolución 567/2026, anexo de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/08/anexo-salta-pesca-2026-7.pdf', validUntil: '2027-08-31' },
   { label: 'Catamarca: Disposición 309/2026, temporada de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/11/Disposicion-Temporada-de-pesca-2026-2027.pdf', validUntil: '2027-08-31' },

@@ -215,3 +215,23 @@ Investigación en `~/vikarg-fishing-work/noa/` (una provincia por archivo; fuent
 - **Catamarca:** Disp. 309/2026 (ríos del 01/11 al 30/04, diques al 31/08/2027; solo viernes a domingo y feriados): diques y ríos con pejerrey 30, trucha 5, perca 5. La Puntilla, reserva por 2 años.
 - **La Rioja:** sin norma de temporada publicada (Ley 4.678 delega en un acto anual que no aparece): solo Los Sauces en el mapa, sin reglas; preguntar a la Secretaría de Ambiente.
 - **Sin ficha:** dientudo, bocacha, yusca, bagre cuchara: quedan solo en el texto de cada ambiente.
+
+## Reglamentos vencidos o sin norma vigente: revisar periódicamente (al 2026-11-25)
+
+Revisar al menos una vez por mes (y cuando llegue un aviso del servidor) si apareció la norma nueva; al cargarla, actualizar `validUntil`, la fuente y `FISHING_DOCS` del servidor.
+
+| Jurisdicción | Estado | Qué buscar | Dónde |
+|---|---|---|---|
+| Tucumán (ríos Tafí, Salí, Marapa, Los Sosa, Chavarría, Río Hondo) | **Vencida** el 20/09/2026 (Res. 117/2026); la app ya los muestra «sin regla específica» | Nueva habilitación de pesca en ríos | Dirección de Flora, Fauna Silvestre y Suelos (producciontucuman.gob.ar), AICACYP |
+| Tucumán (diques El Cadillal, Escaba, La Angostura, El Frontal) | Veda sin fecha de fin (Res. 385/2026) | Levantamiento de la veda y cupos de diques | ídem |
+| Santiago del Estero | **Sin norma 2025/26 ni 2026/27**: cupos de 2024 «sin confirmar» | Reglamentación de temporada y vedas de diciembre | Dirección General de Bosques y Fauna (dgbyf.gob.ar) |
+| La Rioja | **Sin norma de temporada publicada** (Ley 4.678 delega en un acto anual) | Resolución anual de pesca | Secretaría de Ambiente de La Rioja |
+| Jujuy (ríos San Francisco y Lavayén) | Veda desde el 21/10/2026, sin fecha de fin (Res. 131/2026) | Levantamiento y nueva habilitación | Secretaría de Biodiversidad y Desarrollo Sustentable, AICACYP |
+| Jujuy (diques) | Cupos de la Res. 60/2022 | Norma de cupos actualizada | ídem |
+| Salta (río Bermejo) | Veda total desde el 02/11/2026 (Res. 821/2026) | Fin de la veda | Secretaría de Ambiente de Salta |
+| San Luis | **Vence el 31/12/2026** (Calendario Íctico 2026) | Calendario Íctico 2027 (el servidor ya lo prueba) | permisosdepesca.sanluis.gov.ar |
+| Entre Ríos | Tallas, cupos y especies prohibidas sin texto oficial; resolución del Paraná oct–dic 2026 sin hallar | Resoluciones de la DRNyF | mail redactado en `~/vikarg-fishing-work/mails/` |
+| Chaco | Res. 1078/2020 y Dec. 1623/10 sin texto; cupos del compendio 2019 | Texto vigente | mail redactado en `~/vikarg-fishing-work/mails/` |
+| Litoral (Chaco, Misiones, Formosa) | Tallas y cupos de 2019 (compendio del MAGyP) | Normas provinciales vigentes | sitios provinciales |
+
+Próximos vencimientos: Salta y Catamarca 31/08/2027; Córdoba y Santa Cruz 30/09/2027; Tierra del Fuego 29/10/2027; Patagonia común y Mendoza 31/10/2027. El servidor (`server/src/fishing/watch.ts`) los revisa solo desde 45 días antes y avisa por mail.
