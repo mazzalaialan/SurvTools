@@ -798,6 +798,7 @@ Propuesta: una sección **Supervivencia** (hoy no existe) que junte lo que sirve
 ## Pendiente: sección Fauna (pedido del dueño, 2026-11-23)
 
 Sección nueva (aparte de Pesca): qué animales salvajes se pueden encontrar en cada zona (mamíferos, aves, reptiles; cuáles son peligrosos y qué hacer ante un encuentro) y, si hay **caza autorizada** de alguna especie, con su temporada y requisitos según la provincia (normativa con fuente y fecha, como en Pesca; «informativo, consultá el reglamento vigente»). Datos posibles: GBIF (ocurrencias, CC BY), las ecorregiones que ya tiene la app, reglamentos de caza provinciales y de Parques Nacionales. Reusar el diseño de Pesca (portada, mapa, ficha por especie). Sin investigar ni estimar todavía.
+- **Fauna acuática que no es pez** (pedido del dueño, 2026-11-25): cangrejos de río, ranas, mejillones, almejas, camarones de agua dulce. Algunas normas de pesca los regulan (Mendoza, Res. 322/2026: veda total todo el año de cangrejos; Tierra del Fuego y Santa Cruz prohíben la carnada de peces y almejas). Van en Fauna, con lo que se puede capturar, dónde, cuándo y cuánto. Hoy, en Pesca, Mendoza lo muestra como aviso fijo en cada lugar (`alert` del tramo); el «bagre sapo» de La Pampa no es un sapo: es el bagre negro (*Rhamdia quelen*).
 
 ## Pendiente: sección Fuego (pedido del dueño, 2026-11-24)
 

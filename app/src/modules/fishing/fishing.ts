@@ -113,6 +113,8 @@ export interface Season {
 }
 
 export interface FishSector {
+  /** Aviso fijo de la jurisdicción para todos sus tramos (p. ej. especies vedadas que no son peces: cangrejos en Mendoza). */
+  alert?: string;
   /** Hasta cuándo vale la norma cargada (ver `rulesExpired`). */
   validUntil?: string;
   id: string;

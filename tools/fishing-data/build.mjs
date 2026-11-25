@@ -6,7 +6,7 @@
 // seguro queda en el texto del tramo, que la app muestra siempre.
 //
 // Uso: node tools/fishing-data/build.mjs <carpeta de trabajo> <jurisdicción>[,<jurisdicción>…] [salida]
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const [work, jurs, outArg] = process.argv.slice(2);
@@ -25,9 +25,13 @@ const ambientes = [
   ...(existsSync(`${work}/cuyo/ambientes-sl.json`) ? read('cuyo/ambientes-sl.json') : []),
   ...(existsSync(`${work}/pampeana/ambientes-cba.json`) ? read('pampeana/ambientes-cba.json') : []),
   ...(existsSync(`${work}/pampeana/ambientes-lp.json`) ? read('pampeana/ambientes-lp.json') : []),
+  // NOA: un archivo por provincia (noa/ambientes-<id>.json).
+  ...(existsSync(`${work}/noa`) ? readdirSync(`${work}/noa`).filter((f) => /^ambientes-.*\.json$/.test(f)).flatMap((f) => read(`noa/${f}`)) : []),
 ];
 const reglasSur = existsSync(`${work}/sur/reglas_generales.json`) ? read('sur/reglas_generales.json') : { reglas: [] };
 // Región pampeana interior (Córdoba, La Pampa): reglas generales y fuentes, con el mismo formato que Cuyo.
+if (existsSync(`${work}/noa/reglas_generales.json`))
+  for (const b of read('noa/reglas_generales.json')) reglasSur.reglas.push(...(b.reglas ?? []).map((r) => ({ jurisdiccion: b.jurisdiccion, ...r })));
 if (existsSync(`${work}/pampeana/reglas_generales.json`))
   for (const b of read('pampeana/reglas_generales.json')) reglasSur.reglas.push(...(b.reglas ?? []).map((r) => ({ jurisdiccion: b.jurisdiccion, ...r })));
 if (existsSync(`${work}/cuyo/reglas_generales.json`)) {
@@ -143,6 +147,9 @@ OWN.Mendoza = {
   // dientudos y mojarras todo el año; bagres, cangrejos y anguilas vedados todo el año.
   season: { from: '2026-11-01', to: '2027-05-01' },
   validUntil: '2027-10-31',
+  // Art. 2: veda total todo el año de bagres, cangrejos y anguilas en toda la provincia.
+  forbiddenSpecies: { 'bagre-negro': 'Bagres: veda total todo el año (Res. 322/2026, art. 2).', anguila: 'Anguilas: veda total todo el año (Res. 322/2026, art. 2).' },
+  alert: 'Vedado todo el año en toda la provincia: bagres, cangrejos y anguilas (Res. 322/2026).',
   extraSpecies: {
     pejerrey: { closures: [{ from: '10-01', to: '11-30' }], note: 'Temporada del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2).' },
     carpa: { limit: null, note: 'Todo el año (Res. 322/2026, art. 2).' },
@@ -387,6 +394,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
       if (e) Object.assign(e, patch);
       else p.species.push({ id, ...patch });
     }
+    for (const [id, note] of Object.entries(OWN[jur]?.forbiddenSpecies ?? {})) if (!p.closed && !p.species.some((e) => e.id === id)) p.species.push({ id, forbidden: true, note });
     if (cuts[a.id]?.release === false) p.catchAndRelease = undefined;
     const own = OWN[jur];
     for (const [id, patch] of Object.entries(own?.extraSpecies ?? {})) if (!p.closed && !p.species.some((e) => e.id === id) && new RegExp(id, 'i').test(a.descripcion_tramo_literal)) p.species.push({ id, ...patch });
@@ -418,6 +426,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
         .join(' — '),
       ...((cuts[a.id]?.approx || g.approxPoint) && { approx: cuts[a.id]?.approx ?? 'ubicado por coordenada; el agua no está dibujada en el mapa base' }),
       source: OWN[jur]?.source.id ?? SOURCE.id,
+      ...(OWN[jur]?.alert && { alert: OWN[jur].alert }),
       validUntil: (OWN[jur] && 'validUntil' in OWN[jur] ? OWN[jur].validUntil : PDCP_VALID_UNTIL) ?? undefined,
       ref: `pág. ${a.fuente?.pagina_impresa ?? a.fuente?.pagina ?? a.fuente?.pagina_pdf ?? '?'}`,
       _shared: !!a.compartido_con,
@@ -564,9 +573,10 @@ const ZONES = [
   { id: 'patagonia', name: { es: 'Patagonia', en: 'Patagonia', pt: 'Patagônia' } },
   { id: 'litoral', name: { es: 'Litoral (Paraná, Uruguay y Delta)', en: 'Litoral (Paraná, Uruguay and Delta)', pt: 'Litoral (Paraná, Uruguai e Delta)' } },
   { id: 'cuyo', name: { es: 'Cuyo', en: 'Cuyo', pt: 'Cuyo' } },
+  { id: 'noa', name: { es: 'Noroeste (NOA)', en: 'Northwest (NOA)', pt: 'Noroeste (NOA)' } },
   { id: 'pampeana', name: { es: 'Córdoba y La Pampa', en: 'Córdoba and La Pampa', pt: 'Córdoba e La Pampa' } },
 ];
-for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : r.id === 'cordoba' || r.id === 'la-pampa' ? 'pampeana' : 'patagonia';
+for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : r.id === 'cordoba' || r.id === 'la-pampa' ? 'pampeana' : ['tucuman', 'santiago-del-estero', 'salta', 'jujuy', 'catamarca', 'la-rioja'].includes(r.id) ? 'noa' : 'patagonia';
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', zones: ZONES.filter((z) => regions.some((r) => r.zone === z.id)), sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);

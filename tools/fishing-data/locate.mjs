@@ -30,6 +30,12 @@ const BBOX = {
   'San Luis': [-67.5, -36.1, -64.9, -31.8],
   Córdoba: [-65.9, -35.1, -61.7, -29.4],
   'La Pampa': [-68.4, -39.4, -63.3, -34.9],
+  Tucumán: [-66.3, -28.1, -64.4, -26.0],
+  'Santiago del Estero': [-65.3, -30.1, -61.6, -25.6],
+  Salta: [-68.7, -26.5, -62.2, -21.9],
+  Jujuy: [-67.3, -24.7, -64.1, -21.7],
+  Catamarca: [-69.2, -30.2, -64.8, -25.1],
+  'La Rioja': [-69.7, -32.0, -65.4, -27.7],
   // Litoral (Entre Ríos, Santa Fe, Corrientes, Misiones, Chaco, Formosa, Buenos Aires y el río Uruguay compartido).
   // Litoral, y al sur de -34° más al oeste (lagunas del oeste y el sur de Buenos Aires) sin entrar en Salta ni Santiago del Estero.
   Litoral: [[-62.9, -38.6, -53.5, -21.9], [-64.0, -40.2, -56.0, -34.0]],

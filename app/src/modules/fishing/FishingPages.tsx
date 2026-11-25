@@ -381,6 +381,11 @@ function SectorRules({ data, s }: { data: FishData; s: FishSector }) {
   return (
     <>
       <p>{s.name}</p>
+      {s.alert && (
+        <p className="fish-rule" data-rule="forbidden" data-testid="fish-sector-alert">
+          {s.alert}
+        </p>
+      )}
       <p>
         <SectorSeasonBadge data={data} sector={s} />
         {region && `${sectorSeason(data, s) || s.closed ? ' · ' : ''}${region.name}`}
