@@ -16,6 +16,12 @@ describe('datos de fauna', () => {
     expect(er?.warning).toMatch(/judicializada/);
   });
 
+  it('si la norma da una especie como cazable y protegida, manda la protección (loro barranquero en Catamarca)', () => {
+    const cat = provinceBySlug(data, 'catamarca');
+    expect(cat?.protectedSpecies?.map((x) => x.id)).toContain('loro-barranquero');
+    expect(cat?.zones.some((z) => z.species.some((s) => s.id === 'loro-barranquero'))).toBe(false);
+  });
+
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {
     for (const sp of data.species) expect(sp.nombre.es).toBeTruthy();
     expect(whereHunted(data, 'jabali').length).toBeGreaterThan(3);

@@ -57,6 +57,8 @@ export interface HuntProvince {
     requirements?: string[];
   };
   protected: { name: string; rule?: string; source?: string }[];
+  /** Especies que la norma da como cazables y también como protegidas: se toman como protegidas (no se cazan). */
+  protectedSpecies?: { id: string; note: string }[];
   sources: { title: string; org?: string; url?: string; date?: string; validUntil?: string; confidence?: string }[];
 }
 

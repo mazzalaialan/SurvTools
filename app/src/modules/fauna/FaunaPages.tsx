@@ -299,9 +299,17 @@ export function FaunaProvincePage() {
                 )}
               </section>
             )}
-            {p.protected.length > 0 && (
+            {(p.protected.length > 0 || p.protectedSpecies?.length) && (
               <section className="card stack">
                 <h2 className="section-title">{t('fauna.protected')}</h2>
+                {p.protectedSpecies?.map((x) => (
+                  <p key={x.id} className="fauna-warning" data-status="prohibida" data-testid="fauna-protected-species">
+                    <strong>
+                      <Link to={`/fauna/species/${x.id}`}>{faunaName(speciesById(data, x.id), x.id, i18n.language)}</Link>: {t('fauna.protectedSpecies')}
+                    </strong>{' '}
+                    {x.note}
+                  </p>
+                ))}
                 <ul>
                   {p.protected.map((x) => (
                     <li key={x.name}>

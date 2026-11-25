@@ -129,12 +129,16 @@ for (const region of REGIONS) {
   for (const [name, zs] of Object.entries(zonas)) {
     const st = status[name];
     if (!st) throw new Error(`Falta el estado de ${name} en status.json`);
+    // Si la norma da una especie como cazable y también como protegida, manda la protección: sale de las zonas y se avisa.
+    const { protectedSpecies = {}, ...info } = st;
+    const zonesOut = (Array.isArray(zs) ? zs : []).map(zone).map((z) => ({ ...z, species: z.species.filter((s) => !protectedSpecies[s.id]) }));
     provinces.push({
       name,
       region,
-      ...st,
-      zones: (Array.isArray(zs) ? zs : []).map(zone),
+      ...info,
+      zones: zonesOut,
       permit: permit(permisos[name]),
+      protectedSpecies: Object.keys(protectedSpecies).length ? Object.entries(protectedSpecies).map(([id, note]) => ({ id: canon(id), note })) : undefined,
       protected: protectedList(protegidas[name]),
       sources: sourceList(fuentes[name]),
     });

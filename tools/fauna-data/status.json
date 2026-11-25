@@ -1,5 +1,5 @@
 {
-  "_": "Estado de la norma de caza de cada provincia (relevamiento del 2026-11-25, ver docs/PENDIENTES.md § Fauna). status: vigente (norma 2026 oficial), vieja (norma de otro año o sin confirmar), prohibida, sin-norma, judicializada. El mapa de la sección pinta cada estado de un color.",
+  "_": "Estado de la norma de caza de cada provincia (relevamiento del 2026-11-25, ver docs/PENDIENTES.md § Fauna). status: vigente (norma 2026 oficial), vieja (norma de otro año o sin confirmar), prohibida, sin-norma, judicializada. protectedSpecies: especies que la norma da como cazables y también como protegidas; manda la protección (se sacan de las zonas y van a «Dónde no se caza»). El mapa de la sección pinta cada estado de un color.",
   "Buenos Aires": { "status": "vigente" },
   "Córdoba": { "status": "vigente" },
   "La Pampa": { "status": "vigente" },
@@ -16,7 +16,7 @@
   "Neuquén": { "status": "vieja", "normYear": 2025 },
   "Mendoza": { "status": "vieja", "normYear": 2019 },
   "Formosa": { "status": "vieja", "normYear": 2012 },
-  "Catamarca": { "status": "vieja", "normYear": 2024 },
+  "Catamarca": { "status": "vieja", "normYear": 2024, "protectedSpecies": { "loro-barranquero": "La Disp. 141/2024 lo lista como cazable (art. 4) y también entre las especies protegidas (art. 5 b). Ante la contradicción se toma como protegido: no se caza." } },
   "Santiago del Estero": { "status": "vieja", "warning": "Solo se encontró un afiche oficial de la temporada, no la resolución." },
   "Tierra del Fuego": { "status": "vieja", "normYear": 2021, "warning": "Solo se encontraron notas de prensa de 2021, no la norma." },
   "San Juan": { "status": "prohibida", "warning": "La caza deportiva está prohibida por ley en San Juan." },
