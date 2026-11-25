@@ -575,12 +575,96 @@ if (existsSync(litFile) && jurs.split(',').includes('Litoral')) {
   }
 }
 for (const id of litoralSpecies) if (!species.some((x) => x.id === id)) species.push({ id, scientific: '', native: true, name: { es: LITORAL_NAMES[id] ?? id } });
+// --- Mar (costa atlántica): puntos de pesca de costa y embarcada (mar-lugares.json, OpenStreetMap y prensa), fichas de especies de mar
+// (mar-especies.json, investigación del 2026-11-25) y reglas por provincia (mar-rules.json). Sin tramos: cada lugar es un punto.
+const MAR_ALIAS = { palometa: 'palometa-de-mar', raya: 'raya-de-mar', 'trucha-de-mar': 'trucha-marron' };
+const marineIds = new Set();
+if (jurs.split(',').includes('Mar')) {
+  const rd = (f) => JSON.parse(readFileSync(fileURLToPath(new URL(f, import.meta.url)), 'utf8'));
+  const marSp = rd('./mar-especies.json');
+  const marRules = rd('./mar-rules.json');
+  const v = (x) => (x && typeof x === 'object' && 'valor' in x ? x.valor : x);
+  const list = (x) => (Array.isArray(v(x)) ? v(x) : v(x) ? [v(x)] : []).filter((t) => typeof t === 'string');
+  const byZone = new Map();
+  for (const e of marSp.especies ?? marSp) {
+    const id = MAR_ALIAS[e.id] ?? e.id;
+    marineIds.add(id);
+    for (const z of e.zonas ?? []) byZone.set(z, [...(byZone.get(z) ?? []), id]);
+    if (species.some((x) => x.id === id)) continue; // róbalo, lisa y trucha marrón ya tienen ficha
+    const danger = v(e.peligro);
+    species.push({
+      id,
+      scientific: e.cientifico,
+      native: !/ex[oó]tic|introduc/i.test(v(e.origen) ?? ''),
+      name: e.nombre,
+      ...(v(e.tamano) && { size: v(e.tamano) }),
+      ...(v(e.dieta) && { diet: v(e.dieta) }),
+      ...(v(e.mejor_epoca) && { bestSeason: v(e.mejor_epoca) }),
+      ...(v(e.mejor_horario) && { bestTime: v(e.mejor_horario) }),
+      baits: { natural: list(e.carnadas_naturales), lures: list(e.senuelos_moscas), confidence: 'low' },
+      ...(e.en_supervivencia?.baits?.length && { survival: e.en_supervivencia }),
+      ...(danger?.texto && { danger: { level: danger.nivel, text: danger.texto } }),
+    });
+  }
+  // Zona del lugar → subzona de las fichas y provincia.
+  const Z = {
+    'BA norte': ['Costa bonaerense norte (Punta Rasa a Mar Chiquita)', 'Buenos Aires'],
+    'BA sur': ['Costa bonaerense sur (Mar del Plata a Carmen de Patagones)', 'Buenos Aires'],
+    'Golfo San Matías (RN)': ['Golfo San Matías (Río Negro)', 'Río Negro'],
+    'Chubut (golfos Nuevo/San José/Camarones)': ['Golfos Nuevo y San José (Chubut)', 'Chubut'],
+    'Golfo San Jorge': ['Golfo San Jorge (Chubut-Santa Cruz)', 'Chubut'],
+    'Santa Cruz': ['Santa Cruz', 'Santa Cruz'],
+    'Tierra del Fuego': ['Tierra del Fuego', 'Tierra del Fuego'],
+  };
+  for (const [prov, r] of Object.entries(marRules)) {
+    if (prov === '_') continue;
+    const rid = `mar-${lower(prov).replace(/[^a-z]+/g, '-')}`;
+    regions.push({ id: rid, name: r.name, rules: [r.norm, ...r.rules], season: { allYear: true }, ...(permits[prov] && { permit: permits[prov] }), source: rid });
+    SOURCES.push({ id: rid, name: `${r.name}: ${r.norm}`, url: r.url, license: 'Normativa pública sin licencia declarada: se usa con atribución', date: r.date });
+  }
+  const ring = ([x, y]) => Array.from({ length: 13 }, (_, i) => { const t = (i / 12) * 2 * Math.PI; return [+(x + (0.002 / Math.cos((y * Math.PI) / 180)) * Math.cos(t)).toFixed(5), +(y + 0.002 * Math.sin(t)).toFixed(5)]; });
+  const seen = new Set();
+  for (const l of rd('./mar-lugares.json').lugares) {
+    const z = Z[l.zona];
+    if (!z) continue;
+    const [sub, prov] = z;
+    const r = marRules[prov];
+    const id = `mar-${lower(l.nombre).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${l.lonlat.map((c) => Math.abs(c).toFixed(2)).join('-')}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const sp = (byZone.get(sub) ?? []).map((sid) => ({
+      id: sid,
+      ...(r.release?.includes(sid) && { limit: 0, note: 'Devolución obligatoria.' }),
+      ...(r.reserve?.includes(sid) && { limit: 2, note: 'Con reserva: hasta 2 con sacrificio; el resto se devuelve.' }),
+      ...(r.minSize?.[sid] && { minSizeCm: r.minSize[sid] }),
+    }));
+    sectors.push({
+      id,
+      region: `mar-${lower(prov).replace(/[^a-z]+/g, '-')}`,
+      // Nombre del lugar y, si es genérico («Muelle de pesca»), la localidad más cercana (mar-lugares.json, de OpenStreetMap).
+      water: (() => {
+        const kind = { pier: 'Muelle', breakwater: 'Escollera', beach: 'Playa', harbour: 'Puerto' }[l.tipo] ?? 'Lugar de pesca';
+        const base = /sin nombre/i.test(l.nombre) ? kind : l.nombre;
+        return l.localidad && !base.includes(l.localidad) ? `${base} (${l.localidad})` : base;
+      })(),
+      name: `${{ pier: 'Muelle', breakwater: 'Escollera', beach: 'Playa', harbour: 'Puerto' }[l.tipo] ?? 'Lugar de pesca'} · ${sub}`,
+      geometry: { type: 'Polygon', coordinates: [ring(l.lonlat)] },
+      species: sp,
+      marine: true,
+      ...(/sin confirmar|localidad/i.test(l.confianza ?? '') && { approx: 'ubicado en la localidad que cita la prensa, no en el punto exacto de pesca' }),
+      notes: r.rules.join(' — '),
+      source: `mar-${lower(prov).replace(/[^a-z]+/g, '-')}`,
+      ref: l.fuente,
+    });
+  }
+}
 // Solo los peces que tienen algún tramo (los de otras jurisdicciones se suman cuando se agregan).
 /**
  * Ambiente de cada pez (NO es agua dulce o salada: hay lagunas continentales saladas o salobres): «continental» = ríos, lagos, lagunas y
  * embalses; «marine» = costa, estuario y embarcado. Los que viven en los dos (o entran del mar a los ríos y lagunas costeras) llevan ambos.
  */
 const HABITAT = {
+  ...Object.fromEntries([...marineIds].map((id) => [id, ['marine']])),
   robalo: ['continental', 'marine'],
   lisa: ['continental', 'marine'],
   pejerrey: ['continental', 'marine'],
@@ -607,11 +691,12 @@ const used = species
 const ZONES = [
   { id: 'patagonia', name: { es: 'Patagonia', en: 'Patagonia', pt: 'Patagônia' } },
   { id: 'litoral', name: { es: 'Litoral (Paraná, Uruguay y Delta)', en: 'Litoral (Paraná, Uruguay and Delta)', pt: 'Litoral (Paraná, Uruguai e Delta)' } },
+  { id: 'mar', name: { es: 'Costa atlántica (mar)', en: 'Atlantic coast (sea)', pt: 'Costa atlântica (mar)' } },
   { id: 'cuyo', name: { es: 'Cuyo', en: 'Cuyo', pt: 'Cuyo' } },
   { id: 'noa', name: { es: 'Noroeste (NOA)', en: 'Northwest (NOA)', pt: 'Noroeste (NOA)' } },
   { id: 'pampeana', name: { es: 'Córdoba y La Pampa', en: 'Córdoba and La Pampa', pt: 'Córdoba e La Pampa' } },
 ];
-for (const r of regions) r.zone = r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : r.id === 'cordoba' || r.id === 'la-pampa' ? 'pampeana' : ['tucuman', 'santiago-del-estero', 'salta', 'jujuy', 'catamarca', 'la-rioja'].includes(r.id) ? 'noa' : 'patagonia';
+for (const r of regions) r.zone = r.id.startsWith('mar-') ? 'mar' : r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : r.id === 'cordoba' || r.id === 'la-pampa' ? 'pampeana' : ['tucuman', 'santiago-del-estero', 'salta', 'jujuy', 'catamarca', 'la-rioja'].includes(r.id) ? 'noa' : 'patagonia';
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', zones: ZONES.filter((z) => regions.some((r) => r.zone === z.id)), sources: SOURCES, species: used, regions, sectors };
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);

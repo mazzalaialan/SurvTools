@@ -1,0 +1,95 @@
+{
+ "_": "Reglas de pesca deportiva marítima por provincia (investigación del 2026-11-25, ~/vikarg-fishing-work/mar/normas.json). Solo Buenos Aires tiene cupos y tallas; Río Negro, permiso y devolución de tiburones (sin reglamentar); Chubut, gatopardo Monumento Natural (prensa); Santa Cruz y Tierra del Fuego, sin norma de mar hallada.",
+ "Buenos Aires": {
+  "name": "Costa atlántica: Buenos Aires",
+  "norm": "Disp. 217/2007 (Ministerio de Desarrollo Agrario) y Decreto 3237/95",
+  "url": "https://normas.gba.gob.ar/documentos/0nvkq6iM.html",
+  "date": "2007-12-06",
+  "rules": [
+   "Licencia de pesca deportiva obligatoria (categoría «costera menor marítima» o anual).",
+   "Hasta 2 cañas por persona; prohibidos robadores, anzuelos triples (salvo lenguado) y bicheros.",
+   "Pesca variada: hasta 40 piezas por día; pesca dirigida: 10; captura mixta: 50 en 24 h.",
+   "Tiburones (escalandrún, bacota, gatopardo, cazón, martillo): devolución obligatoria, con anzuelos y aparejos específicos.",
+   "Con reserva (chuchos, rayas, pez ángel, pez elefante, corvina negra): hasta 2 con sacrificio; el resto se devuelve.",
+   "Vigencia sin verificar: el Ministerio enlaza un «reglamento 2026-01» que no se pudo leer."
+  ],
+  "release": [
+   "escalandrun",
+   "bacota",
+   "gatopardo",
+   "cazon",
+   "tiburon-martillo"
+  ],
+  "reserve": [
+   "chucho",
+   "raya-de-mar",
+   "pez-angel",
+   "pez-gallo",
+   "corvina-negra"
+  ],
+  "minSize": {
+   "besugo": 26,
+   "corvina-rubia": 35,
+   "gatuzo": 60,
+   "lisa": 45,
+   "pescadilla": 30,
+   "pez-angel": 75,
+   "pez-palo": 46,
+   "salmon-de-mar": 37
+  }
+ },
+ "Río Negro": {
+  "name": "Costa atlántica: Río Negro",
+  "norm": "Ley 5706 (2023), sin reglamentar",
+  "url": "https://web.legisrn.gov.ar/legislativa/legislacion/documento?id=10791",
+  "date": "2023-12-26",
+  "rules": [
+   "Permiso de pesca deportiva marítima obligatorio (desde tierra, embarcado o submarina) y registro de embarcaciones.",
+   "Devolución obligatoria de escalandrún, bacota, tiburón azul, gatopardo, cazón y martillo.",
+   "Cupos, tallas y zonas: pendientes de reglamentación (rige la norma general; consultá)."
+  ],
+  "release": [
+   "escalandrun",
+   "bacota",
+   "tiburon-azul",
+   "gatopardo",
+   "cazon",
+   "tiburon-martillo"
+  ]
+ },
+ "Chubut": {
+  "name": "Costa atlántica: Chubut",
+  "norm": "Sin norma de pesca deportiva marítima hallada; gatopardo Monumento Natural (2025, número de ley sin confirmar)",
+  "url": "",
+  "date": "2025-04-24",
+  "rules": [
+   "No encontramos norma de pesca deportiva marítima: consultá a la Secretaría de Pesca de Chubut.",
+   "Gatopardo: Monumento Natural provincial desde 2025; devolverlo vivo (dato de prensa)."
+  ],
+  "release": [
+   "gatopardo"
+  ]
+ },
+ "Santa Cruz": {
+  "name": "Costa atlántica: Santa Cruz",
+  "norm": "Sin norma de pesca deportiva marítima hallada",
+  "url": "",
+  "date": "",
+  "rules": [
+   "No encontramos norma de pesca deportiva marítima: consultá a la Subsecretaría de Pesca de Santa Cruz.",
+   "Existe un régimen de pesca de subsistencia (Disp. 162/2026, no leído)."
+  ],
+  "release": []
+ },
+ "Tierra del Fuego": {
+  "name": "Costa atlántica: Tierra del Fuego",
+  "norm": "Ley 126 (licencia obligatoria; sin cupos ni tallas de mar)",
+  "url": "",
+  "date": "1993",
+  "rules": [
+   "Licencia provincial obligatoria también para la pesca marítima de costa (Ley 126).",
+   "Sin cupos ni tallas de mar en las normas halladas."
+  ],
+  "release": []
+ }
+}

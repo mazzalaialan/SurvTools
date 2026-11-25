@@ -1,0 +1,821 @@
+{
+ "_licencia": "© OpenStreetMap contributors, ODbL. Overpass consultado 2026-11-25 (bbox por zonas). OSM tiene pocas etiquetas de pesca en Patagonia (leisure=fishing solo en BA/RN/Chubut). Los muelles 'La Lucila', 'Santa Teresita', 'San Clemente', 'Mar de Ajó' están en prensa; algunos están en OSM como pier sin nombre.",
+ "lugares": [
+  {
+   "nombre": "Muelle de pesca",
+   "tipo": "pier",
+   "lonlat": [
+    -56.68624,
+    -36.57713
+   ],
+   "zona": "BA norte",
+   "fuente": "OpenStreetMap node/4106917625",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Tuyú"
+  },
+  {
+   "nombre": "Muelle de Pesca",
+   "tipo": "pier",
+   "lonlat": [
+    -56.67297,
+    -36.71008
+   ],
+   "zona": "BA norte",
+   "fuente": "OpenStreetMap way/142707146",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar de Ajó"
+  },
+  {
+   "nombre": "Muelle de Pesca",
+   "tipo": "pier",
+   "lonlat": [
+    -56.71647,
+    -36.35506
+   ],
+   "zona": "BA norte",
+   "fuente": "OpenStreetMap way/240890224",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "San Clemente del Tuyú"
+  },
+  {
+   "nombre": "Muelle de Mar del Tuyú",
+   "tipo": "pier",
+   "lonlat": [
+    -56.68629,
+    -36.57711
+   ],
+   "zona": "BA norte",
+   "fuente": "OpenStreetMap way/612393546",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Tuyú"
+  },
+  {
+   "nombre": "Muelle de Mar del Tuyú",
+   "tipo": "pier",
+   "lonlat": [
+    -56.68512,
+    -36.57717
+   ],
+   "zona": "BA norte",
+   "fuente": "OpenStreetMap way/612393547",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Tuyú"
+  },
+  {
+   "nombre": "Muelle de pesca de Mar del Tuyú",
+   "tipo": "pier",
+   "lonlat": [
+    -56.6858,
+    -36.57715
+   ],
+   "zona": "BA norte",
+   "fuente": "OpenStreetMap way/612393548",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Tuyú"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -57.83359,
+    -38.28449
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap node/2122055454",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Miramar"
+  },
+  {
+   "nombre": "Muelle de Pesca de Villa Gesell",
+   "tipo": "pier",
+   "lonlat": [
+    -56.98197,
+    -37.2805
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap node/2400664154",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Villa Gesell"
+  },
+  {
+   "nombre": "El Pescadero",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -62.79719,
+    -41.02201
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap node/6186701236",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "La Baliza",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -62.75608,
+    -41.03311
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap node/6743290368",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -57.5407,
+    -37.99719
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap node/8197853836",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Plata"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -57.54046,
+    -37.99764
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap node/8197853837",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Plata"
+  },
+  {
+   "nombre": "Puente Ezcurra",
+   "tipo": "pier",
+   "lonlat": [
+    -58.71422,
+    -38.56903
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/199953487",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Quequén"
+  },
+  {
+   "nombre": "Muelle",
+   "tipo": "pier",
+   "lonlat": [
+    -57.83411,
+    -38.28413
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/202226698",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Miramar"
+  },
+  {
+   "nombre": "Escollera Playa Varese",
+   "tipo": "groyne",
+   "lonlat": [
+    -57.52981,
+    -38.01268
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/315080739",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Plata"
+  },
+  {
+   "nombre": "Muelle de Pesca de Villa Gesell",
+   "tipo": "pier",
+   "lonlat": [
+    -56.98183,
+    -37.28055
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/583954746",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Villa Gesell"
+  },
+  {
+   "nombre": "Muelle del Inglés",
+   "tipo": "pier",
+   "lonlat": [
+    -62.31653,
+    -40.53545
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/628080611",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Cardenal Cagliero"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -62.82353,
+    -41.05003
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap way/755705894",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "Playa Los Pozones",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -62.83267,
+    -41.05612
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap way/755705896",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "Zona de Pesca con Caña",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -62.79539,
+    -41.02254
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap way/755705901",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "Escollera Sur",
+   "tipo": "groyne",
+   "lonlat": [
+    -57.52612,
+    -38.04461
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/795509111",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Plata"
+  },
+  {
+   "nombre": "Escollera Norte",
+   "tipo": "groyne",
+   "lonlat": [
+    -57.52662,
+    -38.03461
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/795509112",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Plata"
+  },
+  {
+   "nombre": "Muelle Elvimar",
+   "tipo": "pier",
+   "lonlat": [
+    -60.53128,
+    -38.91448
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/1306684274",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Marisol"
+  },
+  {
+   "nombre": "Escollera Norte",
+   "tipo": "groyne",
+   "lonlat": [
+    -57.53129,
+    -38.03177
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap way/1332940719",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Mar del Plata"
+  },
+  {
+   "nombre": "Escollera Norte",
+   "tipo": "breakwater",
+   "lonlat": [
+    -58.69662,
+    -38.57949
+   ],
+   "zona": "BA sur",
+   "fuente": "OpenStreetMap relation/12938249",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Quequén"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -63.37051,
+    -41.15394
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap node/6781960108",
+   "confianza": "OSM, sin verificar que sea apto para pesca"
+  },
+  {
+   "nombre": "El Espigón",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -63.00941,
+    -41.12125
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "OpenStreetMap node/7512368485",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "El Pescadero",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -64.25734,
+    -42.61931
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "OpenStreetMap node/10300681535",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Puerto Pirámides"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -67.36154,
+    -45.65741
+   ],
+   "zona": "Golfo San Jorge",
+   "fuente": "OpenStreetMap node/12140881214",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Comodoro Rivadavia"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -67.36071,
+    -45.65229
+   ],
+   "zona": "Golfo San Jorge",
+   "fuente": "OpenStreetMap node/12140881215",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Comodoro Rivadavia"
+  },
+  {
+   "nombre": "El Pique",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -67.35359,
+    -45.63334
+   ],
+   "zona": "Golfo San Jorge",
+   "fuente": "OpenStreetMap node/12140881216",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Comodoro Rivadavia"
+  },
+  {
+   "nombre": "(sin nombre)",
+   "tipo": "pesca (leisure=fishing)",
+   "lonlat": [
+    -67.3561,
+    -45.63704
+   ],
+   "zona": "Golfo San Jorge",
+   "fuente": "OpenStreetMap node/12140881217",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Comodoro Rivadavia"
+  },
+  {
+   "nombre": "Muelle Almirante Storni",
+   "tipo": "pier",
+   "lonlat": [
+    -65.02772,
+    -42.73677
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "OpenStreetMap way/434936862",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Puerto Madryn"
+  },
+  {
+   "nombre": "Muelle Antiguo",
+   "tipo": "pier",
+   "lonlat": [
+    -65.05444,
+    -43.34178
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "OpenStreetMap way/462148420",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Playa Magagna"
+  },
+  {
+   "nombre": "Muelle Luis Piedrabuena",
+   "tipo": "pier",
+   "lonlat": [
+    -65.02798,
+    -42.76262
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "OpenStreetMap relation/17253196",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Puerto Madryn"
+  },
+  {
+   "nombre": "Muelle Presidente Arturo H. Illia",
+   "tipo": "pier",
+   "lonlat": [
+    -69.01898,
+    -51.6073
+   ],
+   "zona": "Santa Cruz",
+   "fuente": "OpenStreetMap way/135989877",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Río Gallegos"
+  },
+  {
+   "nombre": "Muelle de Ramón (1911)",
+   "tipo": "pier",
+   "lonlat": [
+    -65.90252,
+    -47.75594
+   ],
+   "zona": "Santa Cruz",
+   "fuente": "OpenStreetMap way/1343072527",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Puerto Deseado"
+  },
+  {
+   "nombre": "Muelle AFASyN",
+   "tipo": "pier",
+   "lonlat": [
+    -68.30637,
+    -54.81405
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "OpenStreetMap way/183716955",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Nuevo Muelle AFASyN",
+   "tipo": "pier",
+   "lonlat": [
+    -68.31249,
+    -54.81072
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "OpenStreetMap way/290282488",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Muelle Club Náutico",
+   "tipo": "pier",
+   "lonlat": [
+    -68.31249,
+    -54.81072
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "OpenStreetMap way/745788836",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Delfín de amarre",
+   "tipo": "pier",
+   "lonlat": [
+    -68.29358,
+    -54.81132
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "OpenStreetMap way/1016093587",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Muelle A.R.A. Guaraní",
+   "tipo": "pier",
+   "lonlat": [
+    -68.4809,
+    -54.84694
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "OpenStreetMap way/1212897330",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Puerto Carelo",
+   "tipo": "pier",
+   "lonlat": [
+    -68.24687,
+    -54.8682
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "OpenStreetMap way/1573417253",
+   "confianza": "OSM, sin verificar que sea apto para pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Muelle de Santa Teresita",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -56.68899,
+    -36.54201
+   ],
+   "zona": "BA norte",
+   "fuente": "Nominatim (OSM) node/11529433487; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Santa Teresita"
+  },
+  {
+   "nombre": "Muelle de La Lucila del Mar",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -56.67968,
+    -36.65852
+   ],
+   "zona": "BA norte",
+   "fuente": "Nominatim (OSM) node/4071834248; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Lucila del Mar"
+  },
+  {
+   "nombre": "Muelle de Mar de Ajó",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -56.67188,
+    -36.7101
+   ],
+   "zona": "BA norte",
+   "fuente": "Nominatim (OSM) way/142707146; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Mar de Ajó"
+  },
+  {
+   "nombre": "Punta Médanos",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -56.68855,
+    -36.89948
+   ],
+   "zona": "BA norte",
+   "fuente": "Nominatim (OSM) node/4083450080; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Villarobles"
+  },
+  {
+   "nombre": "Nueva Atlantis",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -56.67652,
+    -36.76338
+   ],
+   "zona": "BA norte",
+   "fuente": "Nominatim (OSM) relation/3443508; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Mar de Ajó"
+  },
+  {
+   "nombre": "Tapera de López",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -56.77275,
+    -36.3225
+   ],
+   "zona": "BA norte",
+   "fuente": "Nominatim (OSM) way/91786627; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "San Clemente del Tuyú"
+  },
+  {
+   "nombre": "Santa Clara del Mar",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -57.50635,
+    -37.83593
+   ],
+   "zona": "BA sur",
+   "fuente": "Nominatim (OSM) relation/4741281; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Santa Clara del Mar"
+  },
+  {
+   "nombre": "San Antonio Este (puerto)",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -64.8808,
+    -40.8035
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "Nominatim (OSM) relation/3410253; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "San Antonio Oeste"
+  },
+  {
+   "nombre": "Punta Perdices",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -64.84422,
+    -40.78331
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "Nominatim (OSM) node/13109054523; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "San Antonio Oeste"
+  },
+  {
+   "nombre": "La Mar Grande",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -65.02705,
+    -41.62972
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "Nominatim (OSM) node/3258818336; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca; DUDOSO, el geocoder devolvió otro lugar",
+   "localidad": "Sierra Grande"
+  },
+  {
+   "nombre": "Balneario El Cóndor",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -62.83068,
+    -41.04703
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "Nominatim (OSM) relation/17570994; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "El Cóndor"
+  },
+  {
+   "nombre": "Puerto Pirámides",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -64.28248,
+    -42.57187
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "Nominatim (OSM) relation/9343387; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Puerto Pirámides"
+  },
+  {
+   "nombre": "Playa Unión (Rawson)",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -65.04668,
+    -43.31928
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "Nominatim (OSM) relation/6407653; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Rawson"
+  },
+  {
+   "nombre": "Camarones",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -65.71037,
+    -44.79849
+   ],
+   "zona": "Chubut (golfos Nuevo/San José/Camarones)",
+   "fuente": "Nominatim (OSM) relation/8142980; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Camarones"
+  },
+  {
+   "nombre": "Comodoro Rivadavia (Rada Tilly)",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -67.55578,
+    -45.92385
+   ],
+   "zona": "Golfo San Jorge",
+   "fuente": "Nominatim (OSM) relation/3732555; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Rada Tilly"
+  },
+  {
+   "nombre": "Caleta Olivia",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -67.51751,
+    -46.44212
+   ],
+   "zona": "Golfo San Jorge",
+   "fuente": "Nominatim (OSM) node/198441453; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Caleta Olivia"
+  },
+  {
+   "nombre": "Puerto Deseado",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -65.90132,
+    -47.75162
+   ],
+   "zona": "Santa Cruz",
+   "fuente": "Nominatim (OSM) relation/3439484; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Puerto Deseado"
+  },
+  {
+   "nombre": "Punta Loyola",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -69.01035,
+    -51.60942
+   ],
+   "zona": "Santa Cruz",
+   "fuente": "Nominatim (OSM) node/1494464406; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Río Gallegos"
+  },
+  {
+   "nombre": "Río Grande (costa)",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -67.70186,
+    -53.78583
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "Nominatim (OSM) relation/11347665; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Río Grande"
+  },
+  {
+   "nombre": "Ushuaia (Bahía)",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -68.30841,
+    -54.80731
+   ],
+   "zona": "Tierra del Fuego",
+   "fuente": "Nominatim (OSM) relation/11347693; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Ushuaia"
+  },
+  {
+   "nombre": "Pehuen Co",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -61.55368,
+    -38.99988
+   ],
+   "zona": "BA sur",
+   "fuente": "Nominatim (OSM) relation/3888222; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Pehuén-Co"
+  },
+  {
+   "nombre": "Monte Hermoso",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -61.30496,
+    -38.98355
+   ],
+   "zona": "BA sur",
+   "fuente": "Nominatim (OSM) relation/3888332; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Monte Hermoso"
+  },
+  {
+   "nombre": "Claromecó",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -60.06721,
+    -38.85458
+   ],
+   "zona": "BA sur",
+   "fuente": "Nominatim (OSM) relation/3912154; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Claromecó"
+  },
+  {
+   "nombre": "Necochea (escollera)",
+   "tipo": "localidad/zona de pesca de costa (referencia de prensa)",
+   "lonlat": [
+    -58.699,
+    -38.58302
+   ],
+   "zona": "BA sur",
+   "fuente": "Nominatim (OSM) way/111662512; lugar tomado de prensa (La Nación 2025-12-31, guías Las Grutas)",
+   "confianza": "sin confirmar: coordenada de la localidad, no del punto de pesca",
+   "localidad": "Quequén"
+  },
+  {
+   "nombre": "Las Grutas (costa y restingas)",
+   "tipo": "beach",
+   "lonlat": [
+    -65.083,
+    -40.807
+   ],
+   "zona": "Golfo San Matías (RN)",
+   "fuente": "Coordenada de la localidad (OSM), corregida a mano",
+   "confianza": "localidad",
+   "localidad": "Las Grutas"
+  }
+ ],
+ "_filtro": "Solo lugares a menos de 3 km de la costa de mar (natural=coastline de OSM): se sacaron lagunas y arroyos del interior."
+}

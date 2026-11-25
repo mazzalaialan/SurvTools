@@ -1,0 +1,3687 @@
+{
+ "version": 1,
+ "generatedAt": "2026-11-25",
+ "scope": "Peces y otros animales de pesca deportiva MARÍTIMA de Argentina (costa bonaerense, Patagonia y Tierra del Fuego). 32 especies. Tabla ORIENTATIVA.",
+ "aviso": "Datos orientativos escritos con palabras propias a partir de FishBase (tamaño, dieta, familia), normas oficiales y notas de prensa. No reemplazan la norma de cada provincia. Las advertencias de peligro son de seguridad general. Tiburones y rayas: devolver según la norma de cada provincia.",
+ "como_leer": "Mismo formato que litoral/especies.json: cada dato trae «valor», «fuentes» (ids de la sección fuentes) y «confianza» (oficial / confirmado por 2 fuentes / sin confirmar). Todo lo de FishBase es «sin confirmar» porque es una sola fuente científica no oficial del país; carnadas, señuelos, horarios y la mayoría de las épocas no tienen fuente citable y están marcados. «en_supervivencia» sigue el modelo de survival.json (baits + tip).",
+ "fuentes": {
+  "fishbase": {
+   "nombre": "FishBase, resumen por especie (tamaño máximo y común, biología, nivel trófico, «peligrosidad»)",
+   "url": "https://www.fishbase.se/summary/<Genero-especie>.html (una por especie; ver campo fishbase de cada ficha)",
+   "tipo": "base científica (no oficial del país)",
+   "fecha_dato": "varía por registro (referencias propias en cada página)",
+   "fecha_consulta": "2026-11-25",
+   "licencia": "CC BY-NC (términos de FishBase); se usa mientras la app sea gratuita y sin publicidad, con interruptor para copia paga",
+   "descarga_masiva": "no se hizo descarga masiva: 34 páginas HTML con pausa de 3 s; copia en mar/fishbase/"
+  },
+  "lacapital-2023": {
+   "nombre": "La Capital MdP, «Mar del Plata y Santa Clara, mecas de la pesca embarcada» (2023-04-16)",
+   "url": "https://www.lacapitalmdp.com/mar-del-plata-y-santa-clara-mecas-de-la-pesca-embarcada-ofrecen-aventura-y-variadas-especies/",
+   "tipo": "prensa",
+   "fecha_dato": "2023-04-16",
+   "fecha_consulta": "2026-11-25",
+   "licencia": "sin licencia declarada; solo se tomó el dato de estación por especie (verano/invierno) con palabras propias"
+  },
+  "lanacion-2025": {
+   "nombre": "La Nación, «Playas: dónde se puede pescar en la Costa Atlántica argentina» (2025-12-31)",
+   "url": "https://www.lanacion.com.ar/sociedad/playas-donde-se-puede-pescar-en-la-costa-atlantica-argentina-nid23122025",
+   "tipo": "prensa",
+   "fecha_dato": "2025-12-31",
+   "fecha_consulta": "2026-11-25",
+   "licencia": "sin licencia declarada; solo se tomaron lugares y especies citadas"
+  },
+  "pba-217-07": {
+   "nombre": "Provincia de Buenos Aires, Disposición 217/2007 (Dirección de Desarrollo Pesquero)",
+   "url": "https://normas.gba.gob.ar/documentos/0nvkq6iM.html",
+   "tipo": "oficial",
+   "fecha_dato": "2007-12-06 (vigencia actual sin verificar)",
+   "fecha_consulta": "2026-11-25",
+   "licencia": "sin licencia declarada (se trata como CC BY)"
+  },
+  "rn-ley-5706": {
+   "nombre": "Río Negro, Ley 5706 de pesca deportiva en aguas marítimas (2023)",
+   "url": "https://web.legisrn.gov.ar/legislativa/legislacion/documento?id=10791",
+   "tipo": "oficial",
+   "fecha_dato": "2023",
+   "fecha_consulta": "2026-11-25",
+   "licencia": "sin licencia declarada"
+  },
+  "practica": {
+   "nombre": "Práctica común de pesca de costa (guías de Las Grutas: welcomeargentina.com, patagonia.com.ar, y conocimiento general)",
+   "url": "no hay una página única",
+   "tipo": "SIN FUENTE CITABLE",
+   "fecha_dato": "s/d",
+   "fecha_consulta": "2026-11-25",
+   "licencia": "no aplica"
+  }
+ },
+ "especies": [
+  {
+   "id": "corvina-rubia",
+   "nombre": {
+    "es": "Corvina rubia",
+    "en": "Whitemouth croaker",
+    "pt": "Corvina-branca (castanha)"
+   },
+   "otros_nombres": [
+    "corvina blanca"
+   ],
+   "cientifico": "Micropogonias furnieri",
+   "familia": "Sciaenidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental; FishBase la da desde el Caribe hasta Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 60 cm de largo estándar, común 45 cm; madura a unos 31 cm; vive hasta 7 años. (La nota anterior daba 80 cm y 4-5 kg: sin fuente.) Talla mínima en Buenos Aires: 35 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Micropogonias-furnieri.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "Cambia con la edad: los jóvenes comen crustáceos y moluscos perforadores del fondo; los adultos son comedores de fondo (bentófagos) y a veces pescan peces. Vive sobre fondos de barro y arena, en la costa y los estuarios, en cardúmenes.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "anchoa",
+     "calamar",
+     "lombriz de mar",
+     "cangrejo",
+     "tira de pescado"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "En verano es la corvina que predomina en la pesca embarcada de Mar del Plata y Santa Clara (La Capital); desde costa, primavera-verano en Samborombón (sin fuente citable). Nueva Atlantis y Punta Médanos son sitios típicos (La Nación).",
+    "fuentes": [
+     "lacapital-2023",
+     "lanacion-2025",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Atardecer y noche, con marea creciente y pleamar (sin fuente citable); las salidas embarcadas parten al amanecer (La Capital).",
+    "fuentes": [
+     "lacapital-2023"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo: dientes chicos y espinas leves en las aletas. FishBase: inofensiva para el humano."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Anchoa, calamar o un trozo de pescado fresco",
+     "Lombriz de mar o cangrejo chico",
+     "Fondo con plomada y 2-3 brazoladas"
+    ],
+    "tip": "Es un pez de fondo que sube con la marea a la orilla al atardecer: probá línea de fondo con plomada y carnada de pescado o calamar. Buena para comer.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "Pesca Variada: talla mín. 35 cm (PBA Disp. 217/07)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Micropogonias-furnieri.html"
+   ],
+   "imagen_id": "corvina-rubia",
+   "imagen": {
+    "archivo": "imagenes/corvina-rubia.jpg",
+    "licencia": "CC BY 2.0"
+   }
+  },
+  {
+   "id": "corvina-negra",
+   "nombre": {
+    "es": "Corvina negra",
+    "en": "Black drum",
+    "pt": "Corvina-negra (burriquete)"
+   },
+   "otros_nombres": [
+    "burriquete (portugués)"
+   ],
+   "cientifico": "Pogonias courbina",
+   "familia": "Sciaenidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental, de Río de Janeiro al sur del Golfo San Matías, según FishBase)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 130 cm de largo total (hembras). Pesos: FishBase no da; la nota anterior decía 30+ kg (sin fuente).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Pogonias-courbina.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta; estima un nivel trófico de 3,8 (a partir de parientes: come animales de fondo). Según guías (sin fuente citable): moluscos y crustáceos que tritura con dientes de la garganta.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "cangrejo vivo (de mar o de río)",
+     "almejas",
+     "mejillón"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Primavera-verano (sin fuente citable); La Nación la cita en Tapera de López (bahía de Samborombón, donde se mezclan agua dulce y salada).",
+    "fuentes": [
+     "lanacion-2025",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Noches de pleamar en bahías y desembocaduras (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): ejemplares grandes y pesados, con espinas en las aletas. FishBase: inofensiva. En Buenos Aires es especie «con reserva»: máximo 2 con sacrificio."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Cangrejo vivo",
+     "Almejas o mejillón"
+    ],
+    "tip": "Fondo pesado en bahías y desembocaduras, de noche con pleamar. Los ejemplares grandes hacen fuerza: usá línea gruesa.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA: Pesca Variada Con Reserva (máx. 2 con sacrificio, el resto a devolver)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Pogonias-courbina.html"
+   ],
+   "imagen_id": "corvina-negra",
+   "imagen": {
+    "archivo": "imagenes/corvina-negra.jpeg",
+    "licencia": "CC BY"
+   }
+  },
+  {
+   "id": "pescadilla",
+   "nombre": {
+    "es": "Pescadilla de red (común)",
+    "en": "Striped weakfish",
+    "pt": "Pescada-olhuda"
+   },
+   "otros_nombres": [
+    "pescadilla común",
+    "pescadilla de red"
+   ],
+   "cientifico": "Cynoscion guatucupa",
+   "familia": "Sciaenidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: Brasil, Uruguay, Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 57,5 cm de largo total; madura a 34,6 cm. Talla mínima en Buenos Aires: 30 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Cynoscion-guatucupa.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto; nivel trófico 3,7 «según alimentos hallados» (es decir, carnívoro; qué come exactamente no figura en el resumen). Vive sobre el fondo, más cerca de mar abierto que otras corvinas parecidas (FishBase).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "anchoa",
+     "calamar",
+     "tira de pescado"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Invierno: es la predominante de esa estación en la pesca embarcada de Mar del Plata y Santa Clara (La Capital).",
+    "fuentes": [
+     "lacapital-2023"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Salidas embarcadas al amanecer (La Capital).",
+    "fuentes": [
+     "lacapital-2023"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Anchoa o calamar",
+     "Tira de pescado"
+    ],
+    "tip": "Se pesca de fondo con brazoladas; en invierno es la que más sale embarcado.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada: talla mín. 30 cm (pescadilla de red)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Cynoscion-guatucupa.html"
+   ],
+   "imagen_id": "pescadilla",
+   "imagen": {
+    "archivo": "imagenes/pescadilla.jpg",
+    "licencia": "CC BY 4.0"
+   }
+  },
+  {
+   "id": "pejerrey-de-mar",
+   "nombre": {
+    "es": "Pejerrey de mar (escardón)",
+    "en": "Silverside (Argentine)",
+    "pt": "Peixe-rei marinho"
+   },
+   "otros_nombres": [
+    "escardón",
+    "pejerrey escardón"
+   ],
+   "cientifico": "Odontesthes argentinensis",
+   "familia": "Atherinopsidae",
+   "origen": {
+    "valor": "nativa (sur de Brasil, Uruguay y Argentina; vive en mar, estuarios y a veces agua dulce)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 42,1 cm de largo total; madura a 16 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Odontesthes-argentinensis.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto; nivel trófico 3,7 (estimado). Según guías: plancton, huevos y crustáceos chicos (sin fuente citable).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "lombriz de mar",
+     "tira de calamar o anchoa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "cucharitas pequeñas",
+     "línea con boyas y 3-5 anzuelos chicos"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Invierno en la pesca embarcada (La Capital); desde escolleras y muelles, todo el año con pleamar (sin fuente citable).",
+    "fuentes": [
+     "lacapital-2023",
+     "lanacion-2025",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Cerca de la pleamar (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombriz de mar",
+     "Trocitos de calamar o anchoa"
+    ],
+    "tip": "Anzuelos chicos y carnada fina, con boya y cerca de la pleamar. Es un pez sencillo y rico para comer.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Pesca Dirigida: 40 piezas, hasta 5 anzuelos simples o línea 'lengüe' sin carnada. RN: cupo a fijar",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Odontesthes-argentinensis.html"
+   ],
+   "imagen_id": "pejerrey-de-mar",
+   "imagen": {
+    "archivo": "imagenes/pejerrey-de-mar.jpg",
+    "licencia": "CC BY-SA 3.0"
+   }
+  },
+  {
+   "id": "lisa",
+   "nombre": {
+    "es": "Lisa",
+    "en": "Lebranche mullet",
+    "pt": "Tainha"
+   },
+   "otros_nombres": [
+    "tainha (portugués)"
+   ],
+   "cientifico": "Mugil liza",
+   "familia": "Mugilidae",
+   "origen": {
+    "valor": "nativa (Atlántico Occidental; entra a estuarios y a veces a agua dulce)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 80 cm de largo total y 9 kg; común 40 cm. Talla mínima en Buenos Aires: 45 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Mugil-liza.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "Come materia orgánica del fondo y algas filamentosas (FishBase); por eso no pica a anzuelo con carnada animal. Forma cardúmenes grandes.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "masa de pan",
+     "bollitos de harina",
+     "pasta",
+     "lombriz"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Verano y otoño en bahías, rías y estuarios (sin fuente citable); La Nación la cita en Tapera de López.",
+    "fuentes": [
+     "lanacion-2025",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "No hay dato citable.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Masa de pan o harina",
+     "Pasta cocida"
+    ],
+    "tip": "Probá con línea fina como la del pejerrey y bollitos de masa; busca la desembocadura de arroyos y ríos.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Pesca Dirigida (10/día); talla mín. 45 cm",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Mugil-liza.html"
+   ],
+   "imagen_id": "lisa",
+   "imagen": {
+    "archivo": "imagenes/lisa.jpeg",
+    "licencia": "CC0"
+   }
+  },
+  {
+   "id": "lenguado",
+   "nombre": {
+    "es": "Lenguado",
+    "en": "Flounder (Brazilian)",
+    "pt": "Linguado"
+   },
+   "otros_nombres": [],
+   "cientifico": "Paralichthys orbignyanus / P. isosceles",
+   "familia": "Paralichthyidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: de Brasil a Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: P. orbignyanus hasta 83 cm de largo total (común 32 cm); P. isosceles hasta 32 cm (machos) y 38 cm (hembras). La nota anterior daba 30-70 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Paralichthys-orbignyanus.html, https://www.fishbase.se/summary/Paralichthys-isosceles.html"
+   },
+   "dieta": {
+    "valor": "Los adultos de P. orbignyanus comen crustáceos (camarones y cangrejos) y, menos, peces; los jóvenes, gusanos poliquetos (FishBase). P. isosceles come peces y calamares.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "anchoa o pejerrey vivo o fresco",
+     "calamar"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "vinilo con cabeza plomada, arrastrado por el fondo"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Verano (La Capital, pesca embarcada); fondos arenosos (sin fuente citable).",
+    "fuentes": [
+     "lacapital-2023",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Con marea que mueve el agua (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Pejerrey o anchoa fresca",
+     "Calamar"
+    ],
+    "tip": "Se esconde en la arena: arrastrá la carnada lento por el fondo. En Buenos Aires se admite un anzuelo triple por línea para el lenguado (art. 13).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Dirigida (10/día); lenguado: un anzuelo triple por línea (art. 13)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Paralichthys-orbignyanus.html",
+    "https://www.fishbase.se/summary/Paralichthys-isosceles.html"
+   ],
+   "imagen_id": "lenguado",
+   "imagen": {
+    "archivo": "imagenes/lenguado.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "pez-palo",
+   "nombre": {
+    "es": "Pez palo",
+    "en": "Brazilian flathead",
+    "pt": "Peixe-pau"
+   },
+   "otros_nombres": [
+    "pez palo",
+    "palo"
+   ],
+   "cientifico": "Percophis brasiliensis",
+   "familia": "Percophidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: sur de Brasil a centro de Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 68,5 cm de largo total, común 40 cm; madura a 40,8 cm. Talla mínima en Buenos Aires: 46 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Percophis-brasiliensis.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto; nivel trófico 4,2 «según alimentos hallados»: nivel de depredador; la nota anterior dice que come peces y calamares chicos (sin fuente citable). Vive en fondos de 5 a 75 m.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "tira de calamar o pescado"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "señuelos pequeños de metal y vinilo"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Primavera-verano; fondos de arena (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): dientes filosos; usá pinza. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Tira de calamar o pescado"
+    ],
+    "tip": "Es un depredador de fondo arenoso; tirá cerca del fondo y manipulalo con pinza por los dientes.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada: talla mín. 46 cm",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Percophis-brasiliensis.html"
+   ],
+   "imagen_id": "pez-palo",
+   "imagen": {
+    "archivo": "imagenes/pez-palo.jpg",
+    "licencia": "CC BY 4.0"
+   }
+  },
+  {
+   "id": "salmon-de-mar",
+   "nombre": {
+    "es": "Salmón de mar (falso salmón)",
+    "en": "Argentine sandperch",
+    "pt": "Namorado-argentino"
+   },
+   "otros_nombres": [
+    "falso salmón",
+    "salmón de mar",
+    "namorado (portugués)"
+   ],
+   "cientifico": "Pseudopercis semifasciata",
+   "familia": "Pinguipedidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: de São Paulo al Golfo San Jorge)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 100 cm de largo total y 10 kg publicados (un capitán brasileño cita ejemplares de 12-24 kg: comunicación personal). Talla mínima en Buenos Aires: 37 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Pseudopercis-semifasciata.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta; nivel trófico 3,9 (según alimentos hallados). La nota anterior dice peces, crustáceos y calamares (sin fuente citable). Vive en fondos rocosos y arenosos de hasta 100 m.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar entero",
+     "caballa o anchoa grande"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "jigs pesados"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Aparece tanto en verano como en invierno en la pesca embarcada de Mar del Plata y Santa Clara (La Capital); sobre restingas de 15-40 m (sin fuente citable).",
+    "fuentes": [
+     "lacapital-2023",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Salidas embarcadas al amanecer.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): dientes y fuerza; devolver con cuidado. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Calamar entero",
+     "Caballa o anchoa grande"
+    ],
+    "tip": "Pez de fondo rocoso: se pesca embarcado con calamar entero o jig pesado; hace fuerza para meterse en la roca.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Dirigida (10/día): talla mín. 37 cm. SM: salida embarcada desde San Antonio Este",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Pseudopercis-semifasciata.html"
+   ],
+   "imagen_id": "salmon-de-mar",
+   "imagen": {
+    "archivo": "imagenes/salmon-de-mar.jpg",
+    "licencia": "CC0"
+   }
+  },
+  {
+   "id": "mero",
+   "nombre": {
+    "es": "Mero (Patagonia)",
+    "en": "Patagonian seabass",
+    "pt": "Mero (Garoupa patagônica)"
+   },
+   "otros_nombres": [
+    "mero patagónico"
+   ],
+   "cientifico": "Acanthistius patachonicus",
+   "familia": "Anthiadidae (según FishBase; otras fuentes lo ponen en Serranidae)",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: centro de Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: A. patachonicus hasta 31 cm de largo estándar. (La nota anterior decía 30-60 cm; el «mero» bonaerense A. brasilianus es otra especie y no se consultó.)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Acanthistius-patachonicus.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto; nivel trófico 4,0 (estimado de parientes); la nota anterior dice que come peces y crustáceos de fondos rocosos (sin fuente citable).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "cangrejo",
+     "calamar",
+     "anchoa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Aparece en verano y en invierno en la pesca embarcada (La Capital); fondos rocosos.",
+    "fuentes": [
+     "lacapital-2023",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): espinas en la aleta dorsal y el opérculo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Cangrejo",
+     "Trozos de calamar o pescado"
+    ],
+    "tip": "Vive entre rocas: usá plomada liviana o perdé el aparejo; sacalo rápido para que no se meta en la cueva.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada (sin talla en el texto leído)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Acanthistius-patachonicus.html"
+   ],
+   "imagen_id": "mero",
+   "imagen": {
+    "archivo": "imagenes/mero.jpg",
+    "licencia": "CC0"
+   }
+  },
+  {
+   "id": "brotola",
+   "nombre": {
+    "es": "Brótola",
+    "en": "Brazilian codling",
+    "pt": "Abrótea"
+   },
+   "otros_nombres": [
+    "brótola"
+   ],
+   "cientifico": "Urophycis brasiliensis",
+   "familia": "Phycidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: sur de Brasil a Malvinas)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 58,6 cm de largo total, común 25 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Urophycis-brasiliensis.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto; nivel trófico 3,9 (según alimentos hallados); la nota anterior dice peces y crustáceos chicos (sin fuente citable).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar",
+     "anchoa",
+     "almeja"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Verano en la pesca embarcada (La Capital); La Nación la menciona en playas, muelles y escolleras.",
+    "fuentes": [
+     "lacapital-2023",
+     "lanacion-2025"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Horas de poca luz (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Calamar o anchoa",
+     "Almeja"
+    ],
+    "tip": "Pez de fondo (24-190 m): línea de fondo desde muelle o embarcado.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada (40 piezas)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Urophycis-brasiliensis.html"
+   ],
+   "imagen_id": "brotola",
+   "imagen": {
+    "archivo": null,
+    "nota": "foto libre de iNaturalist ya registrada en la tanda anterior (mar/inat/taxa.json)"
+   }
+  },
+  {
+   "id": "besugo",
+   "nombre": {
+    "es": "Besugo (pargo rojo)",
+    "en": "Red porgy",
+    "pt": "Pargo"
+   },
+   "otros_nombres": [
+    "pargo rojo",
+    "pargo"
+   ],
+   "cientifico": "Pagrus pagrus",
+   "familia": "Sparidae",
+   "origen": {
+    "valor": "nativa en el Atlántico (distribución amplia; en Argentina del Atlántico Sudoccidental)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 91 cm de largo total y 7,7 kg; común 35 cm. Talla mínima en Buenos Aires: 26 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Pagrus-pagrus.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "Come crustáceos, peces y moluscos (FishBase). Vive sobre roca, grava y arena de 10 a 80 m (hasta 250 m).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "camarón",
+     "calamar",
+     "mejillón"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Invierno, pesca embarcada de Mar del Plata (La Capital).",
+    "fuentes": [
+     "lacapital-2023"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Salida embarcada al amanecer.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo: espinas dorsales. FishBase anota «reportes de ciguatera» para la especie (no se verificó dónde ni en qué ejemplares)."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Camarón, calamar o mejillón"
+    ],
+    "tip": "Pez de fondo rocoso y arenoso: pesca embarcada con carnada fresca.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada: talla mín. 26 cm",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Pagrus-pagrus.html"
+   ],
+   "imagen_id": "besugo",
+   "imagen": {
+    "archivo": "imagenes/besugo.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "anchoa-de-banco",
+   "nombre": {
+    "es": "Anchoa de banco (pez azul)",
+    "en": "Bluefish",
+    "pt": "Anchova (enchova)"
+   },
+   "otros_nombres": [
+    "pez azul",
+    "anchoa de banco (nombre de la tabla de Buenos Aires)",
+    "bluefish (inglés)"
+   ],
+   "cientifico": "Pomatomus saltatrix",
+   "familia": "Pomatomidae",
+   "origen": {
+    "valor": "nativa; especie de distribución casi mundial en aguas templadas y subtropicales",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 130 cm de largo total y 14,4 kg; común 60 cm. (La nota anterior daba 40-70 cm y 5+ kg.)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Pomatomus-saltatrix.html"
+   },
+   "dieta": {
+    "valor": "Depredador voraz que ataca cardúmenes de peces (a veces mata mucho más de lo que come); también come crustáceos y cefalópodos. Va en grupos sueltos. FishBase: muerde al ser manipulado.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "anchoas"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "cucharas de metal",
+     "poppers",
+     "cable de acero fino porque corta la línea"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Verano, cuando hay más calor (La Capital); cardúmenes cerca de la costa (sin fuente citable).",
+    "fuentes": [
+     "lacapital-2023",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Amanecer y atardecer (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto: FishBase la clasifica como «traumatogénica» y dice que muerde al manipularla; dientes muy afilados. Pinza, guante y cuidado con los dedos."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Pescado fresco chico (anchoa)"
+    ],
+    "tip": "Usá un tramo de cable de acero antes del anzuelo porque corta el nylon. Sacá el anzuelo con alicate largo.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada (40 piezas)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Pomatomus-saltatrix.html"
+   ],
+   "imagen_id": "anchoa-de-banco",
+   "imagen": {
+    "archivo": "imagenes/anchoa-de-banco.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "palometa",
+   "nombre": {
+    "es": "Palometa",
+    "en": "Parona leatherjack",
+    "pt": "Palometa"
+   },
+   "otros_nombres": [
+    "palometa"
+   ],
+   "cientifico": "Parona signata",
+   "familia": "Carangidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: sur de Brasil a sur de Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 60 cm de largo total (estimado, no medido), común 40 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Parona-signata.html"
+   },
+   "dieta": {
+    "valor": "FishBase: nivel trófico 3,4 (según alimentos hallados); no trae texto de dieta. La nota anterior dice peces chicos y camarones (sin fuente citable).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar",
+     "anchoa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Invierno en la pesca embarcada (La Capital).",
+    "fuentes": [
+     "lacapital-2023"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Salida al amanecer.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Calamar o anchoa"
+    ],
+    "tip": "Pesca embarcada o desde escolleras con carnada fresca.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Parona-signata.html"
+   ],
+   "imagen_id": "palometa",
+   "imagen": {
+    "archivo": null,
+    "nota": "foto libre de iNaturalist ya registrada en la tanda anterior (mar/inat/taxa.json)"
+   }
+  },
+  {
+   "id": "pez-limon",
+   "nombre": {
+    "es": "Pez limón (palometón)",
+    "en": "Yellowtail kingfish",
+    "pt": "Olhete (Seriola)"
+   },
+   "otros_nombres": [
+    "palometón",
+    "yellowtail kingfish (inglés)"
+   ],
+   "cientifico": "Seriola lalandi",
+   "familia": "Carangidae",
+   "origen": {
+    "valor": "nativa; especie de distribución circumglobal en mares templados y subtropicales",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 250 cm de largo total y 96,8 kg; común 80 cm. (La nota anterior: 60-100 cm, hasta 30 kg.)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Seriola-lalandi.html"
+   },
+   "dieta": {
+    "valor": "Los adultos comen peces chicos, calamares y crustáceos (FishBase); viven cerca de costas rocosas, arrecifes e islas, solos o en grupos chicos.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "sardina o caballa viva"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "jigs",
+     "poppers",
+     "línea gruesa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Verano en la pesca embarcada (La Capital); prefiere agua de 18 a 24 °C (FishBase).",
+    "fuentes": [
+     "lacapital-2023",
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Salidas al amanecer.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio: muy fuerte y rápido, cuidado con los anzuelos al subirlo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Sardina o caballa viva"
+    ],
+    "tip": "Pez muy fuerte de agua abierta: línea gruesa, freno firme y carnada viva.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Dirigida (10/día)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Seriola-lalandi.html"
+   ],
+   "imagen_id": "pez-limon",
+   "imagen": {
+    "archivo": "imagenes/pez-limon.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "caballa",
+   "nombre": {
+    "es": "Caballa",
+    "en": "Chub mackerel",
+    "pt": "Cavala"
+   },
+   "otros_nombres": [
+    "caballa"
+   ],
+   "cientifico": "Scomber colias",
+   "familia": "Scombridae",
+   "origen": {
+    "valor": "nativa; distribución en todo el Atlántico templado",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 55 cm de largo total.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Scomber-colias.html"
+   },
+   "dieta": {
+    "valor": "Juveniles y adultos comen sobre todo zooplancton; los grandes suman cefalópodos, crustáceos y peces chicos (FishBase).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "plumas (sabiki)",
+     "cucharitas chicas"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Verano; desde muelles al amanecer y atardecer (sin fuente citable). Sin dato en La Capital.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Amanecer y atardecer (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensiva."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Trozos de pescado como carnada de reserva"
+    ],
+    "tip": "Se pesca con plumas (sabiki) desde muelle cuando pasa el cardumen.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Dirigida (10/día)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Scomber-colias.html"
+   ],
+   "imagen_id": "caballa",
+   "imagen": {
+    "archivo": null,
+    "nota": "foto libre de iNaturalist ya registrada en la tanda anterior (mar/inat/taxa.json)"
+   }
+  },
+  {
+   "id": "congrio",
+   "nombre": {
+    "es": "Congrio",
+    "en": "Conger eel",
+    "pt": "Congro"
+   },
+   "otros_nombres": [
+    "congrio"
+   ],
+   "cientifico": "Conger orbignyanus",
+   "familia": "Congridae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: de Río de Janeiro al Golfo San Jorge)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 112 cm de largo total. (La nota anterior: 60-120 cm.)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Conger-orbignianus.html"
+   },
+   "dieta": {
+    "valor": "Come peces, camarones, cangrejos y moluscos (FishBase). Vive en cuevas de fondos de plataforma.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar o pescado entero, de noche en restingas y escolleras"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Verano-otoño, de noche (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "De noche (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto (sin fuente citable): mordida fuerte, se enrosca; usar guantes y pinza larga. FishBase lo marca como inofensivo."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Pescado entero o calamar"
+    ],
+    "tip": "Sale de noche de las cuevas: pescado entero en escolleras y restingas. Cuidado con la mordida al sacar el anzuelo.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Conger-orbignianus.html"
+   ],
+   "imagen_id": "congrio",
+   "imagen": {
+    "archivo": "imagenes/congrio.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "gatuzo",
+   "nombre": {
+    "es": "Gatuzo",
+    "en": "Narrownose smooth-hound",
+    "pt": "Cação-bagre (cação-cola)"
+   },
+   "otros_nombres": [],
+   "cientifico": "Mustelus schmitti",
+   "familia": "Triakidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: sur de Brasil a norte de Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 92 cm de largo total, común 60 cm. Talla mínima en Buenos Aires: 60 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Mustelus-schmitti.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "Come cangrejos y probablemente otros crustáceos y peces chicos (FishBase).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar",
+     "cangrejo"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Invierno en la pesca embarcada (La Capital).",
+    "fuentes": [
+     "lacapital-2023"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo-medio: dientes chatos (para triturar cangrejos). FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Cangrejo o calamar"
+    ],
+    "tip": "Tiburón chico de fondo: carnada de cangrejo en el fondo. En Buenos Aires hay talla mínima de 60 cm.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada: talla mín. 60 cm. RN: puede incluirse en protección por resolución (art. 22)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Mustelus-schmitti.html"
+   ],
+   "imagen_id": "gatuzo",
+   "imagen": {
+    "archivo": "imagenes/gatuzo.png",
+    "licencia": "CC0"
+   }
+  },
+  {
+   "id": "cazon",
+   "nombre": {
+    "es": "Cazón",
+    "en": "School shark",
+    "pt": "Tubarão-bico-doce"
+   },
+   "otros_nombres": [
+    "cazón",
+    "tiburón vitamínico (por el aceite de hígado)",
+    "school shark (inglés)"
+   ],
+   "cientifico": "Galeorhinus galeus",
+   "familia": "Triakidae",
+   "origen": {
+    "valor": "nativa; especie de distribución mundial en aguas templadas",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 193-195 cm de largo total y 44,7 kg; común 160 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Galeorhinus-galeus.html"
+   },
+   "dieta": {
+    "valor": "Come peces (de fondo y de aguas abiertas), crustáceos, cefalópodos, gusanos y equinodermos (FishBase). Va en grupos chicos y migra mucho.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "pescado fresco",
+     "calamar"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Verano en la pesca embarcada (La Capital); La Nación lo cita «ocasionalmente» en Punta Médanos.",
+    "fuentes": [
+     "lacapital-2023",
+     "lanacion-2025"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "La estación por especie viene de una nota de prensa de pesca embarcada de Mar del Plata y Santa Clara (La Capital 2023); el resto, sin fuente citable."
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio-alto: tiburón de hasta casi 2 m; no sacarlo del agua. FishBase: inofensivo para el humano."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Pescado fresco"
+    ],
+    "tip": "En Buenos Aires y Río Negro hay que devolverlo; si te toca uno, soltalo sin sacarlo del agua y cortá la línea cerca del anzuelo.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "DEVOLUCIÓN OBLIGATORIA en PBA (Dirigida Con Reserva) y RN (protección diferenciada)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Galeorhinus-galeus.html"
+   ],
+   "imagen_id": "cazon",
+   "imagen": {
+    "archivo": "imagenes/cazon.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "escalandrun",
+   "nombre": {
+    "es": "Escalandrún (tiburón toro)",
+    "en": "Sand tiger shark",
+    "pt": "Tubarão-mangona"
+   },
+   "otros_nombres": [
+    "tiburón toro",
+    "sand tiger (inglés)"
+   ],
+   "cientifico": "Carcharias taurus",
+   "familia": "Carchariidae (en FishBase; otras fuentes dicen Odontaspididae)",
+   "origen": {
+    "valor": "nativa (aguas costeras templadas y tropicales de casi todo el mundo)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 330 cm de largo total y 158,8 kg; común 250 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Carcharias-taurus.html"
+   },
+   "dieta": {
+    "valor": "Come peces, tiburones y rayas chicos, calamares, cangrejos y langostas (FishBase). Único tiburón que traga aire para flotar.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "No se indica época de pesca (pesca prohibida con sacrificio); migra a la costa en verano (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "No aplica.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio: dientes enormes, aunque FishBase lo ve como «traumatogénico» (puede lastimar). No es de pesca: devolver."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "No lo busques: especie de devolución obligatoria. Si se enganchó, soltalo ya, sin sacarlo del agua y cortando la línea cerca del anzuelo.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "DEVOLUCIÓN OBLIGATORIA (PBA y RN)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Carcharias-taurus.html"
+   ],
+   "imagen_id": "escalandrun",
+   "imagen": {
+    "archivo": "imagenes/escalandrun.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "bacota",
+   "nombre": {
+    "es": "Bacota (tiburón cobrizo)",
+    "en": "Bronze whaler",
+    "pt": "Tubarão-cobre"
+   },
+   "otros_nombres": [
+    "tiburón cobrizo",
+    "bronze whaler (inglés)"
+   ],
+   "cientifico": "Carcharhinus brachyurus",
+   "familia": "Carcharhinidae",
+   "origen": {
+    "valor": "nativa (costas continentales de mares tropicales y templados)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 325 cm de largo total y 304,6 kg.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Carcharhinus-brachyurus.html"
+   },
+   "dieta": {
+    "valor": "Come peces óseos de fondo y de aguas abiertas, calamares y tiburones y rayas chicos (FishBase). A veces entra en bahías cerca de la costa.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "No aplica (devolución obligatoria).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "No aplica.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto: FishBase lo señala como implicado en ataques a personas. No manipular fuera del agua."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "No es presa: devolución obligatoria en Buenos Aires y Río Negro.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "DEVOLUCIÓN OBLIGATORIA (PBA y RN)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Carcharhinus-brachyurus.html"
+   ],
+   "imagen_id": "bacota",
+   "imagen": {
+    "archivo": "imagenes/bacota.jpeg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "gatopardo",
+   "nombre": {
+    "es": "Gatopardo (tiburón pintado)",
+    "en": "Broadnose sevengill shark",
+    "pt": "Tubarão-sete-guelras"
+   },
+   "otros_nombres": [
+    "tiburón pintado",
+    "sevengill shark (inglés)",
+    "tiburón de siete branquias"
+   ],
+   "cientifico": "Notorynchus cepedianus",
+   "familia": "Hexanchidae",
+   "origen": {
+    "valor": "nativa (costas templadas del mundo)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 300 cm de largo total y 107 kg; común 150 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Notorynchus-cepedianus.html"
+   },
+   "dieta": {
+    "valor": "Come de todo: otros tiburones, rayas, peces óseos, focas, carroña (FishBase). Nada lento cerca del fondo, a veces a 1 m de profundidad.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "No aplica (devolución obligatoria).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "No aplica.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto: FishBase lo considera potencialmente peligroso y «traumatogénico», agresivo si lo provocan. Quitar el anzuelo con cuidado o cortar la línea."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "En Chubut es Monumento Natural provincial (2025): está prohibido llevárselo o mostrarlo como trofeo; hay que devolverlo vivo. Lo mismo en Buenos Aires y Río Negro.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)",
+    "Golfo San Jorge (Chubut-Santa Cruz)"
+   ],
+   "normativa_nota": {
+    "valor": "DEVOLUCIÓN OBLIGATORIA (PBA, RN); en Chubut monumento natural provincial (2025, por prensa) En Chubut es Monumento Natural provincial desde abril de 2025 (devolución obligatoria con vida; número de ley sin confirmar, ver normas.json cb-monumentos-2025).",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Notorynchus-cepedianus.html"
+   ],
+   "imagen_id": "gatopardo",
+   "imagen": {
+    "archivo": "imagenes/gatopardo.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "tiburon-martillo",
+   "nombre": {
+    "es": "Tiburón martillo",
+    "en": "Smooth hammerhead",
+    "pt": "Tubarão-martelo"
+   },
+   "otros_nombres": [
+    "pez martillo",
+    "smooth hammerhead (inglés)"
+   ],
+   "cientifico": "Sphyrna zygaena",
+   "familia": "Sphyrnidae",
+   "origen": {
+    "valor": "nativa (circumglobal, de mares tropicales a templados)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 500 cm de largo total y 400 kg; común 335 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Sphyrna-zygaena.html"
+   },
+   "dieta": {
+    "valor": "Prefiere tiburones y rayas chicos, pero también come peces óseos, camarones, cangrejos y cefalópodos (FishBase).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "No aplica (devolución obligatoria).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "No aplica.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto: tiburón grande; FishBase lo registra como peligroso para el humano."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "No es presa: devolución obligatoria.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "DEVOLUCIÓN OBLIGATORIA (PBA y RN)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Sphyrna-zygaena.html"
+   ],
+   "imagen_id": "tiburon-martillo",
+   "imagen": {
+    "archivo": "imagenes/tiburon-martillo.jpeg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "tiburon-azul",
+   "nombre": {
+    "es": "Tiburón azul",
+    "en": "Blue shark",
+    "pt": "Tubarão-azul"
+   },
+   "otros_nombres": [
+    "tintorera",
+    "blue shark (inglés)"
+   ],
+   "cientifico": "Prionace glauca",
+   "familia": "Carcharhinidae",
+   "origen": {
+    "valor": "nativa (océanos de todo el mundo)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 400 cm de largo total y 205,9 kg.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Prionace-glauca.html"
+   },
+   "dieta": {
+    "valor": "Come peces (arenque, merluza, bacalao, caballa, lenguados), tiburones chicos, calamares, cangrejos pelágicos y carroña (FishBase).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "No aplica (aguas abiertas; protección en Río Negro).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "No aplica.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto: FishBase lo considera potencialmente peligroso."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "No es presa: en Río Negro tiene protección diferenciada.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "RN: protección diferenciada (art. 20). En PBA el texto leído no lo lista",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Prionace-glauca.html"
+   ],
+   "imagen_id": "tiburon-azul",
+   "imagen": {
+    "archivo": null,
+    "nota": "foto libre de iNaturalist ya registrada en la tanda anterior (mar/inat/taxa.json)"
+   }
+  },
+  {
+   "id": "chucho",
+   "nombre": {
+    "es": "Chucho (pejechucho)",
+    "en": "Eagle ray",
+    "pt": "Raia-chita"
+   },
+   "otros_nombres": [
+    "pejechucho",
+    "chucho",
+    "eagle ray (inglés)"
+   ],
+   "cientifico": "Myliobatis goodei",
+   "familia": "Myliobatidae",
+   "origen": {
+    "valor": "nativa (Atlántico Occidental: de Carolina del Sur a Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 125 cm de largo total; común 80 cm de ancho de disco.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Myliobatis-goodei.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta; nivel trófico 3,3 (según alimentos hallados). La nota anterior dice moluscos y crustáceos de fondo (sin fuente citable). Vive de 1 a 130 m.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar",
+     "almeja"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Primavera-verano (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "alto",
+     "texto": "Alto (sin fuente citable): aguijón en la cola; no tocar la cola. FishBase lo marca como inofensivo, pero las rayas con aguijón pueden herir: tratar con precaución."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "Si se engancha, no la agarres por la cola. En Buenos Aires está «con reserva»: máximo 2 con sacrificio.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada Con Reserva (máx. 2 con sacrificio)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Myliobatis-goodei.html"
+   ],
+   "imagen_id": "chucho",
+   "imagen": {
+    "archivo": null,
+    "nota": "foto libre de iNaturalist ya registrada en la tanda anterior (mar/inat/taxa.json)"
+   }
+  },
+  {
+   "id": "raya",
+   "nombre": {
+    "es": "Rayas",
+    "en": "Skates and rays",
+    "pt": "Raias"
+   },
+   "otros_nombres": [
+    "rayas (Atlantoraja castelnaui, Sympterygia bonapartii y otras)"
+   ],
+   "cientifico": "Atlantoraja spp. / Sympterygia spp.",
+   "familia": "Arhynchobatidae",
+   "origen": {
+    "valor": "nativas (Atlántico Sudoccidental: sur de Brasil a Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: A. castelnaui hasta 132 cm de largo total (común 45 cm); S. bonapartii hasta 63 cm de ancho de disco.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Atlantoraja-castelnaui.html, https://www.fishbase.se/summary/Sympterygia-bonapartii.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta (nivel trófico 3,9-4,5). La nota anterior dice moluscos y crustáceos de fondo (sin fuente citable). Ponen huevos en cápsulas con cuernos en fondos de arena o fango.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar",
+     "anchoa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Todo el año (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): espinas en el lomo y la cola. FishBase: inofensivas."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "En Buenos Aires están «con reserva»: máximo 2 con sacrificio, el resto a devolver.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Matías (Río Negro)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada Con Reserva",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Atlantoraja-castelnaui.html",
+    "https://www.fishbase.se/summary/Sympterygia-bonapartii.html"
+   ],
+   "imagen_id": "raya",
+   "imagen": {
+    "archivo": "imagenes/raya.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "pez-angel",
+   "nombre": {
+    "es": "Pez ángel",
+    "en": "Angular angelshark",
+    "pt": "Cação-anjo"
+   },
+   "otros_nombres": [
+    "angular angelshark (inglés)"
+   ],
+   "cientifico": "Squatina guggenheim",
+   "familia": "Squatinidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: sur de Brasil y Argentina)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 129-130 cm de largo total, común 89 cm. Talla mínima en Buenos Aires: 75 cm.",
+    "fuentes": [
+     "fishbase",
+     "pba-217-07"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Squatina-guggenheim.html. La talla mínima, si figura, es de la norma de Buenos Aires."
+   },
+   "dieta": {
+    "valor": "Come sobre todo peces óseos, después crustáceos y moluscos (FishBase); caza enterrado en el fondo.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Primavera-verano (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): mordida rápida y dientes. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "En Buenos Aires está «con reserva»; talla mínima 75 cm y máximo 2 con sacrificio.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Costa bonaerense norte (Punta Rasa a Mar Chiquita)"
+   ],
+   "normativa_nota": {
+    "valor": "PBA Variada Con Reserva: talla mín. 75 cm",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Squatina-guggenheim.html"
+   ],
+   "imagen_id": "pez-angel",
+   "imagen": {
+    "archivo": "imagenes/pez-angel.jpg",
+    "licencia": "CC BY 4.0"
+   }
+  },
+  {
+   "id": "pez-gallo",
+   "nombre": {
+    "es": "Pez gallo",
+    "en": "Elephantfish",
+    "pt": "Peixe-galo"
+   },
+   "otros_nombres": [
+    "pez elefante",
+    "peixe-galo (portugués)"
+   ],
+   "cientifico": "Callorhinchus callorynchus",
+   "familia": "Callorhinchidae",
+   "origen": {
+    "valor": "nativa (Pacífico Sudoriental y Atlántico Sudoccidental)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 89 cm de largo estándar; común 70 cm.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Callorhinchus-callorynchus.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta (nivel trófico 3,4 según estudios de dieta); vive en fondos arenosos y fangosos de 10 a 116 m. La nota anterior dice moluscos y crustáceos (sin fuente citable).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "calamar",
+     "almeja"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Verano-otoño, cuando se acerca a la costa (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio (sin fuente citable): espina dorsal venenosa. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "En Buenos Aires figura como «pez elefante» con reserva (máximo 2 con sacrificio).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)",
+    "Golfo San Jorge (Chubut-Santa Cruz)"
+   ],
+   "normativa_nota": {
+    "valor": "Sin norma hallada (PBA: 'pez elefante' con reserva)",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Callorhinchus-callorynchus.html"
+   ],
+   "imagen_id": "pez-gallo",
+   "imagen": {
+    "archivo": "imagenes/pez-gallo.jpg",
+    "licencia": "Public domain"
+   }
+  },
+  {
+   "id": "robalo",
+   "nombre": {
+    "es": "Róbalo",
+    "en": "Patagonian blennie",
+    "pt": "Robalo-patagônico"
+   },
+   "otros_nombres": [
+    "róbalo patagónico",
+    "Patagonian blennie (inglés)"
+   ],
+   "cientifico": "Eleginops maclovinus",
+   "familia": "Eleginopidae",
+   "origen": {
+    "valor": "nativa (Chile y Patagonia argentina hasta Tierra del Fuego)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 90 cm de largo total (hembras). (La nota anterior daba 25-50 cm, hasta 70 cm.)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Eleginops-maclovinus.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta; nivel trófico 3,5 «según alimentos hallados». Según guías (sin fuente citable): algas, crustáceos, almejas y peces chicos.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "lombriz de mar",
+     "cangrejo",
+     "almejas",
+     "mejillón"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "cucharita chica",
+     "minnows"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Todo el año en Patagonia; más en invierno y primavera, con marea alta (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Con marea alta (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombriz de mar",
+     "Cangrejo o almejas"
+    ],
+    "tip": "Pica desde la orilla con carnada de mar. En Tierra del Fuego rige la Ley 126 (licencia).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)",
+    "Golfo San Jorge (Chubut-Santa Cruz)",
+    "Santa Cruz",
+    "Tierra del Fuego"
+   ],
+   "normativa_nota": {
+    "valor": "RN: permiso de pesca marítima (cupo a fijar). TDF: licencia provincial. Chubut y Santa Cruz: sin norma hallada Tierra del Fuego: Ley 126 exige licencia para la pesca marítima (costa); no se halló cupo ni talla. Chubut y Santa Cruz: sin norma de mar hallada.",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Eleginops-maclovinus.html"
+   ],
+   "imagen_id": "robalo",
+   "imagen": {
+    "archivo": "imagenes/robalo.jpg",
+    "licencia": "CC0"
+   }
+  },
+  {
+   "id": "sargo",
+   "nombre": {
+    "es": "Sargo",
+    "en": "South American silver porgy",
+    "pt": "Sargo"
+   },
+   "otros_nombres": [
+    "sargo"
+   ],
+   "cientifico": "Diplodus argenteus",
+   "familia": "Sparidae",
+   "origen": {
+    "valor": "nativa (Atlántico Occidental: de Brasil a Argentina; FishBase también lo cita en el sur de Florida y las Antillas)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 37,8 cm de largo total y 2,5 kg (confirmado en Uruguay).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Diplodus-argenteus.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta; nivel trófico 3,1 (según alimentos hallados). La nota anterior dice algas y crustáceos (sin fuente citable). Vive en costas rocosas con oleaje y en pozas (FishBase).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "almejas",
+     "mejillón",
+     "cangrejo de restinga"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Verano (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Almejas o mejillón",
+     "Cangrejo de restinga"
+    ],
+    "tip": "Pescalo en restingas y pozas con anzuelo chico y carnada de mar.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)",
+    "Costa bonaerense sur (Mar del Plata a Carmen de Patagones)"
+   ],
+   "normativa_nota": {
+    "valor": "RN: permiso, cupo a fijar",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Diplodus-argenteus.html"
+   ],
+   "imagen_id": "sargo",
+   "imagen": {
+    "archivo": "imagenes/sargo.jpg",
+    "licencia": "CC BY 4.0"
+   }
+  },
+  {
+   "id": "cabrilla",
+   "nombre": {
+    "es": "Cabrilla (escrófalo)",
+    "en": "Patagonian redfish",
+    "pt": "Cabra"
+   },
+   "otros_nombres": [
+    "escrófalo",
+    "Patagonian redfish (inglés)"
+   ],
+   "cientifico": "Sebastes oculatus",
+   "familia": "Sebastidae",
+   "origen": {
+    "valor": "nativa (Pacífico Sudoriental y Atlántico Sudoccidental: Chile, Argentina, Malvinas)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 40,8 cm de largo total.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Sebastes-oculatus.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto de dieta; nivel trófico 3,1 (según alimentos hallados). La nota anterior dice peces y crustáceos chicos (sin fuente citable). Es vivíparo (FishBase).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "mejillón",
+     "anchoa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Todo el año (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "medio",
+     "texto": "Medio: FishBase la clasifica «traumatogénica» (espinas dorsales); usar pinza."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Mejillón o anchoa"
+    ],
+    "tip": "Fondos rocosos; cuidado con las espinas al sacar el anzuelo.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Golfo San Matías (Río Negro)",
+    "Golfos Nuevo y San José (Chubut)",
+    "Golfo San Jorge (Chubut-Santa Cruz)",
+    "Santa Cruz"
+   ],
+   "normativa_nota": {
+    "valor": "Sin norma hallada",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Sebastes-oculatus.html"
+   ],
+   "imagen_id": "cabrilla",
+   "imagen": {
+    "archivo": "imagenes/cabrilla.jpeg",
+    "licencia": "CC BY"
+   }
+  },
+  {
+   "id": "pejerrey-patagonico",
+   "nombre": {
+    "es": "Pejerrey patagónico",
+    "en": "Patagonian silverside",
+    "pt": "Peixe-rei patagônico"
+   },
+   "otros_nombres": [],
+   "cientifico": "Odontesthes nigricans",
+   "familia": "Atherinopsidae",
+   "origen": {
+    "valor": "nativa (Atlántico Sudoccidental: Malvinas, Estrecho de Magallanes y Tierra del Fuego)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 21,6 cm de largo estándar.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Odontesthes-nigricans.html"
+   },
+   "dieta": {
+    "valor": "FishBase no trae texto; nivel trófico 3,6 (estimado). Según guías: zooplancton (sin fuente citable).",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [
+     "lombriz",
+     "masa"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "senuelos_moscas": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin señuelos citados para esta especie."
+   },
+   "mejor_epoca": {
+    "valor": "Primavera-verano (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase: inofensivo."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [
+     "Lombriz",
+     "Masa"
+    ],
+    "tip": "Línea fina con boyas y anzuelos chicos, desde la costa.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Golfo San Jorge (Chubut-Santa Cruz)",
+    "Santa Cruz",
+    "Tierra del Fuego"
+   ],
+   "normativa_nota": {
+    "valor": "TDF/SC: sin norma de mar hallada Chubut, Santa Cruz y Tierra del Fuego: sin norma de mar hallada (ver normas.json).",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Odontesthes-nigricans.html"
+   ],
+   "imagen_id": null,
+   "imagen": {
+    "archivo": null,
+    "nota": "sin imagen libre hallada"
+   }
+  },
+  {
+   "id": "trucha-de-mar",
+   "nombre": {
+    "es": "Trucha marrón de mar (anádroma)",
+    "en": "Sea-run brown trout",
+    "pt": "Truta-marrom"
+   },
+   "otros_nombres": [
+    "trucha marrón de mar",
+    "trucha marrón anádroma",
+    "sea trout (inglés)"
+   ],
+   "cientifico": "Salmo trutta",
+   "familia": "Salmonidae",
+   "origen": {
+    "valor": "introducida (salmónido europeo; en Santa Cruz y Tierra del Fuego hay poblaciones que bajan al mar y vuelven al río)",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "tamano": {
+    "valor": "FishBase: hasta 140 cm de largo estándar, 50 kg; común 72 cm (la especie, no solo la de mar).",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "Una sola fuente científica (FishBase, con referencias propias): https://www.fishbase.se/summary/Salmo-trutta.html"
+   },
+   "dieta": {
+    "valor": "Los jóvenes comen insectos acuáticos y terrestres; los adultos, moluscos, crustáceos y peces chicos (FishBase). Las de mar se alimentan cerca de la costa, no lejos de la desembocadura de su río natal.",
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase, una sola fuente; donde FishBase no trae texto se aclara y se usa su nivel trófico."
+   },
+   "carnadas_naturales": {
+    "valor": [],
+    "fuentes": [],
+    "confianza": "no aplica o no encontrado",
+    "nota": "Sin carnada natural citada para esta especie."
+   },
+   "senuelos_moscas": {
+    "valor": [
+     "cucharitas y moscas en estuarios (ríos Gallegos, Grande, Coyle)"
+    ],
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_epoca": {
+    "valor": "Verano-otoño (sin fuente citable).",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "sin fuente citable (práctica común de pesca de costa); validar con un guía o club antes de publicar"
+   },
+   "mejor_horario": {
+    "valor": "Sin dato.",
+    "fuentes": [
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "peligro": {
+    "valor": {
+     "nivel": "bajo",
+     "texto": "Bajo. FishBase la marca como «plaga potencial» (especie invasora), no peligrosa para el humano."
+    },
+    "fuentes": [
+     "fishbase"
+    ],
+    "confianza": "sin confirmar",
+    "nota": "FishBase marca para cada especie si es inofensiva, traumatogénica o venenosa; cuando el texto dice «sin fuente citable» se agregó criterio general de pesca."
+   },
+   "en_supervivencia": {
+    "baits": [],
+    "tip": "Está regida por la norma continental de cada provincia (devolución obligatoria en varios ríos): consultar el reglamento de la temporada; en Tierra del Fuego, Res. 276/25 (2025/26): solo de día, cuchara o mosca.",
+    "fuentes": [
+     "fishbase",
+     "practica"
+    ],
+    "confianza": "sin confirmar"
+   },
+   "zonas": [
+    "Santa Cruz",
+    "Tierra del Fuego"
+   ],
+   "normativa_nota": {
+    "valor": "Ver reglamentos continentales (ya en la app): devolución obligatoria en varios ríos Tierra del Fuego 2025/26: Res. 276/25 (solo de día, cuchara o mosca, devolución obligatoria desde el 1-3-2026).",
+    "fuentes": [
+     "pba-217-07",
+     "rn-ley-5706"
+    ],
+    "confianza": "oficial para Buenos Aires (texto leído, vigencia sin verificar) y Río Negro; Chubut/Santa Cruz/Tierra del Fuego: ver normas.json"
+   },
+   "fishbase": [
+    "https://www.fishbase.se/summary/Salmo-trutta.html"
+   ],
+   "imagen_id": "trucha-de-mar",
+   "imagen": {
+    "archivo": "imagenes/trucha-de-mar.jpg",
+    "licencia": "Public domain"
+   }
+  }
+ ],
+ "no_encontrado": [
+  "Carnadas y señuelos por especie con fuente citable (solo hay prensa general y guías sin detalle): validar con un guía o club antes de publicar.",
+  "Horarios con fuente para casi todas las especies.",
+  "Lista de nombres comunes de FishBase (no consultada): otros_nombres es de uso común general.",
+  "Peligro de rayas, chucho, pez gallo y pez ángel: FishBase los marca inofensivos; el aviso de aguijón/mordida es criterio general sin fuente citable."
+ ],
+ "contradicciones": [
+  "Tamaños: FishBase da máximos publicados que difieren de los de la primera tanda (por ejemplo corvina rubia 60 cm SL vs 80 cm; róbalo 90 cm vs 70 cm; mero 31 cm vs 60 cm). Se prefirió FishBase y se anotó la diferencia en cada ficha.",
+  "FishBase clasifica Acanthistius en Anthiadidae y Carcharias en Carchariidae; otras fuentes usan Serranidae y Odontaspididae.",
+  "«Mero»: la norma bonaerense no dice cuál especie; en el sur es Acanthistius patachonicus y en Buenos Aires suele ser A. brasilianus (sin consultar)."
+ ]
+}

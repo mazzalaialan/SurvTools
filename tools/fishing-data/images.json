@@ -1,5 +1,5 @@
 {
- "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor). Especies del MAGyP sumadas el 2026-11-24 (anchoa de río … piraña). Provisorias: cucharon (en acuario, con otro pez atrás), chanchita (en una mano), lisa (grabado de una especie cercana), manduba (lámina de Ageneiosus militaris, con aletas rojas: buscar A. inermis gris), carpa herbívora (de tres cuartos, con la cola cortada).",
+ "_": "Imagen de cada pez (app/public/fish/<id>.webp, recortada y a 720 px desde el original). Validadas por vikarg-critico-dibujos el 2026-11-23; licencias confirmadas en Wikimedia Commons. Reemplazos del 2026-11-24 (perca, pejerrey, bagre blanco, pacú, raya) y nuevas (corvina, bagre negro, armado chancho, róbalo). Provisorias: corvina (en manos), armado chancho (pez muerto sobre juncos), virreyna (con otros peces alrededor). Especies del MAGyP sumadas el 2026-11-24 (anchoa de río … piraña). Provisorias: cucharon (en acuario, con otro pez atrás), chanchita (en una mano), lisa (grabado de una especie cercana), manduba (lámina de Ageneiosus militaris, con aletas rojas: buscar A. inermis gris), carpa herbívora (de tres cuartos, con la cola cortada). Peces de mar (2026-11-25): láminas antiguas de dominio público, Commons e iNaturalist con licencia libre; validadas por vikarg-critico-dibujos.",
  "trucha-arcoiris": {
   "file": "trucha-arcoiris.webp",
   "credit": "Duane Raver, U.S. Fish and Wildlife Service (Wikimedia Commons)",
@@ -293,5 +293,173 @@
   "credit": "Ryan Hagerty / USFWS, Grass carp portrait; vía Wikimedia Commons; recortada y espejada",
   "license": "Dominio público",
   "url": "https://commons.wikimedia.org/wiki/File:Grass_carp_portrait.jpg"
+ },
+ "tiburon-azul": {
+  "file": "tiburon-azul.webp",
+  "credit": "(c) Patrick Doll, some rights reserved (CC BY-SA) (iNaturalist); recortada",
+  "license": "cc-by-sa",
+  "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/358688436/medium.jpg"
+ },
+ "pez-limon": {
+  "file": "pez-limon.webp",
+  "credit": "The U.S. Food and Drug Administration (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Seriola_lalandi_(RFEIMG-0260).jpg"
+ },
+ "cazon": {
+  "file": "cazon.webp",
+  "credit": "autor no indicado (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Galeorhinus_galeus.jpg"
+ },
+ "pez-palo": {
+  "file": "pez-palo.webp",
+  "credit": "Oudart del., Giraud sc.; restauración de Edit-pi (Wikimedia Commons); recortada",
+  "license": "CC0",
+  "url": "https://commons.wikimedia.org/wiki/File:Percophis_brasiliensis.png"
+ },
+ "pez-angel": {
+  "file": "pez-angel.webp",
+  "credit": "vinicius_s_domingues (Wikimedia Commons); recortada",
+  "license": "CC BY 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Squatina_guggenheim_221517259.jpg"
+ },
+ "lenguado": {
+  "file": "lenguado.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Paralichthys_orbignyanus.jpg"
+ },
+ "palometa-de-mar": {
+  "file": "palometa-de-mar.webp",
+  "credit": "(c) Nicolas Olejnik, some rights reserved (CC BY), uploaded by Nicolas Olejnik (iNaturalist); recortada",
+  "license": "cc-by",
+  "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/6485817/medium.jpeg"
+ },
+ "raya-de-mar": {
+  "file": "raya-de-mar.webp",
+  "credit": "Albert Günther, M.A., M.D., Ph.D., F.R.S., Keeper of the Department of Zoology i (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Sympterygia_bonapartii.jpg"
+ },
+ "tiburon-martillo": {
+  "file": "tiburon-martillo.webp",
+  "credit": "David Starr Jordan (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:FMIB_51680_Hammer-head_Shark,_Sphyrna_zygaena_L_Hindustan.jpeg"
+ },
+ "besugo": {
+  "file": "besugo.webp",
+  "credit": "SEFSC Pascagoula Laboratory; Collection of Brandi Noble, NOAA/NMFS/SEFSC /  NOAA (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Pagrus_pagrus.jpg"
+ },
+ "anchoa-de-banco": {
+  "file": "anchoa-de-banco.webp",
+  "credit": "SEFSC Pascagoula Laboratory; Collection of Brandi Noble, NOAA/NMFS/SEFSC. (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Fish4397_-_Flickr_-_NOAA_Photo_Library.jpg"
+ },
+ "bacota": {
+  "file": "bacota.webp",
+  "credit": "Edgar Ravenswood Waite (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:FMIB_45520_Carcharinus_brachyurus.jpeg"
+ },
+ "corvina-negra": {
+  "file": "corvina-negra.webp",
+  "credit": "Werner del., Pedretti sc., Cuvier y Valenciennes, Histoire naturelle des poissons (lámina 118, vía BHL / Wikimedia Commons); recortada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Histoire_naturelle_des_poissons_(Pl._118)_(7950011906).jpg"
+ },
+ "corvina-rubia": {
+  "file": "corvina-rubia.webp",
+  "credit": "Cláudio D. Timm (Wikimedia Commons); recortada",
+  "license": "CC BY 2.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Micropogonias_furnieri.jpg"
+ },
+ "pejerrey-de-mar": {
+  "file": "pejerrey-de-mar.webp",
+  "credit": "CHUCAO (Wikimedia Commons); recortada",
+  "license": "CC BY-SA 3.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Odontesthes_argentinensis_Mar_del_Plata.JPG"
+ },
+ "salmon-de-mar": {
+  "file": "salmon-de-mar.webp",
+  "credit": "Werner del., Cuvier y Valenciennes, Histoire naturelle des poissons (lámina 62, vía Biodiversity Heritage Library / Wikimedia Commons); recortada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Histoire_naturelle_des_poissons_(Pl._62)_(7949951854).jpg"
+ },
+ "escalandrun": {
+  "file": "escalandrun.webp",
+  "credit": "D Ross Robertson (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Carcharias_taurus_SI.jpg"
+ },
+ "congrio": {
+  "file": "congrio.webp",
+  "credit": "Paul Louis Oudart (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Conger_orbignianus.jpg"
+ },
+ "chucho": {
+  "file": "chucho.webp",
+  "credit": "Barcode of Life Data System, no known copyright restrictions (public domain) (iNaturalist); recortada",
+  "license": "pd",
+  "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/43930146/medium.png"
+ },
+ "pescadilla": {
+  "file": "pescadilla.webp",
+  "credit": "Werner del., Cuvier y Valenciennes, Histoire naturelle des poissons (lámina 104, vía Biodiversity Heritage Library / Wikimedia Commons); recortada",
+  "license": "Dominio público",
+  "url": "https://commons.wikimedia.org/wiki/File:Histoire_naturelle_des_poissons_(Pl._104)_(7949996660).jpg"
+ },
+ "cabrilla": {
+  "file": "cabrilla.webp",
+  "credit": "Tomás Carranza Perales (iNaturalist); recortada",
+  "license": "CC BY",
+  "url": "https://www.inaturalist.org/observations/106558095"
+ },
+ "caballa": {
+  "file": "caballa.webp",
+  "credit": "(c) Ben Jobson, some rights reserved (CC BY), uploaded by Ben Jobson (iNaturalist); recortada",
+  "license": "cc-by",
+  "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/449387139/medium.jpeg"
+ },
+ "pez-gallo": {
+  "file": "pez-gallo.webp",
+  "credit": "Whitney, William Dwight (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Callorhinchus_callorynchus1.jpg"
+ },
+ "gatopardo": {
+  "file": "gatopardo.webp",
+  "credit": "Frank Edward Clarke (Wikimedia Commons); recortada",
+  "license": "Public domain",
+  "url": "https://commons.wikimedia.org/wiki/File:Notorynchus-cepedianus_by_Frank_Edward_Clarke.jpg"
+ },
+ "brotola": {
+  "file": "brotola.webp",
+  "credit": "(c) Nicolas Olejnik, some rights reserved (CC BY), uploaded by Nicolas Olejnik (iNaturalist); recortada",
+  "license": "cc-by",
+  "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/6485744/medium.jpeg"
+ },
+ "mero": {
+  "file": "mero.webp",
+  "credit": "BravoGonzalo (Wikimedia Commons); recortada",
+  "license": "CC BY-SA 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Acanthistius_patachonicus.jpg"
+ },
+ "gatuzo": {
+  "file": "gatuzo.webp",
+  "credit": "JLfish (Wikimedia Commons); recortada",
+  "license": "CC0",
+  "url": "https://commons.wikimedia.org/wiki/File:Mustelus_schmitti.png"
+ },
+ "sargo": {
+  "file": "sargo.webp",
+  "credit": "Donald Davesne (Wikimedia Commons); recortada",
+  "license": "CC BY 4.0",
+  "url": "https://commons.wikimedia.org/wiki/File:Diplodus_argenteus_706278211.jpg"
  }
 }
