@@ -7487,13 +7487,20 @@ button.country-pack-del {
   margin: 0;
 }
 
-/* Aviso «no es oficial» de Fauna: resaltado, para que nadie salga a cazar fiándose solo de la app. */
-.fauna-notice {
+/* Aviso «no es oficial» (Fauna, Pesca, Clima): resaltado y arriba, para que nadie se fíe solo de la app. */
+.notice-unofficial {
   display: flex;
   gap: 8px;
   align-items: flex-start;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 4px solid var(--fauna-legal);
+  background: color-mix(in srgb, var(--fauna-legal) 14%, transparent);
+  color: var(--text);
+  font-size: var(--fs-sm);
 }
-.fauna-notice-icon {
+.notice-unofficial-icon {
   flex: none;
   margin-top: 2px;
   color: var(--fauna-legal);

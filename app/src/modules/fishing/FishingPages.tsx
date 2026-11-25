@@ -84,16 +84,18 @@ export function FishingHomePage() {
       <h1 className="page-title">{t('sections.fishing')}</h1>
       <FishDataGate state={state}>
         {(data) => (
+          <>
+          <RulesNotice data={data} />
           <div className="card stack" data-testid="fish-status">
             <ZoneControl data={data} />
             <p>{t('fishing.status', { season: data.seasonLabel ?? '', species: data.species.length, sectors: data.sectors.length })}</p>
             {isStale(data) && <p className="fish-stale">{t('fishing.stale')}</p>}
             <FishPackOffer compact />
-            <RulesNotice data={data} />
             <Link className="btn btn-primary btn-block" to="/fishing/map" data-testid="fish-open-map">
               <MapIcon size={20} aria-hidden /> {t('fishing.openMap')}
             </Link>
           </div>
+          </>
         )}
       </FishDataGate>
       <ModuleGrid section="fishing" />
@@ -199,6 +201,7 @@ export function FishPage() {
         return (
           <div className="stack fish-screen" data-testid="fish-page">
             <h1 className="page-title">{speciesName(sp, i18n.language)}</h1>
+            <RulesNotice data={data} />
             {sp.image && (
               <figure className="fish-figure" data-testid="fish-image">
                 <img src={`${import.meta.env.BASE_URL}fish/${sp.image.file}`} alt={speciesName(sp, i18n.language)} loading="lazy" />
@@ -277,7 +280,6 @@ export function FishPage() {
             <h2 className="section-title">{t('fishing.sectorsFor', { count: sectors.length })}</h2>
             <SectorsByRegion data={data} sectors={sectors} speciesId={sp.id} />
             <p className="muted small">{t('fishing.colorsHint')}</p>
-            <RulesNotice data={data} />
           </div>
         );
       }}
@@ -471,6 +473,7 @@ export function FishSectorPage() {
         return (
           <div className="stack fish-screen" data-testid="fish-sector-page">
             <h1 className="page-title">{s.water}</h1>
+            <RulesNotice data={data} pageRef={s.ref} sourceId={s.source} />
             <Link className="btn btn-primary btn-block" to={`/fishing/map?sector=${s.id}`} data-testid="fish-sector-map">
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>
@@ -491,7 +494,6 @@ export function FishSectorPage() {
             <Link className="btn btn-block" to={`/fishing/map?sector=${s.id}`}>
               <MapIcon size={20} aria-hidden /> {t('fishing.seeOnMap')}
             </Link>
-            <RulesNotice data={data} pageRef={s.ref} sourceId={s.source} />
           </div>
         );
       }}

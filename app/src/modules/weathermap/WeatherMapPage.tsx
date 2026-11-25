@@ -542,6 +542,7 @@ export function WeatherMapPage() {
           <RefreshCw size={18} />
         </button>
       </div>
+      <OfficialWeatherNotice />
 
       {!online && <p className="hint" role="status">{t('weatherMap.offline')}</p>}
       {layers.satellite && satStale && (
@@ -729,7 +730,6 @@ export function WeatherMapPage() {
       </section>
 
       <Notice id="weatherMap.disclaimer">{t('weatherMap.disclaimer')}</Notice>
-      <OfficialWeatherNotice />
     </div>
   );
 }

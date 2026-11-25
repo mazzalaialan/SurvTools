@@ -99,6 +99,7 @@ export function WeatherPage() {
   return (
     <div className="stack">
       <h1 className="page-title">{t('modules.weather.title')}</h1>
+      <OfficialWeatherNotice />
       {picker}
 
       {key && (
@@ -194,7 +195,6 @@ export function WeatherPage() {
         <RainAlertsSettings />
         <PressureAlerts />
       </details>
-      <OfficialWeatherNotice />
     </div>
   );
 }

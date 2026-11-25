@@ -96,8 +96,8 @@ function Gate({ children }: { children: (data: FaunaData) => ReactNode }) {
 function Notice({ data }: { data: FaunaData }) {
   const { t } = useTranslation();
   return (
-    <p className="fauna-warning fauna-notice" role="note" data-testid="fauna-notice">
-      <AlertTriangle size={18} aria-hidden className="fauna-notice-icon" />
+    <p className="notice-unofficial" role="note" data-testid="fauna-notice">
+      <AlertTriangle size={18} aria-hidden className="notice-unofficial-icon" />
       <span>
         <strong>{t('fauna.noticeTitle')}</strong> {t('fauna.notice', { date: data.generatedAt.slice(0, 10) })}
       </span>
@@ -300,6 +300,7 @@ export function FaunaProvincePage() {
         return (
           <div className="stack">
             <h1 className="page-title">{p.name}</h1>
+            <Notice data={data} />
             <StatusChip p={p} />
             {p.warning && (
               <p className="fauna-warning" data-status={p.status} data-testid="fauna-warning">
@@ -307,7 +308,6 @@ export function FaunaProvincePage() {
               </p>
             )}
             {p.status === 'vieja' && <p className="fish-stale">{t('fauna.oldNorm')}</p>}
-            <Notice data={data} />
             <DeptMap province={p} />
             {p.zones
               .filter((z) => z.species.length || z.season?.from || z.closed)
@@ -426,6 +426,7 @@ export function FaunaSpeciesPage() {
           const match = (sp: FaunaSpecies) => !q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim()));
           return (
             <>
+              <Notice data={data} />
               <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fauna.search')} aria-label={t('fauna.search')} />
               {(['mammal', 'bird'] as const).map((g) => {
                 const list = data.species.filter((s) => s.group === g && match(s)).sort((a, b) => faunaName(a, a.id, i18n.language).localeCompare(faunaName(b, b.id, i18n.language), 'es'));
@@ -466,6 +467,7 @@ export function FaunaSpeciesDetailPage() {
         return (
           <div className="stack">
             <h1 className="page-title">{faunaName(sp, sp.id, i18n.language)}</h1>
+            <Notice data={data} />
             {sp.cientifico && (
               <p>
                 <i>{sp.cientifico}</i>
@@ -556,7 +558,6 @@ export function FaunaSpeciesDetailPage() {
                 </ul>
               </section>
             )}
-            <Notice data={data} />
           </div>
         );
       }}

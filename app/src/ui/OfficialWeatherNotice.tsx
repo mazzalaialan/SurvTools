@@ -1,3 +1,4 @@
+import { AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/core/settings/settings';
 
@@ -12,11 +13,14 @@ export function OfficialWeatherNotice() {
   const country = useSettings((s) => s.settings.country);
   const brazil = country === 'BR';
   return (
-    <p className="hint" style={{ margin: 0 }} data-testid="official-weather-notice">
+    <p className="notice-unofficial" role="note" data-testid="official-weather-notice">
+      <AlertTriangle size={18} aria-hidden className="notice-unofficial-icon" />
+      <span>
       {t(brazil ? 'legal.br' : 'legal.smn')}{' '}
       <a href={brazil ? 'https://alertas2.inmet.gov.br' : 'https://www.smn.gob.ar/alertas'} target="_blank" rel="noreferrer">
         {t(brazil ? 'legal.brLink' : 'legal.smnLink')}
       </a>
+      </span>
     </p>
   );
 }

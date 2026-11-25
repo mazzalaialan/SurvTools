@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Fish, Loader2, Mail, Phone } from 'lucide-react';
+import { AlertTriangle, Fish, Loader2, Mail, Phone } from 'lucide-react';
 import { useSettings } from '@/core/settings/settings';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
@@ -131,14 +131,17 @@ export function RulesNotice({ data, pageRef, sourceId }: { data: FishData; pageR
   const { t } = useTranslation();
   const src = sourceId ? data.sources.find((x) => x.id === sourceId) : undefined;
   return (
-    <p className="fish-notice" data-testid="fish-notice">
-      {t('fishing.notice', { season: data.seasonLabel ?? '', date: data.generatedAt.slice(0, 10) })}{' '}
+    <p className="notice-unofficial" role="note" data-testid="fish-notice">
+      <AlertTriangle size={18} aria-hidden className="notice-unofficial-icon" />
+      <span>
+      <strong>{t('fishing.noticeTitle')}</strong> {t('fishing.notice', { season: data.seasonLabel ?? '', date: data.generatedAt.slice(0, 10) })}{' '}
       {pageRef && `${t('fishing.sourceOf', { ref: pageRef })}: `}
       {src && (
         <a href={src.url} target="_blank" rel="noreferrer">
           {src.name}
         </a>
       )}
+      </span>
     </p>
   );
 }

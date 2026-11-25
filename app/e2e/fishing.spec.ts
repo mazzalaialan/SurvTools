@@ -24,7 +24,7 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   await expect(page.getByTestId('fish-pack-offer')).toBeVisible();
   await page.getByTestId('fish-pack-get').click();
   await expect(page.getByTestId('fish-status')).toContainText('2 peces');
-  await expect(page.getByTestId('fish-notice')).toContainText('No es oficial');
+  await expect(page.getByTestId('fish-notice')).toContainText('No es información oficial');
 
   // Mapa: todos los tramos; con la perca, uno solo.
   await page.getByTestId('fish-open-map').click();
