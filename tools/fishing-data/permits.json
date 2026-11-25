@@ -382,9 +382,30 @@
   "where": "En línea: se solicita la licencia con el DNI, se imprime la boleta y se paga en cualquier sucursal del Banco Provincia o BAPRO Pagos; a las 72 h se imprime el carnet. Consultas en Torre Gubernamental I, calle 12 y 51, piso 5, La Plata (lunes a viernes 8 a 18 h). Sin costo: jubilados, pensionados, discapacitados, veteranos de Malvinas y menores de 14."
  },
  "Chaco": {
-  "items": [],
+  "items": [
+   {
+    "type": "Anual embarcada",
+    "price": "17 litros de gasoil (≈ $32.300)"
+   },
+   {
+    "type": "Anual costa",
+    "price": "5 litros (≈ $9.500)"
+   },
+   {
+    "type": "Jubilados",
+    "price": "9 litros"
+   },
+   {
+    "type": "Turista nacional 1 a 5 días",
+    "price": "7 a 18 litros"
+   },
+   {
+    "type": "Turista internacional, por día",
+    "price": "15 litros"
+   }
+  ],
   "extra": [
-   "No encontramos los precios 2026 oficiales."
+   "Valores en litros de gasoil Infinia YPF Resistencia (Disp. 294/23), según AICACYP y Aire Libre: sin confirmar."
   ],
   "buyUrl": "https://carnet.chaco.gob.ar/",
   "date": "2026-11-25",
@@ -435,10 +456,35 @@
   "where": "Trámite personal (no hay venta en línea): Dirección de Registro, Control y Fiscalización, Ministerio de la Producción y Ambiente, Belgrano 1090, Formosa (CP 3600); también oficinas en Clorinda (Libertad 1168), El Colorado, Pirané, Ingeniero Juárez y Posta Cambio Zalazar. Llevar DNI, 2 fotos 3x3, constancia de domicilio y comprobante de depósito en el Banco de Formosa (cuenta 000269470/11). Duración aprox. 30 minutos."
  },
  "Misiones": {
-  "items": [],
+  "items": [
+   {
+    "type": "Licencia base (se suma a la categoría)",
+    "price": "$1.650"
+   },
+   {
+    "type": "Categoría A (costa)",
+    "price": "$4.700"
+   },
+   {
+    "type": "Categoría B (remo)",
+    "price": "$8.000"
+   },
+   {
+    "type": "Categoría C (motor)",
+    "price": "$16.500"
+   },
+   {
+    "type": "Turista nacional 1 / 7 / 20 días",
+    "price": "$6.500 / $12.000 / $15.500"
+   },
+   {
+    "type": "Turista extranjero 1 / 7 / 20 días",
+    "price": "$8.300 / $16.500 / $20.400"
+   }
+  ],
   "extra": [
-   "Licencia digital por el portal de autogestión (pago en línea y carnet por correo). No encontramos los precios 2026.",
-   "Teléfono tomado de prensa: confirmalo."
+   "Teléfono tomado de prensa: confirmalo.",
+   "Valores 2025 (Res. 028/25), según prensa: sin confirmar; puede haber valores 2026."
   ],
   "buyUrl": "https://licenciadepesca.ecologia.misiones.gob.ar/app/login",
   "infoUrl": "https://ecologia.misiones.gob.ar/autogestion-de-licencias-de-pesca/",
@@ -592,12 +638,29 @@
   ]
  },
  "Mendoza": {
-  "items": [],
+  "items": [
+   {
+    "type": "Carnet anual",
+    "price": "$35.000"
+   },
+   {
+    "type": "Otras provincias o país: 15 días",
+    "price": "$30.000"
+   },
+   {
+    "type": "1 día",
+    "price": "$10.000"
+   },
+   {
+    "type": "Sin cargo",
+    "who": "menores de 18 y personas con discapacidad"
+   }
+  ],
   "extra": [
-   "Hay nueve categorías de carnet; no encontramos los importes 2026 publicados.",
    "Obligatorio: la Res. 322/2026 exige 'contar con el carnet de pesca al día' (Art. 1, pág. 2).",
    "Se vende en agentes de venta habilitados, delegaciones regionales (Zona Este, Valle de Uco, San Rafael, General Alvear, Malargüe) e Informador Turístico del Parque General San Martín (L a V 9 a 13 h), según nota de 2021; en delegaciones se pide un código previo y se paga con tarjeta. Datos de 2021, verificar.",
-   "Denuncia de sobreprecios: https://www.mendoza.gov.ar/ambiente/consulta/ (nota 2021)."
+   "Denuncia de sobreprecios: https://www.mendoza.gov.ar/ambiente/consulta/ (nota 2021).",
+   "Ley Impositiva 9.680, Anexo de Tasas Retributivas (Ley 4428)."
   ],
   "buyUrl": null,
   "infoUrl": "https://www.mendoza.gov.ar/prensa/permiso-de-pesca-deportiva-nuevas-tarifas-y-canal-electronico-para-denunciar-sobreprecios/",
@@ -863,13 +926,30 @@
  "Jujuy": {
   "items": [
    {
-    "type": "Permiso diario y licencia anual",
-    "price": "no encontrado para 2026"
+    "type": "Diaria",
+    "price": "1,42 litros de nafta Infinia"
+   },
+   {
+    "type": "Carnet libre anual",
+    "price": "5,68 litros"
+   },
+   {
+    "type": "Libre por 3 años",
+    "price": "14,22 litros"
+   },
+   {
+    "type": "Jubilados",
+    "price": "2,13 litros"
+   },
+   {
+    "type": "Sin cargo",
+    "who": "mujeres y niños"
    }
   ],
   "extra": [
    "Los montos 2026 no se hallaron. Una nota periodística (TodoJujuy, 2022) daba permiso diario 200, carnet libre 750; los precios se actualizan según el precio de la nafta premium: sin valor para 2026.",
-   "Trámite de la licencia anual: copia de DNI (ambos lados) y 2 fotos 4x4; lunes a viernes de 7 a 13 h en República de Siria 147, San Salvador de Jujuy (según TodoJujuy 2026 citando al Ministerio de Ambiente; otra nota antigua decía Siria 150)."
+   "Trámite de la licencia anual: copia de DNI (ambos lados) y 2 fotos 4x4; lunes a viernes de 7 a 13 h en República de Siria 147, San Salvador de Jujuy (según TodoJujuy 2026 citando al Ministerio de Ambiente; otra nota antigua decía Siria 150).",
+   "Valores en litros de nafta (según prensa): sin confirmar; el precio en pesos depende del litro del día."
   ],
   "buyUrl": null,
   "infoUrl": "https://www.aicacyp.ar/blog/temporada-de-pesca-2026-jujuy/",
@@ -931,13 +1011,18 @@
  "La Rioja": {
   "items": [
    {
-    "type": "Licencia de pesca",
-    "price": "no encontrado"
+    "type": "General",
+    "price": "$400 (valor 2024)"
+   },
+   {
+    "type": "Jubilados",
+    "price": "$150 (valor 2024)"
    }
   ],
   "extra": [
    "Datos de trámite de una guía de 2024 (sin confirmar): Secretaría de Ambiente, Hipólito Irigoyen 148 (subsuelo), de 8 a 12:30 h, con fotos, copia del DNI y pago del arancel. La ficha de PESQA recomienda confirmar por WhatsApp al 3804669066 (fuente no oficial).",
-   "No hay temporada, cupos ni tallas publicados: confirmar con la Secretaría de Ambiente antes de pescar."
+   "No hay temporada, cupos ni tallas publicados: confirmar con la Secretaría de Ambiente antes de pescar.",
+   "Valores de 2024 según prensa: sin confirmar."
   ],
   "buyUrl": null,
   "infoUrl": "https://www.aicacyp.ar/blog/temporada-de-pesca-2020-en-la-rioja/",

@@ -1345,22 +1345,8 @@
   "replaceSpecies": true
  },
  "mendoza-el-alambrado-laguna": {
-  "species": {
-   "trucha-arcoiris": {
-    "limit": 2,
-    "groupLimit": true
-   },
-   "trucha-marron": {
-    "limit": 2,
-    "groupLimit": true
-   },
-   "trucha-arroyo": {
-    "limit": 2,
-    "groupLimit": true
-   }
-  },
-  "release": false,
-  "replaceSpecies": true
+  "osm": "way/670032243",
+  "approx": "laguna sin nombre en el mapa base, junto al paraje El Alambrado"
  },
  "mendoza-vaca-lauquen-laguna": {
   "species": {
@@ -2109,5 +2095,35 @@
  },
  "jujuy-los-alisos-embalse": {
   "name": "Dique Los Alisos"
+ },
+ "mendoza-la-salina-laguna": {
+  "osm": "relation/11874057"
+ },
+ "san-luis-los-manantiales-embalse": {
+  "osm": "way/190516725",
+  "approx": "embalse sin nombre en el mapa base, identificado por posición (ex Villa General Roca)"
+ },
+ "tdf-milna-rio": {
+  "ign": {
+   "name": "Río Milna",
+   "near": [
+    -67.6043,
+    -54.6219
+   ],
+   "km": 20
+  }
+ },
+ "tdf-malanguena-rio": {
+  "path": [
+   [
+    -66.2676,
+    -54.524
+   ],
+   [
+    -66.4386,
+    -54.669
+   ]
+  ],
+  "approx": "río Malengüena de las cartas del IGN, dibujado como línea recta entre su naciente y su desembocadura"
  }
 }
