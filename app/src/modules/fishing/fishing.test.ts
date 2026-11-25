@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { releaseActive, distanceToSector, isStale, seasonStatus, sectorsInZone, sectorsNear, sectorsWithSpecies, speciesClosedUntil, speciesInZone, waters, zoneNear, type FishData, type FishSector } from './fishing';
+import { releaseActive, rulesExpired, distanceToSector, isStale, seasonStatus, sectorsInZone, sectorsNear, sectorsWithSpecies, speciesClosedUntil, speciesInZone, waters, zoneNear, type FishData, type FishSector } from './fishing';
 
 const sector = (id: string, water: string, coords: [number, number][], species: string[]): FishSector => ({
   id,
@@ -114,5 +114,13 @@ describe('pesca: reglas por fecha', () => {
     const st = seasonStatus(season, new Date(2027, 6, 1));
     expect(st.state === 'closed' && st.from?.getMonth()).toBe(9);
     expect(seasonStatus(season, new Date(2027, 9, 15)).state).toBe('open');
+  });
+});
+
+describe('pesca: vencimiento de la norma', () => {
+  it('pasada la vigencia, la norma cargada no vale', () => {
+    expect(rulesExpired({ validUntil: '2027-10-31' }, new Date(2027, 9, 31, 12))).toBe(false);
+    expect(rulesExpired({ validUntil: '2027-10-31' }, new Date(2027, 10, 1))).toBe(true);
+    expect(rulesExpired({}, new Date(2030, 0, 1))).toBe(false);
   });
 });

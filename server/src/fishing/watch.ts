@@ -55,6 +55,8 @@ export interface FishingWatchResult {
   changed: string[];
   failed: string[];
   found: string[];
+  /** Normas vencidas sin reemplazo (se avisa una vez por norma). */
+  expired: string[];
 }
 
 const KEY = (url: string) => `fishing-watch:${url}`;
@@ -67,7 +69,7 @@ export async function runFishingWatch(
   now = new Date(),
   docs: WatchedDoc[] = FISHING_DOCS,
 ): Promise<FishingWatchResult> {
-  const result: FishingWatchResult = { checked: 0, changed: [], failed: [], found: [] };
+  const result: FishingWatchResult = { checked: 0, changed: [], failed: [], found: [], expired: [] };
   if (!docs.some((d) => watchDue(now, d.validUntil))) return result;
   const notes: string[] = [];
   for (const doc of docs) {
@@ -102,6 +104,19 @@ export async function runFishingWatch(
       // Todavía no está (o no responde): se prueba mañana.
     }
   }
+  // Vencida la norma sin que aparezca la nueva: la app ya muestra «Sin regla específica encontrada» en esos tramos. Se avisa una vez, para
+  // revisar si la fuente cambió de dirección (y hay que corregir la URL) o si la norma nueva cambió (se liberó la pesca, otra veda…).
+  for (const doc of docs) {
+    const until = doc.validUntil ?? VALID_UNTIL;
+    if (now.getTime() <= new Date(`${until}T23:59:59Z`).getTime()) continue;
+    const key = `fishing-watch:expired:${doc.url}`;
+    if (getSetting(db, key)) continue;
+    setSetting(db, key, now.toISOString());
+    result.expired.push(doc.label);
+    notes.push(`Venció (${until}) y no se cargó la norma nueva: ${doc.label}\n${doc.url}\nLa app ya muestra «Sin regla específica encontrada» en esos tramos. Revisá si la fuente cambió de dirección o si cambió la norma (por ejemplo, si se liberó la pesca).`);
+  }
+  // Lo último que se revisó queda guardado (settings «fishing-watch:last»), para ver después qué falló y desde cuándo.
+  setSetting(db, 'fishing-watch:last', JSON.stringify({ at: now.toISOString(), ...result }));
   if (notes.length) {
     const text = `${notes.join('\n\n')}\n\nRevisar y regenerar los datos de pesca: tools/fishing-data (README) y docs/PESCA.md. Hasta entonces la app muestra los datos anteriores, con su fecha y el aviso de consultar el reglamento vigente.`;
     if (notifier) {

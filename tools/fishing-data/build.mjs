@@ -49,6 +49,7 @@ const OWN = {
       date: '2026-09-22',
     },
     season: { from: '2026-10-01', to: '2027-09-30' },
+    validUntil: '2027-09-30',
   },
   'Tierra del Fuego': {
     source: {
@@ -59,6 +60,8 @@ const OWN = {
       date: '2026-10-01',
     },
     season: { from: '2026-10-30', to: '2027-05-02' },
+    // La resolución de la temporada siguiente sale en septiembre u octubre.
+    validUntil: '2027-10-29',
     // Art. del Anexo I: desde el 01/03/2027, devolución obligatoria en toda la provincia.
     releaseFrom: '2027-03-01',
     // Art. 3: «no podrá sacrificar más de un (01) ejemplar por día» (donde el ambiente no dice otra cosa).
@@ -78,11 +81,14 @@ OWN.Mendoza = {
   // Art. 2: salmónidos del 01/11/2026 al 01/05/2027 (solo señuelo artificial); pejerrey y perca del 01/12/2026 al 30/09/2027; carpas,
   // dientudos y mojarras todo el año; bagres, cangrejos y anguilas vedados todo el año.
   season: { from: '2026-11-01', to: '2027-05-01' },
+  validUntil: '2027-10-31',
   extraSpecies: {
     pejerrey: { closures: [{ from: '10-01', to: '11-30' }], note: 'Temporada del 01/12/2026 al 30/09/2027 (Res. 322/2026, art. 2).' },
     carpa: { limit: null, note: 'Todo el año (Res. 322/2026, art. 2).' },
   },
 };
+/** Los permisos de temporada del reglamento patagónico 2026/27 valen hasta el 31/10/2027. */
+const PDCP_VALID_UNTIL = '2027-10-31';
 const SOURCES = [
   SOURCE,
   ...Object.values(OWN).map((o) => o.source),
@@ -264,6 +270,8 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
     season: OWN[jur]?.season ?? { from: '2026-11-01', to: '2027-05-01' },
     ...(permits[jur] && { permit: permits[jur] }),
     source: OWN[jur]?.source.id ?? SOURCE.id,
+    // Hasta cuándo vale la norma cargada (después, si no se actualizó, la app dice «Sin regla específica encontrada»).
+    validUntil: OWN[jur]?.validUntil ?? PDCP_VALID_UNTIL,
   });
   // Subtramos que son una regla puntual del mismo río (veda junto a un puente, ventana de extracción, régimen de una especie):
   // van como nota del tramo general («fold» en cuts.json), no como otro dibujo encima del mismo río.
@@ -325,6 +333,7 @@ for (const jur of jurs.split(',').filter((j) => j !== 'Litoral')) {
         .join(' — '),
       ...((cuts[a.id]?.approx || g.approxPoint) && { approx: cuts[a.id]?.approx ?? 'ubicado por coordenada; el agua no está dibujada en el mapa base' }),
       source: OWN[jur]?.source.id ?? SOURCE.id,
+      validUntil: OWN[jur]?.validUntil ?? PDCP_VALID_UNTIL,
       ref: `pág. ${a.fuente?.pagina_impresa ?? a.fuente?.pagina ?? a.fuente?.pagina_pdf ?? '?'}`,
       _shared: !!a.compartido_con,
       _regionName: jur,
@@ -395,7 +404,7 @@ if (jurs.split(',').includes('Litoral')) {
 // Ambientes compartidos (decisión del dueño): el mismo río o lago figura en el anexo de cada jurisdicción con reglas distintas. Se
 // dibuja una sola vez y la ficha muestra el reglamento de cada una, con a quién pertenece. Se juntan solo si el reglamento dice que es
 // compartido y además salieron sobre el mismo dibujo (así no se mezclan dos lagunas homónimas).
-const RULE_KEYS = ['season', 'closed', 'modality', 'catchAndRelease', 'species', 'notes', 'ref', 'name', 'approx', 'speciesInferred'];
+const RULE_KEYS = ['validUntil', 'season', 'closed', 'modality', 'catchAndRelease', 'species', 'notes', 'ref', 'name', 'approx', 'speciesInferred'];
 const byGeo = new Map();
 for (const s of sectors) {
   if (!s._shared) continue;

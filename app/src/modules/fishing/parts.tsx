@@ -4,7 +4,7 @@ import { useSettings } from '@/core/settings/settings';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { useTranslation } from 'react-i18next';
-import { releaseActive, sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
+import { releaseActive, rulesExpired, sectorClosure, seasonStatus, sectorSeason, speciesClosedUntil, zoneName, type FishData, type FishRegion, type FishSector, type Season, type SectorSpecies } from './fishing';
 import type { FishDataState } from './useFishData';
 
 /** Colores y trazos para pintar hasta cuatro peces a la vez (Okabe-Ito, aptos para daltonismo; el trazo los distingue en el tema rojo). */
@@ -43,6 +43,12 @@ export function SeasonBadge({ season, now }: { season: Season | undefined; now?:
 
 export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: FishSector }) {
   const { t } = useTranslation();
+  if (rulesExpired(sector))
+    return (
+      <span className="fish-season" data-state="unknown">
+        {t('fishing.season.expired')}
+      </span>
+    );
   if (sector.closed)
     return (
       <span className="fish-season" data-state="closed">
@@ -68,6 +74,7 @@ export function SectorSeasonBadge({ data, sector }: { data: FishData; sector: Fi
  */
 export type KeepRule = 'forbidden' | 'release' | 'keep' | 'free' | 'unknown';
 export function keepRule(sp: SectorSpecies | undefined, sector: FishSector): KeepRule {
+  if (rulesExpired(sector)) return 'unknown';
   if (sector.closed || sectorClosure(sector)) return 'forbidden';
   if (!sp) return 'unknown';
   // Prohibida todo el año o en veda hoy: rojo.
@@ -84,6 +91,7 @@ const fmtMD = (md: string) => md.split('-').slice(-2).reverse().map(Number).join
 /** Cupo y talla de una especie en un tramo, en una línea. */
 export function speciesRules(t: (k: string, o?: Record<string, unknown>) => string, sp: SectorSpecies, sector: FishSector): string[] {
   const out: string[] = [];
+  if (rulesExpired(sector)) return [t('fishing.rules.expired', { date: sector.validUntil!.split('-').reverse().join('/') })];
   if (sp.forbidden) return [t('fishing.rules.forbidden'), ...(sp.note ? [sp.note] : [])];
   const until = speciesClosedUntil(sp);
   if (until) out.push(t('fishing.rules.closedUntil', { date: until.toLocaleDateString(undefined, { day: 'numeric', month: 'long' }) }));

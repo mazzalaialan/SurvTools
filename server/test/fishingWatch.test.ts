@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { openDb } from '../src/db.ts';
+import { getSetting, openDb } from '../src/db.ts';
 import { nextSeasonUrls, runFishingWatch, watchDue } from '../src/fishing/watch.ts';
 
 const DOCS = [{ label: 'Reglamento', url: 'https://example.org/reglamento.pdf' }];
@@ -74,4 +74,17 @@ test('pesca: cada documento se revisa según su propia vigencia', async () => {
   // Mediados de agosto de 2027: ya toca Santa Cruz (45 días antes del 30/09), todavía no el reglamento común (31/10).
   await runFishingWatch(db, null, () => undefined, f, new Date('2027-08-20T12:00:00Z'), docs);
   assert.deepEqual(seen, ['https://example.org/sc.pdf']);
+});
+
+test('pesca: vencida la norma sin la nueva, avisa una sola vez y deja guardada la última revisión', async () => {
+  const db = openDb(':memory:');
+  const sent: string[] = [];
+  const docs = [{ label: 'Santa Cruz', url: 'https://example.org/sc.pdf', validUntil: '2027-09-30' }];
+  const f = (async () => new Response('x')) as typeof fetch;
+  let r = await runFishingWatch(db, { send: async (_s, t) => void sent.push(t) }, () => undefined, f, new Date('2027-10-05T12:00:00Z'), docs);
+  assert.deepEqual(r.expired, ['Santa Cruz']);
+  r = await runFishingWatch(db, { send: async (_s, t) => void sent.push(t) }, () => undefined, f, new Date('2027-10-06T12:00:00Z'), docs);
+  assert.deepEqual(r.expired, []);
+  assert.equal(sent.filter((t) => /Venció/.test(t)).length, 1);
+  assert.match(getSetting(db, 'fishing-watch:last') ?? '', /"checked":1/);
 });

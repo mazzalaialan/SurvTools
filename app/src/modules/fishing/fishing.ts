@@ -64,6 +64,17 @@ export interface SectorSpecies {
   groupLimit?: boolean;
 }
 
+/**
+ * ¿Venció la norma cargada? Cada tramo (y cada bloque de un ambiente compartido) trae `validUntil`: pasada esa fecha, si el paquete no se
+ * actualizó con la norma nueva, no se muestran reglas viejas como si valieran: se dice «Sin regla específica encontrada» y que se consulte
+ * la norma vigente. El servidor vigila las normas (server/src/fishing/watch.ts) y avisa si cambió la fuente o no apareció la nueva.
+ */
+export function rulesExpired(x: { validUntil?: string }, now: Date = new Date()): boolean {
+  if (!x.validUntil) return false;
+  const [y, m, d] = x.validUntil.split('-').map(Number);
+  return now > new Date(y!, m! - 1, d!, 23, 59, 59);
+}
+
 /** ¿Ya rige la devolución obligatoria por fecha? */
 export function releaseActive(sp: SectorSpecies, now: Date = new Date()): boolean {
   const day = (iso: string) => {
@@ -102,6 +113,8 @@ export interface Season {
 }
 
 export interface FishSector {
+  /** Hasta cuándo vale la norma cargada (ver `rulesExpired`). */
+  validUntil?: string;
   id: string;
   region: string;
   /** Nombre del río, arroyo o lago. */
@@ -144,6 +157,8 @@ export interface FishZone {
 }
 
 export interface FishRegion {
+  /** Hasta cuándo vale la norma cargada. */
+  validUntil?: string;
   id: string;
   name: string;
   /** Zona (cuenca) a la que pertenece: Patagonia, Litoral… */
