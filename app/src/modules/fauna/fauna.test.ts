@@ -63,6 +63,14 @@ describe('datos de fauna', () => {
     expect(locateDept(data, -34.6037, -58.3816)?.province.name).toBe('Ciudad de Buenos Aires');
   });
 
+  it('vedas municipales de Buenos Aires 2026: Pergamino en veda para caza menor, con su nota', () => {
+    const ba = provinceBySlug(data, 'buenos-aires')!;
+    const z = ba.zones.find((x) => x.id === 'ba-caza-menor');
+    expect(deptState(z, 'Pergamino')).toMatchObject({ state: 'closed' });
+    expect(deptState(z, 'Pergamino').text).toMatch(/municipio/);
+    expect(deptState(z, 'Tandil').state).toBe('total');
+  });
+
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {
     for (const sp of data.species) expect(sp.nombre.es).toBeTruthy();
     expect(whereHunted(data, 'jabali').length).toBeGreaterThan(3);

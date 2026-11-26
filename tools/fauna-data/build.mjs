@@ -234,6 +234,7 @@ if (unknown.size) console.warn(`Especies de las zonas sin ficha: ${[...unknown].
 // Departamentos (IGN, simplificados por departments.mjs) y qué departamentos toca cada zona (departamentos-zonas.json, del relevamiento).
 const depts = opt(join(work, 'ign', 'departamentos-simple.json'));
 const deptZones = opt(join(work, 'departamentos-zonas.json')) ?? {};
+const vedasMunicipales = opt(join(work, 'vedas-municipales.json'));
 /** Fuera del mapa de la provincia: la Antártida y las islas del Atlántico Sur estiran el de Tierra del Fuego hasta hacerlo ilegible. */
 const SKIP_DEPT = /antártida|atlántico sur/i;
 if (depts)
@@ -258,6 +259,16 @@ if (depts)
         // Ubicado a mano por rutas, sin mapa oficial: la app lo avisa como aproximado.
         approx: dz.aproximado || undefined,
       };
+      // Vedas municipales (Buenos Aires: lista oficial de la temporada, vedas-municipales.json): esos partidos van en veda.
+      const vm = vedasMunicipales?.provincia === p.name ? vedasMunicipales.zonas?.[z.id] : undefined;
+      if (vm?.length) {
+        const set = new Set(vm.filter(ok));
+        z.departments.total = z.departments.total.filter((n) => !set.has(n));
+        for (const n of set) delete z.departments.partial[n];
+        z.departments.closed = [...new Set([...z.departments.closed, ...set])];
+        z.departments.note = `Partidos en veda pedida por el municipio (lista oficial de la Dirección de Flora y Fauna, temporada 2026): ${[...set].join(', ')}. En el resto rige la norma provincial.`;
+        z.departments.closedNotes = Object.fromEntries([...set].map((n) => [n, 'Veda pedida por el municipio (lista oficial de la Dirección de Flora y Fauna, temporada 2026).']));
+      }
       // Departamentos urbanos (status.json): en la práctica no se caza, aunque la zona los habilite.
       const urban = status[p.name]?.urbanDepartments;
       if (urban) {
