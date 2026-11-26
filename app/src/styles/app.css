@@ -7594,3 +7594,8 @@ figure.fauna-dept-map {
   /* El navegador le pone 40 px de margen a los <figure>: dentro del desplegable el mapa quedaba angosto. */
   margin: 0;
 }
+
+.fauna-dept-picked[data-state='urban'] {
+  border-left-color: var(--fauna-legal);
+  background: color-mix(in srgb, var(--fauna-legal) 14%, var(--surface));
+}

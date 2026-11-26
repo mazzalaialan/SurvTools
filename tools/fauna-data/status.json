@@ -1,26 +1,133 @@
 {
-  "_": "Estado de la norma de caza de cada provincia (relevamiento del 2026-11-25, ver docs/PENDIENTES.md § Fauna). status: vigente (norma 2026 oficial), vieja (norma de otro año o sin confirmar), prohibida, sin-norma, judicializada. protectedSpecies: especies que la norma da como cazables y también como protegidas; manda la protección (se sacan de las zonas y van a «Dónde no se caza»). El mapa de la sección pinta cada estado de un color.",
-  "Buenos Aires": { "status": "vigente" },
-  "Córdoba": { "status": "vigente" },
-  "La Pampa": { "status": "vigente" },
-  "Santa Fe": { "status": "vigente" },
-  "Entre Ríos": { "status": "judicializada", "warning": "La temporada de caza 2026 de Entre Ríos está judicializada (hay amparos presentados contra la Res. 100/2026). Antes de salir, confirmá con la Dirección de Recursos Naturales y Fiscalización si sigue habilitada." },
-  "Corrientes": { "status": "vigente" },
-  "Chaco": { "status": "vigente" },
-  "Tucumán": { "status": "vigente" },
-  "Salta": { "status": "vigente" },
-  "Río Negro": { "status": "vigente" },
-  "Chubut": { "status": "vigente" },
-  "Santa Cruz": { "status": "vigente" },
-  "San Luis": { "status": "vigente" },
-  "Neuquén": { "status": "vieja", "normYear": 2025 },
-  "Mendoza": { "status": "vieja", "normYear": 2019 },
-  "Formosa": { "status": "vieja", "normYear": 2012, "protectedSpecies": { "pecari-de-collar": "La Disp. Conj. 28/2012 le daba cupo, pero hoy es especie Amenazada en la categorización nacional (Res. 316/2021). Sin una norma más reciente que lo habilite, se toma como no permitida.", "pato-criollo": "La Disp. Conj. 28/2012 le daba cupo (lo llama «pato picazo»), pero hoy es especie Amenazada en la categorización nacional (Res. 795-E/2017). Sin una norma más reciente que lo habilite, se toma como no permitida." } },
-  "Catamarca": { "status": "vieja", "normYear": 2024, "protectedSpecies": { "loro-barranquero": "La Disp. 141/2024 lo lista como cazable (art. 4) y también entre las especies protegidas (art. 5 b). Ante la contradicción se toma como protegido: no se caza." } },
-  "Santiago del Estero": { "status": "vieja", "warning": "Solo se encontró un afiche oficial de la temporada, no la resolución." },
-  "Tierra del Fuego": { "status": "vieja", "normYear": 2021, "warning": "Solo se encontraron notas de prensa de 2021, no la norma." },
-  "San Juan": { "status": "prohibida", "warning": "La caza deportiva está prohibida por ley en San Juan." },
-  "Misiones": { "status": "sin-norma", "warning": "La caza deportiva no está habilitada en Misiones." },
-  "Jujuy": { "status": "sin-norma", "warning": "No se encontró norma de caza deportiva vigente en Jujuy." },
-  "La Rioja": { "status": "sin-norma", "warning": "No se encontró norma de caza deportiva vigente en La Rioja." }
+  "_": "Estado de la norma de caza de cada provincia (relevamiento del 2026-11-25, ver docs/PENDIENTES.md § Fauna). status: vigente (norma 2026 oficial), vieja (norma de otro año o sin confirmar), prohibida, sin-norma, judicializada. protectedSpecies: especies que la norma da como cazables y también como protegidas; manda la protección (se sacan de las zonas y van a «Dónde no se caza»). El mapa de la sección pinta cada estado de un color. urbanDepartments: departamentos donde en la práctica no se caza (distancia mínima a poblados), con su nota. noZones: jurisdicción sin norma de caza relevada (se arma solo con su estado, aviso y fuentes).",
+  "Buenos Aires": {
+    "status": "vigente",
+    "urbanDepartments": {
+      "list": [
+        "Almirante Brown",
+        "Avellaneda",
+        "Berazategui",
+        "Esteban Echeverría",
+        "Ezeiza",
+        "Florencio Varela",
+        "General San Martín",
+        "Hurlingham",
+        "Ituzaingó",
+        "José C. Paz",
+        "La Matanza",
+        "Lanús",
+        "Lomas de Zamora",
+        "Malvinas Argentinas",
+        "Merlo",
+        "Moreno",
+        "Morón",
+        "Quilmes",
+        "San Fernando",
+        "San Isidro",
+        "San Miguel",
+        "Tigre",
+        "Tres de Febrero",
+        "Vicente López"
+      ],
+      "note": "Partido del Gran Buenos Aires (los 24 partidos del INDEC): en la práctica no se caza. La norma prohíbe cazar cerca de ejidos, pueblos, zonas urbanas y suburbanas, caminos públicos y lugares concurridos (300 m con arma de perdigones y 1500 m con arma de bala; Disp. 51/2026 art. 6 y Código Rural art. 273 inc. c). Además, el municipio puede haber pedido la veda (la lista oficial está solo como imagen)."
+    }
+  },
+  "Córdoba": {
+    "status": "vigente"
+  },
+  "La Pampa": {
+    "status": "vigente"
+  },
+  "Santa Fe": {
+    "status": "vigente"
+  },
+  "Entre Ríos": {
+    "status": "judicializada",
+    "warning": "La temporada de caza 2026 de Entre Ríos está judicializada (hay amparos presentados contra la Res. 100/2026). Antes de salir, confirmá con la Dirección de Recursos Naturales y Fiscalización si sigue habilitada."
+  },
+  "Corrientes": {
+    "status": "vigente"
+  },
+  "Chaco": {
+    "status": "vigente"
+  },
+  "Tucumán": {
+    "status": "vigente"
+  },
+  "Salta": {
+    "status": "vigente"
+  },
+  "Río Negro": {
+    "status": "vigente"
+  },
+  "Chubut": {
+    "status": "vigente"
+  },
+  "Santa Cruz": {
+    "status": "vigente"
+  },
+  "San Luis": {
+    "status": "vigente"
+  },
+  "Neuquén": {
+    "status": "vieja",
+    "normYear": 2025
+  },
+  "Mendoza": {
+    "status": "vieja",
+    "normYear": 2019
+  },
+  "Formosa": {
+    "status": "vieja",
+    "normYear": 2012,
+    "protectedSpecies": {
+      "pecari-de-collar": "La Disp. Conj. 28/2012 le daba cupo, pero hoy es especie Amenazada en la categorización nacional (Res. 316/2021). Sin una norma más reciente que lo habilite, se toma como no permitida.",
+      "pato-criollo": "La Disp. Conj. 28/2012 le daba cupo (lo llama «pato picazo»), pero hoy es especie Amenazada en la categorización nacional (Res. 795-E/2017). Sin una norma más reciente que lo habilite, se toma como no permitida."
+    }
+  },
+  "Catamarca": {
+    "status": "vieja",
+    "normYear": 2024,
+    "protectedSpecies": {
+      "loro-barranquero": "La Disp. 141/2024 lo lista como cazable (art. 4) y también entre las especies protegidas (art. 5 b). Ante la contradicción se toma como protegido: no se caza."
+    }
+  },
+  "Santiago del Estero": {
+    "status": "vieja",
+    "warning": "Solo se encontró un afiche oficial de la temporada, no la resolución."
+  },
+  "Tierra del Fuego": {
+    "status": "vieja",
+    "normYear": 2021,
+    "warning": "Solo se encontraron notas de prensa de 2021, no la norma."
+  },
+  "San Juan": {
+    "status": "prohibida",
+    "warning": "La caza deportiva está prohibida por ley en San Juan."
+  },
+  "Misiones": {
+    "status": "sin-norma",
+    "warning": "La caza deportiva no está habilitada en Misiones."
+  },
+  "Jujuy": {
+    "status": "sin-norma",
+    "warning": "No se encontró norma de caza deportiva vigente en Jujuy."
+  },
+  "La Rioja": {
+    "status": "sin-norma",
+    "warning": "No se encontró norma de caza deportiva vigente en La Rioja."
+  },
+  "Ciudad de Buenos Aires": {
+    "status": "prohibida",
+    "noZones": true,
+    "warning": "En la Ciudad de Buenos Aires la caza está prohibida: la Ley 451 (Régimen de Faltas, art. 1.3.26) sanciona la caza de animales que no estén declarados plaga en cualquier parte de la Ciudad, incluso dentro de casas y terrenos particulares, con multa y decomiso.",
+    "sources": [
+      {
+        "title": "Ley 451, Régimen de Faltas de la Ciudad de Buenos Aires, art. 1.3.26 «Caza de animales que no sean declarados plaga» (texto según Ley 2195)",
+        "org": "Legislatura de la Ciudad Autónoma de Buenos Aires",
+        "url": "https://boletinoficial.buenosaires.gob.ar/normativaba/norma/94903",
+        "date": "2026-11-26"
+      }
+    ]
+  }
 }

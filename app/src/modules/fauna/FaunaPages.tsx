@@ -592,6 +592,7 @@ export function FaunaSpeciesDetailPage() {
 const DEPT_FILL: Record<DeptState, string> = {
   total: 'var(--ok)',
   partial: 'url(#fauna-hatch)',
+  urban: 'var(--fauna-legal)',
   closed: 'var(--danger)',
   unknown: 'var(--text-muted)',
 };
@@ -696,7 +697,7 @@ function DeptMap({ province }: { province: HuntProvince }) {
       </svg>
       <figcaption className="stack">
         <span className="fauna-legend">
-          {(['total', 'partial', 'closed', 'unknown'] as const).map((s) => (
+          {(['total', 'partial', 'urban', 'closed', 'unknown'] as const).filter((s) => s !== 'urban' || depts.some((d) => deptState(zone, d.name).state === 'urban')).map((s) => (
             <span key={s}>
               <span className={`fauna-dot fauna-dot-${s}`} style={{ background: s === 'partial' ? undefined : DEPT_FILL[s] }} aria-hidden /> {t(`${deptKey}.${s}`)}
             </span>
@@ -735,7 +736,7 @@ function ZoneFinder({ data }: { data: FaunaData }) {
         (found ? (
           <>
             <p data-testid="fauna-zone-found">
-              {t(found.province.name === 'Buenos Aires' ? 'fauna.finder.inBA' : 'fauna.finder.in', { dept: found.dept, province: found.province.name })}
+              {t(found.province.name === 'Buenos Aires' ? 'fauna.finder.inBA' : found.province.name === 'Ciudad de Buenos Aires' ? 'fauna.finder.inCABA' : 'fauna.finder.in', { dept: found.dept, province: found.province.name })}
             </p>
             <Link className="btn btn-primary btn-block" to={`/fauna/p/${provinceSlug(found.province.name)}?dept=${encodeURIComponent(found.dept)}`} data-testid="fauna-go-zone">
               {t('fauna.finder.go')}

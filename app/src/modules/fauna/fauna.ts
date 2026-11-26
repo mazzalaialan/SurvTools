@@ -34,7 +34,7 @@ export interface HuntZone {
   reserves?: string;
   closed: boolean | null;
   /** Qué departamentos toca la zona según la norma (nombres del IGN). `rest`: qué pasa con los que no nombra. */
-  departments?: { total: string[]; partial: Record<string, string>; closed: string[]; rest: 'total' | 'veda' | null; note?: string; approx?: boolean };
+  departments?: { total: string[]; partial: Record<string, string>; closed: string[]; rest: 'total' | 'veda' | null; note?: string; approx?: boolean; urban?: Record<string, string> };
   season?: { from?: string; to?: string; note?: string };
   species: ZoneSpecies[];
 }
@@ -169,13 +169,14 @@ export function fieldText(v: unknown): { label?: string; text: string }[] {
   return [];
 }
 
-export type DeptState = 'total' | 'partial' | 'closed' | 'unknown';
+export type DeptState = 'total' | 'partial' | 'urban' | 'closed' | 'unknown';
 
 /** Estado de un departamento para una zona: habilitado entero, en parte, en veda o sin dato. */
 export function deptState(zone: HuntZone | undefined, name: string): { state: DeptState; text?: string } {
   const d = zone?.departments;
   if (!d) return { state: 'unknown' };
   if (d.closed.includes(name)) return { state: 'closed' };
+  if (d.urban && name in d.urban) return { state: 'urban', text: d.urban[name] };
   if (d.total.includes(name)) return { state: 'total' };
   if (name in d.partial) return { state: 'partial', text: d.partial[name] };
   if (d.rest === 'total') return { state: 'total' };

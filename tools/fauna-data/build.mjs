@@ -130,7 +130,7 @@ for (const region of REGIONS) {
     const st = status[name];
     if (!st) throw new Error(`Falta el estado de ${name} en status.json`);
     // Si la norma da una especie como cazable y también como protegida, manda la protección: sale de las zonas y se avisa.
-    const { protectedSpecies = {}, ...info } = st;
+    const { protectedSpecies = {}, urbanDepartments: _u, ...info } = st;
     const zonesOut = (Array.isArray(zs) ? zs : []).map(zone).map((z) => ({ ...z, species: z.species.filter((s) => !protectedSpecies[s.id]) }));
     provinces.push({
       name,
@@ -143,6 +143,12 @@ for (const region of REGIONS) {
       sources: sourceList(fuentes[name]),
     });
   }
+}
+// Jurisdicciones sin norma de caza relevada (CABA): solo su estado, aviso y fuentes.
+for (const [name, st] of Object.entries(status)) {
+  if (name.startsWith('_') || !st.noZones || provinces.some((p) => p.name === name)) continue;
+  const { noZones: _n, sources = [], urbanDepartments: _u, ...info } = st;
+  provinces.push({ name, region: 'centro', ...info, zones: [], protected: [], sources });
 }
 const missing = Object.keys(status).filter((k) => !k.startsWith('_') && !provinces.some((p) => p.name === k));
 if (missing.length) throw new Error(`Provincias de status.json sin datos: ${missing.join(', ')}`);
@@ -225,6 +231,14 @@ if (depts)
         // Ubicado a mano por rutas, sin mapa oficial: la app lo avisa como aproximado.
         approx: dz.aproximado || undefined,
       };
+      // Departamentos urbanos (status.json): en la práctica no se caza, aunque la zona los habilite.
+      const urban = status[p.name]?.urbanDepartments;
+      if (urban) {
+        const set = new Set(urban.list);
+        z.departments.total = z.departments.total.filter((n) => !set.has(n));
+        for (const n of set) delete z.departments.partial[n];
+        z.departments.urban = Object.fromEntries(urban.list.filter((n) => names.has(n)).map((n) => [n, urban.note]));
+      }
     }
   }
 

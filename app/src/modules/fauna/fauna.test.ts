@@ -5,8 +5,8 @@ import { deptState, fieldText, locateDept, provinceBySlug, STATUSES, whereHunted
 const data = JSON.parse(readFileSync(new URL('../../../public/data/fauna-AR.json', import.meta.url), 'utf8')) as FaunaData;
 
 describe('datos de fauna', () => {
-  it('trae las 23 provincias, cada una con un estado que el mapa sabe pintar', () => {
-    expect(data.provinces).toHaveLength(23);
+  it('trae las 23 provincias y CABA, cada una con un estado que el mapa sabe pintar', () => {
+    expect(data.provinces).toHaveLength(24);
     for (const p of data.provinces) expect(STATUSES).toContain(p.status);
   });
 
@@ -50,6 +50,17 @@ describe('datos de fauna', () => {
     expect(locateDept(data, -31.73, -60.52)).toMatchObject({ dept: 'Paraná', province: { name: 'Entre Ríos' } });
     expect(locateDept(data, -37.26, -56.98)?.province.name).toBe('Buenos Aires');
     expect(locateDept(data, -34.9, -56.16)).toBeNull();
+  });
+
+  it('conurbano y CABA: Morón «no se caza en la práctica»; CABA prohibida (Ley 451) y ubicada por comuna', () => {
+    const ba = provinceBySlug(data, 'buenos-aires')!;
+    const z = ba.zones.find((x) => x.departments)!;
+    expect(deptState(z, 'Morón').state).toBe('urban');
+    expect(deptState(z, 'Tandil').state).toBe('total');
+    const caba = provinceBySlug(data, 'ciudad-de-buenos-aires')!;
+    expect(caba.status).toBe('prohibida');
+    expect(caba.warning).toMatch(/Ley 451/);
+    expect(locateDept(data, -34.6037, -58.3816)?.province.name).toBe('Ciudad de Buenos Aires');
   });
 
   it('cada ficha tiene nombre y cada especie cazable aparece en alguna zona', () => {

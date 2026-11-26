@@ -293,3 +293,7 @@ Se usan para el asistente «Armar botiquín» (`app/src/modules/firstAid/kitTemp
 - **Fuente:** Instituto Geográfico Nacional (IGN), capa «departamento» del WFS oficial (`https://wms.ign.gob.ar/geoserver/ign/ows`, `typeName=ign:departamento`), bajada el 2026-11-26.
 - **Licencia:** CC BY 4.0: crédito visible en el mapa («límites del Instituto Geográfico Nacional, CC BY 4.0»).
 - **Uso:** `tools/fauna-data/departments.mjs` simplifica los contornos (~1 km) y `build.mjs` los mete en `fauna-AR.json` con qué departamentos nombra cada zona de caza (`~/vikarg-fishing-work/fauna/departamentos-zonas.json`, leído de las normas). Las zonas de Córdoba, Tucumán, Formosa y el Iberá se describen por rutas y se ubicaron a mano: la app las marca como aproximadas.
+
+## Caza en la Ciudad de Buenos Aires
+
+- **Norma:** Ley 451 (Régimen de Faltas de la CABA), art. 1.3.26 «Caza de animales que no sean declarados plaga» (texto según Ley 2195): multa de 100 a 1.000 unidades fijas y decomiso; el doble en áreas protegidas. Fuente: Boletín Oficial de la Ciudad (`https://boletinoficial.buenosaires.gob.ar/normativaba/norma/94903`), consultado el 2026-11-26. Texto oficial sin licencia declarada: se usa con atribución.
