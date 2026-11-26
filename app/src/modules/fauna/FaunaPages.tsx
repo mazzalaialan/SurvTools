@@ -542,7 +542,9 @@ export function FaunaSpeciesDetailPage() {
             {typeof sp.aviso_identificacion === 'string' && <p className="fauna-warning">{sp.aviso_identificacion}</p>}
             {FIELDS.map((f) => {
               const parts = fieldText(sp[f]);
-              if (!parts.length) return null;
+              // «Dónde vive» lleva adentro el mapa de registros («Dónde se encuentra»), aunque no tenga texto.
+              const range = f === 'habitat_distribucion' ? <SpeciesRange key={sp.id} data={data} sp={sp} /> : null;
+              if (!parts.length) return range ? <section key={f} className="card stack"><h2 className="section-title">{t('fauna.field.habitat_distribucion')}</h2>{range}</section> : null;
               return (
                 <section key={f} className={`card stack${f === 'en_supervivencia' ? ' fauna-survival' : ''}`}>
                   <h2 className="section-title">{t(`fauna.field.${f}`)}</h2>
@@ -552,11 +554,11 @@ export function FaunaSpeciesDetailPage() {
                       {x.text}
                     </p>
                   ))}
+                  {/* `key` (en `range`): al pasar a otra especie, el desplegable vuelve a empezar cerrado. */}
+                  {range}
                 </section>
               );
             })}
-            {/* `key`: al pasar a otra especie, el desplegable vuelve a empezar cerrado. */}
-            <SpeciesRange key={sp.id} data={data} sp={sp} />
             <section className="card stack">
               <h2 className="section-title">{t('fauna.whereHunted')}</h2>
               {where.length ? (
@@ -819,7 +821,7 @@ function SpeciesRange({ data, sp }: { data: FaunaData; sp: FaunaSpecies }) {
     return `${d}Z`;
   };
   return (
-    <Collapsible id="fauna-range" testId="fauna-range" title={t('fauna.range.title')} summary={count ? t('fauna.range.summary', { count }) : t('fauna.range.none')}>
+    <Collapsible inline id="fauna-range" testId="fauna-range" title={t('fauna.range.title')} summary={count ? t('fauna.range.summary', { count }) : t('fauna.range.none')}>
       {count > 0 ? (
         <>
           <ZoomSvg viewBox={[0, 0, Math.round(x(box.e)), Math.round(y(box.s))]} label={`${t('fauna.range.title')}: ${faunaName(sp, sp.id, 'es')}`}>
