@@ -159,9 +159,9 @@ mkdirSync(imgOut, { recursive: true });
 const species = [];
 /** «No consta como Monumento Natural…» no es un monumento: solo se guarda cuando la ficha nombra uno. */
 const monument = (m) => (typeof m === 'string' && m.trim() && !/^(no |sin |ninguno)/i.test(m.trim()) ? m : undefined);
-const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}), ...(opt(join(work, 'imagenes-protegidas.json')) ?? {}), ...(opt(join(work, 'imagenes-reptiles.json')) ?? {}) };
+const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}), ...(opt(join(work, 'imagenes-protegidas.json')) ?? {}), ...(opt(join(work, 'imagenes-reptiles.json')) ?? {}), ...(opt(join(work, 'imagenes-artropodos.json')) ?? {}) };
 // Las protegidas (amenazadas y monumentos naturales que no se cazan) traen su grupo en cada ficha (`grupo`).
-for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird'], ['especies-protegidas.json', null], ['especies-reptiles.json', 'reptile']]) {
+for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird'], ['especies-protegidas.json', null], ['especies-reptiles.json', 'reptile'], ['especies-artropodos.json', 'arthropod']]) {
   const d = opt(join(work, file));
   if (!d) continue;
   const list = Array.isArray(d.especies) ? d.especies : Object.values(d).filter((x) => x && typeof x === 'object' && x.id);
@@ -175,7 +175,7 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
     }
     // Crédito de la foto (autor, licencia y página en Wikimedia Commons): se muestra debajo de la imagen.
     const c = credits[sp.id] ?? sp.imagen;
-    const { imagen: _, grupo, monumento_natural, por_que, caza, venenosa, mordedura, ...rest } = sp;
+    const { imagen: _, grupo, monumento_natural, por_que, caza, venenosa, mordedura, picadura, vector, ...rest } = sp;
     species.push({
       ...rest,
       group: group ?? grupo ?? 'mammal',
@@ -184,6 +184,9 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
       // Ficha de una especie que no se caza en ningún lado (no figura en ninguna norma de caza).
       ...(group === null && { protectedOnly: true, naturalMonument: monument(monumento_natural), whyListed: por_que || undefined }),
       // Reptiles: caza prohibida (por defecto), regulada (solo programas o cupos habilitados) o sin regla específica; y si es venenosa.
+      // Insectos y arácnidos: no se cazan ni están protegidos; importan por la picadura y por las enfermedades que transmiten.
+      // Su estado de conservación no se evaluó (no viene al caso): no se muestra.
+      ...(file === 'especies-artropodos.json' && { estado_conservacion: undefined, whyListed: por_que || undefined, venomous: venenosa || undefined, bite: picadura || undefined, vector: vector || undefined }),
       ...(file === 'especies-reptiles.json' && {
         protectedOnly: caza !== 'regulada' && caza !== 'sin-regla',
         regulated: caza === 'regulada' || undefined,

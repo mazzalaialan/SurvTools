@@ -7703,3 +7703,28 @@ figure.fauna-map {
 .fauna-range-dot[data-level='3'] {
   background: color-mix(in srgb, var(--ok) 70%, white 30%);
 }
+
+/* Transmite enfermedades (vinchuca, mosquitos, garrapatas): azul, distinto del verde veneno y del rojo de prohibida. */
+.fauna-vector {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  margin-left: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--info);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.fauna-vector-box {
+  border-left-color: var(--info);
+  background: color-mix(in srgb, var(--info) 14%, var(--surface));
+}
+.fauna-vector-box p {
+  margin: 4px 0 0;
+}
+.fauna-vector-box .fauna-bite-title svg {
+  color: var(--info);
+}

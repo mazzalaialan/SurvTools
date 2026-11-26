@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
-import { AlertTriangle, Loader2, PawPrint, Skull } from 'lucide-react';
+import { AlertTriangle, Bug, Loader2, PawPrint, Skull } from 'lucide-react';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useSettings } from '@/core/settings/settings';
@@ -98,13 +98,13 @@ function Gate({ children }: { children: (data: FaunaData) => ReactNode }) {
 }
 
 /** Aviso fijo: la información es orientativa, manda la norma vigente. */
-function Notice({ data }: { data: FaunaData }) {
+function Notice({ data, health = false }: { data: FaunaData; health?: boolean }) {
   const { t } = useTranslation();
   return (
     <p className="notice-unofficial" role="note" data-testid="fauna-notice">
       <AlertTriangle size={18} aria-hidden className="notice-unofficial-icon" />
       <span>
-        <strong>{t('fauna.noticeTitle')}</strong> {t('fauna.notice', { date: data.generatedAt.slice(0, 10) })}
+        <strong>{t('fauna.noticeTitle')}</strong> {t(health ? 'fauna.noticeHealth' : 'fauna.notice', { date: data.generatedAt.slice(0, 10) })}
       </span>
     </p>
   );
@@ -427,6 +427,11 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
               <Skull size={14} aria-hidden /> {t('fauna.venomous')}
             </span>
           )}
+          {sp.vector && (
+            <span className="fauna-vector">
+              <Bug size={14} aria-hidden /> {t('fauna.vectorBadge')}
+            </span>
+          )}
           {isBanned(sp) && <span className="fauna-banned">{bannedText(t, sp)}</span>}
           {!isBanned(sp) && sp.regulated && <span className="fauna-regulated">{t('fauna.regulated')}</span>}
         </span>
@@ -446,7 +451,7 @@ export function FaunaSpeciesPage() {
       <h1 className="page-title">{t('modules.faunaSpecies.title')}</h1>
       <Gate>
         {(data) => {
-          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : !isBanned(sp) && !sp.regulated)) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
+          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : !isBanned(sp) && !sp.regulated && sp.group !== 'arthropod')) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
           return (
             <>
               <Notice data={data} />
@@ -458,7 +463,7 @@ export function FaunaSpeciesPage() {
                   </button>
                 ))}
               </div>
-              {(['mammal', 'bird', 'reptile'] as const).map((g) => {
+              {(['mammal', 'bird', 'reptile', 'arthropod'] as const).map((g) => {
                 const list = data.species.filter((s) => s.group === g && match(s)).sort((a, b) => faunaName(a, a.id, i18n.language).localeCompare(faunaName(b, b.id, i18n.language), 'es'));
                 return list.length ? (
                   <section key={g} className="stack">
@@ -497,7 +502,8 @@ export function FaunaSpeciesDetailPage() {
         return (
           <div className="stack">
             <h1 className="page-title">{faunaName(sp, sp.id, i18n.language)}</h1>
-            <Notice data={data} />
+            {/* Insectos y arácnidos: el aviso habla de salud, no de caza. */}
+            <Notice data={data} health={sp.group === 'arthropod'} />
             {sp.cientifico && (
               <p>
                 <i>{sp.cientifico}</i>
@@ -526,9 +532,17 @@ export function FaunaSpeciesDetailPage() {
             {sp.venomous && sp.bite && (
               <section className="fauna-warning fauna-bite" data-testid="fauna-bite">
                 <strong className="fauna-bite-title">
-                  <Skull size={18} aria-hidden /> {t('fauna.biteTitle')}
+                  <Skull size={18} aria-hidden /> {t(sp.group === 'arthropod' ? 'fauna.stingTitle' : 'fauna.biteTitle')}
                 </strong>
                 <p>{sp.bite}</p>
+              </section>
+            )}
+            {sp.vector && (
+              <section className="fauna-warning fauna-vector-box" data-testid="fauna-vector">
+                <strong className="fauna-bite-title">
+                  <Bug size={18} aria-hidden /> {t('fauna.vectorTitle')}
+                </strong>
+                <p>{sp.vector}</p>
               </section>
             )}
             {!isBanned(sp) && sp.regulated && <p className="fauna-warning">{t('fauna.regulatedLong')}</p>}

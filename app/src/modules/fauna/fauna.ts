@@ -69,7 +69,7 @@ export interface HuntProvince {
 /** Ficha de una especie. Los campos vienen del relevamiento (texto en español) y pueden faltar. */
 export interface FaunaSpecies {
   id: string;
-  group: 'mammal' | 'bird' | 'reptile';
+  group: 'mammal' | 'bird' | 'reptile' | 'arthropod';
   nombre: { es: string; en?: string; pt?: string };
   otros_nombres?: string[];
   cientifico?: string;
@@ -89,6 +89,8 @@ export interface FaunaSpecies {
   venomous?: boolean;
   /** Registros de GBIF por provincia y departamento (nombres del IGN): dónde se la vio. */
   presence?: Record<string, Record<string, number>>;
+  /** Enfermedad que transmite (vinchuca, mosquitos, garrapatas): cómo se contagia, síntomas y prevención (fuente oficial). */
+  vector?: string;
   /** Primeros auxilios ante una mordedura (fuente oficial). */
   bite?: string;
   [field: string]: unknown;

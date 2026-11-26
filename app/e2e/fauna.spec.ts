@@ -58,4 +58,8 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
   await page.getByTestId('fauna-kind-venomous').click();
   await page.locator('.fish-card', { hasText: 'Yarará grande' }).click();
   await expect(page.getByTestId('fauna-bite')).toContainText('Si te muerde');
+
+  // Insectos y arácnidos: la vinchuca con la enfermedad que transmite.
+  await page.goto('/#/fauna/species/vinchuca');
+  await expect(page.getByTestId('fauna-vector')).toContainText('Chagas');
 });
