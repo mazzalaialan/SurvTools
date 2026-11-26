@@ -151,9 +151,11 @@ if (missing.length) throw new Error(`Provincias de status.json sin datos: ${miss
 const imgOut = here('../../app/public/fauna/');
 mkdirSync(imgOut, { recursive: true });
 const species = [];
-const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}) };
-for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird']]) {
-  const d = read(join(work, file));
+const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}), ...(opt(join(work, 'imagenes-protegidas.json')) ?? {}) };
+// Las protegidas (amenazadas y monumentos naturales que no se cazan) traen su grupo en cada ficha (`grupo`).
+for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird'], ['especies-protegidas.json', null]]) {
+  const d = opt(join(work, file));
+  if (!d) continue;
   const list = Array.isArray(d.especies) ? d.especies : Object.values(d).filter((x) => x && typeof x === 'object' && x.id);
   for (const sp of list) {
     if (alias[sp.id]) continue;
@@ -165,8 +167,15 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
     }
     // Crédito de la foto (autor, licencia y página en Wikimedia Commons): se muestra debajo de la imagen.
     const c = credits[sp.id] ?? sp.imagen;
-    const { imagen: _, ...rest } = sp;
-    species.push({ ...rest, group, image, imageCredit: c ? { author: c.credit, license: c.license, url: c.url } : undefined });
+    const { imagen: _, grupo, monumento_natural, por_que, ...rest } = sp;
+    species.push({
+      ...rest,
+      group: group ?? grupo ?? 'mammal',
+      image,
+      imageCredit: c ? { author: c.credit, license: c.license, url: c.url } : undefined,
+      // Ficha de una especie que no se caza en ningún lado (no figura en ninguna norma de caza).
+      ...(group === null && { protectedOnly: true, naturalMonument: monumento_natural || undefined, whyListed: por_que || undefined }),
+    });
   }
 }
 // Especie amenazada en la categorización nacional (Amenazada, Vulnerable, En peligro): no se caza en ninguna provincia, aunque una

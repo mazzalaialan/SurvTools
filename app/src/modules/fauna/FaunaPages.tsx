@@ -15,6 +15,7 @@ import {
   deptState,
   type DeptState,
   hasFaunaData,
+  isBanned,
   locateDept,
   faunaName,
   fieldText,
@@ -411,7 +412,7 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
   const { t } = useTranslation();
   return (
     <li>
-      <Link className="fish-card" data-threatened={sp.threatened ? '' : undefined} to={`/fauna/species/${sp.id}`}>
+      <Link className="fish-card" data-threatened={isBanned(sp) ? '' : undefined} to={`/fauna/species/${sp.id}`}>
         <span className="fish-card-img">{sp.image ? <img src={`${import.meta.env.BASE_URL}fauna/${sp.image}`} alt="" loading="lazy" /> : <PawPrint size={36} aria-hidden />}</span>
         <span>
           <span className="list-main">{faunaName(sp, sp.id, lang)}</span>
@@ -420,7 +421,7 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
               <i>{sp.cientifico}</i>
             </span>
           )}
-          {sp.threatened && <span className="fauna-banned">{t('fauna.threatened', { status: sp.threatened })}</span>}
+          {isBanned(sp) && <span className="fauna-banned">{bannedText(t, sp)}</span>}
         </span>
       </Link>
     </li>
@@ -431,18 +432,26 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
 export function FaunaSpeciesPage() {
   const { t, i18n } = useTranslation();
   const [q, setQ] = useState('');
+  const [kind, setKind] = useState<'all' | 'hunted' | 'banned'>('all');
   const norm = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   return (
     <div className="stack">
       <h1 className="page-title">{t('modules.faunaSpecies.title')}</h1>
       <Gate>
         {(data) => {
-          const match = (sp: FaunaSpecies) => !q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim()));
+          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'banned') === isBanned(sp)) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
           return (
             <>
               <Notice data={data} />
               <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fauna.search')} aria-label={t('fauna.search')} />
-              {(['mammal', 'bird'] as const).map((g) => {
+              <div className="segmented" role="group" aria-label={t('fauna.kind.label')}>
+                {(['all', 'hunted', 'banned'] as const).map((k) => (
+                  <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)} data-testid={`fauna-kind-${k}`}>
+                    {t(`fauna.kind.${k}`)}
+                  </button>
+                ))}
+              </div>
+              {(['mammal', 'bird', 'reptile'] as const).map((g) => {
                 const list = data.species.filter((s) => s.group === g && match(s)).sort((a, b) => faunaName(a, a.id, i18n.language).localeCompare(faunaName(b, b.id, i18n.language), 'es'));
                 return list.length ? (
                   <section key={g} className="stack">
@@ -507,9 +516,10 @@ export function FaunaSpeciesDetailPage() {
               </figure>
             )}
             {sp.otros_nombres?.length ? <p className="muted">{t('fauna.aka', { names: sp.otros_nombres.join(', ') })}</p> : null}
-            {sp.threatened && (
+            {isBanned(sp) && (
               <p className="fauna-warning" data-status="prohibida" data-testid="fauna-threatened">
-                <strong>{t('fauna.threatened', { status: sp.threatened })}</strong>
+                <strong>{bannedText(t, sp)}</strong>
+                {sp.naturalMonument && <> {t('fauna.monumentOf', { norm: sp.naturalMonument })}</>}
               </p>
             )}
             {typeof sp.aviso === 'string' && <p className="fauna-warning">{sp.aviso}</p>}
@@ -751,4 +761,10 @@ function zoneLabel(name: string, province: string): { title: string; detail?: st
     detail = m[2];
   }
   return { title: s.charAt(0).toUpperCase() + s.slice(1), detail };
+}
+
+/** Por qué no se caza: amenazada (con su categoría) o protegida. */
+function bannedText(t: (k: string, o?: Record<string, unknown>) => string, sp: FaunaSpecies): string {
+  // La categoría va en minúscula en medio de la frase («Especie en peligro crítico: …»).
+  return sp.threatened ? t('fauna.threatened', { status: sp.threatened.toLowerCase() }) : t('fauna.protectedBan');
 }

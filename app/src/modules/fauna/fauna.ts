@@ -69,7 +69,7 @@ export interface HuntProvince {
 /** Ficha de una especie. Los campos vienen del relevamiento (texto en español) y pueden faltar. */
 export interface FaunaSpecies {
   id: string;
-  group: 'mammal' | 'bird';
+  group: 'mammal' | 'bird' | 'reptile';
   nombre: { es: string; en?: string; pt?: string };
   otros_nombres?: string[];
   cientifico?: string;
@@ -77,6 +77,12 @@ export interface FaunaSpecies {
   image?: string;
   /** Categoría nacional de amenaza (p. ej. «Amenazada»): la caza no está permitida en ningún lado. */
   threatened?: string;
+  /** Especie protegida que no se caza en ningún lado (amenazada o monumento natural): se muestra para reconocerla. */
+  protectedOnly?: boolean;
+  /** Monumento natural (nacional o provincial), con su norma. */
+  naturalMonument?: string;
+  /** Por qué está en la lista (p. ej. «se confunde con el guazuncho»). */
+  whyListed?: string;
   [field: string]: unknown;
 }
 
@@ -193,3 +199,6 @@ export function locateDept(data: FaunaData, lat: number, lon: number): { provinc
     for (const d of p.departments ?? []) if (d.rings.some((r) => inRing(r, lon, lat))) return { province: p, dept: d.name };
   return null;
 }
+
+/** ¿La caza de esta especie no está permitida en ningún lado? (amenazada en la categorización nacional o protegida). */
+export const isBanned = (sp: FaunaSpecies): boolean => !!sp.threatened || !!sp.protectedOnly;
