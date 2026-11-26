@@ -50,4 +50,9 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
   await page.getByTestId('fauna-kind-banned').click();
   await expect(page.locator('.fish-card[data-threatened]', { hasText: 'Yaguareté' })).toBeVisible();
   await expect(page.locator('.fish-card', { hasText: 'Jabalí' })).toHaveCount(0);
+
+  // Venenosas: la yarará grande, con su marca y qué hacer ante una mordedura.
+  await page.getByTestId('fauna-kind-venomous').click();
+  await page.locator('.fish-card', { hasText: 'Yarará grande' }).click();
+  await expect(page.getByTestId('fauna-bite')).toContainText('Si te muerde');
 });

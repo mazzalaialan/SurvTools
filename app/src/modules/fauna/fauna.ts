@@ -83,6 +83,12 @@ export interface FaunaSpecies {
   naturalMonument?: string;
   /** Por qué está en la lista (p. ej. «se confunde con el guazuncho»). */
   whyListed?: string;
+  /** Aprovechamiento regulado (solo programas o cupos habilitados, no caza deportiva), p. ej. el lagarto overo. */
+  regulated?: boolean;
+  /** Venenosa (yarará, cascabel, coral): se marca y la ficha muestra qué hacer ante una mordedura. */
+  venomous?: boolean;
+  /** Primeros auxilios ante una mordedura (fuente oficial). */
+  bite?: string;
   [field: string]: unknown;
 }
 

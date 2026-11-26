@@ -157,9 +157,9 @@ if (missing.length) throw new Error(`Provincias de status.json sin datos: ${miss
 const imgOut = here('../../app/public/fauna/');
 mkdirSync(imgOut, { recursive: true });
 const species = [];
-const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}), ...(opt(join(work, 'imagenes-protegidas.json')) ?? {}) };
+const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}), ...(opt(join(work, 'imagenes-protegidas.json')) ?? {}), ...(opt(join(work, 'imagenes-reptiles.json')) ?? {}) };
 // Las protegidas (amenazadas y monumentos naturales que no se cazan) traen su grupo en cada ficha (`grupo`).
-for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird'], ['especies-protegidas.json', null]]) {
+for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird'], ['especies-protegidas.json', null], ['especies-reptiles.json', 'reptile']]) {
   const d = opt(join(work, file));
   if (!d) continue;
   const list = Array.isArray(d.especies) ? d.especies : Object.values(d).filter((x) => x && typeof x === 'object' && x.id);
@@ -173,7 +173,7 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
     }
     // Crédito de la foto (autor, licencia y página en Wikimedia Commons): se muestra debajo de la imagen.
     const c = credits[sp.id] ?? sp.imagen;
-    const { imagen: _, grupo, monumento_natural, por_que, ...rest } = sp;
+    const { imagen: _, grupo, monumento_natural, por_que, caza, venenosa, mordedura, ...rest } = sp;
     species.push({
       ...rest,
       group: group ?? grupo ?? 'mammal',
@@ -181,6 +181,15 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
       imageCredit: c ? { author: c.credit, license: c.license, url: c.url } : undefined,
       // Ficha de una especie que no se caza en ningún lado (no figura en ninguna norma de caza).
       ...(group === null && { protectedOnly: true, naturalMonument: monumento_natural || undefined, whyListed: por_que || undefined }),
+      // Reptiles: caza prohibida (por defecto), regulada (solo programas o cupos habilitados) o sin regla específica; y si es venenosa.
+      ...(file === 'especies-reptiles.json' && {
+        protectedOnly: caza !== 'regulada' && caza !== 'sin-regla',
+        regulated: caza === 'regulada' || undefined,
+        naturalMonument: monumento_natural || undefined,
+        whyListed: por_que || undefined,
+        venomous: venenosa || undefined,
+        bite: mordedura || undefined,
+      }),
     });
   }
 }

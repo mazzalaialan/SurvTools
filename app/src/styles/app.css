@@ -7402,6 +7402,7 @@ button.country-pack-del {
 /* Fauna: mapa de provincias por estado de la norma de caza. */
 :root {
   --fauna-legal: #e08a2c; /* naranja: caza judicializada */
+  --fauna-venom: #7ccf2c; /* verde veneno: especies venenosas */
 }
 .fauna-map svg {
   width: 100%;
@@ -7634,4 +7635,45 @@ figure.fauna-dept-map {
 }
 figure.fauna-map {
   margin: 0;
+}
+
+/* Reptiles: venenosa (marca roja fuerte) y aprovechamiento regulado (naranja). */
+.fauna-venomous {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  /* Verde veneno: distinto del rojo de «caza prohibida». */
+  background: var(--fauna-venom);
+  color: #0d1a05;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.fauna-regulated {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--fauna-legal);
+}
+.fauna-bite p {
+  margin: 4px 0 0;
+}
+
+.fauna-bite {
+  border-left-color: var(--fauna-venom);
+  background: color-mix(in srgb, var(--fauna-venom) 14%, var(--surface));
+}
+.fauna-bite-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fauna-bite-title svg {
+  color: var(--fauna-venom);
+}
+:root[data-theme='red'] .fauna-venomous {
+  background: var(--text);
 }

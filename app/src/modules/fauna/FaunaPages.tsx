@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { usePlacePicker } from '@/modules/waypoints/PlacePicker';
-import { AlertTriangle, Loader2, PawPrint } from 'lucide-react';
+import { AlertTriangle, Loader2, PawPrint, Skull } from 'lucide-react';
 import { useCountryPackStore } from '@/modules/emergency/useCountryPacks';
 import { formatBytes } from '@/modules/emergency/countryDownload';
 import { useSettings } from '@/core/settings/settings';
@@ -422,7 +422,13 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
               <i>{sp.cientifico}</i>
             </span>
           )}
+          {sp.venomous && (
+            <span className="fauna-venomous">
+              <Skull size={14} aria-hidden /> {t('fauna.venomous')}
+            </span>
+          )}
           {isBanned(sp) && <span className="fauna-banned">{bannedText(t, sp)}</span>}
+          {!isBanned(sp) && sp.regulated && <span className="fauna-regulated">{t('fauna.regulated')}</span>}
         </span>
       </Link>
     </li>
@@ -433,20 +439,20 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
 export function FaunaSpeciesPage() {
   const { t, i18n } = useTranslation();
   const [q, setQ] = useState('');
-  const [kind, setKind] = useState<'all' | 'hunted' | 'banned'>('all');
+  const [kind, setKind] = useState<'all' | 'hunted' | 'banned' | 'venomous'>('all');
   const norm = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   return (
     <div className="stack">
       <h1 className="page-title">{t('modules.faunaSpecies.title')}</h1>
       <Gate>
         {(data) => {
-          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'banned') === isBanned(sp)) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
+          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : !isBanned(sp) && !sp.regulated)) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
           return (
             <>
               <Notice data={data} />
               <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fauna.search')} aria-label={t('fauna.search')} />
               <div className="segmented" role="group" aria-label={t('fauna.kind.label')}>
-                {(['all', 'hunted', 'banned'] as const).map((k) => (
+                {(['all', 'hunted', 'banned', 'venomous'] as const).map((k) => (
                   <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)} data-testid={`fauna-kind-${k}`}>
                     {t(`fauna.kind.${k}`)}
                   </button>
@@ -517,6 +523,15 @@ export function FaunaSpeciesDetailPage() {
               </figure>
             )}
             {sp.otros_nombres?.length ? <p className="muted">{t('fauna.aka', { names: sp.otros_nombres.join(', ') })}</p> : null}
+            {sp.venomous && sp.bite && (
+              <section className="fauna-warning fauna-bite" data-testid="fauna-bite">
+                <strong className="fauna-bite-title">
+                  <Skull size={18} aria-hidden /> {t('fauna.biteTitle')}
+                </strong>
+                <p>{sp.bite}</p>
+              </section>
+            )}
+            {!isBanned(sp) && sp.regulated && <p className="fauna-warning">{t('fauna.regulatedLong')}</p>}
             {isBanned(sp) && (
               <p className="fauna-warning" data-status="prohibida" data-testid="fauna-threatened">
                 <strong>{bannedText(t, sp)}</strong>
