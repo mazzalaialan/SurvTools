@@ -23,7 +23,9 @@ const MANUAL = 'manual';
  * escritas. Se recuerda el waypoint elegido; las coordenadas a mano no se guardan
  * (para eso está guardarlas como waypoint). Con `initial` arranca en esas coordenadas.
  */
-export function usePlacePicker(initial?: LatLon | null): { place: PickedPlace | null; picker: ReactNode } {
+export function usePlacePicker(initial?: LatLon | null, opts: { report?: boolean } = {}): { place: PickedPlace | null; picker: ReactNode } {
+  // `report: false`: el lugar elegido no cuenta como «dónde está la persona» (p. ej. mirar la fauna de otra zona no debe cambiar el país detectado).
+  const report = opts.report ?? true;
   const { t } = useTranslation();
   const hasGps = useCapability('geolocation');
   const waypoints = useWaypoints((s) => s.waypoints);
@@ -45,7 +47,7 @@ export function usePlacePicker(initial?: LatLon | null): { place: PickedPlace | 
 
   // Un lugar elegido o escrito a mano cuenta como ubicación nueva (el país donde estás se detecta con eso, sin pedir el GPS).
   useEffect(() => {
-    if (place) reportLocation(place.lat, place.lon);
+    if (place && report) reportLocation(place.lat, place.lon);
   }, [place?.lat, place?.lon]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function choose(value: string) {

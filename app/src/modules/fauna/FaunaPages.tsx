@@ -878,3 +878,170 @@ function SpeciesRange({ data, sp }: { data: FaunaData; sp: FaunaSpecies }) {
     </Collapsible>
   );
 }
+
+const LEVEL_KEY = ['', 'few', 'some', 'many'] as const;
+
+/** Registros de una especie en un departamento, o en toda la provincia si `dept` es null. */
+function recordsIn(sp: FaunaSpecies, prov: string, dept: string | null): number {
+  const p = sp.presence?.[prov];
+  if (!p) return 0;
+  return dept ? (p[dept] ?? 0) : Object.values(p).reduce((a, b) => a + b, 0);
+}
+
+/**
+ * «Fauna en mi zona»: elegís un lugar (GPS, waypoint o coordenadas) o tocás un departamento en el mapa de su provincia, y muestra qué
+ * especies tienen registros ahí (GBIF desde 1990), primero las peligrosas (venenosas y transmisoras). Resolución por departamento.
+ */
+export function FaunaZonePage() {
+  const { t, i18n } = useTranslation();
+  // Mirar la fauna de otra zona no cuenta como «estoy acá» (no cambia el país detectado).
+  const { place, picker } = usePlacePicker(undefined, { report: false });
+  const [manual, setManual] = useState<{ prov: string; dept: string } | null>(null);
+  const placeKey = place ? `${place.lat.toFixed(4)},${place.lon.toFixed(4)}` : '';
+  // Elegir otro lugar arriba vuelve a usar el departamento de ese lugar.
+  useEffect(() => setManual(null), [placeKey]);
+  return (
+    <div className="stack">
+      <h1 className="page-title">{t('modules.faunaZone.title')}</h1>
+      <Gate>
+        {(data) => {
+          const located = place ? locateDept(data, place.lat, place.lon) : null;
+          const sel = manual ?? (located ? { prov: located.province.name, dept: located.dept } : null);
+          const province = sel ? data.provinces.find((p) => p.name === sel.prov) : undefined;
+          return (
+            <>
+              <section className="card stack" data-testid="fauna-zone-place">
+                {picker}
+                {place && !located && !manual && <p className="muted">{t('fauna.finder.outside')}</p>}
+              </section>
+              {province && sel && (
+                <>
+                  <ZoneMap province={province} dept={sel.dept} onPick={(dept) => setManual({ prov: province.name, dept })} />
+                  <ZoneSpecies data={data} prov={province.name} dept={sel.dept} lang={i18n.language} />
+                </>
+              )}
+            </>
+          );
+        }}
+      </Gate>
+    </div>
+  );
+}
+
+/** Mapa de la provincia con el departamento elegido; tocar otro lo elige. Debajo, la misma elección en una lista (sin mapa). */
+function ZoneMap({ province, dept, onPick }: { province: HuntProvince; dept: string; onPick: (d: string) => void }) {
+  const { t } = useTranslation();
+  const depts = province.departments ?? [];
+  const box = useMemo(() => {
+    let w = 180, e = -180, s = 90, n = -90;
+    for (const d of depts)
+      for (const r of d.rings)
+        for (let i = 0; i < r.length; i += 2) {
+          w = Math.min(w, r[i]!); e = Math.max(e, r[i]!); s = Math.min(s, r[i + 1]!); n = Math.max(n, r[i + 1]!);
+        }
+    return { w, e, s, n, k: Math.cos((((s + n) / 2) * Math.PI) / 180) };
+  }, [depts]);
+  if (!depts.length) return null;
+  const scale = 1000 / Math.max((box.e - box.w) * box.k, box.n - box.s);
+  const x = (lon: number) => (lon - box.w) * box.k * scale;
+  const y = (lat: number) => (box.n - lat) * scale;
+  const path = (ring: number[]) => {
+    let d = '';
+    for (let i = 0; i < ring.length; i += 2) d += `${i ? 'L' : 'M'}${x(ring[i]!).toFixed(1)},${y(ring[i + 1]!).toFixed(1)}`;
+    return `${d}Z`;
+  };
+  const word = province.name === 'Buenos Aires' ? 'fauna.partyOf' : 'fauna.deptOf';
+  return (
+    <section className="card stack" data-testid="fauna-zone-map">
+      <ZoomSvg viewBox={[-4, -4, Math.round(x(box.e) + 8), Math.round(y(box.s) + 8)]} label={`${province.name}: ${t(word, { name: dept })}`}>
+        {depts.map((d) => (
+          <path key={d.name} d={d.rings.map(path).join('')} className="fauna-zone-dept" data-on={d.name === dept || undefined} data-dept={d.name} onClick={() => onPick(d.name)}>
+            <title>{d.name}</title>
+          </path>
+        ))}
+      </ZoomSvg>
+      <label className="field">
+        <span>{t('fauna.zone.pickDept', { province: province.name })}</span>
+        <select className="input" value={dept} onChange={(e) => onPick(e.target.value)} data-testid="fauna-zone-select">
+          {depts.map((d) => (
+            <option key={d.name} value={d.name}>
+              {d.name}
+            </option>
+          ))}
+        </select>
+      </label>
+    </section>
+  );
+}
+
+/** Especies con registros en el departamento (o, si no hay ninguna, en la provincia), primero las peligrosas. */
+function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string; dept: string; lang: string }) {
+  const { t } = useTranslation();
+  const inDept = data.species.filter((sp) => recordsIn(sp, prov, dept) > 0);
+  const scopeDept = inDept.length > 0;
+  const list = scopeDept ? inDept : data.species.filter((sp) => recordsIn(sp, prov, null) > 0);
+  const n = (sp: FaunaSpecies) => recordsIn(sp, prov, scopeDept ? dept : null);
+  const byName = (a: FaunaSpecies, b: FaunaSpecies) => faunaName(a, a.id, lang).localeCompare(faunaName(b, b.id, lang), 'es');
+  const danger = list.filter((sp) => sp.venomous || sp.vector).sort(byName);
+  const rest = list.filter((sp) => !sp.venomous && !sp.vector);
+  const venom = danger.filter((sp) => sp.venomous).length;
+  const vector = danger.filter((sp) => sp.vector).length;
+  const place = scopeDept ? dept : prov;
+  const row = (sp: FaunaSpecies) => (
+    <li key={sp.id}>
+      <Link className="list-row fauna-zone-row" to={`/fauna/species/${sp.id}`}>
+        <span className="fauna-zone-thumb">{sp.image ? <img src={`${import.meta.env.BASE_URL}fauna/${sp.image}`} alt="" loading="lazy" /> : <PawPrint size={22} aria-hidden />}</span>
+        <span className="list-main">
+          <span className="list-title">{faunaName(sp, sp.id, lang)}</span>
+          <span className="list-sub">
+            {sp.venomous && (
+              <span className="fauna-venomous">
+                <Skull size={14} aria-hidden /> {t('fauna.venomous')}
+              </span>
+            )}
+            {sp.vector && (
+              <span className="fauna-vector">
+                <Bug size={14} aria-hidden /> {t('fauna.vectorBadge')}
+              </span>
+            )}{' '}
+            {t(`fauna.zone.level.${LEVEL_KEY[rangeLevel(n(sp))]}`)}
+          </span>
+        </span>
+      </Link>
+    </li>
+  );
+  return (
+    <>
+      <p className="notice-unofficial" role="note">
+        <AlertTriangle size={18} aria-hidden className="notice-unofficial-icon" />
+        <span>{t('fauna.zone.notice')}</span>
+      </p>
+      <section className="card stack" role="status" data-testid="fauna-zone-summary">
+        {!scopeDept && <p className="muted">{t('fauna.zone.noneInDept', { dept, province: prov })}</p>}
+        <p className="fauna-zone-summary">
+          {danger.length
+            ? t('fauna.zone.summary', { place, venom, vector })
+            : t('fauna.zone.noDanger', { place })}
+        </p>
+      </section>
+      {danger.length > 0 && (
+        <section className="stack">
+          <h2 className="section-title">{t('fauna.zone.danger')}</h2>
+          <ul className="list">{danger.map(row)}</ul>
+        </section>
+      )}
+      {(['mammal', 'bird', 'reptile', 'arthropod'] as const).map((g) => {
+        const items = rest.filter((sp) => sp.group === g).sort(byName);
+        return items.length ? (
+          <section key={g} className="stack">
+            <h2 className="section-title">{t(`fauna.group.${g}`)}</h2>
+            <ul className="list">{items.map(row)}</ul>
+          </section>
+        ) : null;
+      })}
+      <Collapsible id="fauna-zone-howto" title={t('fauna.zone.howTitle')}>
+        <p>{t('fauna.range.note', { date: data.presenceSource?.date ?? '' })}</p>
+      </Collapsible>
+    </>
+  );
+}

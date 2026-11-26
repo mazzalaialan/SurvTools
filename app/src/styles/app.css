@@ -7728,3 +7728,39 @@ figure.fauna-map {
 .fauna-vector-box .fauna-bite-title svg {
   color: var(--info);
 }
+
+/* Fauna en mi zona. */
+.fauna-zone-dept {
+  fill: color-mix(in srgb, var(--text-muted) 18%, var(--surface));
+  stroke: var(--bg);
+  stroke-width: 1;
+  cursor: pointer;
+}
+.fauna-zone-dept[data-on] {
+  fill: var(--accent);
+  stroke: var(--text);
+  stroke-width: 2.5;
+}
+.fauna-zone-row {
+  gap: 12px;
+}
+.fauna-zone-thumb {
+  flex: none;
+  width: 56px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+}
+.fauna-zone-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fauna-zone-summary {
+  margin: 0;
+  font-weight: 600;
+}

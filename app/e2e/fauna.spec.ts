@@ -63,3 +63,20 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
   await page.goto('/#/fauna/species/vinchuca');
   await expect(page.getByTestId('fauna-vector')).toContainText('Chagas');
 });
+
+test('fauna en mi zona: con el GPS en Tucumán marca el departamento y lista primero las peligrosas', async ({ page, context }) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -26.83, longitude: -65.2 });
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' }).first()).toBeVisible();
+  await page.goto('/#/fauna/zone');
+  await page.getByTestId('fauna-pack-get').click();
+  await expect(page.getByTestId('fauna-zone-select')).toHaveValue('Capital');
+  await expect(page.getByTestId('fauna-zone-summary')).toContainText('venenosas');
+  await expect(page.getByRole('heading', { name: 'Peligrosas' })).toBeVisible();
+});

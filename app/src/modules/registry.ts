@@ -101,6 +101,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'fishingWaters', section: 'fishing', icon: Waves, implemented: true, path: '/fishing/waters', degradesWithout: ['geolocation'] },
   { id: 'fishingRules', section: 'fishing', icon: ListChecks, implemented: true, path: '/fishing/rules' },
   { id: 'fishingSurvival', section: 'fishing', icon: LifeBuoy, implemented: true, path: '/fishing/survival' },
+  { id: 'faunaZone', section: 'fauna', icon: MapPin, implemented: true, path: '/fauna/zone' },
   { id: 'faunaProvinces', section: 'fauna', icon: MapIcon, implemented: true, path: '/fauna/provinces' },
   { id: 'faunaSpecies', section: 'fauna', icon: PawPrint, implemented: true, path: '/fauna/species' },
   { id: 'gardenCalendar', section: 'garden', icon: CalendarDays, implemented: true, path: '/garden/calendar' },
