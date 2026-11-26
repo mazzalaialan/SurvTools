@@ -7677,3 +7677,29 @@ figure.fauna-map {
 :root[data-theme='red'] .fauna-venomous {
   background: var(--text);
 }
+
+/* «Dónde se encuentra»: departamentos con registros, en tres verdes bien distintos (sin datos: casi el fondo). */
+.fauna-range-dept {
+  fill: color-mix(in srgb, var(--text-muted) 18%, var(--surface));
+  stroke: var(--bg);
+  stroke-width: 0.6;
+  cursor: pointer;
+}
+.fauna-range-dept[data-level='1'] {
+  fill: color-mix(in srgb, var(--ok) 55%, var(--surface));
+}
+.fauna-range-dept[data-level='2'] {
+  fill: color-mix(in srgb, var(--ok) 80%, white 0%);
+}
+.fauna-range-dept[data-level='3'] {
+  fill: color-mix(in srgb, var(--ok) 70%, white 30%);
+}
+.fauna-range-dot[data-level='1'] {
+  background: color-mix(in srgb, var(--ok) 55%, var(--surface));
+}
+.fauna-range-dot[data-level='2'] {
+  background: color-mix(in srgb, var(--ok) 80%, white 0%);
+}
+.fauna-range-dot[data-level='3'] {
+  background: color-mix(in srgb, var(--ok) 70%, white 30%);
+}

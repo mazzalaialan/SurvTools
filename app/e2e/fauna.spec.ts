@@ -44,6 +44,9 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
   await expect(pecari).toContainText('caza no permitida');
   await pecari.click();
   await expect(page.getByTestId('fauna-threatened')).toBeVisible();
+  // Dónde se encuentra: plegado; al abrirlo, el mapa con los departamentos donde hay registros.
+  await page.getByTestId('fauna-range-toggle').click();
+  await expect(page.getByTestId('fauna-range').locator('path[data-level="3"], path[data-level="2"], path[data-level="1"]').first()).toBeVisible();
 
   // Protegidas: el yaguareté (no se caza en ningún lado) aparece en rojo con el filtro.
   await page.goto('/#/fauna/species');

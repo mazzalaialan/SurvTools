@@ -87,6 +87,8 @@ export interface FaunaSpecies {
   regulated?: boolean;
   /** Venenosa (yarará, cascabel, coral): se marca y la ficha muestra qué hacer ante una mordedura. */
   venomous?: boolean;
+  /** Registros de GBIF por provincia y departamento (nombres del IGN): dónde se la vio. */
+  presence?: Record<string, Record<string, number>>;
   /** Primeros auxilios ante una mordedura (fuente oficial). */
   bite?: string;
   [field: string]: unknown;
@@ -97,6 +99,8 @@ export interface FaunaData {
   generatedAt: string;
   provinces: HuntProvince[];
   species: FaunaSpecies[];
+  /** De dónde salen los registros de «Dónde se encuentra» y cuándo se consultaron. */
+  presenceSource?: { name: string; date: string };
 }
 
 export const FAUNA_COUNTRIES: Country[] = ['AR'];

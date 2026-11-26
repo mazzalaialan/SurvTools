@@ -555,6 +555,8 @@ export function FaunaSpeciesDetailPage() {
                 </section>
               );
             })}
+            {/* `key`: al pasar a otra especie, el desplegable vuelve a empezar cerrado. */}
+            <SpeciesRange key={sp.id} data={data} sp={sp} />
             <section className="card stack">
               <h2 className="section-title">{t('fauna.whereHunted')}</h2>
               {where.length ? (
@@ -784,4 +786,78 @@ function zoneLabel(name: string, province: string): { title: string; detail?: st
 function bannedText(t: (k: string, o?: Record<string, unknown>) => string, sp: FaunaSpecies): string {
   // La categoría va en minúscula en medio de la frase («Especie en peligro crítico: …»).
   return sp.threatened ? t('fauna.threatened', { status: sp.threatened.toLowerCase() }) : t('fauna.protectedBan');
+}
+
+/** Cantidad de registros → nivel de color (1: pocos, 2: varios, 3: muchos). */
+const rangeLevel = (n: number) => (n >= 100 ? 3 : n >= 10 ? 2 : 1);
+
+/**
+ * «Dónde se encuentra»: mapa del país por departamentos, pintado donde hay registros de la especie en GBIF desde 1990. Plegado por
+ * defecto. No es un mapa de distribución exacta: donde no hay registros puede igual haber (nadie la vio o no lo cargó).
+ */
+function SpeciesRange({ data, sp }: { data: FaunaData; sp: FaunaSpecies }) {
+  const { t } = useTranslation();
+  const [picked, setPicked] = useState<{ prov: string; dept: string; n: number } | null>(null);
+  const all = useMemo(() => data.provinces.flatMap((p) => (p.departments ?? []).map((d) => ({ prov: p.name, ...d }))), [data]);
+  const box = useMemo(() => {
+    let w = 180, e = -180, s = 90, n = -90;
+    for (const d of all)
+      for (const r of d.rings)
+        for (let i = 0; i < r.length; i += 2) {
+          w = Math.min(w, r[i]!); e = Math.max(e, r[i]!); s = Math.min(s, r[i + 1]!); n = Math.max(n, r[i + 1]!);
+        }
+    return { w, e, s, n, k: Math.cos((((s + n) / 2) * Math.PI) / 180) };
+  }, [all]);
+  const pres = sp.presence ?? {};
+  const count = Object.values(pres).reduce((n, x) => n + Object.keys(x).length, 0);
+  const scale = 1000 / Math.max((box.e - box.w) * box.k, box.n - box.s);
+  const x = (lon: number) => (lon - box.w) * box.k * scale;
+  const y = (lat: number) => (box.n - lat) * scale;
+  const path = (ring: number[]) => {
+    let d = '';
+    for (let i = 0; i < ring.length; i += 2) d += `${i ? 'L' : 'M'}${x(ring[i]!).toFixed(1)},${y(ring[i + 1]!).toFixed(1)}`;
+    return `${d}Z`;
+  };
+  return (
+    <Collapsible id="fauna-range" testId="fauna-range" title={t('fauna.range.title')} summary={count ? t('fauna.range.summary', { count }) : t('fauna.range.none')}>
+      {count > 0 ? (
+        <>
+          <ZoomSvg viewBox={[0, 0, Math.round(x(box.e)), Math.round(y(box.s))]} label={`${t('fauna.range.title')}: ${faunaName(sp, sp.id, 'es')}`}>
+            {all.map((d) => {
+              const n = pres[d.prov]?.[d.name] ?? 0;
+              return (
+                <path
+                  key={`${d.prov}|${d.name}`}
+                  d={d.rings.map(path).join('')}
+                  className="fauna-range-dept"
+                  data-level={n ? rangeLevel(n) : 0}
+                  // El estilo en línea le gana al CSS de la clase (un atributo `stroke` no).
+                  style={picked?.dept === d.name && picked.prov === d.prov ? { stroke: 'var(--text)', strokeWidth: 3 } : undefined}
+                  onClick={() => setPicked({ prov: d.prov, dept: d.name, n })}
+                >
+                  <title>{`${d.name} (${d.prov}): ${n}`}</title>
+                </path>
+              );
+            })}
+          </ZoomSvg>
+          <span className="fauna-legend">
+            {[1, 2, 3].map((l) => (
+              <span key={l}>
+                <span className="fauna-dot fauna-range-dot" data-level={l} aria-hidden /> {t(`fauna.range.level${l}`)}
+              </span>
+            ))}
+          </span>
+          {picked && (
+            <p className="fauna-dept-picked" data-state={picked.n ? 'total' : 'unknown'} data-testid="fauna-range-picked">
+              <strong className="fauna-dept-picked-name">{picked.dept}, {picked.prov}</strong>
+              <span>{t('fauna.range.records', { count: picked.n })}</span>
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="muted">{t('fauna.range.noRecords')}</p>
+      )}
+      <p className="muted small">{t('fauna.range.note', { date: data.presenceSource?.date ?? '' })}</p>
+    </Collapsible>
+  );
 }

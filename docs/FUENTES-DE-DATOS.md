@@ -297,3 +297,9 @@ Se usan para el asistente «Armar botiquín» (`app/src/modules/firstAid/kitTemp
 ## Caza en la Ciudad de Buenos Aires
 
 - **Norma:** Ley 451 (Régimen de Faltas de la CABA), art. 1.3.26 «Caza de animales que no sean declarados plaga» (texto según Ley 2195): multa de 100 a 1.000 unidades fijas y decomiso; el doble en áreas protegidas. Fuente: Boletín Oficial de la Ciudad (`https://boletinoficial.buenosaires.gob.ar/normativaba/norma/94903`), consultado el 2026-11-26. Texto oficial sin licencia declarada: se usa con atribución.
+
+## Dónde se encuentra cada especie (Fauna)
+
+- **Fuente:** GBIF.org (Global Biodiversity Information Facility), API pública `api.gbif.org/v1/occurrence/search`: registros con coordenadas en Argentina desde 1990, sin problemas geoespaciales, agrupados por departamento (GADM nivel 2, traducido a los nombres del IGN). Consultado el 2026-11-26 con `tools/fauna-data/occurrences.mjs`.
+- **Licencia:** cada conjunto de GBIF trae la suya (CC0, CC BY o CC BY-NC); la app solo usa cantidades por departamento, con crédito a GBIF.org y la fecha (lo NC se usa mientras la app sea gratuita).
+- **Límite:** es un mapa de registros, no de distribución: puede haber animales donde no hay registros y algunos registros pueden ser de cautiverio.

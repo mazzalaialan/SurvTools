@@ -211,6 +211,9 @@ for (const p of provinces)
         (p.protectedSpecies ??= []).push({ id: s.id, note: `La norma le da cupo, pero hoy es especie ${threatened.get(s.id)} en la categorización nacional: no se caza.` });
     z.species = z.species.filter((s) => !threatened.has(s.id));
   }
+// Dónde se encuentra: registros de GBIF por departamento (occurrences.mjs).
+const presence = opt(join(work, 'gbif', 'presencia.json'));
+if (presence) for (const sp of species) if (presence.species[sp.id]) sp.presence = presence.species[sp.id].depts;
 const known = new Set(species.map((s) => s.id));
 const unknown = new Set(provinces.flatMap((p) => p.zones.flatMap((z) => z.species.map((s) => s.id))).filter((id) => !known.has(id)));
 if (unknown.size) console.warn(`Especies de las zonas sin ficha: ${[...unknown].join(', ')}`);
@@ -259,6 +262,7 @@ const out = {
   generatedAt: new Date().toISOString().slice(0, 19) + 'Z',
   provinces,
   species,
+  presenceSource: presence ? { name: presence.source, date: presence.date } : undefined,
 };
 const dest = here('../../app/public/data/fauna-AR.json');
 writeFileSync(dest, JSON.stringify(out));
