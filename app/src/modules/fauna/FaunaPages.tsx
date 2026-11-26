@@ -10,6 +10,7 @@ import { loadGeoData, type GeoRegion } from '@/modules/weathermap/geo';
 import { SeasonBadge } from '@/modules/fishing/parts';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import { Collapsible } from '@/ui/Collapsible';
+import { ZoomSvg } from './ZoomSvg';
 import {
   FAUNA_COUNTRIES,
   deptState,
@@ -149,7 +150,7 @@ function ProvinceMap({ data }: { data: FaunaData }) {
   };
   return (
     <figure className="fauna-map card">
-      <svg viewBox={`0 0 ${(x(E) + 2).toFixed(0)} ${(y(S) + 2).toFixed(0)}`} role="img" aria-label={t('fauna.mapLabel')}>
+      <ZoomSvg viewBox={[0, 0, Math.round(x(E) + 2), Math.round(y(S) + 2)]} label={t('fauna.mapLabel')} testId="fauna-country-map">
         {regions
           .filter((r) => r.name !== 'Islas Malvinas')
           .map((r) => {
@@ -171,7 +172,7 @@ function ProvinceMap({ data }: { data: FaunaData }) {
               </path>
             );
           })}
-      </svg>
+      </ZoomSvg>
       <figcaption className="fauna-legend">
         {STATUSES.map((s) => (
           <span key={s}>
@@ -668,7 +669,7 @@ function DeptMap({ province }: { province: HuntProvince }) {
           })}
         </div>
       )}
-      <svg viewBox={`-4 -4 ${(x(box.e) + 8).toFixed(0)} ${(y(box.s) + 8).toFixed(0)}`} role="img" aria-label={`${t('fauna.deptMap')}: ${province.name}`}>
+      <ZoomSvg viewBox={[-4, -4, Math.round(x(box.e) + 8), Math.round(y(box.s) + 8)]} label={`${t('fauna.deptMap')}: ${province.name}`}>
         <defs>
           <pattern id="fauna-hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <rect width="14" height="14" fill="var(--ok)" fillOpacity="0.35" />
@@ -694,7 +695,7 @@ function DeptMap({ province }: { province: HuntProvince }) {
             </path>
           );
         })}
-      </svg>
+      </ZoomSvg>
       <figcaption className="stack">
         <span className="fauna-legend">
           {(['total', 'partial', 'urban', 'closed', 'unknown'] as const).filter((s) => s !== 'urban' || depts.some((d) => deptState(zone, d.name).state === 'urban')).map((s) => (

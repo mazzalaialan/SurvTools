@@ -21,6 +21,11 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
   await page.getByTestId('fauna-pack-get').click();
   await expect(page.getByTestId('fauna-provinces')).toBeVisible();
   await expect(page.locator('path[data-province="Entre Ríos"]')).toBeVisible();
+  // Zoom: el botón + acerca el mapa (cambia el encuadre) y CABA se puede tocar.
+  const svg = page.getByTestId('fauna-country-map').locator('svg[role="img"]');
+  const before = await svg.getAttribute('viewBox');
+  await page.getByTestId('fauna-country-map').getByTestId('zoom-in').click();
+  await expect(svg).not.toHaveAttribute('viewBox', before!);
 
   // Entre Ríos: aviso de judicializada.
   await page.getByTestId('fauna-provinces').getByRole('link', { name: /Entre Ríos/ }).click();

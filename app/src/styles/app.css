@@ -7599,3 +7599,39 @@ figure.fauna-dept-map {
   border-left-color: var(--fauna-legal);
   background: color-mix(in srgb, var(--fauna-legal) 14%, var(--surface));
 }
+
+/* Mapas de Fauna con zoom: el dedo mueve el mapa (no la página) y los botones quedan arriba a la derecha. */
+.zoom-svg {
+  position: relative;
+}
+.zoom-svg svg {
+  touch-action: none;
+  user-select: none;
+  width: 100%;
+  display: block;
+}
+.zoom-svg-controls {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.zoom-svg-controls .icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--border);
+}
+.zoom-svg-controls .icon-btn:disabled {
+  opacity: 0.4;
+}
+.zoom-svg path {
+  /* Con zoom, los bordes no se engrosan. */
+  vector-effect: non-scaling-stroke;
+}
+figure.fauna-map {
+  margin: 0;
+}
