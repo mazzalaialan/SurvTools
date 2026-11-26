@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '@/core/settings/settings';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { AlertTriangle, Shell } from 'lucide-react';
 import { Collapsible } from '@/ui/Collapsible';
@@ -14,29 +16,106 @@ import type { FishData, ShellfishSpecies } from './fishing';
 
 const name = (sp: ShellfishSpecies, lang: string) => (lang.startsWith('en') ? sp.nombre.en : lang.startsWith('pt') ? sp.nombre.pt : undefined) ?? sp.nombre.es;
 
-/** Aviso de marea roja, con el estado de cada provincia que lo informa (desplegable). */
+/** Días entre una fecha («11/11/2026» o ISO) y hoy; null si no se entiende. */
+function daysSince(s: string | undefined, now = Date.now()): number | null {
+  if (!s) return null;
+  const m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  const d = m ? new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])) : new Date(s);
+  return Number.isNaN(d.getTime()) ? null : Math.max(0, Math.floor((now - d.getTime()) / 86_400_000));
+}
+/** Más de esto (días) y el estado cargado se muestra como posiblemente viejo. */
+const STALE_DAYS = 15;
+const CHUBUT_CACHE = 'vikarg.redtide.chubut';
+
+/**
+ * Últimos avisos oficiales de marea roja de Chubut (feed del sitio oficial, leído por el servidor propio: /api/redtide). Se copia el
+ * título y la fecha tal cual, con el enlace. Sin servidor o sin conexión, lo último que se pudo leer (guardado en el dispositivo).
+ */
+function useChubutNotices(): { items: { title: string; url: string; date: string }[]; fetchedAt: string } | null {
+  const server = useSettings((s) => s.settings.serverUrl?.trim().replace(/\/+$/, '') || null);
+  const [state, setState] = useState<{ items: { title: string; url: string; date: string }[]; fetchedAt: string } | null>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(CHUBUT_CACHE) ?? 'null');
+    } catch {
+      return null;
+    }
+  });
+  useEffect(() => {
+    if (!server || !navigator.onLine) return;
+    let alive = true;
+    void fetch(`${server}/api/redtide`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        const c = j?.chubut;
+        if (!alive || !c?.items?.length) return;
+        setState(c);
+        try {
+          localStorage.setItem(CHUBUT_CACHE, JSON.stringify(c));
+        } catch {
+          /* sin almacenamiento: solo esta vez */
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [server]);
+  return state;
+}
+
+/** Aviso de marea roja: prevención (fija), últimos avisos oficiales de Chubut y el estado cargado de cada provincia con su fecha. */
 function RedTide({ data }: { data: FishData }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const rt = data.shellfish?.redTide;
+  const chubut = useChubutNotices();
   if (!rt) return null;
+  const dateFmt = new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' });
   return (
     <section className="fauna-warning fauna-bite" data-status="prohibida" data-testid="red-tide">
       <strong className="fauna-bite-title">
         <AlertTriangle size={18} aria-hidden /> {t('fishing.shellfish.redTideTitle')}
       </strong>
       <p>{rt.text}</p>
-      <Collapsible inline id="red-tide-status" title={t('fishing.shellfish.redTideStatus', { date: rt.date })}>
-        <ul>
-          {rt.status.map((s) => (
-            <li key={s.jurisdiction}>
-              <strong>{s.jurisdiction}:</strong> {s.status}{' '}
-              {s.url && (
-                <a href={s.url} target="_blank" rel="noreferrer">
-                  {t('fishing.shellfish.source')}
-                </a>
-              )}
-            </li>
-          ))}
+      {chubut && (
+        <div className="stack" data-testid="red-tide-chubut">
+          <strong>{t('fishing.shellfish.chubutTitle')}</strong>
+          <ul>
+            {chubut.items.slice(0, 3).map((n) => (
+              <li key={n.url}>
+                <a href={n.url} target="_blank" rel="noreferrer">
+                  {n.title}
+                </a>{' '}
+                <span className="muted small">({dateFmt.format(new Date(n.date))})</span>
+              </li>
+            ))}
+          </ul>
+          <p className="muted small">{t('fishing.shellfish.chubutRead', { date: dateFmt.format(new Date(chubut.fetchedAt)) })}</p>
+        </div>
+      )}
+      <Collapsible
+        inline
+        id="red-tide-status"
+        title={t('fishing.shellfish.redTideStatusTitle')}
+        // A la vista aunque esté cerrado: si algún dato tiene más de 15 días, se avisa.
+        summary={rt.status.some((s) => (daysSince(s.date) ?? Infinity) > STALE_DAYS) ? <span className="red-tide-stale">{t('fishing.shellfish.staleSummary')}</span> : undefined}
+      >
+        <ul className="stack">
+          {rt.status.map((s) => {
+            const days = daysSince(s.date);
+            const stale = days === null || days > STALE_DAYS;
+            return (
+              <li key={s.jurisdiction} data-stale={stale || undefined}>
+                <strong>{s.jurisdiction}:</strong> {days === null ? t('fishing.shellfish.noDated') : t('fishing.shellfish.lastLoaded', { date: s.date, days })}{' '}
+                {s.url && (
+                  <a href={s.url} target="_blank" rel="noreferrer">
+                    {t('fishing.shellfish.officialSource')}
+                  </a>
+                )}
+                <div className="muted small">{s.status}</div>
+                {stale && <div className="red-tide-stale">{t('fishing.shellfish.staleWarn')}</div>}
+              </li>
+            );
+          })}
         </ul>
         <p className="muted small">{t('fishing.shellfish.redTideCheck')}</p>
       </Collapsible>

@@ -135,3 +135,26 @@ test('caza: si cambia la lista de vedas municipales, el mail dice cómo regenera
   assert.match(sent[0]!, /vedas-municipales\.json/);
 });
 
+test('marea roja: se revisa todo el año, sin aviso de «venció», y el mail dice cómo actualizar el estado', async () => {
+  const db = openDb(':memory:');
+  const sent: string[] = [];
+  const notifier = { send: async (_s: string, t: string) => void sent.push(t) };
+  const now = new Date('2026-12-01T12:00:00Z');
+  const docs = [{ label: 'RN', url: 'https://example.org/rn', keywords: ['marea roja'], redTide: true }];
+  const html = (b: string) => (async () => new Response(b, { status: 200, headers: { 'content-type': 'text/html' } })) as unknown as typeof fetch;
+  await runFishingWatch(db, notifier, () => undefined, html('<p>Marea roja: veda en Pozo Salado</p>'), now, docs);
+  await runFishingWatch(db, notifier, () => undefined, html('<p>Marea roja: se levantó la veda</p>'), now, docs);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0]!, /marea-roja\.json/);
+  assert.doesNotMatch(sent[0]!, /Venció/);
+});
+
+test('marea roja: lee los avisos del feed oficial de Chubut', async () => {
+  const { parseFeed } = await import('../src/redtide/chubut.ts');
+  const xml = '<rss><channel><item><title>Veda Circular 06-26</title><link>https://marearoja.chubut.gov.ar/zona-de-veda-circular-06-26/</link><pubDate>Wed, 11 Nov 2026 20:53:44 +0000</pubDate></item><item><title>Otro</title><link>https://otro.sitio/x</link><pubDate>Wed, 11 Nov 2026 20:53:44 +0000</pubDate></item></channel></rss>';
+  const items = parseFeed(xml);
+  assert.equal(items.length, 1);
+  assert.equal(items[0]!.title, 'Veda Circular 06-26');
+  assert.equal(items[0]!.date, '2026-11-11T20:53:44.000Z');
+});
+

@@ -36,6 +36,7 @@ import { brRiverLevels, brRiverStations as toRiverStations } from './rivers/brWa
 import { loadRiverCatalog, RIVER_EVERY_MS, runRiverForecastWatch, runRiverWatch, stationsToWatch, type RiverLevel, type RiverStation } from './rivers/watch.ts';
 import { runVolcanoWatch, volcanoReadStamp, VOLCANO_EVERY_MS } from './volcanoes/watch.ts';
 import { createMailNotifier, createSourceMonitor } from './monitor/sources.ts';
+import { refreshChubut } from './redtide/chubut.ts';
 import { runFishingWatch } from './fishing/watch.ts';
 
 const config = loadConfig();
@@ -444,6 +445,18 @@ async function fishingWatchTick() {
   }
 }
 const fishingWatchTimer = setInterval(() => void fishingWatchTick(), 24 * 3_600_000);
+
+// Marea roja: una vez por día se leen los últimos avisos oficiales de Chubut (la app los muestra con su fecha y el enlace).
+async function redTideTick() {
+  try {
+    await refreshChubut(db);
+    await monitor.ok('redtide-chubut', 'Avisos de marea roja de Chubut');
+  } catch (err) {
+    await monitor.fail('redtide-chubut', 'Avisos de marea roja de Chubut', err);
+  }
+}
+const redTideTimer = setInterval(() => void redTideTick(), 24 * 3_600_000);
+setTimeout(() => void redTideTick(), 90_000);
 setTimeout(() => void fishingWatchTick(), 120_000);
 
 // Cada 15 minutos: la helada se avisa a partir de las 17 y el riego y las tareas a la hora de aviso de cada uno.
@@ -463,6 +476,7 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, async () => {
     clearInterval(timer);
     clearInterval(fishingWatchTimer);
+    clearInterval(redTideTimer);
     clearInterval(rainTimer);
     clearInterval(rainMapTimer);
     clearInterval(observedRainTimer);

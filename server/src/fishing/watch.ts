@@ -27,6 +27,8 @@ export interface WatchedDoc {
   keywords?: string[];
   /** Norma de caza (sección Fauna), no de pesca: el mail dice cómo regenerar los datos de fauna. */
   hunting?: boolean;
+  /** Marea roja: se revisa todo el año (no tiene vigencia) y el mail dice cómo actualizar el estado que muestra la app. */
+  redTide?: boolean;
 }
 
 /** Fin de la vigencia del reglamento cargado (los permisos de temporada 2026/27 valen hasta el 31/10/2027). */
@@ -69,6 +71,10 @@ export const FISHING_DOCS: WatchedDoc[] = [
   // mediados de marzo (45 días antes del 30/04); pasado el 30/04 sin lista nueva, avisa una vez para revisarla a mano.
   { label: 'Buenos Aires (caza): municipios que solicitan veda, temporada 2026', url: 'https://drive.google.com/uc?export=download&id=1gFXlUdQSVAA1DMa0XYSCPNJ8RDdwrWKt', validUntil: '2027-04-30', hunting: true },
   { label: 'Buenos Aires (caza): página de caza de la Dirección de Flora y Fauna', url: 'https://www.gba.gob.ar/desarrollo_agrario/direccion_de_flora_y_fauna/caza', validUntil: '2027-04-30', keywords: ['veda', 'temporada', 'municipios'], hunting: true },
+  // Marea roja (vedas sanitarias de moluscos): sin fuente con el estado al día salvo Chubut (que se lee solo: redtide/chubut.ts). Se
+  // avisa si cambia lo que dicen de marea roja o vedas las páginas de Río Negro y de la Dirección Provincial de Pesca de Buenos Aires.
+  { label: 'Río Negro (marea roja): búsqueda de notas oficiales', url: 'https://rionegro.gov.ar/?s=marea+roja', keywords: ['marea roja', 'veda', 'moluscos', 'mejill'], redTide: true },
+  { label: 'Buenos Aires (marea roja): disposiciones de la Dirección Provincial de Pesca', url: 'https://www.gba.gob.ar/desarrollo_agrario/pesca/legislacion/provincial/disposiciones', keywords: ['marea roja', 'veda', 'bivalv', 'moluscos', 'mejill', 'almeja'], redTide: true },
   { label: 'Tierra del Fuego: página de pesca deportiva (anuncia la resolución nueva)', url: 'https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/', validUntil: '2027-10-01' },
 ];
 
@@ -127,11 +133,13 @@ export async function runFishingWatch(
   docs: WatchedDoc[] = FISHING_DOCS,
 ): Promise<FishingWatchResult> {
   const result: FishingWatchResult = { checked: 0, changed: [], failed: [], found: [], expired: [] };
-  if (!docs.some((d) => watchDue(now, d.validUntil))) return result;
+  const due = (d: WatchedDoc) => d.redTide || watchDue(now, d.validUntil);
+  if (!docs.some(due)) return result;
   const notes: string[] = [];
   let hunting = false;
+  let redTide = false;
   for (const doc of docs) {
-    if (!watchDue(now, doc.validUntil)) continue;
+    if (!due(doc)) continue;
     try {
       const res = await fetchImpl(doc.url, { signal: AbortSignal.timeout(60_000), headers: { 'user-agent': 'VikArg-server/1.0' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -151,6 +159,7 @@ export async function runFishingWatch(
         result.changed.push(doc.label);
         notes.push(`Cambió: ${doc.label}\n${doc.url}`);
         if (doc.hunting) hunting = true;
+        if (doc.redTide) redTide = true;
       }
     } catch (err) {
       result.failed.push(doc.label);
@@ -176,6 +185,7 @@ export async function runFishingWatch(
   // Vencida la norma sin que aparezca la nueva: la app ya muestra «Sin regla específica encontrada» en esos tramos. Se avisa una vez, para
   // revisar si la fuente cambió de dirección (y hay que corregir la URL) o si la norma nueva cambió (se liberó la pesca, otra veda…).
   for (const doc of docs) {
+    if (doc.redTide) continue; // no vence
     const until = doc.validUntil ?? VALID_UNTIL;
     if (now.getTime() <= new Date(`${until}T23:59:59Z`).getTime()) continue;
     const key = `fishing-watch:expired:${doc.url}`;
@@ -191,7 +201,10 @@ export async function runFishingWatch(
     const huntingNote = hunting
       ? '\n\nCaza (Fauna): actualizar ~/vikarg-fishing-work/fauna/vedas-municipales.json (lista de municipios en veda de la temporada) o la norma que cambió, y regenerar con node tools/fauna-data/build.mjs ~/vikarg-fishing-work/fauna.'
       : '';
-    const text = `${notes.join('\n\n')}\n\nRevisar y regenerar los datos de pesca: tools/fishing-data (README) y docs/PESCA.md. Hasta entonces la app muestra los datos anteriores, con su fecha y el aviso de consultar el reglamento vigente.${huntingNote}`;
+    const redTideNote = redTide
+      ? '\n\nMarea roja: revisar el aviso oficial y actualizar el estado en ~/vikarg-fishing-work/invertebrados/marea-roja.json (con la fecha), y regenerar con node tools/fishing-data/shellfish.mjs ~/vikarg-fishing-work/invertebrados.'
+      : '';
+    const text = `${notes.join('\n\n')}${redTideNote}\n\nRevisar y regenerar los datos de pesca: tools/fishing-data (README) y docs/PESCA.md. Hasta entonces la app muestra los datos anteriores, con su fecha y el aviso de consultar el reglamento vigente.${huntingNote}`;
     if (notifier) {
       try {
         await notifier.send('VikArg: cambió la normativa de pesca', text);

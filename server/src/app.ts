@@ -1,3 +1,4 @@
+import { redTideRoutes } from './redtide/chubut.ts';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import cors from '@fastify/cors';
@@ -73,6 +74,7 @@ export async function buildApp(
   rainMapRoutes(app, rainMap.store, rainMap.wake);
   radarRoutes(app, radar.store, config.radarSinarame, { store: radar.store });
   mapRoutes(app, maps, config);
+  redTideRoutes(app, db);
   libraryRoutes(app, config);
   dataRoutes(app, config);
   riversRoutes(app, config);
