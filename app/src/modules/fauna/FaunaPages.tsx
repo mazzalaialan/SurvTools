@@ -951,11 +951,30 @@ function ZoneMap({ province, dept, onPick }: { province: HuntProvince; dept: str
     return `${d}Z`;
   };
   const word = province.name === 'Buenos Aires' ? 'fauna.partyOf' : 'fauna.deptOf';
+  // Arranca acercado al departamento y sus vecinos de la provincia (en Buenos Aires, Hurlingham entero era un punto).
+  const sel = depts.find((d) => d.name === dept);
+  const near = depts.filter((d) => d === sel || sel?.neighbors?.includes(`${province.name}|${d.name}`));
+  let fx = Infinity, fy = Infinity, tx = -Infinity, ty = -Infinity;
+  for (const d of near)
+    for (const r of d.rings)
+      for (let i = 0; i < r.length; i += 2) {
+        fx = Math.min(fx, x(r[i]!)); tx = Math.max(tx, x(r[i]!)); fy = Math.min(fy, y(r[i + 1]!)); ty = Math.max(ty, y(r[i + 1]!));
+      }
+  const full: [number, number, number, number] = [-4, -4, Math.round(x(box.e) + 8), Math.round(y(box.s) + 8)];
+  let initial: [number, number, number, number] | undefined;
+  if (near.length && Number.isFinite(fx)) {
+    // Mismo formato que el mapa completo (para que no se deforme), con un margen.
+    const pad = Math.max(tx - fx, ty - fy) * 0.15 + 10;
+    let w = tx - fx + pad * 2, h = ty - fy + pad * 2;
+    const ratio = full[2] / full[3];
+    if (w / h > ratio) h = w / ratio; else w = h * ratio;
+    if (w < full[2] * 0.9) initial = [(fx + tx) / 2 - w / 2, (fy + ty) / 2 - h / 2, w, h];
+  }
   return (
     <section className="card stack" data-testid="fauna-zone-map">
-      <ZoomSvg viewBox={[-4, -4, Math.round(x(box.e) + 8), Math.round(y(box.s) + 8)]} label={`${province.name}: ${t(word, { name: dept })}`}>
+      <ZoomSvg viewBox={full} initial={initial} label={`${province.name}: ${t(word, { name: dept })}`}>
         {depts.map((d) => (
-          <path key={d.name} d={d.rings.map(path).join('')} className="fauna-zone-dept" data-on={d.name === dept || undefined} data-dept={d.name} onClick={() => onPick(d.name)}>
+          <path key={d.name} d={d.rings.map(path).join('')} className="fauna-zone-dept" data-on={d.name === dept || undefined} data-near={(d !== sel && near.includes(d)) || undefined} data-dept={d.name} onClick={() => onPick(d.name)}>
             <title>{d.name}</title>
           </path>
         ))}
@@ -977,19 +996,20 @@ function ZoneMap({ province, dept, onPick }: { province: HuntProvince; dept: str
 /** Especies con registros en el departamento (o, si no hay ninguna, en la provincia), primero las peligrosas. */
 function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string; dept: string; lang: string }) {
   const { t } = useTranslation();
-  const inDept = data.species.filter((sp) => recordsIn(sp, prov, dept) > 0);
-  const scopeDept = inDept.length > 0;
-  // Sin registros en el departamento: los de sus vecinos (no los de toda la provincia, que en Buenos Aires traía ciervos de cotos lejanos).
-  const neighbors = scopeDept ? [] : (data.provinces.find((p) => p.name === prov)?.departments?.find((d) => d.name === dept)?.neighbors ?? []).map((k) => k.split('|') as [string, string]);
-  const inNeighbors = (sp: FaunaSpecies) => neighbors.reduce((a, [p, d]) => a + recordsIn(sp, p, d), 0);
-  const list = scopeDept ? inDept : data.species.filter((sp) => inNeighbors(sp) > 0);
-  const n = (sp: FaunaSpecies) => (scopeDept ? recordsIn(sp, prov, dept) : inNeighbors(sp));
+  // Se suman siempre los vecinos: si en Morón hay araña lobo, en Hurlingham casi seguro también (y GBIF todavía cuenta Hurlingham
+  // dentro de Morón, con el mapa viejo). Cada especie dice si se registró acá o cerca.
+  const neighbors = (data.provinces.find((p) => p.name === prov)?.departments?.find((d) => d.name === dept)?.neighbors ?? []).map((k) => k.split('|') as [string, string]);
+  const here = (sp: FaunaSpecies) => recordsIn(sp, prov, dept);
+  const near = (sp: FaunaSpecies) => neighbors.filter(([p, d]) => recordsIn(sp, p, d) > 0).map(([, d]) => d);
+  const nearCount = (sp: FaunaSpecies) => neighbors.reduce((a, [p, d]) => a + recordsIn(sp, p, d), 0);
+  const list = data.species.filter((sp) => here(sp) > 0 || nearCount(sp) > 0);
+  const scopeDept = list.some((sp) => here(sp) > 0);
   const byName = (a: FaunaSpecies, b: FaunaSpecies) => faunaName(a, a.id, lang).localeCompare(faunaName(b, b.id, lang), 'es');
   const danger = list.filter((sp) => sp.venomous || sp.vector).sort(byName);
   const rest = list.filter((sp) => !sp.venomous && !sp.vector);
   const venom = danger.filter((sp) => sp.venomous).length;
   const vector = danger.filter((sp) => sp.vector).length;
-  const place = scopeDept ? dept : t('fauna.zone.around', { dept });
+  const place = neighbors.length ? t('fauna.zone.around', { dept }) : dept;
   const row = (sp: FaunaSpecies) => (
     <li key={sp.id}>
       <Link className="list-row fauna-zone-row" to={`/fauna/species/${sp.id}`}>
@@ -1007,7 +1027,7 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
                 <Bug size={14} aria-hidden /> {t('fauna.vectorBadge')}
               </span>
             )}{' '}
-            {t(`fauna.zone.level.${LEVEL_KEY[rangeLevel(n(sp))]}`)}
+            {here(sp) > 0 ? t('fauna.zone.hereLevel', { level: t(`fauna.zone.level.${LEVEL_KEY[rangeLevel(here(sp))]}`) }) : t('fauna.zone.nearIn', { list: near(sp).slice(0, 3).join(', ') })}
           </span>
         </span>
       </Link>
@@ -1020,9 +1040,10 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
         <span>{t('fauna.zone.notice')}</span>
       </p>
       <section className="card stack" role="status" data-testid="fauna-zone-summary">
-        {!scopeDept && (
+        {!list.length && <p className="muted">{t('fauna.zone.noneAround', { dept })}</p>}
+        {!scopeDept && list.length > 0 && (
           <p className="muted" data-testid="fauna-zone-neighbors">
-            {neighbors.length ? t('fauna.zone.noneInDept', { dept, list: neighbors.map(([, d]) => d).join(', ') }) : t('fauna.zone.noneAround', { dept })}
+            {t('fauna.zone.noneInDept', { dept })}
           </p>
         )}
         <p className="fauna-zone-summary">

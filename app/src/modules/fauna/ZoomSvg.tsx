@@ -12,16 +12,17 @@ const DRAG_PX = 6;
  * Mapa SVG con zoom y desplazamiento: rueda del mouse, pellizco con dos dedos, arrastre, doble toque y botones + / − / encuadrar.
  * Cambia el `viewBox` (no escala con CSS), así los bordes siguen finos. Un arrastre no dispara el clic de lo que está debajo.
  */
-export function ZoomSvg({ viewBox, label, children, testId }: { viewBox: Box; label: string; children: ReactNode; testId?: string }) {
+/** `initial`: encuadre con el que arranca (p. ej. acercado a un departamento); `viewBox` sigue siendo el mapa completo («ver todo»). */
+export function ZoomSvg({ viewBox, initial, label, children, testId }: { viewBox: Box; initial?: Box; label: string; children: ReactNode; testId?: string }) {
   const { t } = useTranslation();
   const ref = useRef<SVGSVGElement>(null);
-  const [vb, setVb] = useState<Box>(viewBox);
+  const [vb, setVb] = useState<Box>(initial ? clamp(initial, viewBox) : viewBox);
   const base = useRef(viewBox);
-  const key = viewBox.join(',');
+  const key = `${viewBox.join(',')}|${initial?.map((n) => n.toFixed(0)).join(',') ?? ''}`;
   // Otro mapa (otra provincia): vuelve al encuadre completo.
   useEffect(() => {
     base.current = viewBox;
-    setVb(viewBox);
+    setVb(initial ? clamp(initial, viewBox) : viewBox);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 

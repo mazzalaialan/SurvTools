@@ -7789,3 +7789,7 @@ figure.fauna-map {
   gap: 8px;
   min-width: 180px;
 }
+
+.fauna-zone-dept[data-near] {
+  fill: color-mix(in srgb, var(--accent) 35%, var(--surface));
+}
