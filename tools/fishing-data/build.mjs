@@ -6,6 +6,7 @@
 // seguro queda en el texto del tramo, que la app muestra siempre.
 //
 // Uso: node tools/fishing-data/build.mjs <carpeta de trabajo> <jurisdicción>[,<jurisdicción>…] [salida]
+import { buildShellfish } from './shellfish.mjs';
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -705,6 +706,9 @@ const ZONES = [
 ];
 for (const r of regions) r.zone = r.id.startsWith('mar-') ? 'mar' : r.id.startsWith('lit-') ? 'litoral' : r.id === 'mendoza' || r.id === 'san-juan' || r.id === 'san-luis' ? 'cuyo' : r.id === 'cordoba' || r.id === 'la-pampa' ? 'pampeana' : ['tucuman', 'santiago-del-estero', 'salta', 'jujuy', 'catamarca', 'la-rioja'].includes(r.id) ? 'noa' : 'patagonia';
 const data = { version: 1, generatedAt: new Date().toISOString().slice(0, 19) + 'Z', seasonLabel: '2026/2027', zones: ZONES.filter((z) => regions.some((r) => r.zone === z.id)), sources: SOURCES, species: used, regions, sectors };
+// Crustáceos y moluscos (shellfish.mjs), si está la carpeta de invertebrados al lado de la de trabajo.
+const shellfish = buildShellfish(`${work}/invertebrados`) ?? buildShellfish(`${work}/../invertebrados`);
+if (shellfish) data.shellfish = shellfish;
 writeFileSync(OUT, JSON.stringify(data));
 const noSpecies = sectors.filter((s) => s.speciesInferred).map((s) => s.id);
 console.log(`${sectors.length} tramos, ${used.length} especies → ${OUT} (${Math.round(readFileSync(OUT).length / 1024)} KB)`);

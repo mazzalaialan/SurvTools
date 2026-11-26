@@ -227,6 +227,23 @@ for (const p of provinces)
 // Dónde se encuentra: registros de GBIF por departamento (occurrences.mjs).
 const presence = opt(join(work, 'gbif', 'presencia.json'));
 if (presence) for (const sp of species) if (presence.species[sp.id]) sp.presence = presence.species[sp.id].depts;
+// Crustáceos y moluscos: la ficha completa y sus reglas están en Pesca (tools/fishing-data/shellfish.mjs); acá van para «Especies» y
+// «Fauna en mi zona», con el enlace a Pesca.
+{
+  const inv = opt(join(work, '..', 'invertebrados', 'especies.json'));
+  const invCredits = opt(join(work, '..', 'invertebrados', 'imagenes.json')) ?? {};
+  for (const sp of inv?.especies ?? []) {
+    const img = join(work, '..', 'invertebrados', 'listas', `${sp.id}.webp`);
+    let image;
+    if (existsSync(img)) {
+      copyFileSync(img, join(imgOut, `${sp.id}.webp`));
+      image = `${sp.id}.webp`;
+    }
+    const c = invCredits[sp.id];
+    const { grupo: _g, agua: _a, reglas_resumen: _r, marea_roja, invasora, por_que, ...rest } = sp;
+    species.push({ ...rest, group: 'shellfish', image, imageCredit: c?.file ? { author: c.credit, license: c.license, url: c.url } : undefined, fishLink: `/fishing/shellfish/${sp.id}`, redTide: marea_roja || undefined, invasive: invasora || undefined, whyListed: por_que || undefined, presence: presence?.species[sp.id]?.depts });
+  }
+}
 const known = new Set(species.map((s) => s.id));
 const unknown = new Set(provinces.flatMap((p) => p.zones.flatMap((z) => z.species.map((s) => s.id))).filter((id) => !known.has(id)));
 if (unknown.size) console.warn(`Especies de las zonas sin ficha: ${[...unknown].join(', ')}`);

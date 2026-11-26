@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Activity,
   PawPrint,
+  Shell,
   Anchor,
   BellRing,
   BookA,
@@ -100,6 +101,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'fishingSpecies', section: 'fishing', icon: Fish, implemented: true, path: '/fishing/species' },
   { id: 'fishingWaters', section: 'fishing', icon: Waves, implemented: true, path: '/fishing/waters', degradesWithout: ['geolocation'] },
   { id: 'fishingRules', section: 'fishing', icon: ListChecks, implemented: true, path: '/fishing/rules' },
+  { id: 'fishingShellfish', section: 'fishing', icon: Shell, implemented: true, path: '/fishing/shellfish' },
   { id: 'fishingSurvival', section: 'fishing', icon: LifeBuoy, implemented: true, path: '/fishing/survival' },
   { id: 'faunaZone', section: 'fauna', icon: MapPin, implemented: true, path: '/fauna/zone' },
   { id: 'faunaProvinces', section: 'fauna', icon: MapIcon, implemented: true, path: '/fauna/provinces' },

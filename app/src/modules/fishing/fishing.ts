@@ -184,6 +184,22 @@ export interface FishRegion {
   source: string;
 }
 
+/** Un crustáceo o molusco (cangrejo, camarón, almeja, mejillón…), con los textos del relevamiento en español. */
+export interface ShellfishSpecies {
+  id: string;
+  grupo: 'crustacean' | 'mollusc';
+  agua: 'dulce' | 'mar' | 'ambas';
+  invasora?: boolean;
+  /** Bivalvo o caracol que acumula la toxina de la marea roja. */
+  marea_roja?: boolean;
+  nombre: { es: string; en?: string; pt?: string };
+  cientifico?: string;
+  origen?: string;
+  image?: string;
+  imageCredit?: { author?: string; license?: string; url?: string };
+  [field: string]: unknown;
+}
+
 export interface FishData {
   version: number;
   generatedAt: string;
@@ -195,6 +211,12 @@ export interface FishData {
   species: FishSpecies[];
   regions: FishRegion[];
   sectors: FishSector[];
+  /** Crustáceos y moluscos: fichas, reglas por jurisdicción y marea roja (tools/fishing-data/shellfish.mjs). */
+  shellfish?: {
+    species: ShellfishSpecies[];
+    rules: { jurisdiction: string; rules: { species: string[]; topic?: string; summary: string; norm?: string; article?: string; date?: string; url?: string }[] }[];
+    redTide: { text: string; status: { jurisdiction: string; status: string; url?: string; date?: string }[]; agencies: { name: string; role?: string; pages: string[] }[]; date: string };
+  };
 }
 
 export const fishFile = (country: Country) => `fish-${country}.json`;

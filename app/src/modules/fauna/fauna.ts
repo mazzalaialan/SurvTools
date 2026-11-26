@@ -69,7 +69,11 @@ export interface HuntProvince {
 /** Ficha de una especie. Los campos vienen del relevamiento (texto en español) y pueden faltar. */
 export interface FaunaSpecies {
   id: string;
-  group: 'mammal' | 'bird' | 'reptile' | 'amphibian' | 'arthropod';
+  group: 'mammal' | 'bird' | 'reptile' | 'amphibian' | 'arthropod' | 'shellfish';
+  /** Crustáceos y moluscos: su ficha completa (reglas y marea roja) está en Pesca. */
+  fishLink?: string;
+  redTide?: boolean;
+  invasive?: boolean;
   nombre: { es: string; en?: string; pt?: string };
   otros_nombres?: string[];
   cientifico?: string;

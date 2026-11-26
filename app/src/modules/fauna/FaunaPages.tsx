@@ -432,6 +432,7 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
               <Bug size={14} aria-hidden /> {t('fauna.vectorBadge')}
             </span>
           )}
+          {sp.redTide && <span className="fauna-banned">{t('fishing.shellfish.redTideBadge')}</span>}
           {isBanned(sp) && <span className="fauna-banned">{bannedText(t, sp)}</span>}
           {!isBanned(sp) && sp.regulated && <span className="fauna-regulated">{t('fauna.regulated')}</span>}
         </span>
@@ -465,7 +466,7 @@ export function FaunaSpeciesPage() {
                   </button>
                 ))}
               </div>
-              {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod'] as const).map((g) => {
+              {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod', 'shellfish'] as const).map((g) => {
                 const list = data.species.filter((s) => s.group === g && match(s)).sort((a, b) => faunaName(a, a.id, i18n.language).localeCompare(faunaName(b, b.id, i18n.language), 'es'));
                 return list.length ? (
                   <section key={g} className="stack">
@@ -538,6 +539,11 @@ export function FaunaSpeciesDetailPage() {
                 </strong>
                 <p>{sp.bite}</p>
               </section>
+            )}
+            {sp.fishLink && (
+              <Link className="btn btn-primary btn-block" to={sp.fishLink} data-testid="fauna-fish-link">
+                {t(sp.redTide ? 'fauna.fishLinkTide' : 'fauna.fishLink')}
+              </Link>
             )}
             {sp.vector && (
               <section className="fauna-warning fauna-vector-box" data-testid="fauna-vector">
@@ -1069,7 +1075,7 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
           <ul className="list">{danger.map(row)}</ul>
         </section>
       )}
-      {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod'] as const).map((g) => {
+      {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod', 'shellfish'] as const).map((g) => {
         const items = rest.filter((sp) => sp.group === g).sort(byName);
         return items.length ? (
           <section key={g} className="stack">

@@ -106,6 +106,8 @@ const alias = existsSync(join(work, 'alias.json')) ? read(join(work, 'alias.json
 // Las fichas vienen como lista (`especies`) o como objeto por id (las aves).
 const listOf = (d) => (Array.isArray(d.especies) ? d.especies : Object.values(d).filter((x) => x && typeof x === 'object' && x.id));
 const species = files.flatMap((f) => (existsSync(join(work, f)) ? listOf(read(join(work, f))) : [])).filter((s) => !alias[s.id]);
+// Crustáceos y moluscos (carpeta hermana de la de fauna).
+if (existsSync(join(work, '..', 'invertebrados', 'especies.json'))) species.push(...read(join(work, '..', 'invertebrados', 'especies.json')).especies);
 const out = { source: 'GBIF.org, registros con coordenadas en Argentina desde 1990, por departamento (GADM nivel 2)', date: new Date().toISOString().slice(0, 10), species: {} };
 const unmatched = new Set();
 for (const sp of species) {

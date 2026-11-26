@@ -71,3 +71,20 @@ test('pesca: portada, mapa con un pez elegido, ficha del pez con carnadas y fich
   await page.goto('/#/fishing/sector/neuquen-pocahullo');
   await expect(page.getByTestId('fish-forbidden')).toHaveText('Pesca no autorizada');
 });
+
+test('crustáceos y moluscos: lista con el aviso de marea roja y ficha del mejillón con sus normas', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' }).first()).toBeVisible();
+  await page.goto('/#/fishing');
+  await page.getByTestId('fish-pack-get').click();
+  await expect(page.getByTestId('fish-status')).toBeVisible();
+  await page.goto('/#/fishing/shellfish');
+  await expect(page.getByTestId('red-tide')).toContainText('Marea roja');
+  await page.goto('/#/fishing/shellfish/mejillon');
+  await expect(page.getByTestId('shellfish-rules')).toBeVisible();
+});
