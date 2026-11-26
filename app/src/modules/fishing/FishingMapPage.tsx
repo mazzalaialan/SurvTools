@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Layers, Loader2, Locate, X } from 'lucide-react';
+import { useGeolocation } from '@/core/geo/useGeolocation';
 import { useSettings } from '@/core/settings/settings';
 import { MapView, type ViewState } from '@/modules/maps/MapView';
 import { outlineFeatures } from '@/modules/maps/outline';
@@ -13,6 +14,7 @@ import { useFishZone } from './useFishZone';
 import { FISH_STYLES, FishDataGate, HabitatPicker, MAX_FISH, SectorSeasonBadge, useHabitatFilter, ZonePicker } from './parts';
 import { useFishData } from './useFishData';
 
+const FISH_LAYERS_KEY = 'vikarg.fishing.layers';
 const NONE: never[] = [];
 /** Color de los tramos en «Todos» (neutro: cada tramo lleva el número de especies). */
 const ALL_COLOR = '#7f97ad';
@@ -141,6 +143,25 @@ function FishingMap({ data }: { data: FishData }) {
   const lang = i18n.language;
   const [params, setParams] = useSearchParams();
   const layers = useSettings((s) => s.settings.mapLayers);
+  // Relieve y curvas de nivel: apagados por defecto en el mapa de pesca (tapan los ríos); se prenden en «Capas». Se recuerda en el dispositivo.
+  const [extra, setExtra] = useState<{ hillshade: boolean; contours: boolean }>(() => {
+    try {
+      return { hillshade: false, contours: false, ...JSON.parse(localStorage.getItem(FISH_LAYERS_KEY) ?? '{}') };
+    } catch {
+      return { hillshade: false, contours: false };
+    }
+  });
+  const toggleExtra = (k: 'hillshade' | 'contours') =>
+    setExtra((prev) => {
+      const next = { ...prev, [k]: !prev[k] };
+      try {
+        localStorage.setItem(FISH_LAYERS_KEY, JSON.stringify(next));
+      } catch {
+        /* sin almacenamiento: queda solo en esta sesión */
+      }
+      return next;
+    });
+  const [layersOpen, setLayersOpen] = useState(false);
   const [outline, setOutline] = useState<FeatureCollection | null>(null);
   useEffect(() => {
     void loadGeoData().then((geo) => setOutline(outlineFeatures(geo)));
@@ -192,6 +213,9 @@ function FishingMap({ data }: { data: FishData }) {
 
   // Al cambiar de zona (o de tramo elegido) el mapa vuela a lo nuevo; si no, los ríos de la zona quedaban fuera de la vista.
   const [fly, setFly] = useState<(ViewState & { key: number }) | null>(null);
+  // Mi ubicación: el punto azul en el mapa y el botón para ir a ella (como en el mapa sin conexión).
+  const { fix } = useGeolocation();
+  const hereLoc = useMemo(() => (fix ? { lat: fix.lat, lon: fix.lon, accuracy: fix.accuracy } : null), [fix]);
   const target = focus ? focus.id : `zone:${z.zone ?? 'all'}`;
   const lastTarget = useRef(target);
   useEffect(() => {
@@ -234,13 +258,13 @@ function FishingMap({ data }: { data: FishData }) {
       <MapView
         initial={start.view}
         initialBounds={start.bounds}
-        layers={{ ...layers, ecoregions: false, geology: false, slope: false }}
+        layers={{ ...layers, ...extra, terrain3d: false, ecoregions: false, geology: false, slope: false }}
         showMine={false}
         waypoints={NONE}
         routes={NONE}
         tracks={NONE}
         showTracks={false}
-        here={null}
+        here={hereLoc}
         zones={NONE}
         preview={null}
         outline={outline}
@@ -254,6 +278,29 @@ function FishingMap({ data }: { data: FishData }) {
         }}
         onPick={() => setPicked([])}
       />
+      <button
+        className="icon-btn maps-locate fish-locate"
+        type="button"
+        data-testid="fish-locate"
+        aria-label={fix ? t('maps.goHere') : t('fishing.locating')}
+        aria-busy={!fix}
+        onClick={() => fix && setFly({ lat: fix.lat, lon: fix.lon, zoom: Math.max(view.zoom, 11), key: Date.now() })}
+      >
+        {fix ? <Locate size={20} aria-hidden /> : <Loader2 size={20} className="spin" aria-hidden />}
+      </button>
+      <button className="icon-btn fish-layers-btn" type="button" aria-expanded={layersOpen} aria-label={t('fishing.layers.title')} data-testid="fish-layers" onClick={() => setLayersOpen(!layersOpen)}>
+        <Layers size={20} aria-hidden />
+      </button>
+      {layersOpen && (
+        <div className="card fish-layers-panel" data-testid="fish-layers-panel">
+          <strong>{t('fishing.layers.title')}</strong>
+          {(['hillshade', 'contours'] as const).map((k) => (
+            <label key={k} className="check">
+              <input type="checkbox" checked={extra[k]} onChange={() => toggleExtra(k)} data-testid={`fish-layer-${k}`} /> {t(`fishing.layers.${k}`)}
+            </label>
+          ))}
+        </div>
+      )}
       <div className="fish-chips" role="group" aria-label={t('fishing.chooseFish')} data-testid="fish-chips">
         <button type="button" className="chip" aria-pressed={!chosen.length} onClick={() => setChosen([])}>
           {t('fishing.all')}

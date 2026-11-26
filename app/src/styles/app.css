@@ -7764,3 +7764,28 @@ figure.fauna-map {
   margin: 0;
   font-weight: 600;
 }
+
+/* Mapa de pesca: «mi ubicación» y «capas» arriba a la derecha (abajo está el panel de tramos). */
+.maps-locate.fish-locate {
+  top: 8px;
+  bottom: auto;
+  right: 8px;
+}
+.fish-layers-btn {
+  position: absolute;
+  top: 60px;
+  right: 8px;
+  z-index: 2;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.fish-layers-panel {
+  position: absolute;
+  top: 112px;
+  right: 8px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
