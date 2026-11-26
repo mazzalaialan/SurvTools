@@ -101,7 +101,7 @@ function toIgn(prov, dept) {
   return hit ? [Object.keys(ign).find((k) => ign[k] === list), hit] : null;
 }
 
-const files = ['especies-mamiferos.json', 'especies-aves.json', 'especies-protegidas.json', 'especies-reptiles.json', 'especies-artropodos.json'];
+const files = ['especies-mamiferos.json', 'especies-aves.json', 'especies-protegidas.json', 'especies-reptiles.json', 'especies-artropodos.json', 'especies-comunes.json'];
 const alias = existsSync(join(work, 'alias.json')) ? read(join(work, 'alias.json')) : {};
 // Las fichas vienen como lista (`especies`) o como objeto por id (las aves).
 const listOf = (d) => (Array.isArray(d.especies) ? d.especies : Object.values(d).filter((x) => x && typeof x === 'object' && x.id));

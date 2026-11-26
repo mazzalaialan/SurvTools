@@ -79,4 +79,7 @@ test('fauna en mi zona: con el GPS en Tucumán marca el departamento y lista pri
   await expect(page.getByTestId('fauna-zone-select')).toHaveValue('Capital');
   await expect(page.getByTestId('fauna-zone-summary')).toContainText('venenosas');
   await expect(page.getByRole('heading', { name: 'Peligrosas' })).toBeVisible();
+  // Fauna común: el cuis tiene su ficha (con su mapa de registros).
+  await page.goto('/#/fauna/species/cuis-campestre');
+  await expect(page.getByRole('heading', { name: /Cuis/ })).toBeVisible();
 });
