@@ -259,6 +259,32 @@ if (depts)
     }
   }
 
+// Vecinos de cada departamento (también de otras provincias): los que tienen algún vértice a menos de ~2,5 km (los contornos están simplificados a ~1 km). Sirven para «Fauna en
+// mi zona» cuando un departamento no tiene registros (p. ej. Hurlingham: GBIF usa un mapa viejo que lo cuenta dentro de Morón).
+{
+  const all = provinces.flatMap((p) => (p.departments ?? []).map((d) => ({ p: p.name, d })));
+  const NEAR = 0.025;
+  for (const a of all) {
+    let w = 180, e = -180, s = 90, n = -90;
+    for (const r of a.d.rings) for (let i = 0; i < r.length; i += 2) { w = Math.min(w, r[i]); e = Math.max(e, r[i]); s = Math.min(s, r[i + 1]); n = Math.max(n, r[i + 1]); }
+    a.box = [w - NEAR, s - NEAR, e + NEAR, n + NEAR];
+  }
+  const touch = (a, b) => {
+    for (const ra of a.d.rings)
+      for (let i = 0; i < ra.length; i += 2)
+        for (const rb of b.d.rings)
+          for (let j = 0; j < rb.length; j += 2) if (Math.abs(ra[i] - rb[j]) < NEAR && Math.abs(ra[i + 1] - rb[j + 1]) < NEAR) return true;
+    return false;
+  };
+  for (let i = 0; i < all.length; i++)
+    for (let j = i + 1; j < all.length; j++) {
+      const a = all[i], c = all[j];
+      if (a.box[0] > c.box[2] || c.box[0] > a.box[2] || a.box[1] > c.box[3] || c.box[1] > a.box[3]) continue;
+      if (!touch(a, c)) continue;
+      (a.d.neighbors ??= []).push(`${c.p}|${c.d.name}`);
+      (c.d.neighbors ??= []).push(`${a.p}|${a.d.name}`);
+    }
+}
 const out = {
   version: 1,
   // Con hora: la app compara esta marca para saber si la copia guardada es vieja (con solo la fecha, dos versiones del mismo día no se actualizaban).

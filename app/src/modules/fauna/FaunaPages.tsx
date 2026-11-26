@@ -979,14 +979,17 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
   const { t } = useTranslation();
   const inDept = data.species.filter((sp) => recordsIn(sp, prov, dept) > 0);
   const scopeDept = inDept.length > 0;
-  const list = scopeDept ? inDept : data.species.filter((sp) => recordsIn(sp, prov, null) > 0);
-  const n = (sp: FaunaSpecies) => recordsIn(sp, prov, scopeDept ? dept : null);
+  // Sin registros en el departamento: los de sus vecinos (no los de toda la provincia, que en Buenos Aires traía ciervos de cotos lejanos).
+  const neighbors = scopeDept ? [] : (data.provinces.find((p) => p.name === prov)?.departments?.find((d) => d.name === dept)?.neighbors ?? []).map((k) => k.split('|') as [string, string]);
+  const inNeighbors = (sp: FaunaSpecies) => neighbors.reduce((a, [p, d]) => a + recordsIn(sp, p, d), 0);
+  const list = scopeDept ? inDept : data.species.filter((sp) => inNeighbors(sp) > 0);
+  const n = (sp: FaunaSpecies) => (scopeDept ? recordsIn(sp, prov, dept) : inNeighbors(sp));
   const byName = (a: FaunaSpecies, b: FaunaSpecies) => faunaName(a, a.id, lang).localeCompare(faunaName(b, b.id, lang), 'es');
   const danger = list.filter((sp) => sp.venomous || sp.vector).sort(byName);
   const rest = list.filter((sp) => !sp.venomous && !sp.vector);
   const venom = danger.filter((sp) => sp.venomous).length;
   const vector = danger.filter((sp) => sp.vector).length;
-  const place = scopeDept ? dept : prov;
+  const place = scopeDept ? dept : t('fauna.zone.around', { dept });
   const row = (sp: FaunaSpecies) => (
     <li key={sp.id}>
       <Link className="list-row fauna-zone-row" to={`/fauna/species/${sp.id}`}>
@@ -1017,7 +1020,11 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
         <span>{t('fauna.zone.notice')}</span>
       </p>
       <section className="card stack" role="status" data-testid="fauna-zone-summary">
-        {!scopeDept && <p className="muted">{t('fauna.zone.noneInDept', { dept, province: prov })}</p>}
+        {!scopeDept && (
+          <p className="muted" data-testid="fauna-zone-neighbors">
+            {neighbors.length ? t('fauna.zone.noneInDept', { dept, list: neighbors.map(([, d]) => d).join(', ') }) : t('fauna.zone.noneAround', { dept })}
+          </p>
+        )}
         <p className="fauna-zone-summary">
           {danger.length
             ? t('fauna.zone.summary', { place, venom, vector })

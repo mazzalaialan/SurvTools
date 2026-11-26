@@ -49,7 +49,7 @@ export interface HuntProvince {
   warning?: string;
   zones: HuntZone[];
   /** Departamentos de la provincia (IGN, CC BY 4.0), con sus anillos [lon, lat, …], para el mapa de caza. */
-  departments?: { name: string; rings: number[][] }[];
+  departments?: { name: string; rings: number[][]; /** Vecinos como «Provincia|Departamento». */ neighbors?: string[] }[];
   permit?: {
     buyUrl?: string;
     infoUrl?: string;
