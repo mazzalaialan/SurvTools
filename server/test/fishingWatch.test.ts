@@ -123,3 +123,15 @@ test('pesca: en una página de blog solo cuenta el artículo (las entradas recie
   assert.equal(sent.length, 1);
 });
 
+test('caza: si cambia la lista de vedas municipales, el mail dice cómo regenerar los datos de fauna', async () => {
+  const db = openDb(':memory:');
+  const sent: string[] = [];
+  const notifier = { send: async (_s: string, t: string) => void sent.push(t) };
+  const now = new Date('2027-04-01T12:00:00Z');
+  const docs = [{ label: 'Vedas BA', url: 'https://example.org/vedas.png', validUntil: '2027-04-30', hunting: true }];
+  await runFishingWatch(db, notifier, () => undefined, fakeFetch({ [docs[0]!.url]: 'lista 2026' }), now, docs);
+  await runFishingWatch(db, notifier, () => undefined, fakeFetch({ [docs[0]!.url]: 'lista 2027' }), now, docs);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0]!, /vedas-municipales\.json/);
+});
+

@@ -25,6 +25,8 @@ export interface WatchedDoc {
    * palabras («pesca», «veda»), así avisa cuando aparece o cambia algo de pesca y no por cada noticia nueva.
    */
   keywords?: string[];
+  /** Norma de caza (sección Fauna), no de pesca: el mail dice cómo regenerar los datos de fauna. */
+  hunting?: boolean;
 }
 
 /** Fin de la vigencia del reglamento cargado (los permisos de temporada 2026/27 valen hasta el 31/10/2027). */
@@ -62,6 +64,11 @@ export const FISHING_DOCS: WatchedDoc[] = [
   { label: 'Catamarca: Disposición 309/2026, temporada de pesca (copia de AICACYP)', url: 'https://www.aicacyp.ar/wp-content/uploads/2026/11/Disposicion-Temporada-de-pesca-2026-2027.pdf', validUntil: '2027-08-31' },
   // Mendoza: Res. 322/2026 (pejerrey y perca hasta el 30/09/2027; la resolución nueva sale en octubre).
   { label: 'Mendoza: Resolución de pesca deportiva 2026/2027 (copia del Boletín Oficial)', url: 'https://www.elsol.com.ar/wp-content/uploads/2026/11/Pesca-Resolucion.pdf', validUntil: '2027-09-30' },
+  // Caza (sección Fauna). Buenos Aires: lista de municipios con veda de caza de la temporada (imagen en Drive enlazada desde la página
+  // de Flora y Fauna) y la página misma (por si enlazan una lista nueva). La temporada de caza menor empieza en mayo: se revisa desde
+  // mediados de marzo (45 días antes del 30/04); pasado el 30/04 sin lista nueva, avisa una vez para revisarla a mano.
+  { label: 'Buenos Aires (caza): municipios que solicitan veda, temporada 2026', url: 'https://drive.google.com/uc?export=download&id=1gFXlUdQSVAA1DMa0XYSCPNJ8RDdwrWKt', validUntil: '2027-04-30', hunting: true },
+  { label: 'Buenos Aires (caza): página de caza de la Dirección de Flora y Fauna', url: 'https://www.gba.gob.ar/desarrollo_agrario/direccion_de_flora_y_fauna/caza', validUntil: '2027-04-30', keywords: ['veda', 'temporada', 'municipios'], hunting: true },
   { label: 'Tierra del Fuego: página de pesca deportiva (anuncia la resolución nueva)', url: 'https://prodyambiente.tierradelfuego.gob.ar/pesca-deportiva-tdf/', validUntil: '2027-10-01' },
 ];
 
@@ -122,6 +129,7 @@ export async function runFishingWatch(
   const result: FishingWatchResult = { checked: 0, changed: [], failed: [], found: [], expired: [] };
   if (!docs.some((d) => watchDue(now, d.validUntil))) return result;
   const notes: string[] = [];
+  let hunting = false;
   for (const doc of docs) {
     if (!watchDue(now, doc.validUntil)) continue;
     try {
@@ -142,6 +150,7 @@ export async function runFishingWatch(
       if (before && before !== hash) {
         result.changed.push(doc.label);
         notes.push(`Cambió: ${doc.label}\n${doc.url}`);
+        if (doc.hunting) hunting = true;
       }
     } catch (err) {
       result.failed.push(doc.label);
@@ -173,12 +182,16 @@ export async function runFishingWatch(
     if (getSetting(db, key)) continue;
     setSetting(db, key, now.toISOString());
     result.expired.push(doc.label);
+    if (doc.hunting) hunting = true;
     notes.push(`Venció (${until}) y no se cargó la norma nueva: ${doc.label}\n${doc.url}\nLa app ya muestra «Sin regla específica encontrada» en esos tramos. Revisá si la fuente cambió de dirección o si cambió la norma (por ejemplo, si se liberó la pesca).`);
   }
   // Lo último que se revisó queda guardado (settings «fishing-watch:last»), para ver después qué falló y desde cuándo.
   setSetting(db, 'fishing-watch:last', JSON.stringify({ at: now.toISOString(), ...result }));
   if (notes.length) {
-    const text = `${notes.join('\n\n')}\n\nRevisar y regenerar los datos de pesca: tools/fishing-data (README) y docs/PESCA.md. Hasta entonces la app muestra los datos anteriores, con su fecha y el aviso de consultar el reglamento vigente.`;
+    const huntingNote = hunting
+      ? '\n\nCaza (Fauna): actualizar ~/vikarg-fishing-work/fauna/vedas-municipales.json (lista de municipios en veda de la temporada) o la norma que cambió, y regenerar con node tools/fauna-data/build.mjs ~/vikarg-fishing-work/fauna.'
+      : '';
+    const text = `${notes.join('\n\n')}\n\nRevisar y regenerar los datos de pesca: tools/fishing-data (README) y docs/PESCA.md. Hasta entonces la app muestra los datos anteriores, con su fecha y el aviso de consultar el reglamento vigente.${huntingNote}`;
     if (notifier) {
       try {
         await notifier.send('VikArg: cambió la normativa de pesca', text);
