@@ -74,6 +74,22 @@ const DEPT = {
   Ameghino: 'Florentino Ameghino', 'Juan B. Alberdi': 'Juan Bautista Alberdi', 'General Angel Vicente Peñaloza': 'Ángel Vicente Peñaloza',
   'General Ocampo': 'General Ortiz de Ocampo', 'Coronel Felipe Varela': 'General Felipe Varela',
 };
+/**
+ * Partidos y departamentos que se dividieron después del mapa que usa GBIF (GADM): los registros del viejo se cuentan también en cada
+ * uno de los que salieron de él (es aproximado: el registro estaba en alguna parte del territorio viejo).
+ */
+const SPLITS = {
+  'Buenos Aires|Morón': ['Morón', 'Hurlingham', 'Ituzaingó'],
+  'Buenos Aires|General Sarmiento': ['San Miguel', 'José C. Paz', 'Malvinas Argentinas'],
+  'Buenos Aires|Esteban Echeverría': ['Esteban Echeverría', 'Ezeiza', 'Presidente Perón'],
+  'Buenos Aires|San Vicente': ['San Vicente', 'Presidente Perón'],
+  'Buenos Aires|Florencio Varela': ['Florencio Varela', 'Presidente Perón'],
+  'Buenos Aires|Magdalena': ['Magdalena', 'Punta Indio'],
+  'Buenos Aires|Chascomús': ['Chascomús', 'Lezama'],
+  'Tierra del Fuego|Río Grande': ['Río Grande', 'Tolhuin'],
+  'Entre Ríos|Villaguay': ['Villaguay', 'San Salvador'],
+  'Entre Ríos|Colón': ['Colón', 'San Salvador'],
+};
 const DEPT_BY_PROV = { 'Jujuy|Capital': 'Dr. Manuel Belgrano', 'San Luis|La Capital': 'Juan Martín de Pueyrredón' };
 function toIgn(prov, dept) {
   dept = DEPT_BY_PROV[`${prov}|${dept}`] ?? DEPT[dept] ?? dept;
@@ -110,6 +126,12 @@ for (const sp of species) {
     if (!c.name.startsWith('ARG.')) continue;
     const g = await gadmName(c.name);
     const hit = g.parent ? toIgn(g.parent, g.name) : null;
+    const split = g.parent ? SPLITS[`${PROV[g.parent] ?? g.parent}|${g.name}`] : undefined;
+    if (split) {
+      const prov = PROV[g.parent] ?? g.parent;
+      for (const dn of split) (depts[prov] ??= {})[dn] = (depts[prov][dn] ?? 0) + c.count;
+      continue;
+    }
     if (!hit && /buenos aires/i.test(g.parent ?? '') && g.name === 'Distrito Federal') {
       // GADM tiene a la Ciudad de Buenos Aires como un solo bloque: se pinta en todas sus comunas.
       for (const com of ign['Ciudad de Buenos Aires'] ?? []) (depts['Ciudad de Buenos Aires'] ??= {})[com] = (depts['Ciudad de Buenos Aires'][com] ?? 0) + c.count;
