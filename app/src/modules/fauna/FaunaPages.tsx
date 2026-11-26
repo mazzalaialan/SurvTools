@@ -444,21 +444,22 @@ function SpeciesCard({ sp, lang }: { sp: FaunaSpecies; lang: string }) {
 export function FaunaSpeciesPage() {
   const { t, i18n } = useTranslation();
   const [q, setQ] = useState('');
-  const [kind, setKind] = useState<'all' | 'hunted' | 'banned' | 'venomous'>('all');
+  const [kind, setKind] = useState<'all' | 'hunted' | 'banned' | 'venomous' | 'vector'>('all');
   const norm = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   return (
     <div className="stack">
       <h1 className="page-title">{t('modules.faunaSpecies.title')}</h1>
       <Gate>
         {(data) => {
-          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : !isBanned(sp) && !sp.regulated && sp.group !== 'arthropod')) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
+          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'vector' ? !!sp.vector : kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : !isBanned(sp) && !sp.regulated && sp.group !== 'arthropod')) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
           return (
             <>
               <Notice data={data} />
               <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('fauna.search')} aria-label={t('fauna.search')} />
-              <div className="segmented" role="group" aria-label={t('fauna.kind.label')}>
-                {(['all', 'hunted', 'banned', 'venomous'] as const).map((k) => (
-                  <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)} data-testid={`fauna-kind-${k}`}>
+              {/* Cinco filtros: en el celular no entran en una fila, así que van como chips que bajan de renglón. */}
+              <div className="chips fauna-kinds" role="group" aria-label={t('fauna.kind.label')}>
+                {(['all', 'hunted', 'banned', 'venomous', 'vector'] as const).map((k) => (
+                  <button key={k} type="button" className="chip" aria-pressed={kind === k} onClick={() => setKind(k)} data-testid={`fauna-kind-${k}`}>
                     {t(`fauna.kind.${k}`)}
                   </button>
                 ))}
