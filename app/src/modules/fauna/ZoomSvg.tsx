@@ -13,7 +13,11 @@ const DRAG_PX = 6;
  * Cambia el `viewBox` (no escala con CSS), así los bordes siguen finos. Un arrastre no dispara el clic de lo que está debajo.
  */
 /** `initial`: encuadre con el que arranca (p. ej. acercado a un departamento); `viewBox` sigue siendo el mapa completo («ver todo»). */
-export function ZoomSvg({ viewBox, initial, label, children, testId }: { viewBox: Box; initial?: Box; label: string; children: ReactNode; testId?: string }) {
+/**
+ * `children` puede ser una función que recibe cuántos píxeles de pantalla mide una unidad del mapa con el zoom actual (para nombres que
+ * no crecen al acercar y que se ocultan si no entran).
+ */
+export function ZoomSvg({ viewBox, initial, label, children, testId }: { viewBox: Box; initial?: Box; label: string; children: ReactNode | ((pxPerUnit: number) => ReactNode); testId?: string }) {
   const { t } = useTranslation();
   const ref = useRef<SVGSVGElement>(null);
   const [vb, setVb] = useState<Box>(initial ? clamp(initial, viewBox) : viewBox);
@@ -112,6 +116,15 @@ export function ZoomSvg({ viewBox, initial, label, children, testId }: { viewBox
     }
   };
 
+  // Ancho del mapa en pantalla (cambia al girar el celular o al abrir un desplegable).
+  const [px, setPx] = useState(360);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setPx(el.getBoundingClientRect().width || 360));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const center = (): [number, number] => [vb[0] + vb[2] / 2, vb[1] + vb[3] / 2];
   const zoomed = vb[2] < base.current[2] - 0.5;
   return (
@@ -131,7 +144,7 @@ export function ZoomSvg({ viewBox, initial, label, children, testId }: { viewBox
           zoomAt(2, cx, cy);
         }}
       >
-        {children}
+        {typeof children === 'function' ? children(px / vb[2]) : children}
       </svg>
       <div className="zoom-svg-controls">
         <button type="button" className="icon-btn" aria-label={t('fauna.zoom.in')} onClick={() => zoomAt(1.6, ...center())} data-testid="zoom-in">

@@ -69,7 +69,7 @@ export interface HuntProvince {
 /** Ficha de una especie. Los campos vienen del relevamiento (texto en español) y pueden faltar. */
 export interface FaunaSpecies {
   id: string;
-  group: 'mammal' | 'bird' | 'reptile' | 'arthropod';
+  group: 'mammal' | 'bird' | 'reptile' | 'amphibian' | 'arthropod';
   nombre: { es: string; en?: string; pt?: string };
   otros_nombres?: string[];
   cientifico?: string;

@@ -7793,3 +7793,17 @@ figure.fauna-map {
 .fauna-zone-dept[data-near] {
   fill: color-mix(in srgb, var(--accent) 35%, var(--surface));
 }
+
+/* Nombres de departamentos en los mapas de Fauna: con borde del color del fondo para leerse sobre cualquier relleno. */
+.dept-label {
+  fill: var(--text);
+  stroke: var(--bg);
+  stroke-width: 3px;
+  paint-order: stroke;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  font-weight: 600;
+}
+.dept-label-on {
+  font-weight: 800;
+}

@@ -451,7 +451,8 @@ export function FaunaSpeciesPage() {
       <h1 className="page-title">{t('modules.faunaSpecies.title')}</h1>
       <Gate>
         {(data) => {
-          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'vector' ? !!sp.vector : kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : !isBanned(sp) && !sp.regulated && sp.group !== 'arthropod')) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
+          const hunted = new Set(data.provinces.flatMap((p) => p.zones.flatMap((z) => z.species.map((s) => s.id))));
+          const match = (sp: FaunaSpecies) => (kind === 'all' || (kind === 'vector' ? !!sp.vector : kind === 'venomous' ? !!sp.venomous : kind === 'banned' ? isBanned(sp) : hunted.has(sp.id))) && (!q.trim() || norm(`${faunaName(sp, sp.id, i18n.language)} ${sp.cientifico ?? ''} ${(sp.otros_nombres ?? []).join(' ')}`).includes(norm(q.trim())));
           return (
             <>
               <Notice data={data} />
@@ -464,7 +465,7 @@ export function FaunaSpeciesPage() {
                   </button>
                 ))}
               </div>
-              {(['mammal', 'bird', 'reptile', 'arthropod'] as const).map((g) => {
+              {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod'] as const).map((g) => {
                 const list = data.species.filter((s) => s.group === g && match(s)).sort((a, b) => faunaName(a, a.id, i18n.language).localeCompare(faunaName(b, b.id, i18n.language), 'es'));
                 return list.length ? (
                   <section key={g} className="stack">
@@ -704,6 +705,8 @@ function DeptMap({ province }: { province: HuntProvince }) {
         </div>
       )}
       <ZoomSvg viewBox={[-4, -4, Math.round(x(box.e) + 8), Math.round(y(box.s) + 8)]} label={`${t('fauna.deptMap')}: ${province.name}`}>
+        {(k) => (
+          <>
         <defs>
           <pattern id="fauna-hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <rect width="14" height="14" fill="var(--ok)" fillOpacity="0.35" />
@@ -729,6 +732,9 @@ function DeptMap({ province }: { province: HuntProvince }) {
             </path>
           );
         })}
+                  <DeptLabels depts={depts} x={x} y={y} pxPerUnit={k} picked={picked} />
+          </>
+        )}
       </ZoomSvg>
       <figcaption className="stack">
         <span className="fauna-legend">
@@ -973,11 +979,16 @@ function ZoneMap({ province, dept, onPick }: { province: HuntProvince; dept: str
   return (
     <section className="card stack" data-testid="fauna-zone-map">
       <ZoomSvg viewBox={full} initial={initial} label={`${province.name}: ${t(word, { name: dept })}`}>
+        {(k) => (
+          <>
         {depts.map((d) => (
           <path key={d.name} d={d.rings.map(path).join('')} className="fauna-zone-dept" data-on={d.name === dept || undefined} data-near={(d !== sel && near.includes(d)) || undefined} data-dept={d.name} onClick={() => onPick(d.name)}>
             <title>{d.name}</title>
           </path>
         ))}
+                  <DeptLabels depts={depts} x={x} y={y} pxPerUnit={k} picked={dept} />
+          </>
+        )}
       </ZoomSvg>
       <label className="field">
         <span>{t('fauna.zone.pickDept', { province: province.name })}</span>
@@ -1058,7 +1069,7 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
           <ul className="list">{danger.map(row)}</ul>
         </section>
       )}
-      {(['mammal', 'bird', 'reptile', 'arthropod'] as const).map((g) => {
+      {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod'] as const).map((g) => {
         const items = rest.filter((sp) => sp.group === g).sort(byName);
         return items.length ? (
           <section key={g} className="stack">
@@ -1071,5 +1082,46 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
         <p>{t('fauna.range.note', { date: data.presenceSource?.date ?? '' })}</p>
       </Collapsible>
     </>
+  );
+}
+
+/** Centro (aproximado) del anillo más grande de un departamento, en coordenadas del mapa, y su ancho: dónde va el nombre y si entra. */
+function labelSpot(rings: number[][], x: (lon: number) => number, y: (lat: number) => number): { cx: number; cy: number; w: number } | null {
+  let best: number[] | null = null;
+  let bestA = 0;
+  for (const r of rings) {
+    let a = 0;
+    for (let i = 0, j = r.length - 2; i < r.length; j = i, i += 2) a += r[j]! * r[i + 1]! - r[i]! * r[j + 1]!;
+    if (Math.abs(a) > bestA) [bestA, best] = [Math.abs(a), r];
+  }
+  if (!best) return null;
+  let cx = 0, cy = 0, a6 = 0, minX = Infinity, maxX = -Infinity;
+  for (let i = 0, j = best.length - 2; i < best.length; j = i, i += 2) {
+    const x0 = x(best[j]!), y0 = y(best[j + 1]!), x1 = x(best[i]!), y1 = y(best[i + 1]!);
+    const f = x0 * y1 - x1 * y0;
+    cx += (x0 + x1) * f; cy += (y0 + y1) * f; a6 += f * 3;
+    minX = Math.min(minX, x1); maxX = Math.max(maxX, x1);
+  }
+  return a6 ? { cx: cx / a6, cy: cy / a6, w: maxX - minX } : null;
+}
+
+/** Nombres de los departamentos: tamaño fijo en pantalla y solo los que entran en su departamento con el zoom actual. */
+function DeptLabels({ depts, x, y, pxPerUnit, picked }: { depts: { name: string; rings: number[][] }[]; x: (lon: number) => number; y: (lat: number) => number; pxPerUnit: number; picked?: string | null }) {
+  const spots = useMemo(() => depts.map((d) => ({ name: d.name, spot: labelSpot(d.rings, x, y) })), [depts, x, y]);
+  const FONT = 11;
+  return (
+    <g className="dept-labels" aria-hidden>
+      {spots.map(({ name, spot }) => {
+        if (!spot) return null;
+        // Ancho aproximado del texto (en píxeles): si no entra en el departamento, no se muestra (salvo el elegido).
+        const textPx = name.length * FONT * 0.55;
+        if (name !== picked && spot.w * pxPerUnit < textPx * 0.9) return null;
+        return (
+          <text key={name} x={spot.cx} y={spot.cy} fontSize={FONT / pxPerUnit} textAnchor="middle" dominantBaseline="middle" className={name === picked ? 'dept-label dept-label-on' : 'dept-label'}>
+            {name}
+          </text>
+        );
+      })}
+    </g>
   );
 }
