@@ -157,6 +157,8 @@ if (missing.length) throw new Error(`Provincias de status.json sin datos: ${miss
 const imgOut = here('../../app/public/fauna/');
 mkdirSync(imgOut, { recursive: true });
 const species = [];
+/** «No consta como Monumento Natural…» no es un monumento: solo se guarda cuando la ficha nombra uno. */
+const monument = (m) => (typeof m === 'string' && m.trim() && !/^(no |sin |ninguno)/i.test(m.trim()) ? m : undefined);
 const credits = { ...(opt(join(work, 'imagenes.json')) ?? {}), ...(opt(join(work, 'imagenes-aves.json')) ?? {}), ...(opt(join(work, 'imagenes-protegidas.json')) ?? {}), ...(opt(join(work, 'imagenes-reptiles.json')) ?? {}) };
 // Las protegidas (amenazadas y monumentos naturales que no se cazan) traen su grupo en cada ficha (`grupo`).
 for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-aves.json', 'bird'], ['especies-protegidas.json', null], ['especies-reptiles.json', 'reptile']]) {
@@ -180,12 +182,12 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
       image,
       imageCredit: c ? { author: c.credit, license: c.license, url: c.url } : undefined,
       // Ficha de una especie que no se caza en ningún lado (no figura en ninguna norma de caza).
-      ...(group === null && { protectedOnly: true, naturalMonument: monumento_natural || undefined, whyListed: por_que || undefined }),
+      ...(group === null && { protectedOnly: true, naturalMonument: monument(monumento_natural), whyListed: por_que || undefined }),
       // Reptiles: caza prohibida (por defecto), regulada (solo programas o cupos habilitados) o sin regla específica; y si es venenosa.
       ...(file === 'especies-reptiles.json' && {
         protectedOnly: caza !== 'regulada' && caza !== 'sin-regla',
         regulated: caza === 'regulada' || undefined,
-        naturalMonument: monumento_natural || undefined,
+        naturalMonument: monument(monumento_natural),
         whyListed: por_que || undefined,
         venomous: venenosa || undefined,
         bite: mordedura || undefined,
