@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { getSetting, openDb } from '../src/db.ts';
-import { keywordLines, nextSeasonUrls, runFishingWatch, watchDue } from '../src/fishing/watch.ts';
+import { articleText, keywordLines, nextSeasonUrls, runFishingWatch, watchDue } from '../src/fishing/watch.ts';
 
 const DOCS = [{ label: 'Reglamento', url: 'https://example.org/reglamento.pdf' }];
 
@@ -104,3 +104,22 @@ test('pesca: una página web que responde 200 para cualquier dirección no cuent
   const r = await runFishingWatch(db, null, () => undefined, f, new Date('2026-11-25T12:00:00Z'), docs);
   assert.deepEqual(r.found, []);
 });
+
+test('pesca: en una página de blog solo cuenta el artículo (las entradas recientes y los códigos internos cambian todos los días)', async () => {
+  const page = (sidebar: string, nonce: string, body = 'Temporada 2026: habilitada hasta el 20/09.') =>
+    `<!doctype html><html><head><script>var n="${nonce}"</script></head><body><nav>Inicio</nav><article><h1>Pesca Tucumán</h1><p>${body}</p><form><input value="${nonce}"></form></article><aside>Entradas recientes: ${sidebar}</aside></body></html>`;
+  assert.equal(articleText(page('a', '1')), articleText(page('b', '2')));
+  const db = openDb(':memory:');
+  const sent: string[] = [];
+  const notifier = { send: async (s: string) => void sent.push(s) };
+  const now = new Date('2027-10-01T12:00:00Z');
+  const docs = [{ label: 'Blog', url: 'https://example.org/blog/' }];
+  const html = (b: string) =>
+    (async () => new Response(b, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } })) as unknown as typeof fetch;
+  await runFishingWatch(db, notifier, () => undefined, html(page('a', '1')), now, docs);
+  await runFishingWatch(db, notifier, () => undefined, html(page('b', '2')), now, docs);
+  assert.equal(sent.length, 0);
+  await runFishingWatch(db, notifier, () => undefined, html(page('c', '3', 'Temporada 2027 habilitada')), now, docs);
+  assert.equal(sent.length, 1);
+});
+

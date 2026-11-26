@@ -96,6 +96,21 @@ export function keywordLines(html: string, keywords: string[]): string {
     .join('\n');
 }
 
+/**
+ * Texto del artículo de una página web (sin menús, comentarios, códigos internos ni etiquetas): las páginas de un blog cambian todos
+ * los días aunque el artículo no cambie (entradas recientes, comentarios, `nonce` de los formularios), y comparar la página entera
+ * avisaba «cambió» a diario. Se usa el `<article>` (o el `<main>`) si lo hay; si no, todo el texto.
+ */
+export function articleText(html: string): string {
+  const pick = html.match(/<article[\s>][\s\S]*?<\/article>/i)?.[0] ?? html.match(/<main[\s>][\s\S]*?<\/main>/i)?.[0] ?? html;
+  return pick
+    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<noscript[\s\S]*?<\/noscript>|<!--[\s\S]*?-->/gi, ' ')
+    .replace(/<(aside|nav|form|footer)[\s>][\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export async function runFishingWatch(
   db: Db,
   notifier: AdminNotifier | null,
@@ -113,10 +128,16 @@ export async function runFishingWatch(
       const res = await fetchImpl(doc.url, { signal: AbortSignal.timeout(60_000), headers: { 'user-agent': 'VikArg-server/1.0' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = Buffer.from(await res.arrayBuffer());
-      const hash = createHash('sha256').update(doc.keywords ? keywordLines(body.toString('utf8'), doc.keywords) : body).digest('hex');
+      const html = /text\/html/i.test(res.headers.get('content-type') ?? '') || /^\s*<(!doctype|html)/i.test(body.subarray(0, 200).toString('utf8'));
+      // Páginas web: solo el texto del artículo (o las líneas de pesca); los PDF, enteros.
+      const hash = createHash('sha256')
+        .update(doc.keywords ? keywordLines(body.toString('utf8'), doc.keywords) : html ? articleText(body.toString('utf8')) : body)
+        .digest('hex');
       result.checked++;
-      const before = getSetting(db, KEY(doc.url));
-      setSetting(db, KEY(doc.url), hash);
+      // Las páginas web usan una clave nueva (v2): al cambiar la forma de calcular la huella, la primera vuelta solo la guarda (sin un aviso falso).
+      const key = html && !doc.keywords ? `fishing-watch:v2:${doc.url}` : KEY(doc.url);
+      const before = getSetting(db, key);
+      setSetting(db, key, hash);
       // La primera vez solo se guarda la huella.
       if (before && before !== hash) {
         result.changed.push(doc.label);
