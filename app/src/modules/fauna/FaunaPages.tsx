@@ -985,7 +985,7 @@ function ZoneMap({ province, dept, onPick }: { province: HuntProvince; dept: str
     if (w < full[2] * 0.9) initial = [(fx + tx) / 2 - w / 2, (fy + ty) / 2 - h / 2, w, h];
   }
   return (
-    <section className="card stack" data-testid="fauna-zone-map">
+    <Collapsible id="fauna-zone-map" testId="fauna-zone-map" title={t('fauna.zone.mapTitle')} summary={t(word, { name: dept })} defaultOpen>
       <ZoomSvg viewBox={full} initial={initial} label={`${province.name}: ${t(word, { name: dept })}`}>
         {(k) => (
           <>
@@ -1008,7 +1008,7 @@ function ZoneMap({ province, dept, onPick }: { province: HuntProvince; dept: str
           ))}
         </select>
       </label>
-    </section>
+    </Collapsible>
   );
 }
 
@@ -1072,18 +1072,16 @@ function ZoneSpecies({ data, prov, dept, lang }: { data: FaunaData; prov: string
         </p>
       </section>
       {danger.length > 0 && (
-        <section className="stack">
-          <h2 className="section-title">{t('fauna.zone.danger')}</h2>
+        <Collapsible id="fauna-zone-danger" testId="fauna-zone-danger" title={t('fauna.zone.danger')} summary={t('fauna.speciesCount', { count: danger.length })} defaultOpen>
           <ul className="list">{danger.map(row)}</ul>
-        </section>
+        </Collapsible>
       )}
       {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod', 'shellfish'] as const).map((g) => {
         const items = rest.filter((sp) => sp.group === g).sort(byName);
         return items.length ? (
-          <section key={g} className="stack">
-            <h2 className="section-title">{t(`fauna.group.${g}`)}</h2>
+          <Collapsible key={g} id={`fauna-zone-group-${g}`} testId={`fauna-zone-group-${g}`} title={t(`fauna.group.${g}`)} summary={t('fauna.speciesCount', { count: items.length })}>
             <ul className="list">{items.map(row)}</ul>
-          </section>
+          </Collapsible>
         ) : null;
       })}
       <Collapsible id="fauna-zone-howto" title={t('fauna.zone.howTitle')}>
