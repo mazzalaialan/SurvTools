@@ -40,6 +40,9 @@ test('fauna: se baja aparte, mapa por provincia con Entre Ríos judicializada y 
 
   // Especies: el pecarí (amenazado) en rojo, con «caza no permitida».
   await page.goto('/#/fauna/species');
+  // En «Todas», cada grupo empieza cerrado: se abre el de mamíferos.
+  await expect(page.locator('.fish-card', { hasText: 'Pecarí de collar' })).toBeHidden();
+  await page.getByTestId('fauna-group-mammal-toggle').click();
   const pecari = page.locator('.fish-card[data-threatened]', { hasText: 'Pecarí de collar' });
   await expect(pecari).toContainText('caza no permitida');
   await pecari.click();

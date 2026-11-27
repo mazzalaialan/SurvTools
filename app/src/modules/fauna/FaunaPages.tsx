@@ -468,15 +468,17 @@ export function FaunaSpeciesPage() {
               </div>
               {(['mammal', 'bird', 'reptile', 'amphibian', 'arthropod', 'shellfish'] as const).map((g) => {
                 const list = data.species.filter((s) => s.group === g && match(s)).sort((a, b) => faunaName(a, a.id, i18n.language).localeCompare(faunaName(b, b.id, i18n.language), 'es'));
+                // En «Todas» y sin buscar, cada grupo empieza cerrado (son muchas especies); al filtrar o buscar, abierto.
+                // La `key` cambia con el filtro para que el desplegable vuelva a su estado inicial.
+                const open = kind !== 'all' || !!q.trim();
                 return list.length ? (
-                  <section key={g} className="stack">
-                    <h2 className="section-title">{t(`fauna.group.${g}`)}</h2>
+                  <Collapsible key={`${g}-${open}`} id={`fauna-group-${g}`} testId={`fauna-group-${g}`} title={t(`fauna.group.${g}`)} summary={t('fauna.speciesCount', { count: list.length })} defaultOpen={open}>
                     <ul className="fish-grid" data-testid={`fauna-${g}s`}>
                       {list.map((sp) => (
                         <SpeciesCard key={sp.id} sp={sp} lang={i18n.language} />
                       ))}
                     </ul>
-                  </section>
+                  </Collapsible>
                 ) : null;
               })}
             </>
