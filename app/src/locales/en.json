@@ -2469,7 +2469,7 @@
       "rotate": "Rotate with the compass",
       "rotateNoCompass": "No compass on this device: the drawing stays north-up."
     },
-    "rec": {
+    "rec": {"idle": {"title": "Trim the time you didn't move?", "hint": "We found stretches of 10 minutes or more in the same place. If you trim them, they leave the track and their time doesn't count in the duration. Nothing is trimmed unless you tick it.", "rest": "Rest of {{time}} (from {{from}} to {{to}})", "tail": "The end: {{time}} without moving since {{from}} (did you forget to stop?)", "head": "The start: {{time}} without moving until {{to}}"}, 
       "gapJoined": "Nothing was recorded with the screen off between {{from}} and {{to}} ({{time}}). It was joined with a straight line, shown in another color: that distance counts, and it is less than you walked. To avoid it, keep the app open with the black screen (moon).",
       "gapKept": "Nothing was recorded with the screen off between {{from}} and {{to}} ({{time}}). The route has a gap there (it adds no distance). To avoid it, keep the app open with the black screen (moon).",
       "pauseShort": "Pause",

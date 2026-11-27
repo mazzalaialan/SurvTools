@@ -2468,7 +2468,7 @@
       "rotate": "Girar con la brújula",
       "rotateNoCompass": "Sin brújula en este dispositivo: el dibujo queda con el norte arriba."
     },
-    "rec": {
+    "rec": {"idle": {"title": "¿Recortar los ratos sin moverte?", "hint": "Detectamos tramos de 10 minutos o más en el mismo lugar. Si los recortás, salen del recorrido y su tiempo no cuenta en la duración. No se recorta nada que no marques.", "rest": "Descanso de {{time}} (de {{from}} a {{to}})", "tail": "El final: {{time}} sin moverte desde las {{from}} (¿te olvidaste de terminar?)", "head": "El principio: {{time}} sin moverte hasta las {{to}}"}, 
       "gapJoined": "Con la pantalla apagada no se grabó entre las {{from}} y las {{to}} ({{time}}). Se unió con una línea recta, marcada en otro color: suma esa distancia, que es menos de lo que caminaste. Para que no pase, dejá la app abierta con la pantalla negra (luna).",
       "gapKept": "Con la pantalla apagada no se grabó entre las {{from}} y las {{to}} ({{time}}). Quedó un hueco en el recorrido (no suma distancia). Para que no pase, dejá la app abierta con la pantalla negra (luna).",
       "pauseShort": "Pausa",

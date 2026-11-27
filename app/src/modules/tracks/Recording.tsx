@@ -1,3 +1,4 @@
+import { detectIdle } from './idle';
 import { recordingLocation } from '@/core/geo/locationBackend';
 import { gpsErrorText } from '@/core/geo/gpsText';
 import { gpsSignal } from '@/core/geo/signal';
@@ -313,7 +314,8 @@ export function RecWarning() {
  * y, si no hay ficha médica con peso, el peso para las calorías). Sin nada grabado se descarta.
  */
 export function FinishDialog({ initialName, points, onClose }: { initialName: string; points: number; onClose: () => void }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const hhmm = (ms: number) => new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(ms));
   const f = useTrainingFormat();
   const navigate = useNavigate();
   const finish = useRecorder((s) => s.finish);
@@ -327,11 +329,16 @@ export function FinishDialog({ initialName, points, onClose }: { initialName: st
   const [pack, setPack] = useState(recordedPack ? String(recordedPack) : '');
   const [weight, setWeight] = useState('');
   const nothing = points < 2;
+  // Descansos largos y final olvidado: se calculan al abrir y se pregunta si recortarlos (no se recorta nada sin que se elija).
+  const segments = useRecorder((s) => s.track?.segments);
+  const idle = useMemo(() => (segments ? detectIdle(segments, Date.now() / 1000) : []), [segments]);
+  const [trimmed, setTrimmed] = useState<Set<number>>(() => new Set());
   const packKg = Number(pack.replace(',', '.'));
   const weightKg = Number(weight.replace(',', '.'));
   async function stop() {
     onClose();
-    const id = await finish(name, nothing || driving ? undefined : { kind, packKg: kind === 'trek' && packKg > 0 ? packKg : null, weightKg: !bodyKg && weightKg >= 20 && weightKg <= 400 ? weightKg : null });
+    const trim = idle.filter((_, i) => trimmed.has(i));
+    const id = await finish(name, nothing ? undefined : driving ? { trim } : { kind, packKg: kind === 'trek' && packKg > 0 ? packKg : null, weightKg: !bodyKg && weightKg >= 20 && weightKg <= 400 ? weightKg : null, trim });
     const workoutId = useRecorder.getState().lastWorkoutId;
     if (workoutId) navigate(`/training/workouts/${workoutId}`);
     else if (id) navigate(`/orientation/tracks/${id}`);
@@ -360,6 +367,35 @@ export function FinishDialog({ initialName, points, onClose }: { initialName: st
           void stop();
         }}
       >
+        {!nothing && idle.length > 0 && (
+          <fieldset className="card stack rec-idle" data-testid="rec-idle">
+            <legend className="section-title">{t('tracks.rec.idle.title')}</legend>
+            <p className="hint" style={{ margin: 0 }}>{t('tracks.rec.idle.hint')}</p>
+            {idle.map((sp, i) => {
+              const mins = Math.round((sp.to - sp.from) / 60);
+              const from = hhmm(sp.from * 1000);
+              const to = hhmm(sp.to * 1000);
+              return (
+                <label key={i} className="check">
+                  <input
+                    type="checkbox"
+                    checked={trimmed.has(i)}
+                    onChange={() =>
+                      setTrimmed((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(i)) next.delete(i);
+                        else next.add(i);
+                        return next;
+                      })
+                    }
+                    data-testid={`rec-idle-${i}`}
+                  />{' '}
+                  {t(sp.tail ? 'tracks.rec.idle.tail' : sp.head ? 'tracks.rec.idle.head' : 'tracks.rec.idle.rest', { time: formatDuration(mins * 60), from, to })}
+                </label>
+              );
+            })}
+          </fieldset>
+        )}
         {nothing ? (
           <p className="error" role="alert">
             {t('tracks.rec.nothingYet')}

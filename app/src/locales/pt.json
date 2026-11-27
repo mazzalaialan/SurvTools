@@ -3783,7 +3783,7 @@
    "rotate": "Girar com a bússola",
    "rotateNoCompass": "Sem bússola neste dispositivo: o desenho fica com o norte para cima."
   },
-  "rec": {
+  "rec": {"idle": {"title": "Cortar os momentos sem se mover?", "hint": "Detectamos trechos de 10 minutos ou mais no mesmo lugar. Se cortar, saem do percurso e o tempo não conta na duração. Nada é cortado sem que você marque.", "rest": "Descanso de {{time}} (de {{from}} a {{to}})", "tail": "O final: {{time}} sem se mover desde as {{from}} (esqueceu de terminar?)", "head": "O começo: {{time}} sem se mover até as {{to}}"}, 
    "gapJoined": "Com a tela apagada não houve gravação entre {{from}} e {{to}} ({{time}}). Foi unido com uma linha reta, marcada em outra cor: soma essa distância, que é menos do que você caminhou. Para evitar isso, deixe o app aberto com a tela preta (lua).",
    "gapKept": "Com a tela apagada não houve gravação entre {{from}} e {{to}} ({{time}}). Ficou uma lacuna no rota (não soma distância). Para evitar isso, deixe o app aberto com a tela preta (lua).",
    "pauseShort": "Pausa",

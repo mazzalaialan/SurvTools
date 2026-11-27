@@ -642,3 +642,40 @@ test('un corte que vuelve sobre un track cargado se une siguiendo ese track, no 
   await page.getByTestId('rec-summary').click();
   await expect(page.getByTestId('track-gaps')).toContainText('siguiendo el track «Camino en L»');
 });
+
+test('al guardar, ofrece recortar el final si seguiste grabando sin moverte (no recorta sin preguntar)', async ({ page, context }) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: -34.6, longitude: -58.4, accuracy: 5 });
+  await page.clock.install();
+  await page.goto('/');
+  await page.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
+  await page.getByLabel('Repetir contraseña').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Crear bóveda' }).click();
+  await page.getByLabel('Ya la anoté en un lugar seguro').check();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
+  await page.goto('/#/orientation/tracks');
+  await page.getByRole('button', { name: 'Grabar mi recorrido' }).click();
+  await page.getByTestId('rec-begin').click();
+  await page.getByTestId('rec-warn').getByRole('button', { name: 'Entendido' }).click();
+  for (const lat of [-34.5997, -34.5994, -34.5991]) {
+    await context.setGeolocation({ latitude: lat, longitude: -58.4, accuracy: 5 });
+    await page.waitForTimeout(400);
+  }
+  // Media hora quieto (o con la grabación olvidada).
+  await page.clock.fastForward('30:00');
+  // Media hora sin tocar nada: la app se bloqueó (la grabación sigue). Se desbloquea.
+  const unlock = page.getByRole('button', { name: 'Desbloquear' });
+  if (await unlock.isVisible().catch(() => false)) {
+    await page.getByLabel('Contraseña').fill(PASSWORD);
+    await unlock.click();
+  }
+  await page.getByTestId('rec-bar').locator('.rec-finish').click();
+  const idle = page.getByTestId('rec-idle');
+  await expect(idle).toContainText('¿te olvidaste de terminar?');
+  await expect(page.getByTestId('rec-idle-0')).not.toBeChecked();
+  await page.getByTestId('rec-idle-0').check();
+  await page.getByTestId('rec-save-btn').click();
+  await expect(page).toHaveURL(/#\/(training\/workouts|orientation\/tracks)\/[^/]+$/);
+});
+

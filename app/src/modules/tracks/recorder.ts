@@ -1,3 +1,4 @@
+import { idleSeconds, trimIdle, type IdleSpan } from './idle';
 import { create } from 'zustand';
 import { recordingLocation, type Fix } from '@/core/geo/locationBackend';
 import type { GeoError } from '@/core/geo/useGeolocation';
@@ -35,6 +36,8 @@ export interface FinishOptions {
   packKg?: number | null;
   /** Peso de quien entrena, si no hay ficha médica con peso (solo para las calorías de esta sesión). */
   weightKg?: number | null;
+  /** Descansos (o el final olvidado) que la persona eligió recortar al guardar (idle.ts). */
+  trim?: IdleSpan[];
 }
 
 interface RecorderState {
@@ -243,29 +246,34 @@ export const useRecorder = create<RecorderState>((set, get) => ({
   async finish(name, opts) {
     if (!get().track) return null;
     await stopWatch();
-    const s = get();
-    if (!s.track) return null;
-    const finalName = name?.trim() || s.track.name;
+    const s0 = get();
+    if (!s0.track) return null;
+    // Recortar los descansos elegidos: fuera los puntos de adentro y su tiempo de la duración.
+    const trim = opts?.trim ?? [];
+    const s = trim.length ? { ...s0, track: { ...s0.track, segments: trimIdle(s0.track.segments, trim) } } : s0;
+    const track = s.track!;
+    const durationS = Math.max(0, elapsedS(s0) - idleSeconds(trim));
+    const finalName = name?.trim() || track.name;
     // Las estadísticas de la actividad, con todos los puntos y sus horas (antes de simplificar el recorrido).
-    const raw = s.track.segments.map((seg) => (seg.length > 1 ? seg : []));
-    const activity = opts?.kind ?? s.track.activity;
+    const raw = track.segments.map((seg) => (seg.length > 1 ? seg : []));
+    const activity = opts?.kind ?? track.activity;
     const stats = activity ? analyzeRecording(raw) : null;
-    const drive = s.track.vehicle ? driveSummary(raw, elapsedS(s)) : undefined;
-    const finished = finishedTrack({ ...s.track, name: finalName, ...(activity ? { activity, activityPackKg: opts?.packKg ?? s.track.activityPackKg ?? null } : {}), ...(drive ? { drive } : {}) }, elapsedS(s));
+    const drive = track.vehicle ? driveSummary(raw, durationS) : undefined;
+    const finished = finishedTrack({ ...track, name: finalName, ...(activity ? { activity, activityPackKg: opts?.packKg ?? track.activityPackKg ?? null } : {}), ...(drive ? { drive } : {}) }, durationS);
     // La clave de la grabación ya no hace falta.
     const done = finished && { ...finished, recKey: undefined };
     const kind = activity;
-    const packKg = opts?.packKg ?? s.track.activityPackKg ?? null;
+    const packKg = opts?.packKg ?? track.activityPackKg ?? null;
     set({ ...IDLE });
     void clearLocked();
     if (!done) {
-      await useTracks.getState().deleteTrack(s.track.id);
+      await useTracks.getState().deleteTrack(track.id);
       return null;
     }
     await useTracks.getState().saveTrack(done);
     if (kind && stats) {
       const me = [...useMedical.getState().profiles.values()].find((p) => p.isMe);
-      const workout = { ...workoutFromRecording(kind, finalName, done, stats, Date.parse(s.track.createdAt), me?.weightKg ?? opts?.weightKg ?? null, packKg), intervals: s.track.intervals ?? null, laps: s.track.laps ?? [] };
+      const workout = { ...workoutFromRecording(kind, finalName, done, stats, Date.parse(track.createdAt), me?.weightKg ?? opts?.weightKg ?? null, packKg), intervals: track.intervals ?? null, laps: track.laps ?? [] };
       const saved = await useTraining.getState().saveWorkout(workout);
       set({ lastWorkoutId: workout.id });
       // El clima se agrega después, sin demorar: si hay internet, queda en la actividad.
