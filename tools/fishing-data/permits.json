@@ -379,7 +379,14 @@
    "pesca@mda.gba.gob.ar",
    "dapa@mda.gba.gob.ar"
   ],
-  "where": "En línea: se solicita la licencia con el DNI, se imprime la boleta y se paga en cualquier sucursal del Banco Provincia o BAPRO Pagos; a las 72 h se imprime el carnet. Consultas en Torre Gubernamental I, calle 12 y 51, piso 5, La Plata (lunes a viernes 8 a 18 h). Sin costo: jubilados, pensionados, discapacitados, veteranos de Malvinas y menores de 14."
+  "where": "En línea: se solicita la licencia con el DNI, se imprime la boleta y se paga en cualquier sucursal del Banco Provincia o BAPRO Pagos; a las 72 h se imprime el carnet. Consultas en Torre Gubernamental I, calle 12 y 51, piso 5, La Plata (lunes a viernes 8 a 18 h). Sin costo: jubilados, pensionados, discapacitados, veteranos de Malvinas y menores de 14.",
+  "legal": [
+   "Pescar sin la licencia de pesca deportiva vigente está prohibido: la Ley 11.477 exige licencia, autorización o permiso provincial para pescar en toda la jurisdicción de la Provincia (mar, ríos, arroyos y lagunas), y hacerlo sin ella es una infracción con sanciones administrativas.",
+   "Concursos de pesca: necesitan autorización previa de la Provincia (Res. 36/00) y cada participante, su propia licencia; en el mar rige además la Disp. 217/07.",
+   "Carnadas: tienen que estar habilitadas, y quien las vende necesita habilitación provincial (Disp. 468/99).",
+   "Pesqueros deportivos (lugares que cobran por pescar): necesitan autorización provincial (Res. 30/99).",
+   "Fuente: respuesta de la Dirección Provincial de Pesca (Ministerio de Desarrollo Agrario) del 27/11/2026, que confirma además que la Disp. 217/07 es la norma vigente de la pesca deportiva marítima."
+  ]
  },
  "Chaco": {
   "items": [

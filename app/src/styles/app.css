@@ -7814,3 +7814,9 @@ figure.fauna-map {
   font-weight: 600;
   font-size: var(--fs-sm);
 }
+
+.fish-permit-legal {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: var(--fs-sm);
+}

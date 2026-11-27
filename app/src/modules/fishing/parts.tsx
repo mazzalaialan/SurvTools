@@ -168,7 +168,17 @@ export function PermitCard({ region }: { region: FishRegion | undefined }) {
   return (
     <section className="card stack fish-permit" data-testid="fish-permit">
       <h2 className="section-title">{t('fishing.permit.title', { region: region.name })}</h2>
-      <p>{t('fishing.permit.required')}</p>
+      {/* Que hace falta el permiso va resaltado: la autoridad de Buenos Aires pidió destacarlo (pescar sin licencia es infracción). */}
+      <p className="fauna-warning" data-status="prohibida" data-testid="fish-permit-required">
+        <strong>{t('fishing.permit.required')}</strong>
+      </p>
+      {p?.legal?.length ? (
+        <ul className="fish-permit-legal" data-testid="fish-permit-legal">
+          {p.legal.map((x) => (
+            <li key={x}>{x}</li>
+          ))}
+        </ul>
+      ) : null}
       {p?.items.length ? (
         <ul className="fish-permit-list">
           {p.items.map((x) => (

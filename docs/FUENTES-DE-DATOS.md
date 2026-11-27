@@ -303,3 +303,9 @@ Se usan para el asistente «Armar botiquín» (`app/src/modules/firstAid/kitTemp
 - **Fuente:** GBIF.org (Global Biodiversity Information Facility), API pública `api.gbif.org/v1/occurrence/search`: registros con coordenadas en Argentina desde 1990, sin problemas geoespaciales, agrupados por departamento (GADM nivel 2, traducido a los nombres del IGN). Consultado el 2026-11-26 con `tools/fauna-data/occurrences.mjs`.
 - **Licencia:** cada conjunto de GBIF trae la suya (CC0, CC BY o CC BY-NC); la app solo usa cantidades por departamento, con crédito a GBIF.org y la fecha (lo NC se usa mientras la app sea gratuita).
 - **Límite:** es un mapa de registros, no de distribución: puede haber animales donde no hay registros y algunos registros pueden ser de cautiverio.
+
+## Pesca en Buenos Aires: respuesta de la Dirección Provincial de Pesca (2026-11-27)
+
+- La Dirección Provincial de Pesca (Ministerio de Desarrollo Agrario) respondió la consulta formal: la **Disp. 217/07** es la norma vigente de la pesca deportiva marítima (cupos, tallas y clasificación de especies). Vedas, licencias y valores, en https://www.gba.gob.ar/desarrollo_agrario/pesca.
+- Pidieron destacar que pescar sin licencia es infracción (Ley 11.477) y sumaron concursos (Res. 36/00), carnadas (Disp. 468/99) y pesqueros deportivos (Res. 30/99): van en la tarjeta del permiso de Buenos Aires (`legal` en `tools/fishing-data/permits.json`).
+- Copia de la respuesta y de las cuatro normas adjuntas en `~/vikarg-fishing-work/mar/respuestas/`.

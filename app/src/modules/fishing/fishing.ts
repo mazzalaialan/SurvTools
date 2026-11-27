@@ -177,7 +177,8 @@ export interface FishRegion {
   /** Zona (cuenca) a la que pertenece: Patagonia, Litoral… */
   zone?: string;
   /** Cómo sacar el permiso de pesca: tipos y precios, enlace oficial de compra y otros lugares de venta. */
-  permit?: { items: FishPermit[]; extra?: string[]; buyUrl?: string; infoUrl?: string; phone?: string[]; email?: string[]; where?: string; requirements?: string; source?: string; date?: string };
+  /** `legal`: avisos legales de la autoridad (p. ej. que pescar sin licencia es infracción), destacados en la tarjeta del permiso. */
+  permit?: { legal?: string[]; items: FishPermit[]; extra?: string[]; buyUrl?: string; infoUrl?: string; phone?: string[]; email?: string[]; where?: string; requirements?: string; source?: string; date?: string };
   /** Reglas generales de la jurisdicción (texto del reglamento, resumido). */
   rules?: string[];
   season?: Season;
