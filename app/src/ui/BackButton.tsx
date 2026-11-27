@@ -16,7 +16,7 @@ export const ROUTE_PATHS = [
   '/orientation/starmap', '/orientation/maps', '/orientation/routes', '/orientation/tracks', '/orientation/tracks/:id',
   '/orientation/tracks/:id/follow', '/orientation/routes/:id', '/orientation/routes/:id/go/:step', '/weather', '/weather/sky',
   '/weather/forecast', '/weather/history', '/weather/compare', '/weather/map', '/weather/navigation', '/knots', '/knots/guide', '/knots/guide/:id', '/knots/anchors', '/knots/anchors/:id', '/knots/ropes', '/knots/carabiners', '/knots/glossary',
-  '/garden', '/garden/calendar', '/garden/crops/:id', '/garden/beds', '/garden/beds/:id', '/fishing', '/fishing/map', '/fishing/species', '/fishing/fish/:id', '/fishing/waters', '/fishing/sector/:id', '/fishing/rules', '/fishing/survival', '/fishing/shellfish', '/fishing/shellfish/:id', '/fauna', '/fauna/zone', '/fauna/provinces', '/fauna/p/:slug', '/fauna/species', '/fauna/species/:id', '/field', '/library', '/library/books', '/library/search', '/library/read/:id', '/settings', '/about', '/about/licenses',
+  '/garden', '/garden/calendar', '/garden/crops/:id', '/garden/beds', '/garden/beds/:id', '/farm', '/farm/species', '/farm/species/:id', '/farm/rules', '/fishing', '/fishing/map', '/fishing/species', '/fishing/fish/:id', '/fishing/waters', '/fishing/sector/:id', '/fishing/rules', '/fishing/survival', '/fishing/shellfish', '/fishing/shellfish/:id', '/fauna', '/fauna/zone', '/fauna/provinces', '/fauna/p/:slug', '/fauna/species', '/fauna/species/:id', '/field', '/library', '/library/books', '/library/search', '/library/read/:id', '/settings', '/about', '/about/licenses',
 ];
 
 /** Donde no alcanza con sacar el último tramo de la ruta. */

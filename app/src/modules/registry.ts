@@ -32,13 +32,14 @@ import {
   Spool,
   Link2,
   Sprout,
+  Egg,
   Tags,
   Triangle,
   Warehouse, Fish, ListChecks, LifeBuoy, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
 import type { Capability, CapabilityMap } from '@/core/capabilities/capabilities';
 
 /** En el orden en que se muestran en Inicio. */
-export const SECTIONS = ['firstAid', 'orientation', 'weather', 'training', 'documents', 'inventory', 'knots', 'garden', 'fishing', 'fauna', 'library'] as const;
+export const SECTIONS = ['firstAid', 'orientation', 'weather', 'training', 'documents', 'inventory', 'knots', 'garden', 'farm', 'fishing', 'fauna', 'library'] as const;
 export type Section = (typeof SECTIONS)[number];
 
 export interface ModuleDef {
@@ -106,6 +107,8 @@ export const MODULES: ModuleDef[] = [
   { id: 'faunaZone', section: 'fauna', icon: MapPin, implemented: true, path: '/fauna/zone' },
   { id: 'faunaProvinces', section: 'fauna', icon: MapIcon, implemented: true, path: '/fauna/provinces' },
   { id: 'faunaSpecies', section: 'fauna', icon: PawPrint, implemented: true, path: '/fauna/species' },
+  { id: 'farmSpecies', section: 'farm', icon: Egg, implemented: true, path: '/farm/species' },
+  { id: 'farmRules', section: 'farm', icon: Scale, implemented: true, path: '/farm/rules' },
   { id: 'gardenCalendar', section: 'garden', icon: CalendarDays, implemented: true, path: '/garden/calendar' },
   { id: 'gardenBeds', section: 'garden', icon: Sprout, implemented: true, path: '/garden/beds' },
   { id: 'libraryBooks', section: 'library', icon: BookOpen, implemented: true, path: '/library/books' },
