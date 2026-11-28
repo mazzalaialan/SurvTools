@@ -129,3 +129,37 @@ const file = here('../../app/src/modules/farm/farm-AR.json');
 mkdirSync(here('../../app/src/modules/farm/'), { recursive: true });
 writeFileSync(file, JSON.stringify({ date: sp.fecha, species, rules, sources }));
 console.log(`${species.length} especies, ${rules.length} normas → ${file} (${Math.round(readFileSync(file).length / 1024)} KB)`);
+
+// Etapa 2: calculadora (cuántos animales para N personas) y calendario de tareas por mes y región. Archivo aparte, que solo cargan esas
+// pantallas. Solo números con fuente: lo que no tiene, queda null y la calculadora no lo usa.
+const calc = opt('calculadora.json');
+const cal = opt('calendario.json');
+if (calc || cal) {
+  const num = (x) => (x && typeof x.valor === 'number' ? { value: x.valor, unit: x.unidad, source: x.fuente ? { org: x.fuente.organismo, url: x.fuente.url, date: x.fuente.fecha } : undefined, confidence: x.confianza } : undefined);
+  const plan = {
+    date: calc?.fecha ?? cal?.fecha,
+    consumption: calc ? Object.fromEntries(Object.entries(calc.consumo).map(([k, v]) => [k, num(v)])) : {},
+    species: calc
+      ? Object.fromEntries(
+          Object.entries(calc.especies).map(([id, s]) => [
+            id,
+            {
+              product: s.producto,
+              perYear: num(s.por_animal_por_anio),
+              meatYield: num(s.rendimiento_carne),
+              cycleDays: num(s.ciclo_dias),
+              spaceM2: num(s.espacio_m2),
+              feedKgDay: num(s.alimento_kg_dia),
+              waterLDay: num(s.agua_l_dia),
+              note: s.nota,
+            },
+          ]),
+        )
+      : {},
+    omitted: calc?.omitidos,
+    tasks: (cal?.tareas ?? []).map((x) => ({ species: x.especies, months: x.meses, regions: x.regiones ?? null, provinces: x.provincias, text: { es: x.tarea_es, en: x.tarea_en, pt: x.tarea_pt }, kind: x.tipo, source: x.fuente ? { org: x.fuente.organismo, url: x.fuente.url, date: x.fuente.fecha } : undefined, confidence: x.confianza })),
+  };
+  const planFile = here('../../app/src/modules/farm/farm-plan-AR.json');
+  writeFileSync(planFile, JSON.stringify(plan));
+  console.log(`calculadora: ${Object.keys(plan.species).length} especies; calendario: ${plan.tasks.length} tareas → ${planFile}`);
+}
