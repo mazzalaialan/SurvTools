@@ -17,7 +17,7 @@ describe('migraciones', () => {
 
     const upgraded = new UserDb(name);
     await upgraded.open();
-    expect(upgraded.verno).toBe(8);
+    expect(upgraded.verno).toBe(9);
     expect(await upgraded.items.count()).toBe(1);
     await upgraded.medicalProfiles.put({ id: 'p', updatedAt: 'x', deletedAt: null, iv: new Uint8Array(12), ct: new ArrayBuffer(4) });
     expect(await upgraded.medicalProfiles.count()).toBe(1);

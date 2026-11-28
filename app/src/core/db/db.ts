@@ -40,7 +40,7 @@ const V1_ENTITY_TABLES = [
   'recommendationRules',
 ] as const satisfies readonly EntityTable[];
 
-export const ENTITY_TABLES = [...V1_ENTITY_TABLES, 'medicalProfiles', 'routes', 'contacts', 'tracks', 'gardenBeds', 'plantings', 'workouts', 'outings', 'gear', 'weights'] as const satisfies readonly EntityTable[];
+export const ENTITY_TABLES = [...V1_ENTITY_TABLES, 'medicalProfiles', 'routes', 'contacts', 'tracks', 'gardenBeds', 'plantings', 'workouts', 'outings', 'gear', 'weights', 'farmHerds'] as const satisfies readonly EntityTable[];
 
 /** Binarios cifrados (fotos), separados para no cargarlos a memoria al desbloquear. */
 export interface BlobRow extends Sealed {
@@ -72,6 +72,7 @@ export class UserDb extends Dexie {
   outings!: Table<EncryptedRow, string>;
   gear!: Table<EncryptedRow, string>;
   weights!: Table<EncryptedRow, string>;
+  farmHerds!: Table<EncryptedRow, string>;
 
   constructor(name = 'vikarg-user') {
     super(name);
@@ -100,6 +101,8 @@ export class UserDb extends Dexie {
     this.version(7).stores({ workouts: 'id, updatedAt', outings: 'id, updatedAt' });
     // v8: equipo de entrenamiento e historial de peso.
     this.version(8).stores({ gear: 'id, updatedAt', weights: 'id, updatedAt' });
+    // v9: granja (lotes de animales con sus eventos y su producción).
+    this.version(9).stores({ farmHerds: 'id, updatedAt' });
   }
 
   entityTable(name: EntityTable): Table<EncryptedRow, string> {

@@ -63,6 +63,7 @@ export const repos = {
   outings: new Repository('outings'),
   gear: new Repository('gear'),
   weights: new Repository('weights'),
+  farmHerds: new Repository('farmHerds'),
 } satisfies { [K in EntityTable]: Repository<K> };
 
 /** Binarios cifrados (fotos), leídos bajo demanda. */

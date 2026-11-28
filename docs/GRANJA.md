@@ -23,10 +23,10 @@ Fichas base dentro de la app (como `garden/seeds.json`) para que ande sin descar
 
 ## Etapas
 0. Investigación SENASA/INTA de las especies del MVP (antes de cualquier cifra).
-1. MVP: sección, portada, rutas, fichas de gallina, codorniz, pato y conejo, avisos fijos.
-2. Calculadora, calendario, registro con «Sumar al inventario».
+1. MVP: sección, portada, rutas, fichas de gallina, codorniz, pato y conejo, avisos fijos. **Hecho (con 18 especies y «Dónde se crían»).**
+2. Calculadora, calendario, registro con «Sumar al inventario». **Hecho el 2026-11-27.**
 3. Clima y waypoint, Huerta, triage, paquete de fotos.
-4. Cabras, ovejas, cerdos, vacas, abejas, peces (más riesgo sanitario y normativo).
+4. Cabras, ovejas, cerdos, vacas, abejas, peces (más riesgo sanitario y normativo). **Adelantado y hecho el 2026-11-27.**
 
 ## Riesgos
 Sanidad (nada de dosis), normativa variable por provincia y municipio (manda la norma vigente), licencias, Inicio con 12 secciones, confusión con Fauna.

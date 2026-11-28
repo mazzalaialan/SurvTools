@@ -33,6 +33,7 @@ import {
   Link2,
   Sprout,
   Egg,
+  ClipboardList,
   Tags,
   Triangle,
   Warehouse, Fish, ListChecks, LifeBuoy, Scale, Shirt, Timer, Metronome, Waves, History, GitCompareArrows } from 'lucide-react';
@@ -108,6 +109,9 @@ export const MODULES: ModuleDef[] = [
   { id: 'faunaProvinces', section: 'fauna', icon: MapIcon, implemented: true, path: '/fauna/provinces' },
   { id: 'faunaSpecies', section: 'fauna', icon: PawPrint, implemented: true, path: '/fauna/species' },
   { id: 'farmSpecies', section: 'farm', icon: Egg, implemented: true, path: '/farm/species' },
+  { id: 'farmHerd', section: 'farm', icon: ClipboardList, implemented: true, path: '/farm/herd' },
+  { id: 'farmPlan', section: 'farm', icon: Calculator, implemented: true, path: '/farm/plan' },
+  { id: 'farmCalendar', section: 'farm', icon: CalendarDays, implemented: true, path: '/farm/calendar' },
   { id: 'farmRules', section: 'farm', icon: Scale, implemented: true, path: '/farm/rules' },
   { id: 'gardenCalendar', section: 'garden', icon: CalendarDays, implemented: true, path: '/garden/calendar' },
   { id: 'gardenBeds', section: 'garden', icon: Sprout, implemented: true, path: '/garden/beds' },

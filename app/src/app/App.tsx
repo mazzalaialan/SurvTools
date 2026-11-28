@@ -114,6 +114,10 @@ const FarmHomePage = page(() => import('@/modules/farm/FarmPages').then((m) => (
 const FarmSpeciesPage = page(() => import('@/modules/farm/FarmPages').then((m) => ({ default: m.FarmSpeciesPage })));
 const FarmSpeciesDetailPage = page(() => import('@/modules/farm/FarmPages').then((m) => ({ default: m.FarmSpeciesDetailPage })));
 const FarmRulesPage = page(() => import('@/modules/farm/FarmPages').then((m) => ({ default: m.FarmRulesPage })));
+const FarmPlanPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmPlanPage })));
+const FarmCalendarPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmCalendarPage })));
+const FarmHerdsPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmHerdsPage })));
+const FarmHerdPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmHerdPage })));
 const FaunaHomePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaHomePage })));
 const FaunaZonePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaZonePage })));
 const FaunaProvincesPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaProvincesPage })));
@@ -236,6 +240,10 @@ const router = createHashRouter([
       { path: '/farm/species', element: <FarmSpeciesPage /> },
       { path: '/farm/species/:id', element: <FarmSpeciesDetailPage /> },
       { path: '/farm/rules', element: <FarmRulesPage /> },
+      { path: '/farm/plan', element: <FarmPlanPage /> },
+      { path: '/farm/calendar', element: <FarmCalendarPage /> },
+      { path: '/farm/herd', element: <FarmHerdsPage /> },
+      { path: '/farm/herd/:id', element: <FarmHerdPage /> },
       { path: '/fauna', element: <FaunaHomePage /> },
       { path: '/fauna/zone', element: <FaunaZonePage /> },
       { path: '/fauna/provinces', element: <FaunaProvincesPage /> },

@@ -333,6 +333,7 @@ export interface EntityMap {
   outings: Outing;
   gear: Gear;
   weights: WeightEntry;
+  farmHerds: FarmHerd;
 }
 
 /** Actividad del Entrenamiento (ver modules/training/activities.ts). */
@@ -633,3 +634,33 @@ export interface Track extends BaseEntity {
 }
 
 export type EntityTable = keyof EntityMap;
+
+/** Granja: un lote de animales (p. ej. «Gallinas del fondo»), con lo que les pasó y lo que produjeron. Ver modules/farm/herd.ts. */
+export interface FarmHerd extends BaseEntity {
+  name: string;
+  /** Id de la ficha de Granja (gallina, conejo, vaca…). */
+  speciesId: string;
+  count: number;
+  breed: string;
+  startedOn: IsoDay;
+  notes: string;
+  events: FarmEvent[];
+  production: FarmProduction[];
+}
+export interface FarmEvent {
+  id: Id;
+  date: IsoDay;
+  kind: 'vaccine' | 'deworm' | 'birth' | 'death' | 'slaughter' | 'bought' | 'sold' | 'note';
+  /** Cuántos animales entran (nacimientos, compras) o salen (muertes, faena, ventas). */
+  count: number | null;
+  note: string;
+}
+export interface FarmProduction {
+  id: Id;
+  date: IsoDay;
+  product: 'eggs' | 'milk' | 'meat' | 'honey' | 'wool';
+  quantity: number;
+  unit: string;
+  /** Lote del inventario creado al sumarlo (si se sumó). */
+  lotId: Id | null;
+}
