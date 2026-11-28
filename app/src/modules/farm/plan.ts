@@ -29,8 +29,25 @@ export interface FarmTask {
   source?: { org?: string; url?: string; date?: string };
   confidence?: string;
 }
+export interface Stress {
+  heat?: PlanNum;
+  cold?: PlanNum;
+  heatNote?: string;
+  heatDo?: string;
+  coldDo?: string;
+}
+export interface Urgent {
+  sign: string;
+  todo: string;
+  level: 'ya' | 'hoy' | 'senasa';
+  confidence?: string;
+  source?: { org?: string; url?: string; date?: string };
+}
 interface PlanData {
   date: string;
+  stress?: Record<string, Stress>;
+  urgent?: Record<string, Urgent[]>;
+  senasa?: string;
   consumption: Record<string, PlanNum | undefined>;
   species: Record<string, PlanSpecies>;
   tasks: FarmTask[];

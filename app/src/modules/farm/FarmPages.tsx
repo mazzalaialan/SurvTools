@@ -43,7 +43,7 @@ interface FarmData {
 }
 const farm = data as FarmData;
 
-const BLOCKS = ['breeds', 'space', 'food', 'water', 'production', 'breeding', 'health', 'zoonoses', 'slaughter', 'rules'] as const;
+const BLOCKS = ['breeds', 'space', 'food', 'water', 'production', 'breeding', 'health', 'zoonoses', 'slaughter', 'garden', 'rules'] as const;
 const GROUPS = ['aves', 'conejos', 'rumiantes', 'cerdos', 'equinos', 'camelidos', 'abejas', 'peces'] as const;
 
 const nameOf = (sp: FarmSpecies, lang: string) => (lang.startsWith('en') ? sp.name.en : lang.startsWith('pt') ? sp.name.pt : undefined) ?? sp.name.es;

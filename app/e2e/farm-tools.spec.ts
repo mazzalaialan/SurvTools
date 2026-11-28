@@ -1,6 +1,15 @@
 import { expect, test } from '@playwright/test';
 
 const PASSWORD = 'prueba-segura-123';
+test.use({ geolocation: { latitude: -34.92, longitude: -57.95 }, permissions: ['geolocation'] });
+test.beforeEach(async ({ context }) => {
+  await context.route(/\/api\/om\//, (route) => route.fulfill({ status: 404, json: { error: 'sin copia propia' } }));
+  // Pronóstico del corral: mañana 38 °C (pasa el límite de la gallina, 36 °C).
+  await context.route('https://api.open-meteo.com/v1/forecast**', (route) => {
+    const day = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
+    return route.fulfill({ json: { daily: { time: [0, 1, 2, 3].map(day), temperature_2m_max: [30, 38, 31, 29], temperature_2m_min: [18, 22, 17, 15] } } });
+  });
+});
 
 test('granja: calculadora, calendario y mis animales (producción al inventario y eventos que suman o restan)', async ({ page }) => {
   await page.goto('/');
@@ -27,6 +36,8 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   await page.goto('/#/farm/herd');
   await page.getByTestId('farm-add-pen').click();
   await page.getByTestId('pen-name').fill('Gallinero');
+  await page.getByRole('button', { name: /marcarlo con el GPS/ }).click();
+  await expect(page.getByLabel('Lugar')).toHaveValue(/.+/);
   await page.goto('/#/farm/herd');
   await expect(page.getByTestId('farm-pen-card')).toContainText('Gallinero');
   await page.getByTestId('farm-new-pen').selectOption({ label: 'Gallinero' });
@@ -42,6 +53,13 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   await page.getByTestId('herd-event-count').fill('3');
   await page.getByTestId('herd-add-event').click();
   await expect(page.getByTestId('herd-count')).toHaveValue('4');
+  // Aviso de calor del corral (pronóstico del lugar contra el límite de la especie).
+  await page.goto('/#/farm/herd');
+  await expect(page.getByTestId('farm-alerts').locator('[data-kind="heat"]')).toContainText('Gallinero');
+  await page.goto('/#/farm/vet');
+  await expect(page.getByTestId('farm-senasa')).toBeVisible();
+  await page.goBack();
+  await page.goBack();
   await page.screenshot({ path: 'test-results/farm-herd.png', fullPage: true });
 
   const herdUrl = page.url();

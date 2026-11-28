@@ -25,7 +25,7 @@ Fichas base dentro de la app (como `garden/seeds.json`) para que ande sin descar
 0. Investigación SENASA/INTA de las especies del MVP (antes de cualquier cifra).
 1. MVP: sección, portada, rutas, fichas de gallina, codorniz, pato y conejo, avisos fijos. **Hecho (con 18 especies y «Dónde se crían»).**
 2. Calculadora, calendario, registro con «Sumar al inventario». **Hecho el 2026-11-27.**
-3. Clima y waypoint, Huerta, triage, paquete de fotos.
+3. Clima y waypoint, Huerta, triage, paquete de fotos. **Hecho el 2026-11-28 (con corrales; fotos quedaron dentro de la app, 1,3 MB).**
 4. Cabras, ovejas, cerdos, vacas, abejas, peces (más riesgo sanitario y normativo). **Adelantado y hecho el 2026-11-27.**
 
 ## Riesgos

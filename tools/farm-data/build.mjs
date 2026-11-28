@@ -85,6 +85,7 @@ const species = sp.especies.map((s) => {
     blocks: Object.fromEntries(BLOCKS.map(([k, key]) => [key, block(s[k])]).filter(([, v]) => v.length)),
   };
 });
+const sources_e3 = {};
 const sources = Object.fromEntries(Object.entries(sp.fuentes_ref).map(([id, f]) => [id, { org: f.organismo, title: f.titulo, url: f.url, date: f.fecha }]));
 const rules = normas.normas.map((n) => ({ topic: n.tema, text: n.v, confidence: n.confianza, source: n.fuente ? { org: n.fuente.organismo, url: n.fuente.url, date: n.fuente.fecha } : undefined, contact: n.consultas }));
 // Dónde se crían: existencias oficiales por departamento (SENASA 2019, colmenas RENAPA 2026; código INDEC → nombre del IGN, como en
@@ -125,8 +126,21 @@ for (const s of species) {
   if (c?.v) s.climate = { text: c.v, confidence: c.confianza, sources: Array.isArray(c.fuente) ? c.fuente : c.fuente ? [typeof c.fuente === 'string' ? c.fuente : c.fuente.organismo] : undefined };
 }
 if (missing.size) console.warn(`Departamentos sin equivalente en el IGN (${missing.size}): ${[...missing].slice(0, 15).join('; ')}`);
+// Etapa 3: estiércol y forraje («En la huerta») como un bloque más de la ficha.
+const e3 = opt('etapa3.json');
+for (const s of species) {
+  const h = e3?.huerta?.[s.id];
+  if (!h) continue;
+  const items = [];
+  if (h.estiercol?.v) items.push({ label: 'Estiércol', text: h.estiercol.v, confidence: h.estiercol.confianza, sources: h.estiercol.fuente?.organismo ? [`e3:${s.id}:e`] : undefined });
+  for (const [i, f] of (h.forraje ?? []).entries()) if (f?.v) items.push({ label: 'Forraje', text: f.v, confidence: f.confianza, sources: f.fuente?.organismo ? [`e3:${s.id}:f${i}`] : undefined });
+  if (h.estiercol?.fuente?.organismo) sources_e3[`e3:${s.id}:e`] = h.estiercol.fuente;
+  for (const [i, f] of (h.forraje ?? []).entries()) if (f?.fuente?.organismo) sources_e3[`e3:${s.id}:f${i}`] = f.fuente;
+  if (items.length) s.blocks.garden = items;
+}
 const file = here('../../app/src/modules/farm/farm-AR.json');
 mkdirSync(here('../../app/src/modules/farm/'), { recursive: true });
+for (const [k, f] of Object.entries(sources_e3)) sources[k] = { org: f.organismo, url: f.url, date: f.fecha };
 writeFileSync(file, JSON.stringify({ date: sp.fecha, species, rules, sources }));
 console.log(`${species.length} especies, ${rules.length} normas → ${file} (${Math.round(readFileSync(file).length / 1024)} KB)`);
 
@@ -157,6 +171,23 @@ if (calc || cal) {
         )
       : {},
     omitted: calc?.omitidos,
+    // Umbrales de aire para los avisos por corral (abeja: dentro de la colmena; peces: agua: no se comparan con el pronóstico).
+    stress: Object.fromEntries(
+      Object.entries(opt('etapa3.json')?.estres ?? {}).map(([id, x]) => [
+        id,
+        {
+          heat: id === 'abeja' || id === 'peces-estanque' ? undefined : num(x.calor_c),
+          cold: id === 'abeja' || id === 'peces-estanque' ? undefined : num(x.frio_c),
+          heatNote: x.calor_c?.nota,
+          heatDo: x.que_hacer_calor?.v,
+          coldDo: x.que_hacer_frio?.v,
+        },
+      ]),
+    ),
+    urgent: Object.fromEntries(
+      Object.entries(opt('etapa3.json')?.urgencias ?? {}).map(([g, list]) => [g, list.map((u) => ({ sign: u.senal, todo: u.que_hacer, level: u.urgencia, confidence: u.confianza, source: u.fuente ? { org: u.fuente.organismo, url: u.fuente.url, date: u.fuente.fecha } : undefined }))]),
+    ),
+    senasa: opt('etapa3.json')?.canales_senasa?.v,
     tasks: (cal?.tareas ?? []).map((x) => ({ species: x.especies, months: x.meses, regions: x.regiones ?? null, provinces: x.provincias, text: { es: x.tarea_es, en: x.tarea_en, pt: x.tarea_pt }, kind: x.tipo, source: x.fuente ? { org: x.fuente.organismo, url: x.fuente.url, date: x.fuente.fecha } : undefined, confidence: x.confianza })),
   };
   const planFile = here('../../app/src/modules/farm/farm-plan-AR.json');

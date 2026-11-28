@@ -33,3 +33,16 @@ describe('calculadora de granja', () => {
     expect(farmPlan.tasks.length).toBeGreaterThan(50);
   });
 });
+
+import { stressDays } from './weather';
+describe('avisos de calor y frío del corral', () => {
+  const days = [
+    { date: '2026-12-01', max: 30, min: 18 },
+    { date: '2026-12-02', max: 38, min: 4 },
+  ];
+  it('marca los días que pasan el límite (desde hoy) y nada si la especie no tiene límite', () => {
+    expect(stressDays(days, '2026-12-01', 36, 5)).toEqual({ heat: [days[1]], cold: [days[1]] });
+    expect(stressDays(days, '2026-12-02', null, null)).toEqual({ heat: [], cold: [] });
+    expect(stressDays(days, '2026-12-03', 36, 5)).toEqual({ heat: [], cold: [] });
+  });
+});
