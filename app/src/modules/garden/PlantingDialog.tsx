@@ -28,7 +28,9 @@ function HarvestForm({ planting }: { planting: Planting }) {
   const [qty, setQty] = useState('');
   const [unit, setUnit] = useState<string>(crop.harvestUnit);
   const [toInventory, setToInventory] = useState(true);
-  const [locationId, setLocationId] = useState(roots[0]?.id ?? '');
+  const bedLocation = useGarden((s) => (planting.bedId ? s.beds.get(planting.bedId)?.locationId : null));
+  // Por defecto, la ubicación del cantero (si tiene y existe); si no, la primera.
+  const [locationId, setLocationId] = useState((bedLocation && locations.has(bedLocation) ? bedLocation : null) ?? roots[0]?.id ?? '');
   const [busy, setBusy] = useState(false);
   const q = parseNum(qty);
   const valid = q !== null && q > 0 && !!date;

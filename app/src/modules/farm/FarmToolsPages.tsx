@@ -14,6 +14,8 @@ import data from './farm-AR.json';
 import { REGIONS, animalsFor, farmPlan, tasksFor, yearlyNeed, yields, type Product } from './plan';
 import { PRODUCT_UNIT, SPECIES_PRODUCTS, newHerd, newPen, recentProduction, useHerds } from './herd';
 import { WaypointField } from '@/modules/waypoints/WaypointField';
+import { LocationSelect } from '@/modules/inventory/components/LocationSelect';
+import { placeWaypointOf } from '@/modules/inventory/domain/locations';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { useSettings } from '@/core/settings/settings';
 import { Collapsible } from '@/ui/Collapsible';
@@ -226,6 +228,7 @@ export function FarmHerdsPage() {
   useLoadHerds();
   const herds = useHerds((s) => s.herds);
   const pens = useHerds((s) => s.pens);
+  const locations = useInventory((s) => s.locations);
   const { save, savePen } = useHerds.getState();
   const [speciesId, setSpeciesId] = useState(SPECIES[0]?.id ?? 'gallina');
   const [penId, setPenId] = useState('');
@@ -261,7 +264,7 @@ export function FarmHerdsPage() {
                 </Link>
               )}
             </div>
-            {pen && !pen.waypointId && <p className="muted small">{t('farm.pen.noPlace')}</p>}
+            {pen && !placeWaypointOf(pen, locations) && <p className="muted small">{t('farm.pen.noPlace')}</p>}
             {list.length ? (
               <ul className="list">
                 {list
@@ -346,6 +349,7 @@ export function FarmPenPage() {
           <input id="pen-name" className="input" value={pen.name} onChange={(e) => void savePen({ ...pen, name: e.target.value })} data-testid="pen-name" />
         </div>
         <WaypointField id="pen-place" label={t('farm.pen.place')} value={pen.waypointId} onChange={(waypointId) => void savePen({ ...pen, waypointId })} newName={pen.name} noneLabel={t('farm.pen.noPlaceShort')} hint={t('farm.pen.placeHint')} />
+        <LocationSelect id="pen-location" label={t('places.location')} value={pen.locationId} ownWaypoint={pen.waypointId} onChange={(locationId) => void savePen({ ...pen, locationId })} />
         <div className="field">
           <label htmlFor="pen-notes">{t('farm.pen.notes')}</label>
           <textarea id="pen-notes" className="input" rows={2} value={pen.notes} onChange={(e) => void savePen({ ...pen, notes: e.target.value })} />
@@ -395,17 +399,19 @@ function PenAlerts({ penId }: { penId?: string }) {
   const pens = useHerds((s) => s.pens);
   const herds = useHerds((s) => s.herds);
   const waypoints = useWaypoints((s) => s.waypoints);
+  const locations = useInventory((s) => s.locations);
   const base = useSettings((s) => s.settings.weatherUrl);
   const places = useMemo(() => {
     const out: { pen: FarmPen; lat: number; lon: number; species: string[] }[] = [];
     for (const p of pens.values()) {
       if (penId && p.id !== penId) continue;
-      const w = p.waypointId ? waypoints.get(p.waypointId) : undefined;
+      const wid = placeWaypointOf(p, locations);
+      const w = wid ? waypoints.get(wid) : undefined;
       if (!w) continue;
       out.push({ pen: p, lat: w.lat, lon: w.lon, species: [...new Set([...herds.values()].filter((h) => h.penId === p.id && h.count > 0).map((h) => h.speciesId))] });
     }
     return out;
-  }, [pens, herds, waypoints, penId]);
+  }, [pens, herds, waypoints, locations, penId]);
   const [weather, setWeather] = useState<Record<string, FarmWeather>>({});
   const keys = [...new Set(places.map((p) => farmWeatherKey(p.lat, p.lon)))].sort().join('|');
   useEffect(() => {
@@ -561,7 +567,8 @@ export function FarmHerdPage() {
 
   async function saveProduction(amount: number) {
     if (!prod || !h || amount <= 0) return;
-    const locId = toInventory ? locationId || roots[0]?.id || (await harvestLocation(t('garden.pantry'))).id : '';
+    const penLoc = h.penId ? pens.get(h.penId)?.locationId : null;
+    const locId = toInventory ? locationId || (penLoc && locations.has(penLoc) ? penLoc : null) || roots[0]?.id || (await harvestLocation(t('garden.pantry'))).id : '';
     const itemName = `${t(`farm.herd.product.${prod}`)} (${speciesName(h.speciesId, i18n.language)}, ${t('farm.herd.fromFarm')})`;
     await addProduction(h.id, { date, product: prod, quantity: amount, unit }, toInventory ? { locationId: locId, itemName } : null);
     setQty('');
@@ -642,7 +649,7 @@ export function FarmHerdPage() {
             {t('garden.toInventory')}
           </label>
           {toInventory && roots.length > 0 && (
-            <select className="select" aria-label={t('garden.harvestLocation')} value={locationId || roots[0]!.id} onChange={(e) => setLocationId(e.target.value)}>
+            <select className="select" aria-label={t('garden.harvestLocation')} value={locationId || (h.penId && pens.get(h.penId)?.locationId && locations.has(pens.get(h.penId)!.locationId!) ? pens.get(h.penId)!.locationId! : roots[0]!.id)} onChange={(e) => setLocationId(e.target.value)}>
               {roots.map((l) => (
                 <option key={l.id} value={l.id}>
                   {'· '.repeat(l.depth - 1)}

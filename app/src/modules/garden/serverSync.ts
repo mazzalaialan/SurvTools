@@ -5,6 +5,8 @@ import { readNotificationState, updateNotificationState } from '@/core/notificat
 import { useSettings, type Settings } from '@/core/settings/settings';
 import { today as todayIso } from '@/modules/inventory/domain/dates';
 import { useWaypoints } from '@/modules/waypoints/store';
+import { useInventory } from '@/modules/inventory/store';
+import { withPlaces } from '@/modules/inventory/domain/locations';
 import { cropName } from './crops';
 import { cropKc, frostThreshold, plantingTasks, readilyAvailableMm } from './logic';
 import { placeGroups } from './status';
@@ -80,7 +82,7 @@ export async function syncGarden(): Promise<void> {
   const { push } = await readNotificationState();
   const garden = useGarden.getState();
   if (!push || !navigator.onLine || !garden.loaded) return;
-  const body = gardenServerBody(garden.beds, garden.plantings, useWaypoints.getState().waypoints, useSettings.getState().settings, i18n.language, (k, o) => i18n.t(k, o) as string);
+  const body = gardenServerBody(withPlaces(garden.beds, useInventory.getState().locations), garden.plantings, useWaypoints.getState().waypoints, useSettings.getState().settings, i18n.language, (k, o) => i18n.t(k, o) as string);
   const res = await fetch(`${push.serverUrl}/api/devices/${push.deviceId}/garden`, {
     method: 'PUT',
     headers: { 'content-type': 'application/json', authorization: `Bearer ${push.token}` },
@@ -95,6 +97,7 @@ export function useGardenServerSync() {
   const beds = useGarden((s) => s.beds);
   const plantings = useGarden((s) => s.plantings);
   const waypoints = useWaypoints((s) => s.waypoints);
+  const locations = useInventory((s) => s.locations);
   const notificationsEnabled = useSettings((s) => s.settings.notificationsEnabled);
   const frost = useSettings((s) => s.settings.gardenFrostAlerts);
   const water = useSettings((s) => s.settings.gardenWaterAlerts);
@@ -103,5 +106,5 @@ export function useGardenServerSync() {
   useEffect(() => {
     const timer = setTimeout(() => void syncGarden(), 2000);
     return () => clearTimeout(timer);
-  }, [beds, plantings, waypoints, notificationsEnabled, frost, water, watered, language]);
+  }, [beds, plantings, waypoints, locations, notificationsEnabled, frost, water, watered, language]);
 }

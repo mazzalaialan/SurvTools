@@ -6,6 +6,8 @@ import { useSettings } from '@/core/settings/settings';
 import { usePlaceCountry } from '@/modules/emergency/usePlaceCountry';
 import { today as todayIso } from '@/modules/inventory/domain/dates';
 import { useWaypoints } from '@/modules/waypoints/store';
+import { useInventory } from '@/modules/inventory/store';
+import { withPlaces } from '@/modules/inventory/domain/locations';
 import { useRainWatch } from '@/modules/weather/rainWatch';
 import { ZONES, zoneFor, type Zone } from './calendar';
 import { dueTasks, frostRisk, greenhousePlantings, outdoorPlantings, waterBalance, type FrostRisk, type GardenTask, type PlantedEntry, type WaterBalance } from './logic';
@@ -28,7 +30,9 @@ export interface GardenPlace {
 export function useZonePlace(useGps = false): GardenPlace | null {
   const placeWaypointId = useSettings((s) => s.settings.placeWaypointId);
   const waypoints = useWaypoints((s) => s.waypoints);
-  const beds = useGarden((s) => s.beds);
+  const rawBeds = useGarden((s) => s.beds);
+  const locations = useInventory((s) => s.locations);
+  const beds = useMemo(() => withPlaces(rawBeds, locations), [rawBeds, locations]);
   const bedWp = [...beds.values()]
     .sort((x, y) => x.order - y.order)
     .map((b) => (b.waypointId ? waypoints.get(b.waypointId) : undefined))
@@ -156,7 +160,10 @@ export interface GardenStatus {
 
 /** Tareas que corresponden y, por lugar, helada y riego (lo que se muestra en Inicio y en la huerta). */
 export function useGardenStatus(): GardenStatus {
-  const { beds, plantings, loaded } = useGarden(useShallow((s) => ({ beds: s.beds, plantings: s.plantings, loaded: s.loaded })));
+  const { beds: rawBeds, plantings, loaded } = useGarden(useShallow((s) => ({ beds: s.beds, plantings: s.plantings, loaded: s.loaded })));
+  // El lugar de cada cantero: su waypoint o el de su ubicación del Inventario (o una ubicación padre).
+  const locations = useInventory((s) => s.locations);
+  const beds = useMemo(() => withPlaces(rawBeds, locations), [rawBeds, locations]);
   const { gardenFrostAlerts, gardenWaterAlerts, gardenWateredAt } = useSettings(
     useShallow((s) => ({ gardenFrostAlerts: s.settings.gardenFrostAlerts, gardenWaterAlerts: s.settings.gardenWaterAlerts, gardenWateredAt: s.settings.gardenWateredAt })),
   );

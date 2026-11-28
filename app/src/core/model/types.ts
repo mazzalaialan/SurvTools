@@ -520,6 +520,8 @@ export interface GardenBed extends BaseEntity {
   waypointId: Id | null;
   notes: string;
   order: number;
+  /** Ubicación del Inventario donde está: si no tiene waypoint propio, usa el de la ubicación (o el de su padre). */
+  locationId?: Id | null;
 }
 
 export type PlantingStatus = 'nursery' | 'growing' | 'harvesting' | 'done';
@@ -640,6 +642,8 @@ export type EntityTable = keyof EntityMap;
 export interface FarmPen extends BaseEntity {
   name: string;
   waypointId: Id | null;
+  /** Ubicación del Inventario donde está: si no tiene waypoint propio, usa el de la ubicación (o el de su padre). */
+  locationId?: Id | null;
   notes: string;
 }
 

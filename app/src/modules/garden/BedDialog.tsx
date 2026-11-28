@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import type { GardenBed } from '@/core/model/types';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { WaypointField } from '@/modules/waypoints/WaypointField';
+import { LocationSelect } from '@/modules/inventory/components/LocationSelect';
+import { placeWaypointOf } from '@/modules/inventory/domain/locations';
+import { useInventory } from '@/modules/inventory/store';
 import { Dialog } from '@/ui/Dialog';
 import { numToInput, parseNum } from '@/ui/numbers';
 import { Segmented } from '@/ui/Segmented';
@@ -20,7 +23,9 @@ export function BedDialog({ bed, onClose, onSave, onDelete }: { bed: GardenBed; 
   const [sun, setSun] = useState(numToInput(bed.sunHours));
   const waypoints = useWaypoints((s) => s.waypoints);
   const zonePlace = useZonePlace(false);
-  const wp = draft.waypointId ? waypoints.get(draft.waypointId) : undefined;
+  const locations = useInventory((s) => s.locations);
+  const placeId = placeWaypointOf(draft, locations);
+  const wp = placeId ? waypoints.get(placeId) : undefined;
   const sunPlace = wp ? { lat: wp.lat, lon: wp.lon, alt: wp.alt } : zonePlace ? { lat: zonePlace.lat, lon: zonePlace.lon } : null;
   const calculated = draft.sunMode === 'calculated';
   const w = parseNum(width);
@@ -93,6 +98,7 @@ export function BedDialog({ bed, onClose, onSave, onDelete }: { bed: GardenBed; 
           noneLabel={t('garden.noPlace')}
           hint={draft.greenhouse ? t('garden.placeHintGreenhouse') : t('garden.placeHint')}
         />
+        <LocationSelect id="bed-location" label={t('places.location')} value={draft.locationId} ownWaypoint={draft.waypointId} onChange={(locationId) => setDraft((d) => ({ ...d, locationId }))} />
         <Segmented
           label={t('garden.sun.mode')}
           value={calculated ? 'calculated' : 'manual'}

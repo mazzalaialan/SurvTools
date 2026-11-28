@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { placeWaypointOf } from '@/modules/inventory/domain/locations';
+import { useInventory } from '@/modules/inventory/store';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { MapPin, MapPinOff, Pencil, Warehouse } from 'lucide-react';
@@ -53,7 +55,8 @@ export function BedPage() {
   const here = all.filter((p) => p.bedId === bed.id);
   const current = here.filter((p) => p.status !== 'done').sort((a, b) => a.sownOn.localeCompare(b.sownOn));
   const history = here.filter((p) => p.status === 'done').sort((a, b) => (b.endedOn ?? '').localeCompare(a.endedOn ?? ''));
-  const wp = bed.waypointId ? waypoints.get(bed.waypointId) : undefined;
+  const placeId = placeWaypointOf(bed, useInventory.getState().locations);
+  const wp = placeId ? waypoints.get(placeId) : undefined;
   const sunPlace = wp ? { lat: wp.lat, lon: wp.lon, alt: wp.alt } : place ? { lat: place.lat, lon: place.lon } : null;
   const ownerCrops = new Map<number, string>([...owners].map(([cell, p]) => [cell, p.cropId]));
 

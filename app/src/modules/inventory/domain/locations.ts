@@ -83,3 +83,23 @@ export function kitOfLocation(id: Id, byId: Map<Id, Location>): Location | null 
   for (let l = byId.get(id), i = 0; l && i < 8; l = l.parentId ? byId.get(l.parentId) : undefined, i++) if (l.kitType !== null) return l;
   return null;
 }
+
+/** Waypoint de una ubicación: el suyo o, si no tiene, el de la ubicación padre más cercana que tenga. */
+export function locationWaypoint(id: Id | null | undefined, byId: Map<Id, Location>): Id | null {
+  let cur = id ? byId.get(id) : undefined;
+  for (let i = 0; cur && i <= MAX_LOCATION_DEPTH; i++) {
+    if (cur.waypointId) return cur.waypointId;
+    cur = cur.parentId ? byId.get(cur.parentId) : undefined;
+  }
+  return null;
+}
+
+/** Lugar de un cantero o corral: su waypoint propio o, si no tiene, el de su ubicación del Inventario (o el de una ubicación padre). */
+export function placeWaypointOf(x: { waypointId?: Id | null; locationId?: Id | null }, byId: Map<Id, Location>): Id | null {
+  return x.waypointId ?? locationWaypoint(x.locationId, byId);
+}
+
+/** Los mismos canteros (o corrales) con el waypoint ya resuelto desde su ubicación, para los avisos por lugar. */
+export function withPlaces<T extends { waypointId?: Id | null; locationId?: Id | null }>(xs: Map<Id, T>, byId: Map<Id, Location>): Map<Id, T> {
+  return new Map([...xs].map(([k, x]) => [k, x.waypointId || !x.locationId ? x : { ...x, waypointId: locationWaypoint(x.locationId, byId) }]));
+}

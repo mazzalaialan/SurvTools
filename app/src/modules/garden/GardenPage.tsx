@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { placeWaypointOf } from '@/modules/inventory/domain/locations';
+import { useInventory } from '@/modules/inventory/store';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { CloudRain, Droplets, MapPin, MapPinOff, Plus, Snowflake, Sprout, Warehouse } from 'lucide-react';
@@ -188,6 +190,7 @@ export function GardenPage() {
   const [search] = useSearchParams();
   const transplant = search.get('transplant');
   const { beds, plantings, saveBed } = useGarden(useShallow((s) => ({ beds: s.beds, plantings: s.plantings, saveBed: s.saveBed })));
+  const locations = useInventory((s) => s.locations);
   const status = useGardenStatus();
   const waypoints = useWaypoints((s) => s.waypoints);
   const [editing, setEditing] = useState<GardenBed | null>(null);
@@ -232,9 +235,9 @@ export function GardenPage() {
                         {b.greenhouse ? ` · ${t('garden.greenhouse')}` : ''}
                       </span>
                       <span className="list-sub">
-                        {b.waypointId && waypoints.get(b.waypointId) ? (
+                        {placeWaypointOf(b, locations) && waypoints.get(placeWaypointOf(b, locations)!) ? (
                           <>
-                            <MapPin size={14} aria-hidden /> {waypoints.get(b.waypointId)!.name}
+                            <MapPin size={14} aria-hidden /> {waypoints.get(placeWaypointOf(b, locations)!)!.name}
                           </>
                         ) : (
                           <>
