@@ -46,10 +46,48 @@ function WeekChips({ week }: { week: Week }) {
   );
 }
 
+/**
+ * Los animales de un corral, bien visibles: foto de la especie, nombre (y especie o raza debajo), producción de la semana y la
+ * cantidad grande con su palabra («4 animales»). Cada fila es una tarjeta que se toca entera para abrir el grupo.
+ */
+function HerdList({ list }: { list: FarmHerd[] }) {
+  const { t, i18n } = useTranslation();
+  const today = todayIso();
+  return (
+    <ul className="farm-herd-list">
+      {[...list]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((h) => {
+          const sp = speciesName(h.speciesId, i18n.language);
+          const img = SPECIES.find((s) => s.id === h.speciesId)?.image;
+          const sub = [h.name !== sp ? sp : null, h.breed || null].filter(Boolean).join(' · ');
+          return (
+            <li key={h.id}>
+              <Link className="farm-herd-row" to={`/farm/herd/${h.id}`} data-testid="farm-herd-row">
+                <span className="farm-herd-img">{img ? <img src={`${import.meta.env.BASE_URL}farm/${img}`} alt="" loading="lazy" /> : null}</span>
+                <span className="farm-herd-main">
+                  <span className="farm-herd-name">{h.name}</span>
+                  {sub && <span className="list-sub">{sub}</span>}
+                  <WeekChips week={recentProduction(h, today)} />
+                </span>
+                <span className="farm-total" aria-label={t('farm.herd.animals', { count: h.count })}>
+                  <span className="farm-total-n">{h.count}</span>
+                  <span className="farm-total-l" aria-hidden>
+                    {t('farm.herd.animalsWord', { count: h.count })}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+    </ul>
+  );
+}
+
 // ——— Lista ———
 
 export function FarmHerdsPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   useLoadHerds();
   const herds = useHerds((s) => s.herds);
@@ -104,23 +142,7 @@ export function FarmHerdsPage() {
             )}
             <WeekChips week={pw} />
             {list.length ? (
-              <ul className="list list-flat">
-                {list
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((h) => (
-                    <li key={h.id}>
-                      <Link className="list-row" to={`/farm/herd/${h.id}`}>
-                        <span className="list-main">
-                          <span className="list-title">{h.name}</span>
-                          {h.name !== speciesName(h.speciesId, i18n.language) && <span className="list-sub">{speciesName(h.speciesId, i18n.language)}</span>}
-                        </span>
-                        <span className="farm-count-big" aria-label={t('farm.herd.animals', { count: h.count })}>
-                          {h.count}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-              </ul>
+              <HerdList list={list} />
             ) : (
               <p className="muted small">{t('farm.pen.empty')}</p>
             )}
@@ -256,7 +278,7 @@ function HerdDialog({ penId, pens, onClose, onSave }: { penId: string; pens: Far
 // ——— Corral ———
 
 export function FarmPenPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { id = '' } = useParams();
   const navigate = useNavigate();
   useLoadHerds();
@@ -287,19 +309,7 @@ export function FarmPenPage() {
       <section className="card stack">
         <h2 className="section-title">{t('farm.pen.animals')}</h2>
         {list.length ? (
-          <ul className="list list-flat">
-            {list.map((h) => (
-              <li key={h.id}>
-                <Link className="list-row" to={`/farm/herd/${h.id}`}>
-                  <span className="list-main">
-                    <span className="list-title">{h.name}</span>
-                    {h.name !== speciesName(h.speciesId, i18n.language) && <span className="list-sub">{speciesName(h.speciesId, i18n.language)}</span>}
-                  </span>
-                  <span className="farm-count-big">{h.count}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <HerdList list={list} />
         ) : (
           <p className="muted small">{t('farm.pen.empty')}</p>
         )}

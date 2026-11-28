@@ -21,7 +21,7 @@ import { FARM_WEATHER_STALE_MS, cachedFarmWeather, farmWeatherKey, fetchFarmWeat
  * registro de mis grupos de animales (eventos y producción, con «Sumar al inventario»).
  */
 
-export const SPECIES = (data as { species: { id: string; name: { es: string; en?: string; pt?: string } }[] }).species;
+export const SPECIES = (data as { species: { id: string; image?: string; name: { es: string; en?: string; pt?: string } }[] }).species;
 export const speciesName = (id: string, lang: string) => {
   const s = SPECIES.find((x) => x.id === id);
   if (!s) return id;

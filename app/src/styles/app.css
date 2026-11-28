@@ -7844,3 +7844,13 @@ figure.fauna-map {
 
 /* Waypoint propio: alternativa a la ubicación del Inventario (cantero, corral). */
 .place-alt { border-left: 3px solid var(--control-border); padding-left: var(--sp-3); }
+
+.farm-herd-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.farm-herd-row { display: flex; align-items: center; gap: var(--sp-3); min-height: 72px; padding: var(--sp-2); border: 1px solid var(--control-border); border-radius: var(--radius-ctl); background: var(--surface-2, transparent); color: inherit; text-decoration: none; }
+.farm-herd-row:hover, .farm-herd-row:focus-visible { border-color: var(--text-muted); }
+.farm-herd-img { flex: none; width: 64px; height: 64px; border-radius: calc(var(--radius-ctl) - 2px); overflow: hidden; background: var(--control-border); }
+.farm-herd-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.farm-herd-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.farm-herd-name { font-weight: 700; font-size: var(--fs-md, 1rem); overflow-wrap: anywhere; }
+.farm-herd-row .farm-total { flex: none; }
+.farm-herd-main .farm-week { align-self: flex-start; }

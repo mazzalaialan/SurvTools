@@ -87,6 +87,9 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
 
   // Sincronizados: borrar la producción en Granja borra el lote del inventario…
   await page.goto(herdUrl);
+  await page.goto('/#/farm/herd');
+  await expect(page.getByTestId('farm-herd-row')).toContainText('4');
+  await page.goto(herdUrl);
   await page.getByTestId('herd-history-toggle').click();
   await page.getByTestId('herd-production-list').getByRole('button', { name: /Borrar/ }).click();
   await expect(page.getByTestId('herd-history')).not.toContainText('6 u');
