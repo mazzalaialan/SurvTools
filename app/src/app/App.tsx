@@ -116,10 +116,10 @@ const FarmSpeciesDetailPage = page(() => import('@/modules/farm/FarmPages').then
 const FarmRulesPage = page(() => import('@/modules/farm/FarmPages').then((m) => ({ default: m.FarmRulesPage })));
 const FarmPlanPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmPlanPage })));
 const FarmCalendarPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmCalendarPage })));
-const FarmHerdsPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmHerdsPage })));
+const FarmHerdsPage = page(() => import('@/modules/farm/FarmHerdPages').then((m) => ({ default: m.FarmHerdsPage })));
 const FarmVetPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmVetPage })));
-const FarmPenPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmPenPage })));
-const FarmHerdPage = page(() => import('@/modules/farm/FarmToolsPages').then((m) => ({ default: m.FarmHerdPage })));
+const FarmPenPage = page(() => import('@/modules/farm/FarmHerdPages').then((m) => ({ default: m.FarmPenPage })));
+const FarmHerdPage = page(() => import('@/modules/farm/FarmHerdPages').then((m) => ({ default: m.FarmHerdPage })));
 const FaunaHomePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaHomePage })));
 const FaunaZonePage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaZonePage })));
 const FaunaProvincesPage = page(() => import('@/modules/fauna/FaunaPages').then((m) => ({ default: m.FaunaProvincesPage })));

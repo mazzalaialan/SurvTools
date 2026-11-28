@@ -1,20 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Minus, Plus, Trash2 } from 'lucide-react';
-import type { FarmEvent, FarmProduction } from '@/core/model/types';
+import { Minus, Plus } from 'lucide-react';
 import { isUnlocked } from '@/core/security/session';
 import { today as todayIso } from '@/modules/inventory/domain/dates';
 import { useInventory } from '@/modules/inventory/store';
-import { harvestLocation } from '@/modules/garden/store';
-import { confirmAction } from '@/ui/confirm';
 import { parseNum } from '@/ui/numbers';
 import { FarmNotice } from './FarmPages';
 import data from './farm-AR.json';
 import { REGIONS, animalsFor, farmPlan, tasksFor, yearlyNeed, yields, type Product } from './plan';
-import { PRODUCT_UNIT, SPECIES_PRODUCTS, newHerd, newPen, recentProduction, useHerds } from './herd';
-import { WaypointField } from '@/modules/waypoints/WaypointField';
-import { LocationSelect } from '@/modules/inventory/components/LocationSelect';
+import { useHerds } from './herd';
 import { placeWaypointOf } from '@/modules/inventory/domain/locations';
 import { useWaypoints } from '@/modules/waypoints/store';
 import { useSettings } from '@/core/settings/settings';
@@ -27,8 +21,8 @@ import { FARM_WEATHER_STALE_MS, cachedFarmWeather, farmWeatherKey, fetchFarmWeat
  * registro de mis grupos de animales (eventos y producción, con «Sumar al inventario»).
  */
 
-const SPECIES = (data as { species: { id: string; name: { es: string; en?: string; pt?: string } }[] }).species;
-const speciesName = (id: string, lang: string) => {
+export const SPECIES = (data as { species: { id: string; name: { es: string; en?: string; pt?: string } }[] }).species;
+export const speciesName = (id: string, lang: string) => {
   const s = SPECIES.find((x) => x.id === id);
   if (!s) return id;
   return (lang.startsWith('en') ? s.name.en : lang.startsWith('pt') ? s.name.pt : undefined) ?? s.name.es;
@@ -214,7 +208,7 @@ export function FarmCalendarPage() {
 
 // ——— Mis animales ———
 
-function useLoadHerds() {
+export function useLoadHerds() {
   const loaded = useHerds((s) => s.loaded);
   useEffect(() => {
     // Si el módulo se cargó después de desbloquear, el aviso de sesión ya pasó: se lee acá.
@@ -222,179 +216,11 @@ function useLoadHerds() {
   }, [loaded]);
 }
 
-export function FarmHerdsPage() {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
-  useLoadHerds();
-  const herds = useHerds((s) => s.herds);
-  const pens = useHerds((s) => s.pens);
-  const locations = useInventory((s) => s.locations);
-  const { save, savePen } = useHerds.getState();
-  const [speciesId, setSpeciesId] = useState(SPECIES[0]?.id ?? 'gallina');
-  const [penId, setPenId] = useState('');
-  const today = todayIso();
-  const penList = [...pens.values()].sort((a, b) => a.name.localeCompare(b.name));
-  // Como los canteros de la huerta: cada corral con sus grupos de animales; al final, los que no tienen corral.
-  const groups = [...penList.map((p) => ({ pen: p, list: [...herds.values()].filter((h) => h.penId === p.id) })), { pen: null, list: [...herds.values()].filter((h) => !h.penId || !pens.has(h.penId)) }];
-  async function addHerd() {
-    const h = newHerd(speciesId, today, { name: speciesName(speciesId, i18n.language), penId: penId || null });
-    await save(h);
-    navigate(`/farm/herd/${h.id}`);
-  }
-  async function addPen() {
-    const p = newPen({ name: t('farm.pen.defaultName', { n: pens.size + 1 }) });
-    await savePen(p);
-    navigate(`/farm/pen/${p.id}`);
-  }
-  return (
-    <div className="stack">
-      <h1 className="page-title">{t('modules.farmHerd.title')}</h1>
-      <PenAlerts />
-      {herds.size === 0 && pens.size === 0 && <p className="muted">{t('farm.herd.empty')}</p>}
-      {groups.map(({ pen, list }) =>
-        pen || list.length ? (
-          <section key={pen?.id ?? 'none'} className="card stack" data-testid={pen ? 'farm-pen-card' : 'farm-no-pen'}>
-            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 className="section-title" style={{ margin: 0 }}>
-                {pen ? pen.name : t('farm.pen.none')}
-              </h2>
-              {pen && (
-                <Link to={`/farm/pen/${pen.id}`} className="small">
-                  {t('farm.pen.edit')}
-                </Link>
-              )}
-            </div>
-            {pen && !placeWaypointOf(pen, locations) && <p className="muted small">{t('farm.pen.noPlace')}</p>}
-            {list.length ? (
-              <ul className="list">
-                {list
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((h) => {
-                    const week = recentProduction(h, today);
-                    return (
-                      <li key={h.id}>
-                        <Link className="list-row" to={`/farm/herd/${h.id}`}>
-                          <span className="list-main">
-                            {h.name} · {h.count}
-                          </span>
-                          <span className="list-sub">
-                            {speciesName(h.speciesId, i18n.language)}
-                            {Object.entries(week).map(([p, n]) => ` · ${t(`farm.herd.week.${p}`, { n })}`)}
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-              </ul>
-            ) : (
-              <p className="muted small">{t('farm.pen.empty')}</p>
-            )}
-          </section>
-        ) : null,
-      )}
-      <div className="card stack">
-        <div className="field">
-          <label htmlFor="farm-new-species">{t('farm.herd.species')}</label>
-          <select id="farm-new-species" className="select" value={speciesId} onChange={(e) => setSpeciesId(e.target.value)} data-testid="farm-new-species">
-            {SPECIES.map((s) => (
-              <option key={s.id} value={s.id}>
-                {speciesName(s.id, i18n.language)}
-              </option>
-            ))}
-          </select>
-        </div>
-        {penList.length > 0 && (
-          <div className="field">
-            <label htmlFor="farm-new-pen">{t('farm.pen.label')}</label>
-            <select id="farm-new-pen" className="select" value={penId} onChange={(e) => setPenId(e.target.value)} data-testid="farm-new-pen">
-              <option value="">{t('farm.pen.none')}</option>
-              {penList.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        <button type="button" className="btn btn-primary" onClick={() => void addHerd()} data-testid="farm-add-herd">
-          {t('farm.herd.add')}
-        </button>
-        <button type="button" className="btn" onClick={() => void addPen()} data-testid="farm-add-pen">
-          {t('farm.pen.add')}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/** Un corral: nombre, lugar (waypoint, para los avisos de calor y frío) y sus grupos de animales. */
-export function FarmPenPage() {
-  const { t, i18n } = useTranslation();
-  const { id = '' } = useParams();
-  const navigate = useNavigate();
-  useLoadHerds();
-  const loaded = useHerds((s) => s.loaded);
-  const pen = useHerds((s) => s.pens.get(id));
-  const herds = useHerds((s) => s.herds);
-  const { savePen, removePen } = useHerds.getState();
-  if (!loaded) return null;
-  if (!pen) return <Navigate to="/farm/herd" replace />;
-  const list = [...herds.values()].filter((h) => h.penId === pen.id);
-  return (
-    <div className="stack" data-testid="farm-pen">
-      <h1 className="page-title">{pen.name || t('farm.pen.label')}</h1>
-      <div className="card stack">
-        <div className="field">
-          <label htmlFor="pen-name">{t('farm.pen.name')}</label>
-          <input id="pen-name" className="input" value={pen.name} onChange={(e) => void savePen({ ...pen, name: e.target.value })} data-testid="pen-name" />
-        </div>
-        <WaypointField id="pen-place" label={t('farm.pen.place')} value={pen.waypointId} onChange={(waypointId) => void savePen({ ...pen, waypointId })} newName={pen.name} noneLabel={t('farm.pen.noPlaceShort')} hint={t('farm.pen.placeHint')} />
-        <LocationSelect id="pen-location" label={t('places.location')} value={pen.locationId} ownWaypoint={pen.waypointId} onChange={(locationId) => void savePen({ ...pen, locationId })} />
-        <div className="field">
-          <label htmlFor="pen-notes">{t('farm.pen.notes')}</label>
-          <textarea id="pen-notes" className="input" rows={2} value={pen.notes} onChange={(e) => void savePen({ ...pen, notes: e.target.value })} />
-        </div>
-      </div>
-      <PenAlerts penId={pen.id} />
-      <section className="card stack">
-        <h2 className="section-title">{t('farm.pen.animals')}</h2>
-        {list.length ? (
-          <ul className="list">
-            {list.map((h) => (
-              <li key={h.id}>
-                <Link className="list-row" to={`/farm/herd/${h.id}`}>
-                  <span className="list-main">
-                    {h.name} · {h.count}
-                  </span>
-                  <span className="list-sub">{speciesName(h.speciesId, i18n.language)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="muted small">{t('farm.pen.empty')}</p>
-        )}
-      </section>
-      <button
-        type="button"
-        className="btn btn-danger"
-        onClick={async () => {
-          if (!(await confirmAction(t('farm.pen.deleteConfirm', { name: pen.name })))) return;
-          await removePen(pen.id);
-          navigate('/farm/herd', { replace: true });
-        }}
-      >
-        {t('farm.pen.delete')}
-      </button>
-    </div>
-  );
-}
-
 /**
  * Avisos de calor y frío por corral: el pronóstico de su lugar (hoy y 3 días) contra el umbral de cada especie que tiene, con qué hacer.
  * Solo especies con umbral de aire con fuente (la abeja se mide dentro de la colmena y los peces en el agua). Sin `penId`, todos.
  */
-function PenAlerts({ penId }: { penId?: string }) {
+export function PenAlerts({ penId }: { penId?: string }) {
   const { t, i18n } = useTranslation();
   const pens = useHerds((s) => s.pens);
   const herds = useHerds((s) => s.herds);
@@ -461,7 +287,12 @@ function PenAlerts({ penId }: { penId?: string }) {
           <strong>
             {t(a.kind === 'heat' ? 'farm.alerts.heat' : 'farm.alerts.cold', { pen: a.pen.name, species: speciesName(a.sid, i18n.language), when: when(a.day.date), temp: Math.round(a.temp), limit: a.limit.value })}
           </strong>
-          {a.todo && <p style={{ margin: '4px 0' }}>{a.todo}</p>}
+          {a.todo && (
+            <details className="farm-todo">
+              <summary>{t('farm.alerts.what')}</summary>
+              <p style={{ margin: '4px 0' }}>{a.todo}</p>
+            </details>
+          )}
           <span className="muted small">
             {a.limit.confidence && a.limit.confidence !== 'oficial' ? `${t('farm.unconfirmed')} · ` : ''}
             {a.limit.source?.url ? (
@@ -533,207 +364,6 @@ export function FarmVetPage() {
           </Collapsible>
         );
       })}
-    </div>
-  );
-}
-
-const EVENT_KINDS: FarmEvent['kind'][] = ['vaccine', 'deworm', 'birth', 'bought', 'death', 'slaughter', 'sold', 'note'];
-
-export function FarmHerdPage() {
-  const { t, i18n } = useTranslation();
-  const { id = '' } = useParams();
-  const navigate = useNavigate();
-  useLoadHerds();
-  const loaded = useHerds((s) => s.loaded);
-  const h = useHerds((s) => s.herds.get(id));
-  const pens = useHerds((s) => s.pens);
-  const { save, remove, addEvent, removeEvent, addProduction, removeProduction } = useHerds.getState();
-  const locations = useInventory((s) => s.locations);
-  const roots = [...locations.values()].sort((a, b) => a.depth - b.depth || a.name.localeCompare(b.name));
-  const products = SPECIES_PRODUCTS[h?.speciesId ?? ''] ?? [];
-  const [product, setProduct] = useState<FarmProduction['product'] | ''>('');
-  const [qty, setQty] = useState('');
-  const [date, setDate] = useState(todayIso());
-  const [toInventory, setToInventory] = useState(true);
-  const [locationId, setLocationId] = useState('');
-  const [eventKind, setEventKind] = useState<FarmEvent['kind']>('vaccine');
-  const [eventCount, setEventCount] = useState('');
-  const [eventNote, setEventNote] = useState('');
-  if (!loaded) return null;
-  if (!h) return <Navigate to="/farm/herd" replace />;
-  const prod = product || products[0] || '';
-  const unit = prod ? PRODUCT_UNIT[prod] : '';
-  const q = parseNum(qty);
-
-  async function saveProduction(amount: number) {
-    if (!prod || !h || amount <= 0) return;
-    const penLoc = h.penId ? pens.get(h.penId)?.locationId : null;
-    const locId = toInventory ? locationId || (penLoc && locations.has(penLoc) ? penLoc : null) || roots[0]?.id || (await harvestLocation(t('garden.pantry'))).id : '';
-    const itemName = `${t(`farm.herd.product.${prod}`)} (${speciesName(h.speciesId, i18n.language)}, ${t('farm.herd.fromFarm')})`;
-    await addProduction(h.id, { date, product: prod, quantity: amount, unit }, toInventory ? { locationId: locId, itemName } : null);
-    setQty('');
-  }
-
-  return (
-    <div className="stack" data-testid="farm-herd">
-      <h1 className="page-title">{h.name}</h1>
-      <div className="card stack">
-        <div className="field">
-          <label htmlFor="herd-name">{t('farm.herd.name')}</label>
-          <input id="herd-name" className="input" value={h.name} onChange={(e) => void save({ ...h, name: e.target.value })} />
-        </div>
-        <div className="field">
-          <label htmlFor="herd-count">{t('farm.herd.count')}</label>
-          <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-            <button type="button" className="icon-btn" aria-label="−1" onClick={() => void save({ ...h, count: Math.max(0, h.count - 1) })}>
-              <Minus size={20} aria-hidden />
-            </button>
-            <input id="herd-count" className="input" inputMode="numeric" style={{ maxWidth: 100, textAlign: 'center' }} value={String(h.count)} onChange={(e) => void save({ ...h, count: Math.max(0, Math.round(parseNum(e.target.value) ?? 0)) })} data-testid="herd-count" />
-            <button type="button" className="icon-btn" aria-label="+1" onClick={() => void save({ ...h, count: h.count + 1 })}>
-              <Plus size={20} aria-hidden />
-            </button>
-          </div>
-        </div>
-        <div className="field">
-          <label htmlFor="herd-breed">{t('farm.herd.breed')}</label>
-          <input id="herd-breed" className="input" value={h.breed} onChange={(e) => void save({ ...h, breed: e.target.value })} />
-        </div>
-        <div className="field">
-          <label htmlFor="herd-pen">{t('farm.pen.label')}</label>
-          <select id="herd-pen" className="select" value={h.penId ?? ''} onChange={(e) => void save({ ...h, penId: e.target.value || null })} data-testid="herd-pen">
-            <option value="">{t('farm.pen.none')}</option>
-            {[...pens.values()].map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Link to={`/farm/species/${h.speciesId}`}>{t('farm.herd.sheet', { name: speciesName(h.speciesId, i18n.language) })}</Link>
-      </div>
-
-      {products.length > 0 && (
-        <section className="card stack" data-testid="herd-production">
-          <h2 className="section-title">{t('farm.herd.production')}</h2>
-          {products.length > 1 && (
-            <div className="chips" role="group">
-              {products.map((p) => (
-                <button key={p} type="button" className="chip" aria-pressed={prod === p} onClick={() => setProduct(p)}>
-                  {t(`farm.herd.product.${p}`)}
-                </button>
-              ))}
-            </div>
-          )}
-          {/* Botones grandes para anotar con guantes: huevos de a 1 o de a 6; lo demás con cantidad. */}
-          {prod === 'eggs' && (
-            <div className="row" style={{ gap: 8 }}>
-              {[1, 6, 12].map((n) => (
-                <button key={n} type="button" className="btn btn-primary" style={{ flex: 1, minHeight: 56, fontSize: '1.2rem' }} onClick={() => void saveProduction(n)} data-testid={`herd-eggs-${n}`}>
-                  +{n}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="row" style={{ gap: 8 }}>
-            <div className="field" style={{ flex: 1 }}>
-              <label htmlFor="herd-qty">{t('farm.herd.qty', { unit })}</label>
-              <input id="herd-qty" className="input" inputMode="decimal" value={qty} onChange={(e) => setQty(e.target.value)} data-testid="herd-qty" />
-            </div>
-            <div className="field" style={{ flex: 1 }}>
-              <label htmlFor="herd-date">{t('farm.herd.date')}</label>
-              <input id="herd-date" className="input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            </div>
-          </div>
-          <label className="check">
-            <input type="checkbox" checked={toInventory} onChange={(e) => setToInventory(e.target.checked)} data-testid="herd-to-inventory" />
-            {t('garden.toInventory')}
-          </label>
-          {toInventory && roots.length > 0 && (
-            <select className="select" aria-label={t('garden.harvestLocation')} value={locationId || (h.penId && pens.get(h.penId)?.locationId && locations.has(pens.get(h.penId)!.locationId!) ? pens.get(h.penId)!.locationId! : roots[0]!.id)} onChange={(e) => setLocationId(e.target.value)}>
-              {roots.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {'· '.repeat(l.depth - 1)}
-                  {l.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <button type="button" className="btn" disabled={q === null || q <= 0} onClick={() => void saveProduction(q ?? 0)} data-testid="herd-add-production">
-            {t('farm.herd.addProduction')}
-          </button>
-          {h.production.length > 0 && (
-            <ul className="list">
-              {h.production.slice(0, 20).map((p) => (
-                <li key={p.id} className="list-row">
-                  <span className="list-main">
-                    {p.date} · {t(`farm.herd.product.${p.product}`)}: {p.quantity} {p.unit}
-                  </span>
-                  <button type="button" className="icon-btn" aria-label={t('farm.herd.delete')} onClick={() => void removeProduction(h.id, p.id)}>
-                    <Trash2 size={18} aria-hidden />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-
-      <section className="card stack" data-testid="herd-events">
-        <h2 className="section-title">{t('farm.herd.events')}</h2>
-        <div className="row" style={{ gap: 8 }}>
-          <select className="select" style={{ flex: 2 }} aria-label={t('farm.herd.eventKind')} value={eventKind} onChange={(e) => setEventKind(e.target.value as FarmEvent['kind'])} data-testid="herd-event-kind">
-            {EVENT_KINDS.map((k) => (
-              <option key={k} value={k}>
-                {t(`farm.herd.event.${k}`)}
-              </option>
-            ))}
-          </select>
-          <input className="input" style={{ flex: 1 }} inputMode="numeric" placeholder={t('farm.herd.howMany')} aria-label={t('farm.herd.howMany')} value={eventCount} onChange={(e) => setEventCount(e.target.value)} data-testid="herd-event-count" />
-        </div>
-        <input className="input" placeholder={t('farm.herd.note')} aria-label={t('farm.herd.note')} value={eventNote} onChange={(e) => setEventNote(e.target.value)} />
-        <button
-          type="button"
-          className="btn"
-          data-testid="herd-add-event"
-          onClick={() => {
-            const n = parseNum(eventCount);
-            void addEvent(h.id, { date: todayIso(), kind: eventKind, count: n && n > 0 ? Math.round(n) : null, note: eventNote.trim() });
-            setEventCount('');
-            setEventNote('');
-          }}
-        >
-          {t('farm.herd.addEvent')}
-        </button>
-        {h.events.length > 0 && (
-          <ul className="list">
-            {h.events.slice(0, 30).map((e) => (
-              <li key={e.id} className="list-row">
-                <span className="list-main">
-                  {e.date} · {t(`farm.herd.event.${e.kind}`)}
-                  {e.count ? ` (${e.count})` : ''}
-                </span>
-                {e.note && <span className="list-sub">{e.note}</span>}
-                <button type="button" className="icon-btn" aria-label={t('farm.herd.delete')} onClick={() => void removeEvent(h.id, e.id)}>
-                  <Trash2 size={18} aria-hidden />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="muted small">{t('farm.herd.eventHint')}</p>
-      </section>
-
-      <button
-        type="button"
-        className="btn btn-danger"
-        onClick={async () => {
-          if (!(await confirmAction(t('farm.herd.deleteConfirm', { name: h.name })))) return;
-          await remove(h.id);
-          navigate('/farm/herd', { replace: true });
-        }}
-      >
-        {t('farm.herd.deleteHerd')}
-      </button>
     </div>
   );
 }

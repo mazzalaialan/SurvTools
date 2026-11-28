@@ -7820,3 +7820,24 @@ figure.fauna-map {
   padding-left: 1.2em;
   font-size: var(--fs-sm);
 }
+
+/* Granja: «Mis animales» (rediseño 2026-11-28). */
+.farm-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.farm-actions > .btn { flex: 1 1 12rem; min-height: 48px; }
+.farm-summary { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.farm-week { display: inline-flex; flex-wrap: wrap; gap: var(--sp-1); }
+.farm-pen-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.farm-count { color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.farm-count-big { font-size: var(--fs-lg, 1.4rem); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 2.5ch; text-align: right; }
+.farm-place { display: flex; align-items: center; gap: 4px; margin: 0; }
+.farm-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
+.farm-quick-btn { min-height: 56px; font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.farm-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+.farm-other { width: auto; min-height: 48px; }
+.undo-toast { position: fixed; left: 50%; bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: var(--sp-3); max-width: calc(100vw - 32px); padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4); border-radius: var(--radius-ctl); background: var(--surface-2, var(--surface)); color: var(--text); border: 1px solid var(--control-border); box-shadow: 0 6px 20px rgb(0 0 0 / 0.35); }
+.undo-toast .btn { min-height: 44px; }
+
+.farm-total { display: flex; flex-direction: column; align-items: center; line-height: 1; padding: var(--sp-2) var(--sp-3); border: 1px solid var(--control-border); border-radius: var(--radius-ctl); min-width: 4.5rem; }
+.farm-total-n { font-size: 2rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.farm-total-l { font-size: var(--fs-sm, 0.8rem); color: var(--text-muted); margin-top: 2px; }
+.farm-todo summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; font-weight: 600; }

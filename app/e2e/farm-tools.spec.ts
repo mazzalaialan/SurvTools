@@ -32,27 +32,36 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   while (!/abril/i.test((await page.getByTestId('farm-month').textContent()) ?? '')) await page.getByRole('button', { name: 'Mes siguiente' }).click();
   await expect(page.getByTestId('farm-tasks').locator('[data-kind="obligatorio"]').first()).toContainText(/aftosa/i);
 
-  // Corrales (como los canteros): uno con nombre; el lote se crea adentro.
+  // Corrales (como los canteros): alta en un diálogo con nombre y lugar.
   await page.goto('/#/farm/herd');
   await page.getByTestId('farm-add-pen').click();
-  await page.getByTestId('pen-name').fill('Gallinero');
-  await page.getByRole('button', { name: /marcarlo con el GPS/ }).click();
-  await expect(page.getByLabel('Lugar')).toHaveValue(/.+/);
-  await page.goto('/#/farm/herd');
+  const dlg = page.getByRole('dialog');
+  await dlg.getByTestId('pen-name').fill('Gallinero');
+  await dlg.getByRole('button', { name: /marcarlo con el GPS/ }).click();
+  await expect(dlg.getByLabel('Lugar')).toHaveValue(/.+/);
+  await dlg.getByTestId('pen-save').click();
   await expect(page.getByTestId('farm-pen-card')).toContainText('Gallinero');
-  await page.getByTestId('farm-new-pen').selectOption({ label: 'Gallinero' });
 
-  // Mis animales: un lote de gallinas, 6 huevos al inventario y una compra de 3 que suma.
-  await page.getByTestId('farm-new-species').selectOption('gallina');
-  await page.getByTestId('farm-add-herd').click();
+  // Grupo de animales: alta en un diálogo (especie, corral, cantidad) y a la ficha.
+  await page.getByTestId('farm-pen-card').getByRole('button', { name: 'Agregar animales acá' }).click();
+  await page.getByRole('dialog').getByTestId('farm-new-species').selectOption('gallina');
+  await expect(page.getByRole('dialog').getByTestId('farm-new-pen').locator('option:checked')).toHaveText('Gallinero');
+  await page.getByRole('dialog').getByTestId('herd-save').click();
   await expect(page.getByTestId('farm-herd')).toBeVisible();
-  await expect(page.getByTestId('herd-pen').locator('option:checked')).toHaveText('Gallinero');
+  await expect(page.getByTestId('farm-herd')).toContainText('Gallinero');
+  // Huevos de un toque, con «Deshacer».
   await page.getByTestId('herd-eggs-6').click();
-  await expect(page.getByTestId('herd-production')).toContainText('6 u');
-  await page.getByTestId('herd-event-kind').selectOption('bought');
+  await expect(page.getByTestId('undo-toast')).toContainText('6');
+  await page.getByTestId('herd-eggs-1').click();
+  await page.getByTestId('undo-toast-undo').click();
+  await page.getByTestId('herd-history-toggle').click();
+  await expect(page.getByTestId('herd-production-list')).toContainText('6 u');
+  await expect(page.getByTestId('herd-production-list').locator('li')).toHaveCount(1);
+  // Compra de 3 (chip): suma a la cantidad, que ya no se edita a mano.
+  await page.getByTestId('herd-event-bought').click();
   await page.getByTestId('herd-event-count').fill('3');
   await page.getByTestId('herd-add-event').click();
-  await expect(page.getByTestId('herd-count')).toHaveValue('4');
+  await expect(page.getByTestId('herd-count')).toHaveText('4');
   // Aviso de calor del corral (pronóstico del lugar contra el límite de la especie).
   await page.goto('/#/farm/herd');
   await expect(page.getByTestId('farm-alerts').locator('[data-kind="heat"]')).toContainText('Gallinero');
@@ -60,7 +69,15 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   await expect(page.getByTestId('farm-senasa')).toBeVisible();
   await page.goBack();
   await page.goBack();
+  await page.setViewportSize({ width: 412, height: 915 });
   await page.screenshot({ path: 'test-results/farm-herd.png', fullPage: true });
+  await page.goto('/#/farm/herd');
+  await page.screenshot({ path: 'test-results/farm-list.png', fullPage: true });
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.screenshot({ path: 'test-results/farm-list-light.png', fullPage: true });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goBack();
 
   const herdUrl = page.url();
 
@@ -70,10 +87,11 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
 
   // Sincronizados: borrar la producción en Granja borra el lote del inventario…
   await page.goto(herdUrl);
-  await page.getByTestId('herd-production').getByRole('button', { name: 'Borrar' }).click();
-  await expect(page.getByTestId('herd-production')).not.toContainText('6 u');
+  await page.getByTestId('herd-history-toggle').click();
+  await page.getByTestId('herd-production-list').getByRole('button', { name: /Borrar/ }).click();
+  await expect(page.getByTestId('herd-history')).not.toContainText('6 u');
   await page.getByTestId('herd-eggs-12').click();
-  await expect(page.getByTestId('herd-production')).toContainText('12 u');
+  await expect(page.getByTestId('herd-production-list')).toContainText('12 u');
   await page.goto('/#/inventory/items');
   await page.locator('main').getByRole('link', { name: /Huevos \(Gallina/ }).click();
   await expect(page.locator('main')).toContainText('12');
@@ -83,5 +101,6 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   await page.getByTestId('confirm-ok').click();
   await expect(page).toHaveURL(/#\/inventory\/items$/);
   await page.goto(herdUrl);
-  await expect(page.getByTestId('herd-production')).not.toContainText('12 u');
+  await page.getByTestId('herd-history-toggle').click();
+  await expect(page.getByTestId('herd-history')).not.toContainText('12 u');
 });

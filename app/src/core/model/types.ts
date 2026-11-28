@@ -664,9 +664,11 @@ export interface FarmHerd extends BaseEntity {
 export interface FarmEvent {
   id: Id;
   date: IsoDay;
-  kind: 'vaccine' | 'deworm' | 'birth' | 'death' | 'slaughter' | 'bought' | 'sold' | 'note';
-  /** Cuántos animales entran (nacimientos, compras) o salen (muertes, faena, ventas). */
+  kind: 'vaccine' | 'deworm' | 'birth' | 'death' | 'slaughter' | 'bought' | 'sold' | 'note' | 'adjust';
+  /** Cuántos animales entran (nacimientos, compras) o salen (muertes, faena, ventas); en «adjust» (corrección), la cantidad nueva. */
   count: number | null;
+  /** Corrección: cuántos había antes (para deshacerla). */
+  prevCount?: number;
   note: string;
 }
 export interface FarmProduction {

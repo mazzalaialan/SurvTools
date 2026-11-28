@@ -54,10 +54,10 @@ interface HerdState {
   save: (h: FarmHerd) => Promise<void>;
   remove: (id: Id) => Promise<void>;
   /** Registra un evento; nacimientos y compras suman animales, muertes, faena y ventas restan. */
-  addEvent: (herdId: Id, e: Omit<FarmEvent, 'id'>) => Promise<void>;
+  addEvent: (herdId: Id, e: Omit<FarmEvent, 'id'>) => Promise<Id | null>;
   removeEvent: (herdId: Id, eventId: Id) => Promise<void>;
   /** Registra producción y, si se pide, la suma al inventario en esa ubicación. */
-  addProduction: (herdId: Id, p: Omit<FarmProduction, 'id' | 'lotId'>, inventory: { locationId: Id; itemName: string } | null) => Promise<void>;
+  addProduction: (herdId: Id, p: Omit<FarmProduction, 'id' | 'lotId'>, inventory: { locationId: Id; itemName: string } | null) => Promise<Id | null>;
   removeProduction: (herdId: Id, prodId: Id) => Promise<void>;
 }
 
@@ -98,10 +98,14 @@ export const useHerds = create<HerdState>((set, get) => ({
   },
   async addEvent(herdId, e) {
     const h = get().herds.get(herdId);
-    if (!h) return;
+    if (!h) return null;
     const d = DELTA[e.kind];
-    const count = d && e.count ? Math.max(0, h.count + d * e.count) : h.count;
-    await get().save({ ...h, count, events: [...h.events, { ...e, id: uuidv7() }].sort((a, b) => b.date.localeCompare(a.date)) });
+    // Corrección: la cantidad nueva queda anotada con la anterior (así el historial explica cada cambio).
+    const adjust = e.kind === 'adjust' && e.count !== null;
+    const count = adjust ? Math.max(0, e.count!) : d && e.count ? Math.max(0, h.count + d * e.count) : h.count;
+    const ev: FarmEvent = { ...e, id: uuidv7(), ...(adjust && { prevCount: h.count }) };
+    await get().save({ ...h, count, events: [...h.events, ev].sort((a, b) => b.date.localeCompare(a.date)) });
+    return ev.id;
   },
   async removeEvent(herdId, eventId) {
     const h = get().herds.get(herdId);
@@ -109,12 +113,12 @@ export const useHerds = create<HerdState>((set, get) => ({
     if (!h || !e) return;
     // Deshacer el evento devuelve los animales que había sumado o restado.
     const d = DELTA[e.kind];
-    const count = d && e.count ? Math.max(0, h.count - d * e.count) : h.count;
+    const count = e.kind === 'adjust' && typeof e.prevCount === 'number' ? e.prevCount : d && e.count ? Math.max(0, h.count - d * e.count) : h.count;
     await get().save({ ...h, count, events: h.events.filter((x) => x.id !== eventId) });
   },
   async addProduction(herdId, p, inventory) {
     const h = get().herds.get(herdId);
-    if (!h) return;
+    if (!h) return null;
     let lotId: Id | null = null;
     if (inventory) {
       const inv = useInventory.getState();
@@ -144,7 +148,9 @@ export const useHerds = create<HerdState>((set, get) => ({
       await inv.saveLot(lot);
       lotId = lot.id;
     }
-    await get().save({ ...h, production: [...h.production, { ...p, id: uuidv7(), lotId }].sort((a, b) => b.date.localeCompare(a.date)) });
+    const id = uuidv7();
+    await get().save({ ...h, production: [...h.production, { ...p, id, lotId }].sort((a, b) => b.date.localeCompare(a.date)) });
+    return id;
   },
   async removeProduction(herdId, prodId) {
     const h = get().herds.get(herdId);
