@@ -36,7 +36,25 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   await expect(page.getByTestId('herd-count')).toHaveValue('4');
   await page.screenshot({ path: 'test-results/farm-herd.png', fullPage: true });
 
+  const herdUrl = page.url();
+
   // Los huevos quedaron en el inventario (Alimento).
   await page.goto('/#/inventory/items');
   await expect(page.locator('main')).toContainText('Huevos (Gallina');
+
+  // Sincronizados: borrar la producción en Granja borra el lote del inventario…
+  await page.goto(herdUrl);
+  await page.getByTestId('herd-production').getByRole('button', { name: 'Borrar' }).click();
+  await expect(page.getByTestId('herd-production')).not.toContainText('6 u');
+  await page.getByTestId('herd-eggs-12').click();
+  await expect(page.getByTestId('herd-production')).toContainText('12 u');
+  await page.goto('/#/inventory/items');
+  await page.locator('main').getByRole('link', { name: /Huevos \(Gallina/ }).click();
+  await expect(page.locator('main')).toContainText('12');
+  await expect(page.locator('main')).not.toContainText(/\b6 u\b/);
+  // …y borrar el artículo del inventario borra la producción anotada en Granja.
+  await page.locator('main').getByRole('button', { name: 'Eliminar', exact: true }).last().click();
+  await page.getByTestId('confirm-ok').click();
+  await page.goto(herdUrl);
+  await expect(page.getByTestId('herd-production')).not.toContainText('12 u');
 });

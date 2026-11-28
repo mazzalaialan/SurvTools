@@ -5,7 +5,7 @@ import { newEntity, touch } from '@/core/model/entity';
 import type { FarmEvent, FarmHerd, FarmProduction, Id, IsoDay, Item, Lot } from '@/core/model/types';
 import { isUnlocked, onSessionChange } from '@/core/security/session';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
-import { useInventory } from '@/modules/inventory/store';
+import { onLinkedLotsRemoved, useInventory } from '@/modules/inventory/store';
 import { addDays } from '@/modules/garden/logic';
 
 /**
@@ -127,8 +127,11 @@ export const useHerds = create<HerdState>((set, get) => ({
   },
   async removeProduction(herdId, prodId) {
     const h = get().herds.get(herdId);
-    if (!h) return;
+    const p = h?.production.find((x) => x.id === prodId);
+    if (!h || !p) return;
     await get().save({ ...h, production: h.production.filter((x) => x.id !== prodId) });
+    // Y su lote del inventario (si se sumó y sigue estando), para que los dos lados coincidan.
+    if (p.lotId && useInventory.getState().lots.has(p.lotId)) await useInventory.getState().deleteLot(p.lotId);
   },
 }));
 
@@ -136,4 +139,9 @@ onSessionChange(() => {
   if (isUnlocked()) {
     if (!useHerds.getState().loaded) void useHerds.getState().load();
   } else useHerds.getState().clear();
+});
+
+// Si se borró del inventario un lote que vino de acá, se relee (la producción ya se sacó de lo guardado).
+onLinkedLotsRemoved(() => {
+  if (useHerds.getState().loaded) void useHerds.getState().load();
 });

@@ -6,7 +6,7 @@ import { newEntity, touch } from '@/core/model/entity';
 import type { Attachment, GardenBed, HarvestEntry, Id, IsoDay, Item, Location, Lot, Planting } from '@/core/model/types';
 import { isUnlocked, onSessionChange } from '@/core/security/session';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
-import { useInventory } from '@/modules/inventory/store';
+import { onLinkedLotsRemoved, useInventory } from '@/modules/inventory/store';
 import { CROP_BY_ID, type Crop } from './crops';
 import { addDays } from './logic';
 
@@ -194,8 +194,11 @@ export const useGarden = create<GardenState>((set, get) => ({
 
   async removeHarvest(plantingId, harvestId) {
     const p = get().plantings.get(plantingId);
-    if (!p) return;
-    await get().savePlanting({ ...p, harvests: p.harvests.filter((h) => h.id !== harvestId) });
+    const h = p?.harvests.find((x) => x.id === harvestId);
+    if (!p || !h) return;
+    await get().savePlanting({ ...p, harvests: p.harvests.filter((x) => x.id !== harvestId) });
+    // Y su lote del inventario (si se sumó y sigue estando).
+    if (h.lotId && useInventory.getState().lots.has(h.lotId)) await useInventory.getState().deleteLot(h.lotId);
   },
 
   async setPhoto(plantingId, image) {
@@ -242,4 +245,9 @@ onSessionChange(() => {
   } else {
     useGarden.getState().clear();
   }
+});
+
+// Si se borró del inventario un lote que vino de la huerta, se relee (la cosecha ya se sacó de lo guardado).
+onLinkedLotsRemoved(() => {
+  if (useGarden.getState().loaded) void useGarden.getState().load();
 });

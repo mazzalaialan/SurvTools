@@ -76,6 +76,33 @@ export function registerAlertSource(source: () => AlertIndexRow[]): void {
  * Inventario en memoria (ARQUITECTURA §7.3): se descifra todo al desbloquear,
  * cada cambio se persiste cifrado al instante y se descarta al bloquear.
  */
+/**
+ * Lo que vino de la huerta o de la granja queda atado a su lote del inventario: si se borra el lote (o el artículo), se borra también
+ * la cosecha o la producción anotada, para que los dos lados digan lo mismo. Se hace sobre lo guardado (aunque esas pantallas no se
+ * hayan abierto) y después se avisa a las que estén cargadas para que relean.
+ */
+const lotListeners = new Set<() => void>();
+export function onLinkedLotsRemoved(fn: () => void): () => void {
+  lotListeners.add(fn);
+  return () => lotListeners.delete(fn);
+}
+async function unlinkProduction(lotIds: Id[]): Promise<void> {
+  if (!lotIds.length) return;
+  const gone = new Set(lotIds);
+  let changed = false;
+  for (const h of await repos.farmHerds.loadAll()) {
+    if (!h.production.some((p) => p.lotId && gone.has(p.lotId))) continue;
+    await repos.farmHerds.put(touch(h, { production: h.production.filter((p) => !(p.lotId && gone.has(p.lotId))) }));
+    changed = true;
+  }
+  for (const pl of await repos.plantings.loadAll()) {
+    if (!pl.harvests.some((x) => x.lotId && gone.has(x.lotId))) continue;
+    await repos.plantings.put(touch(pl, { harvests: pl.harvests.filter((x) => !(x.lotId && gone.has(x.lotId))) }));
+    changed = true;
+  }
+  if (changed) for (const fn of lotListeners) fn();
+}
+
 export const useInventory = create<InventoryState>((set, get) => {
   /** Regenera el índice en claro que usan las notificaciones en segundo plano. */
   async function syncAlertIndex() {
@@ -213,6 +240,7 @@ export const useInventory = create<InventoryState>((set, get) => {
 
     async deleteItem(id) {
       await get().removeItemPhoto(id);
+      await unlinkProduction([...get().lots.values()].filter((l) => l.itemId === id).map((l) => l.id));
       for (const lot of get().lots.values()) if (lot.itemId === id) await repos.lots.remove(lot.id);
       for (const sm of get().stockMins.values()) if (sm.itemId === id) await repos.stockMins.remove(sm.id);
       await repos.items.remove(id);
@@ -233,6 +261,7 @@ export const useInventory = create<InventoryState>((set, get) => {
 
     async deleteLot(id) {
       await repos.lots.remove(id);
+      await unlinkProduction([id]);
       set({ lots: without(get().lots, id) });
       await syncAlertIndex();
     },
