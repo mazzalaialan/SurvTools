@@ -647,7 +647,7 @@ export interface FarmPen extends BaseEntity {
   notes: string;
 }
 
-/** Granja: un lote de animales (p. ej. «Gallinas del fondo»), con lo que les pasó y lo que produjeron. Ver modules/farm/herd.ts. */
+/** Granja: un grupo de animales (p. ej. «Gallinas del fondo»), con lo que les pasó y lo que produjeron. Ver modules/farm/herd.ts. */
 export interface FarmHerd extends BaseEntity {
   name: string;
   /** Id de la ficha de Granja (gallina, conejo, vaca…). */

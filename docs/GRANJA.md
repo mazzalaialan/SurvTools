@@ -14,7 +14,7 @@ Cada cifra con fuente, organismo y fecha; sin fuente: «sin dato verificado». I
 ## Herramientas
 - Calculadora «cuántos animales para N personas» (lógica de `recommendations/calc.ts`).
 - Calendario de tareas con avisos locales (como Huerta).
-- Registro de lotes, eventos y producción (botones grandes, cifrado como `gardenBeds`), «Sumar al inventario».
+- Registro de grupos de animales, eventos y producción (botones grandes, cifrado como `gardenBeds`), «Sumar al inventario».
 - Clima: calor y heladas (aviso de Huerta) con el waypoint del corral; Huerta: estiércol, compost, forraje.
 - Triage veterinario: señales de urgencia → «llamá al veterinario».
 

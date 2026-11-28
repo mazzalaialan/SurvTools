@@ -24,7 +24,7 @@ import { FARM_WEATHER_STALE_MS, cachedFarmWeather, farmWeatherKey, fetchFarmWeat
 
 /**
  * Etapa 2 de Granja (docs/GRANJA.md): calculadora «cuántos animales para N personas», calendario de tareas por mes y región, y el
- * registro de mis lotes (eventos y producción, con «Sumar al inventario»).
+ * registro de mis grupos de animales (eventos y producción, con «Sumar al inventario»).
  */
 
 const SPECIES = (data as { species: { id: string; name: { es: string; en?: string; pt?: string } }[] }).species;
@@ -142,7 +142,7 @@ export function FarmCalendarPage() {
   const [region, setRegion] = useLocal<string>('vikarg.farm.region', 'pampeana');
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const herds = useHerds((s) => s.herds);
-  // Por defecto, las especies de mis lotes; sin lotes, todas.
+  // Por defecto, las especies de mis grupos de animales; sin lotes, todas.
   const mine = useMemo(() => [...new Set([...herds.values()].map((h) => h.speciesId))], [herds]);
   const [onlyMine, setOnlyMine] = useState(true);
   const species = onlyMine && mine.length ? mine : null;
@@ -234,7 +234,7 @@ export function FarmHerdsPage() {
   const [penId, setPenId] = useState('');
   const today = todayIso();
   const penList = [...pens.values()].sort((a, b) => a.name.localeCompare(b.name));
-  // Como los canteros de la huerta: cada corral con sus lotes; al final, los que no tienen corral.
+  // Como los canteros de la huerta: cada corral con sus grupos de animales; al final, los que no tienen corral.
   const groups = [...penList.map((p) => ({ pen: p, list: [...herds.values()].filter((h) => h.penId === p.id) })), { pen: null, list: [...herds.values()].filter((h) => !h.penId || !pens.has(h.penId)) }];
   async function addHerd() {
     const h = newHerd(speciesId, today, { name: speciesName(speciesId, i18n.language), penId: penId || null });
@@ -327,7 +327,7 @@ export function FarmHerdsPage() {
   );
 }
 
-/** Un corral: nombre, lugar (waypoint, para los avisos de calor y frío) y sus lotes. */
+/** Un corral: nombre, lugar (waypoint, para los avisos de calor y frío) y sus grupos de animales. */
 export function FarmPenPage() {
   const { t, i18n } = useTranslation();
   const { id = '' } = useParams();
