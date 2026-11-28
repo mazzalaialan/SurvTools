@@ -112,11 +112,11 @@ const out = { source: 'GBIF.org, registros con coordenadas en Argentina desde 19
 const unmatched = new Set();
 for (const sp of species) {
   // El nombre científico puede traer aclaraciones («Pecari tajacu (sinónimos: …)»): se usan las dos primeras palabras.
-  const name = String(sp.cientifico ?? '').replace(/[()]/g, ' ').split(/\s+/).slice(0, 2).join(' ');
+  const name = String(sp.nombre_gbif ?? sp.cientifico ?? '').replace(/[()]/g, ' ').split(/\s+/).slice(0, 2).join(' ');
   if (!name) continue;
   const m = await get(`${API}/species/match?${new URLSearchParams({ name, kingdom: 'Animalia' })}`);
   await sleep(150);
-  if (!m.usageKey || m.matchType === 'NONE') {
+  if (!m.usageKey || m.matchType === 'NONE' || m.matchType === 'HIGHERRANK') {
     console.warn(`${sp.id}: sin coincidencia en GBIF para «${name}»`);
     continue;
   }

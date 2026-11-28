@@ -175,7 +175,7 @@ for (const [file, group] of [['especies-mamiferos.json', 'mammal'], ['especies-a
     }
     // Crédito de la foto (autor, licencia y página en Wikimedia Commons): se muestra debajo de la imagen.
     const c = credits[sp.id] ?? sp.imagen;
-    const { imagen: _, grupo, monumento_natural, por_que, caza, venenosa, mordedura, picadura, vector, ...rest } = sp;
+    const { imagen: _, grupo, monumento_natural, por_que, caza, venenosa, mordedura, picadura, vector, nombre_gbif: _g, ...rest } = sp;
     species.push({
       ...rest,
       group: group ?? grupo ?? 'mammal',
