@@ -182,8 +182,13 @@ function PenDialog({ pen, onClose, onSave }: { pen: FarmPen; onClose: () => void
           <label htmlFor="pen-name">{t('farm.pen.name')}</label>
           <input id="pen-name" className="input" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} data-testid="pen-name" />
         </div>
-        <WaypointField id="pen-place" label={t('farm.pen.place')} value={draft.waypointId} onChange={(waypointId) => setDraft((d) => ({ ...d, waypointId }))} newName={draft.name} noneLabel={t('farm.pen.noPlaceShort')} hint={t('farm.pen.placeHint')} />
-        <LocationSelect id="pen-location" label={t('places.location')} value={draft.locationId} ownWaypoint={draft.waypointId} onChange={(locationId) => setDraft((d) => ({ ...d, locationId }))} />
+        {/* Primero la ubicación del Inventario; el waypoint propio es la alternativa cuando no hay ubicación. */}
+        <LocationSelect id="pen-location" label={t('places.location')} value={draft.locationId} ownWaypoint={null} onChange={(locationId) => setDraft((d) => ({ ...d, locationId, waypointId: locationId ? null : d.waypointId }))} />
+        {!draft.locationId && (
+          <div className="place-alt">
+            <WaypointField id="pen-place" label={t('places.orWaypoint')} value={draft.waypointId} onChange={(waypointId) => setDraft((d) => ({ ...d, waypointId }))} newName={draft.name} noneLabel={t('farm.pen.noPlaceShort')} hint={t('farm.pen.placeHint')} />
+          </div>
+        )}
         <div className="field">
           <label htmlFor="pen-notes">{t('farm.pen.notes')}</label>
           <textarea id="pen-notes" className="input" rows={2} value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} />

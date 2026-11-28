@@ -7841,3 +7841,6 @@ figure.fauna-map {
 .farm-total-n { font-size: 2rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 .farm-total-l { font-size: var(--fs-sm, 0.8rem); color: var(--text-muted); margin-top: 2px; }
 .farm-todo summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; font-weight: 600; }
+
+/* Waypoint propio: alternativa a la ubicación del Inventario (cantero, corral). */
+.place-alt { border-left: 3px solid var(--control-border); padding-left: var(--sp-3); }

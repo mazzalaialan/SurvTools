@@ -78,7 +78,7 @@ test('huerta: calendario por zona, canteros con waypoint, grilla, avisos por lug
   await dialog.getByLabel('Largo (cm)').fill('240');
   await expect(dialog.getByText('Grilla de 4 × 8 cuadros de 30 cm.')).toBeVisible();
   await dialog.getByRole('button', { name: /marcarlo con el GPS/ }).click();
-  await expect(dialog.getByLabel('Dónde está (waypoint)')).toHaveValue(/.+/);
+  await expect(dialog.getByLabel('O un lugar propio (waypoint)')).toHaveValue(/.+/);
   await dialog.getByRole('button', { name: 'Guardar' }).click();
   await expect(page.getByRole('heading', { name: 'Cantero 1' })).toBeVisible();
   await expect(page.getByTestId('bed-place')).toContainText('Cantero 1');
@@ -102,7 +102,7 @@ test('huerta: calendario por zona, canteros con waypoint, grilla, avisos por lug
   await page.goto('/#/garden/beds');
   await page.getByRole('button', { name: 'Cantero', exact: true }).click();
   await dialog.getByRole('button', { name: /marcarlo con el GPS/ }).click();
-  await expect(dialog.getByLabel('Dónde está (waypoint)')).toHaveValue(/.+/);
+  await expect(dialog.getByLabel('O un lugar propio (waypoint)')).toHaveValue(/.+/);
   await dialog.getByRole('button', { name: 'Guardar' }).click();
   await expect(page.getByRole('heading', { name: 'Cantero 2' })).toBeVisible();
   await plant([0], 'Pimiento (morrón)');
@@ -195,7 +195,7 @@ test('huerta: sol del cantero según su entorno y distribución de varias planta
   await dialog.getByLabel('Ancho (cm)').fill('120');
   await dialog.getByLabel('Largo (cm)').fill('240');
   await dialog.getByRole('button', { name: /marcarlo con el GPS/ }).click();
-  await expect(dialog.getByLabel('Dónde está (waypoint)')).toHaveValue(/.+/);
+  await expect(dialog.getByLabel('O un lugar propio (waypoint)')).toHaveValue(/.+/);
 
   // Sol calculado: el frente mira al norte; sin nada que tape da el día largo.
   await dialog.getByRole('button', { name: 'Calcular según el entorno' }).click();

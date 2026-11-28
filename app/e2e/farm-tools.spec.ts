@@ -38,7 +38,7 @@ test('granja: calculadora, calendario y mis animales (producción al inventario 
   const dlg = page.getByRole('dialog');
   await dlg.getByTestId('pen-name').fill('Gallinero');
   await dlg.getByRole('button', { name: /marcarlo con el GPS/ }).click();
-  await expect(dlg.getByLabel('Lugar')).toHaveValue(/.+/);
+  await expect(dlg.getByLabel('O un lugar propio (waypoint)')).toHaveValue(/.+/);
   await dlg.getByTestId('pen-save').click();
   await expect(page.getByTestId('farm-pen-card')).toContainText('Gallinero');
 

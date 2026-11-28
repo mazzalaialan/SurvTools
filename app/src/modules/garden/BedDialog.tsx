@@ -89,16 +89,21 @@ export function BedDialog({ bed, onClose, onSave, onDelete }: { bed: GardenBed; 
             {t('garden.gridRounded', { w: size.cols * 30, l: size.rows * 30 })}
           </p>
         )}
+        {/* Primero la ubicación del Inventario; el waypoint propio es la alternativa cuando no hay ubicación. */}
+        <LocationSelect id="bed-location" label={t('places.location')} value={draft.locationId} ownWaypoint={null} onChange={(locationId) => setDraft((d) => ({ ...d, locationId, waypointId: locationId ? null : d.waypointId }))} />
+        {!draft.locationId && (
+          <div className="place-alt">
         <WaypointField
           id="bed-place"
-          label={t('garden.bedPlace')}
+          label={t('places.orWaypoint')}
           value={draft.waypointId}
           onChange={(waypointId) => setDraft((d) => ({ ...d, waypointId }))}
           newName={draft.name}
           noneLabel={t('garden.noPlace')}
           hint={draft.greenhouse ? t('garden.placeHintGreenhouse') : t('garden.placeHint')}
         />
-        <LocationSelect id="bed-location" label={t('places.location')} value={draft.locationId} ownWaypoint={draft.waypointId} onChange={(locationId) => setDraft((d) => ({ ...d, locationId }))} />
+          </div>
+        )}
         <Segmented
           label={t('garden.sun.mode')}
           value={calculated ? 'calculated' : 'manual'}
