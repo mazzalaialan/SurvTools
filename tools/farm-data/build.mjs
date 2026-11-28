@@ -87,6 +87,44 @@ const species = sp.especies.map((s) => {
 });
 const sources = Object.fromEntries(Object.entries(sp.fuentes_ref).map(([id, f]) => [id, { org: f.organismo, title: f.titulo, url: f.url, date: f.fecha }]));
 const rules = normas.normas.map((n) => ({ topic: n.tema, text: n.v, confidence: n.confianza, source: n.fuente ? { org: n.fuente.organismo, url: n.fuente.url, date: n.fuente.fecha } : undefined, contact: n.consultas }));
+// Dónde se crían: existencias oficiales por departamento (SENASA 2019, colmenas RENAPA 2026; código INDEC → nombre del IGN, como en
+// los mapas de Fauna) o por provincia (CNA 2018 del INDEC, acuicultura 2023), y una frase de clima y zona apta.
+const ex = opt('existencias/resumen.json');
+const clima = opt('existencias/clima.json') ?? {};
+const ignFile = join(dir, '..', 'fauna', 'ign', 'departamentos-simple.json');
+const byCode = {};
+if (existsSync(ignFile)) for (const [prov, list] of Object.entries(read(ignFile).provinces)) for (const d of list) byCode[d.id] = { prov, name: d.name };
+const { PROVINCE_CODE } = await import('../fauna-data/departments.mjs').catch(() => ({ PROVINCE_CODE: {} }));
+const provName = (code) => PROVINCE_CODE[code] ?? PROVINCE_CODE[Number(code)];
+const missing = new Set();
+for (const s of species) {
+  const e = ex?.especies?.[s.id];
+  // Los movimientos de animales (codorniz, ñandú, alpaca) no son existencias y cubren pocos lugares: no se dibujan.
+  if (e && (e.nivel === 'departamento' || e.nivel === 'provincia') && e.datos?.length && !/^\d{4}-\d{4}$/.test(String(e.anio))) {
+    const src = ex.fuentes.find((f) => f.id === e.fuente);
+    const data = {};
+    for (const r of e.datos) {
+      if (!r.cantidad) continue;
+      if (e.nivel === 'departamento') {
+        // Chascomús cambió de código al crearse Lezama (2009): SENASA usa el viejo.
+        const code = String(r.codigo_indec).padStart(5, '0');
+        const d = byCode[code] ?? byCode[{ '06217': '06218' }[code]] ?? Object.values(byCode).find((x) => code === '06217' && x.name === 'Chascomús');
+        if (!d) {
+          missing.add(`${r.provincia} / ${r.departamento} (${r.codigo_indec})`);
+          continue;
+        }
+        (data[d.prov] ??= {})[d.name] = ((data[d.prov] ?? {})[d.name] ?? 0) + r.cantidad;
+      } else {
+        const p = provName(String(r.codigo_indec).padStart(2, '0')) ?? r.provincia;
+        data[p] = (data[p] ?? 0) + r.cantidad;
+      }
+    }
+    s.range = { level: e.nivel === 'departamento' ? 'dept' : 'prov', year: e.anio, unit: e.unidad, source: src ? { org: src.organismo, url: src.url, date: src.fecha } : undefined, data };
+  }
+  const c = clima[s.id];
+  if (c?.v) s.climate = { text: c.v, confidence: c.confianza, sources: Array.isArray(c.fuente) ? c.fuente : c.fuente ? [typeof c.fuente === 'string' ? c.fuente : c.fuente.organismo] : undefined };
+}
+if (missing.size) console.warn(`Departamentos sin equivalente en el IGN (${missing.size}): ${[...missing].slice(0, 15).join('; ')}`);
 const file = here('../../app/src/modules/farm/farm-AR.json');
 mkdirSync(here('../../app/src/modules/farm/'), { recursive: true });
 writeFileSync(file, JSON.stringify({ date: sp.fecha, species, rules, sources }));

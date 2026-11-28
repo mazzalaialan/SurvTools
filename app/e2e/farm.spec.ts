@@ -28,5 +28,12 @@ test('granja: sección aparte con fichas (sin descargar nada), aviso fijo, sanid
   // Ñandú: fauna silvestre, aviso legal fijo arriba de la ficha.
   await page.goto('/#/farm/species/nandu');
   await expect(page.getByTestId('farm-warning')).toBeVisible();
+  // Vaca: «Dónde se crían» con las existencias por departamento; el mapa usa los límites del paquete de Fauna (se ofrece bajarlo).
+  await page.goto('/#/farm/species/vaca');
+  await page.getByTestId('farm-range-toggle').click();
+  await expect(page.getByTestId('farm-range')).toContainText('Buenos Aires');
+  await page.getByTestId('fauna-pack-get').click();
+  await expect(page.getByTestId('farm-range').locator('path.fauna-range-dept[data-level="3"]').first()).toBeVisible();
+  await page.getByTestId('farm-range').screenshot({ path: 'test-results/farm-range.png' });
   await page.screenshot({ path: 'test-results/farm-rules.png' });
 });

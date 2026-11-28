@@ -35,7 +35,7 @@ import {
 
 type State = { status: 'loading' } | { status: 'none' } | { status: 'missing' } | { status: 'notDownloaded' } | { status: 'ready'; data: FaunaData };
 
-function useFaunaData(): State {
+export function useFaunaData(): State {
   const country = useSettings((s) => s.settings.country);
   const [state, setState] = useState<State>({ status: 'loading' });
   // Se vuelve a leer cuando termina de bajarse o se borra el paquete (desde Ajustes o desde la sección).
@@ -63,7 +63,7 @@ function useFaunaData(): State {
 }
 
 /** Ofrece bajar el paquete de fauna del país (descarga aparte, como el de pesca). */
-function FaunaPackOffer() {
+export function FaunaPackOffer() {
   const { t, i18n } = useTranslation();
   const country = useSettings((s) => s.settings.country);
   const { fauna, busyFauna, downloadFauna, check } = useCountryPackStore();

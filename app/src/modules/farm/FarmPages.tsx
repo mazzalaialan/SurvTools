@@ -1,8 +1,12 @@
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { AlertTriangle, Bird, Rabbit } from 'lucide-react';
 import { ModuleGrid } from '@/ui/ModuleGrid';
 import { Collapsible } from '@/ui/Collapsible';
+import { ZoomSvg } from '@/modules/fauna/ZoomSvg';
+import { FaunaPackOffer, useFaunaData } from '@/modules/fauna/FaunaPages';
+import type { FaunaData } from '@/modules/fauna/fauna';
 import data from './farm-AR.json';
 
 /**
@@ -26,6 +30,9 @@ interface FarmSpecies {
   imageCredit?: { author?: string; license?: string; url?: string };
   warning?: string;
   survivalLaw?: string;
+  /** Existencias oficiales por departamento (prov → dept → n) o por provincia (prov → n). */
+  range?: { level: 'dept' | 'prov'; year?: number | string; unit?: string; source?: { org?: string; url?: string; date?: string }; data: Record<string, Record<string, number> | number> };
+  climate?: { text: string; confidence?: string; sources?: string[] };
   blocks: Record<string, FarmItem[]>;
 }
 interface FarmData {
@@ -162,6 +169,7 @@ export function FarmSpeciesDetailPage() {
           )}
         </figure>
       )}
+      <FarmRange sp={sp} />
       {BLOCKS.map((b) => {
         const items = sp.blocks[b];
         if (!items?.length) return null;
@@ -218,5 +226,125 @@ export function FarmRulesPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+/** Cantidad de un departamento: la propia (dato por departamento) o la de su provincia (dato por provincia). */
+const amountIn = (r: NonNullable<FarmSpecies['range']>, prov: string, dept: string) => {
+  const v = r.data[prov];
+  return typeof v === 'number' ? v : (v?.[dept] ?? 0);
+};
+
+/**
+ * «Dónde se crían»: clima y zona apta (frase con fuente) y el mapa de existencias oficiales, pintado por departamento o por provincia
+ * en tres niveles (tercios de los lugares con animales). Usa los límites de departamentos del paquete de Fauna (IGN): sin ese paquete,
+ * muestra las provincias con más animales y ofrece bajarlo.
+ */
+function FarmRange({ sp }: { sp: FarmSpecies }) {
+  const { t } = useTranslation();
+  const r = sp.range;
+  const top = useMemo(() => {
+    if (!r) return [];
+    const byProv = Object.entries(r.data).map(([p, v]) => [p, typeof v === 'number' ? v : Object.values(v).reduce((a, b) => a + b, 0)] as const);
+    return byProv.sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [r]);
+  if (!r && !sp.climate) return null;
+  const fmt = new Intl.NumberFormat('es-AR');
+  return (
+    <Collapsible id="farm-range" testId="farm-range" title={t('farm.range.title')} summary={top.length ? <span className="muted small">{top.slice(0, 3).map(([p]) => p).join(', ')}</span> : undefined}>
+      {sp.climate && (
+        <p>
+          {sp.climate.text}
+          {sp.climate.confidence && sp.climate.confidence !== 'oficial' && <span className="fauna-regulated"> {t('farm.unconfirmed')}</span>}
+        </p>
+      )}
+      {r && (
+        <>
+          <p className="muted small">{t('farm.range.top', { list: top.map(([p, n]) => `${p} (${fmt.format(n)})`).join(', ') })}</p>
+          <FarmRangeMap r={r} />
+          <p className="muted small">
+            {t(r.level === 'dept' ? 'farm.range.noteDept' : 'farm.range.noteProv', { year: r.year ?? '', unit: r.unit ?? '' })}{' '}
+            {r.source?.url ? (
+              <a href={r.source.url} target="_blank" rel="noreferrer">
+                {r.source.org}
+              </a>
+            ) : (
+              r.source?.org
+            )}
+          </p>
+        </>
+      )}
+    </Collapsible>
+  );
+}
+
+function FarmRangeMap({ r }: { r: NonNullable<FarmSpecies['range']> }) {
+  const state = useFaunaData();
+  if (state.status === 'notDownloaded') return <FaunaPackOffer />;
+  if (state.status !== 'ready') return null;
+  return <RangeSvg r={r} geo={state.data} />;
+}
+
+function RangeSvg({ r, geo }: { r: NonNullable<FarmSpecies['range']>; geo: FaunaData }) {
+  const { t } = useTranslation();
+  const [picked, setPicked] = useState<{ prov: string; dept: string; n: number } | null>(null);
+  const all = useMemo(() => geo.provinces.flatMap((p) => (p.departments ?? []).map((d) => ({ prov: p.name, ...d }))), [geo]);
+  const box = useMemo(() => {
+    let w = 180, e = -180, s = 90, n = -90;
+    for (const d of all)
+      for (const ring of d.rings)
+        for (let i = 0; i < ring.length; i += 2) {
+          w = Math.min(w, ring[i]!); e = Math.max(e, ring[i]!); s = Math.min(s, ring[i + 1]!); n = Math.max(n, ring[i + 1]!);
+        }
+    return { w, e, s, n, k: Math.cos((((s + n) / 2) * Math.PI) / 180) };
+  }, [all]);
+  // Niveles por tercios de los lugares con animales (las cantidades van de decenas a millones según la especie).
+  const cuts = useMemo(() => {
+    const vals = (r.level === 'dept' ? Object.values(r.data).flatMap((v) => (typeof v === 'number' ? [v] : Object.values(v))) : Object.values(r.data).map((v) => (typeof v === 'number' ? v : 0))).filter((v) => v > 0).sort((a, b) => a - b);
+    return [vals[Math.floor(vals.length / 3)] ?? 0, vals[Math.floor((2 * vals.length) / 3)] ?? 0];
+  }, [r]);
+  const level = (n: number) => (!n ? 0 : n >= cuts[1]! ? 3 : n >= cuts[0]! ? 2 : 1);
+  const scale = 1000 / Math.max((box.e - box.w) * box.k, box.n - box.s);
+  const x = (lon: number) => (lon - box.w) * box.k * scale;
+  const y = (lat: number) => (box.n - lat) * scale;
+  const path = (ring: number[]) => {
+    let d = '';
+    for (let i = 0; i < ring.length; i += 2) d += `${i ? 'L' : 'M'}${x(ring[i]!).toFixed(1)},${y(ring[i + 1]!).toFixed(1)}`;
+    return `${d}Z`;
+  };
+  const fmt = new Intl.NumberFormat('es-AR');
+  return (
+    <>
+      <ZoomSvg viewBox={[0, 0, Math.round(x(box.e)), Math.round(y(box.s))]} label={t('farm.range.title')}>
+        {all.map((d) => {
+          const n = amountIn(r, d.prov, d.name);
+          return (
+            <path
+              key={`${d.prov}|${d.name}`}
+              d={d.rings.map(path).join('')}
+              className="fauna-range-dept"
+              data-level={level(n)}
+              style={picked?.dept === d.name && picked.prov === d.prov ? { stroke: 'var(--text)', strokeWidth: 3 } : undefined}
+              onClick={() => setPicked({ prov: d.prov, dept: d.name, n })}
+            >
+              <title>{`${d.name} (${d.prov}): ${n}`}</title>
+            </path>
+          );
+        })}
+      </ZoomSvg>
+      <span className="fauna-legend">
+        {[1, 2, 3].map((l) => (
+          <span key={l}>
+            <span className="fauna-dot fauna-range-dot" data-level={l} aria-hidden /> {t(`farm.range.level${l}`)}
+          </span>
+        ))}
+      </span>
+      {picked && (
+        <p className="fauna-dept-picked" data-state={picked.n ? 'total' : 'unknown'} data-testid="farm-range-picked">
+          <strong className="fauna-dept-picked-name">{r.level === 'dept' ? `${picked.dept}, ${picked.prov}` : picked.prov}</strong>
+          <span>{fmt.format(picked.n)} {r.unit ?? ''}</span>
+        </p>
+      )}
+    </>
   );
 }
