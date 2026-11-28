@@ -14,7 +14,8 @@ test('granja: sección aparte con fichas (sin descargar nada), aviso fijo, sanid
   await page.goto('/#/farm');
   await page.locator('main').getByRole('link', { name: /Especies/ }).click();
   await expect(page.getByTestId('farm-notice')).toBeVisible();
-  await expect(page.getByTestId('farm-aves').getByRole('link')).toHaveCount(3);
+  await expect(page.getByTestId('farm-aves').getByRole('link')).toHaveCount(6);
+  await page.screenshot({ path: 'test-results/farm-list.png', fullPage: true });
   await page.getByTestId('farm-conejos').getByRole('link').first().click();
   await expect(page.getByTestId('farm-species')).toBeVisible();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Conejo');
@@ -24,5 +25,8 @@ test('granja: sección aparte con fichas (sin descargar nada), aviso fijo, sanid
   await page.screenshot({ path: 'test-results/farm-species.png', fullPage: true });
   await page.getByRole('link', { name: 'Normas y registro' }).click();
   await expect(page.getByTestId('farm-rules')).toContainText('RENSPA');
+  // Ñandú: fauna silvestre, aviso legal fijo arriba de la ficha.
+  await page.goto('/#/farm/species/nandu');
+  await expect(page.getByTestId('farm-warning')).toBeVisible();
   await page.screenshot({ path: 'test-results/farm-rules.png' });
 });

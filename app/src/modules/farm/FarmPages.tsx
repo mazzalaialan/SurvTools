@@ -24,6 +24,8 @@ interface FarmSpecies {
   name: { es: string; en?: string; pt?: string };
   image?: string;
   imageCredit?: { author?: string; license?: string; url?: string };
+  warning?: string;
+  survivalLaw?: string;
   blocks: Record<string, FarmItem[]>;
 }
 interface FarmData {
@@ -35,7 +37,7 @@ interface FarmData {
 const farm = data as FarmData;
 
 const BLOCKS = ['breeds', 'space', 'food', 'water', 'production', 'breeding', 'health', 'zoonoses', 'slaughter', 'rules'] as const;
-const GROUPS = ['aves', 'conejos'] as const;
+const GROUPS = ['aves', 'conejos', 'rumiantes', 'cerdos', 'equinos', 'camelidos', 'abejas', 'peces'] as const;
 
 const nameOf = (sp: FarmSpecies, lang: string) => (lang.startsWith('en') ? sp.name.en : lang.startsWith('pt') ? sp.name.pt : undefined) ?? sp.name.es;
 
@@ -137,6 +139,11 @@ export function FarmSpeciesDetailPage() {
     <div className="stack" data-testid="farm-species">
       <h1 className="page-title">{name}</h1>
       <FarmNotice />
+      {sp.warning && (
+        <p className="fauna-warning" data-status="prohibida" data-testid="farm-warning">
+          <AlertTriangle size={18} aria-hidden /> {sp.warning}
+        </p>
+      )}
       {sp.image && (
         <figure className="fauna-photo">
           <img src={`${import.meta.env.BASE_URL}farm/${sp.image}`} alt={name} />
@@ -170,6 +177,12 @@ export function FarmSpeciesDetailPage() {
           </Collapsible>
         );
       })}
+      {sp.survivalLaw && (
+        <section className="card stack fauna-survival">
+          <h2 className="section-title">{t('fauna.field.en_supervivencia')}</h2>
+          <p>{sp.survivalLaw}</p>
+        </section>
+      )}
       <Link className="btn btn-block" to="/farm/rules">
         {t('modules.farmRules.title')}
       </Link>
@@ -183,14 +196,11 @@ export function FarmRulesPage() {
     <div className="stack">
       <h1 className="page-title">{t('modules.farmRules.title')}</h1>
       <FarmNotice />
-      <ul className="stack" data-testid="farm-rules">
-        {farm.rules.map((r) => (
-          <li key={r.topic} className="card stack">
-            <h2 className="section-title">{r.topic}</h2>
-            <p>
-              {r.text}
-              {r.confidence && r.confidence !== 'oficial' && <span className="fauna-regulated"> {t('farm.unconfirmed')}</span>}
-            </p>
+      {/* Son muchas (36): cada norma plegada con su tema a la vista. */}
+      <div className="stack" data-testid="farm-rules">
+        {farm.rules.map((r, i) => (
+          <Collapsible key={i} id={`farm-rule-${i}`} title={r.topic} summary={r.confidence && r.confidence !== 'oficial' ? <span className="fauna-regulated">{t('farm.unconfirmed')}</span> : undefined}>
+            <p>{r.text}</p>
             {r.contact && <p className="muted small">{r.contact}</p>}
             {r.source && (
               <p className="muted small">
@@ -204,9 +214,9 @@ export function FarmRulesPage() {
                 {r.source.date && ` · ${r.source.date}`}
               </p>
             )}
-          </li>
+          </Collapsible>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
