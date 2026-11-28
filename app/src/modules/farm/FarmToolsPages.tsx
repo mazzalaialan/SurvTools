@@ -12,7 +12,8 @@ import { parseNum } from '@/ui/numbers';
 import { FarmNotice } from './FarmPages';
 import data from './farm-AR.json';
 import { REGIONS, animalsFor, farmPlan, tasksFor, yearlyNeed, yields, type Product } from './plan';
-import { PRODUCT_UNIT, SPECIES_PRODUCTS, newHerd, recentProduction, useHerds } from './herd';
+import { PRODUCT_UNIT, SPECIES_PRODUCTS, newHerd, newPen, recentProduction, useHerds } from './herd';
+import { WaypointField } from '@/modules/waypoints/WaypointField';
 
 /**
  * Etapa 2 de Granja (docs/GRANJA.md): calculadora «cuántos animales para N personas», calendario de tareas por mes y región, y el
@@ -219,39 +220,69 @@ export function FarmHerdsPage() {
   const navigate = useNavigate();
   useLoadHerds();
   const herds = useHerds((s) => s.herds);
-  const save = useHerds((s) => s.save);
+  const pens = useHerds((s) => s.pens);
+  const { save, savePen } = useHerds.getState();
   const [speciesId, setSpeciesId] = useState(SPECIES[0]?.id ?? 'gallina');
+  const [penId, setPenId] = useState('');
   const today = todayIso();
-  const list = [...herds.values()].sort((a, b) => a.name.localeCompare(b.name));
-  async function add() {
-    const h = newHerd(speciesId, today, { name: speciesName(speciesId, i18n.language) });
+  const penList = [...pens.values()].sort((a, b) => a.name.localeCompare(b.name));
+  // Como los canteros de la huerta: cada corral con sus lotes; al final, los que no tienen corral.
+  const groups = [...penList.map((p) => ({ pen: p, list: [...herds.values()].filter((h) => h.penId === p.id) })), { pen: null, list: [...herds.values()].filter((h) => !h.penId || !pens.has(h.penId)) }];
+  async function addHerd() {
+    const h = newHerd(speciesId, today, { name: speciesName(speciesId, i18n.language), penId: penId || null });
     await save(h);
     navigate(`/farm/herd/${h.id}`);
+  }
+  async function addPen() {
+    const p = newPen({ name: t('farm.pen.defaultName', { n: pens.size + 1 }) });
+    await savePen(p);
+    navigate(`/farm/pen/${p.id}`);
   }
   return (
     <div className="stack">
       <h1 className="page-title">{t('modules.farmHerd.title')}</h1>
-      {list.length ? (
-        <ul className="list" data-testid="farm-herds">
-          {list.map((h) => {
-            const week = recentProduction(h, today);
-            return (
-              <li key={h.id}>
-                <Link className="list-row" to={`/farm/herd/${h.id}`}>
-                  <span className="list-main">
-                    {h.name} · {h.count}
-                  </span>
-                  <span className="list-sub">
-                    {speciesName(h.speciesId, i18n.language)}
-                    {Object.entries(week).map(([p, n]) => ` · ${t(`farm.herd.week.${p}`, { n })}`)}
-                  </span>
+      <PenAlerts />
+      {herds.size === 0 && pens.size === 0 && <p className="muted">{t('farm.herd.empty')}</p>}
+      {groups.map(({ pen, list }) =>
+        pen || list.length ? (
+          <section key={pen?.id ?? 'none'} className="card stack" data-testid={pen ? 'farm-pen-card' : 'farm-no-pen'}>
+            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 className="section-title" style={{ margin: 0 }}>
+                {pen ? pen.name : t('farm.pen.none')}
+              </h2>
+              {pen && (
+                <Link to={`/farm/pen/${pen.id}`} className="small">
+                  {t('farm.pen.edit')}
                 </Link>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="muted">{t('farm.herd.empty')}</p>
+              )}
+            </div>
+            {pen && !pen.waypointId && <p className="muted small">{t('farm.pen.noPlace')}</p>}
+            {list.length ? (
+              <ul className="list">
+                {list
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((h) => {
+                    const week = recentProduction(h, today);
+                    return (
+                      <li key={h.id}>
+                        <Link className="list-row" to={`/farm/herd/${h.id}`}>
+                          <span className="list-main">
+                            {h.name} · {h.count}
+                          </span>
+                          <span className="list-sub">
+                            {speciesName(h.speciesId, i18n.language)}
+                            {Object.entries(week).map(([p, n]) => ` · ${t(`farm.herd.week.${p}`, { n })}`)}
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+              </ul>
+            ) : (
+              <p className="muted small">{t('farm.pen.empty')}</p>
+            )}
+          </section>
+        ) : null,
       )}
       <div className="card stack">
         <div className="field">
@@ -264,12 +295,95 @@ export function FarmHerdsPage() {
             ))}
           </select>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => void add()} data-testid="farm-add-herd">
+        {penList.length > 0 && (
+          <div className="field">
+            <label htmlFor="farm-new-pen">{t('farm.pen.label')}</label>
+            <select id="farm-new-pen" className="select" value={penId} onChange={(e) => setPenId(e.target.value)} data-testid="farm-new-pen">
+              <option value="">{t('farm.pen.none')}</option>
+              {penList.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <button type="button" className="btn btn-primary" onClick={() => void addHerd()} data-testid="farm-add-herd">
           {t('farm.herd.add')}
+        </button>
+        <button type="button" className="btn" onClick={() => void addPen()} data-testid="farm-add-pen">
+          {t('farm.pen.add')}
         </button>
       </div>
     </div>
   );
+}
+
+/** Un corral: nombre, lugar (waypoint, para los avisos de calor y frío) y sus lotes. */
+export function FarmPenPage() {
+  const { t, i18n } = useTranslation();
+  const { id = '' } = useParams();
+  const navigate = useNavigate();
+  useLoadHerds();
+  const loaded = useHerds((s) => s.loaded);
+  const pen = useHerds((s) => s.pens.get(id));
+  const herds = useHerds((s) => s.herds);
+  const { savePen, removePen } = useHerds.getState();
+  if (!loaded) return null;
+  if (!pen) return <Navigate to="/farm/herd" replace />;
+  const list = [...herds.values()].filter((h) => h.penId === pen.id);
+  return (
+    <div className="stack" data-testid="farm-pen">
+      <h1 className="page-title">{pen.name || t('farm.pen.label')}</h1>
+      <div className="card stack">
+        <div className="field">
+          <label htmlFor="pen-name">{t('farm.pen.name')}</label>
+          <input id="pen-name" className="input" value={pen.name} onChange={(e) => void savePen({ ...pen, name: e.target.value })} data-testid="pen-name" />
+        </div>
+        <WaypointField id="pen-place" label={t('farm.pen.place')} value={pen.waypointId} onChange={(waypointId) => void savePen({ ...pen, waypointId })} newName={pen.name} noneLabel={t('farm.pen.noPlaceShort')} hint={t('farm.pen.placeHint')} />
+        <div className="field">
+          <label htmlFor="pen-notes">{t('farm.pen.notes')}</label>
+          <textarea id="pen-notes" className="input" rows={2} value={pen.notes} onChange={(e) => void savePen({ ...pen, notes: e.target.value })} />
+        </div>
+      </div>
+      <PenAlerts penId={pen.id} />
+      <section className="card stack">
+        <h2 className="section-title">{t('farm.pen.animals')}</h2>
+        {list.length ? (
+          <ul className="list">
+            {list.map((h) => (
+              <li key={h.id}>
+                <Link className="list-row" to={`/farm/herd/${h.id}`}>
+                  <span className="list-main">
+                    {h.name} · {h.count}
+                  </span>
+                  <span className="list-sub">{speciesName(h.speciesId, i18n.language)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted small">{t('farm.pen.empty')}</p>
+        )}
+      </section>
+      <button
+        type="button"
+        className="btn btn-danger"
+        onClick={async () => {
+          if (!(await confirmAction(t('farm.pen.deleteConfirm', { name: pen.name })))) return;
+          await removePen(pen.id);
+          navigate('/farm/herd', { replace: true });
+        }}
+      >
+        {t('farm.pen.delete')}
+      </button>
+    </div>
+  );
+}
+
+/** Avisos de calor y frío por corral (se completa con los umbrales de cada especie: etapa 3). */
+function PenAlerts(_: { penId?: string }) {
+  return null;
 }
 
 const EVENT_KINDS: FarmEvent['kind'][] = ['vaccine', 'deworm', 'birth', 'bought', 'death', 'slaughter', 'sold', 'note'];
@@ -281,6 +395,7 @@ export function FarmHerdPage() {
   useLoadHerds();
   const loaded = useHerds((s) => s.loaded);
   const h = useHerds((s) => s.herds.get(id));
+  const pens = useHerds((s) => s.pens);
   const { save, remove, addEvent, removeEvent, addProduction, removeProduction } = useHerds.getState();
   const locations = useInventory((s) => s.locations);
   const roots = [...locations.values()].sort((a, b) => a.depth - b.depth || a.name.localeCompare(b.name));
@@ -330,6 +445,17 @@ export function FarmHerdPage() {
         <div className="field">
           <label htmlFor="herd-breed">{t('farm.herd.breed')}</label>
           <input id="herd-breed" className="input" value={h.breed} onChange={(e) => void save({ ...h, breed: e.target.value })} />
+        </div>
+        <div className="field">
+          <label htmlFor="herd-pen">{t('farm.pen.label')}</label>
+          <select id="herd-pen" className="select" value={h.penId ?? ''} onChange={(e) => void save({ ...h, penId: e.target.value || null })} data-testid="herd-pen">
+            <option value="">{t('farm.pen.none')}</option>
+            {[...pens.values()].map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
         </div>
         <Link to={`/farm/species/${h.speciesId}`}>{t('farm.herd.sheet', { name: speciesName(h.speciesId, i18n.language) })}</Link>
       </div>

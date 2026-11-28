@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { v7 as uuidv7 } from 'uuid';
 import { repos } from '@/core/db/repository';
 import { newEntity, touch } from '@/core/model/entity';
-import type { FarmEvent, FarmHerd, FarmProduction, Id, IsoDay, Item, Lot } from '@/core/model/types';
+import type { FarmEvent, FarmHerd, FarmPen, FarmProduction, Id, IsoDay, Item, Lot } from '@/core/model/types';
 import { isUnlocked, onSessionChange } from '@/core/security/session';
 import { systemCategoryId } from '@/modules/inventory/domain/categories';
 import { onLinkedLotsRemoved, useInventory } from '@/modules/inventory/store';
@@ -26,6 +26,10 @@ export const SPECIES_PRODUCTS: Record<string, FarmProduction['product'][]> = {
 /** Eventos que suman o restan animales al lote. */
 const DELTA: Partial<Record<FarmEvent['kind'], 1 | -1>> = { birth: 1, bought: 1, death: -1, slaughter: -1, sold: -1 };
 
+export function newPen(fields: Partial<FarmPen> = {}): FarmPen {
+  return newEntity<FarmPen>({ name: '', waypointId: null, notes: '', ...fields });
+}
+
 export function newHerd(speciesId: string, startedOn: IsoDay, fields: Partial<FarmHerd> = {}): FarmHerd {
   return newEntity<FarmHerd>({ name: '', speciesId, count: 1, breed: '', startedOn, notes: '', events: [], production: [], ...fields });
 }
@@ -41,6 +45,10 @@ export function recentProduction(h: FarmHerd, today: IsoDay, days = 7): Partial<
 interface HerdState {
   loaded: boolean;
   herds: Map<Id, FarmHerd>;
+  pens: Map<Id, FarmPen>;
+  savePen: (p: FarmPen) => Promise<void>;
+  /** Borra el corral; sus lotes quedan sin corral (no se borran animales). */
+  removePen: (id: Id) => Promise<void>;
   load: () => Promise<void>;
   clear: () => void;
   save: (h: FarmHerd) => Promise<void>;
@@ -56,13 +64,26 @@ interface HerdState {
 export const useHerds = create<HerdState>((set, get) => ({
   loaded: false,
   herds: new Map(),
+  pens: new Map(),
 
   async load() {
-    const list = await repos.farmHerds.loadAll();
-    set({ loaded: true, herds: new Map(list.map((h) => [h.id, h])) });
+    const [list, pens] = await Promise.all([repos.farmHerds.loadAll(), repos.farmPens.loadAll()]);
+    set({ loaded: true, herds: new Map(list.map((h) => [h.id, h])), pens: new Map(pens.map((p) => [p.id, p])) });
   },
   clear() {
-    set({ loaded: false, herds: new Map() });
+    set({ loaded: false, herds: new Map(), pens: new Map() });
+  },
+  async savePen(p) {
+    const saved = touch(p);
+    await repos.farmPens.put(saved);
+    set({ pens: new Map(get().pens).set(saved.id, saved) });
+  },
+  async removePen(id) {
+    for (const h of get().herds.values()) if (h.penId === id) await get().save({ ...h, penId: null });
+    await repos.farmPens.remove(id);
+    const pens = new Map(get().pens);
+    pens.delete(id);
+    set({ pens });
   },
   async save(h) {
     const saved = touch(h);

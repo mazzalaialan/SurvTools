@@ -334,6 +334,7 @@ export interface EntityMap {
   gear: Gear;
   weights: WeightEntry;
   farmHerds: FarmHerd;
+  farmPens: FarmPen;
 }
 
 /** Actividad del Entrenamiento (ver modules/training/activities.ts). */
@@ -635,6 +636,13 @@ export interface Track extends BaseEntity {
 
 export type EntityTable = keyof EntityMap;
 
+/** Granja: un corral, gallinero, conejera, colmenar o estanque. Con waypoint, avisos de calor y frío para los animales que tiene. */
+export interface FarmPen extends BaseEntity {
+  name: string;
+  waypointId: Id | null;
+  notes: string;
+}
+
 /** Granja: un lote de animales (p. ej. «Gallinas del fondo»), con lo que les pasó y lo que produjeron. Ver modules/farm/herd.ts. */
 export interface FarmHerd extends BaseEntity {
   name: string;
@@ -644,6 +652,8 @@ export interface FarmHerd extends BaseEntity {
   breed: string;
   startedOn: IsoDay;
   notes: string;
+  /** Corral donde está (como el cantero de una siembra en Huerta). */
+  penId?: Id | null;
   events: FarmEvent[];
   production: FarmProduction[];
 }
